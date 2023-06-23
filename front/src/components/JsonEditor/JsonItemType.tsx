@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.css';
 
 import './JsonEditor.css';
-import * as helper from './helper';
+import * as jh from './helper';
 
 type JsonTypeSelectProps = {
   value: any,
@@ -9,11 +9,11 @@ type JsonTypeSelectProps = {
 };
 
 const JsonTypeSelect = (props: JsonTypeSelectProps) => {
-  const valueType = helper.jsonTypeOf(props.value);
+  const valueType = jh.jsonTypeOf(props.value);
 
   const btnGroup = () => {
-    const arr = Array(helper.jsonTypeSymbols.length);
-    for(let i = 0; i < helper.jsonTypeSymbols.length; i++) {
+    const arr = Array(jh.jsonTypeSymbols.length);
+    for(let i = 0; i < jh.jsonTypeSymbols.length; i++) {
       let className = `btn btn-outline-primary p-2`;
       if(i === valueType) {
         className = `btn btn-primary p-2`;
@@ -24,7 +24,7 @@ const JsonTypeSelect = (props: JsonTypeSelectProps) => {
           className={className}
           onClick={() => props.onTypeSelect(i)}
           key={i}>
-            {helper.jsonTypeSymbols[i]}
+            {jh.jsonTypeSymbols[i]}
         </button>
       );
     }
@@ -32,12 +32,7 @@ const JsonTypeSelect = (props: JsonTypeSelectProps) => {
   }
 
   return (
-    <div className="btn-group" role="group">
-      <button
-        type="button"
-        className="btn btn-danger">
-          X
-      </button>
+    <div className="input-group" role="group">
       {btnGroup()}
     </div>
   );

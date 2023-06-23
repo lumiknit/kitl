@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import * as helper from './helper';
+import * as jh from './helper';
 import JsonItemEdit from './JsonItemEdit';
 import JsonItemType from './JsonItemType';
 
@@ -24,8 +24,8 @@ const JsonItem = (props: JsonItemProps) => {
     mode: JsonItemMode.Edit,
   });
 
-  const jsonType = helper.jsonTypeOf(state.value);
-  const symbol = helper.jsonTypeSymbols[jsonType];
+  const jsonType = jh.jsonTypeOf(state.value);
+  const symbol = jh.jsonTypeSymbols[jsonType];
 
   const enterTypeMode = () => {
     setState({
@@ -39,7 +39,7 @@ const JsonItem = (props: JsonItemProps) => {
     console.log(newType);
     let newValue = state.value;
     if(newType !== jsonType) {
-      newValue = helper.emptyJsonValueOfType(newType);
+      newValue = jh.emptyJsonValueOfType(newType);
     }
     setState({
       value: newValue,
