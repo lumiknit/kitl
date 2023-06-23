@@ -1,3 +1,6 @@
+type JsonKey = number | string;
+type JsonPath = JsonKey[];
+
 const NUMBER_OF_TYPES = 7;
 enum JsonType {
   NULL = 0,
@@ -69,6 +72,19 @@ const emptyJsonValueOfType = (type: JsonType) => {
   }
 };
 
+const updateJsonValue = (
+  parent: any,
+  key: JsonKey,
+  value: any,
+) => {
+  parent[key] = value;
+};
+
+export type {
+  JsonKey,
+  JsonPath,
+};
+
 export {
   NUMBER_OF_TYPES,
   JsonType,
@@ -76,4 +92,5 @@ export {
   jsonTypeSymbols,
   jsonTypeOf,
   emptyJsonValueOfType,
+  updateJsonValue,
 };

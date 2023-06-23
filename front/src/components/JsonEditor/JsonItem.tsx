@@ -11,6 +11,7 @@ import './JsonEditor.css';
 
 type JsonItemProps = {
   value: any,
+  updateValue: (value: any) => void,
 };
 
 enum JsonItemMode {
@@ -40,6 +41,8 @@ const JsonItem = (props: JsonItemProps) => {
     let newValue = state.value;
     if(newType !== jsonType) {
       newValue = jh.emptyJsonValueOfType(newType);
+      // Update value contained in parent
+      props.updateValue(newValue);
     }
     setState({
       value: newValue,
@@ -47,11 +50,17 @@ const JsonItem = (props: JsonItemProps) => {
     });
   };
 
+  const updateValue = (value: any) => {
+    state.value = value;
+    props.updateValue(value);
+  };
+
   switch(state.mode) {
   case JsonItemMode.Edit: return (
     <JsonItemEdit
       value={state.value}
-      onModeClick={enterTypeMode} />
+      onModeClick={enterTypeMode}
+      updateValue={updateValue} />
   );
   case JsonItemMode.Type: return (
     <JsonItemType

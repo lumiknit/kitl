@@ -9,6 +9,7 @@ import './JsonEditor.css';
 type JsonItemEditProps = {
   value: any,
   onModeClick: () => void,
+  updateValue: (value: any) => void,
 };
 
 const jsonConst = (name: string, onModeClick: () => void) => (
@@ -50,6 +51,18 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
   const jsonType = jh.jsonTypeOf(props.value);
   const symbol = jh.jsonTypeSymbols[jsonType];
 
+  const updateNumber = (value: string) => {
+    const newValue = Number(value);
+    if(isNaN(newValue)) {
+      return;
+    }
+    props.updateValue(newValue);
+  };
+
+  const updateString = (value: string) => {
+    props.updateValue(value);
+  }
+
   switch(jsonType) {
   case jh.JsonType.NULL:
     return jsonConst('null', props.onModeClick);
@@ -61,14 +74,14 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
     return jsonLiteral(
       symbol,
       props.value,
-      (value: string) => Number(value),
+      updateNumber,
       props.onModeClick,
     );
   case jh.JsonType.STRING:
     return jsonLiteral(
       symbol,
       props.value,
-      (value: string) => value,
+      updateString,
       props.onModeClick,
     );
   default:

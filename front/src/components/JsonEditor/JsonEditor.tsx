@@ -2,61 +2,41 @@ import { useState } from 'react';
 
 import JsonItemType from './JsonItemType';
 import JsonItem from './JsonItem';
+import * as jh from './helper';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import './JsonEditor.css';
 
-type JsonKey = number | string;
-type JsonPath = JsonKey[];
-
 type JsonEditorState = {
-  value: any,
+  valueBox: any[],
   cnt: number,
 }
 
 const JsonEditor = () => {
   const [state, setState] = useState<JsonEditorState>({
-    value: null,
+    valueBox: [null],
     cnt: 0,
   });
-  
-  const updateValue = (path: JsonPath, value: any) => {
-    if(path.length === 0) {
-      if(value === undefined) {
-        value = null;
-      }
-      setState({
-        value: value,
-        cnt: state.cnt + 1,
-      });
-      return;
-    }
-    // Inplace update
-    let current = state.value;
-    for(let i = 0; i < path.length - 1; i++) {
-      current = current[path[i]];
-    }
-    const key = path[path.length - 1];
-    if(value !== undefined) {
-      current[key] = value;
-    } else if(Array.isArray(current)) {
-      current.splice(Number(key), 1);
-    } else {
-      delete current[key];
-    }
-    setState({
-      value: state.value,
-      cnt: state.cnt + 1,
-    });
+
+  const alertValue = () => {
+    alert(state.valueBox[0]);
+  };
+
+  const updateValue = (value: any) => {
+    state.valueBox[0] = value;
+    console.log("JsonEditor.updateValue", value);
   };
 
   return (
     <>
       <div className="json-editor">
-        Test
+        <button type="button"
+          className="btn btn-danger p-2 m-2"
+          onClick={alertValue}>
+          Alert
+        </button>
         <JsonItem
-          path={[0]}
-          value={state.value}
+          value={state.valueBox[0]}
           updateValue={updateValue} />
       </div>
     </>
