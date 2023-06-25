@@ -17,9 +17,9 @@ const JsonTypeSelect = (props: JsonTypeSelectProps) => {
   const btnGroup = () => {
     const arr = Array(jh.jsonTypeIcons.length);
     for(let i = 0; i < jh.jsonTypeIcons.length; i++) {
-      let btnClass = `btn btn-outline-primary p-2`;
+      let btnClass = `btn btn-outline-primary`;
       if(i === valueType) {
-        btnClass = `btn btn-primary p-2`;
+        btnClass = `btn btn-primary`;
       }
       arr.push(
         <button
@@ -37,7 +37,7 @@ const JsonTypeSelect = (props: JsonTypeSelectProps) => {
   return (
     <div className="json-item-line">
       <JsonItemIndent level={props.depth} />
-      <div className="input-group" role="group">
+      <div className="input-group m-1" role="group">
         {btnGroup()}
       </div>
     </div>

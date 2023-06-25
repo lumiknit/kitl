@@ -17,9 +17,9 @@ type JsonItemEditProps = {
 };
 
 const jsonConst = (icon: any, onModeClick: () => void) => (
-  <div className="input-group">
+  <div className="input-group m-1">
     <button type="button"
-      className="btn btn-primary p-2"
+      className="btn btn-secondary"
       onClick={onModeClick}>
       {icon}
     </button>
@@ -37,9 +37,9 @@ const jsonLiteral = (
     console.log(newValue);
   };
   return (
-    <div className="input-group">
+    <div className="input-group m-1">
       <button type="button"
-        className="btn btn-primary p-2"
+        className="btn btn-outline-secondary"
         onClick={onModeClick}>
         {icon}
       </button>
@@ -99,7 +99,25 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
     );
     break;
   case jh.JsonType.ARRAY:
-    lineItem = jsonConst(icon, props.onModeClick);
+    lineItem = (
+    <div className="input-group m-1">
+      <button type="button"
+        className="btn btn-primary"
+        onClick={props.onModeClick}>
+        {icon}
+      </button>
+      <input type="text"
+        className="form-control"
+        placeholder="key" />
+      <button type="button"
+        className="btn btn-primary"
+        onClick={() => {
+          props.value.push(null);
+          props.updateValue(props.value, true);
+        }}>
+        <BI iconName="plus-square" />
+      </button>
+    </div>);
     for(let i = 0; i < props.value.length; i++) {
       lineNext.push(
         <JsonItem key={i}
@@ -108,22 +126,12 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
           depth={props.depth + 1} />
       );
     }
-    lineNext.push(
-      <button key="B" type="button"
-        className="btn btn-sm btn-primary p-2"
-        onClick={() => {
-          props.value.push(null);
-          props.updateValue(props.value, true);
-        }}>
-        Add
-      </button>
-    )
     break;
   default:
     lineItem = (
-      <div className="input-group">
+      <div className="input-group m-1">
         <button type="button"
-          className="btn btn-primary p-2"
+          className="btn btn-primary"
           onClick={props.onModeClick}>
           {icon}
         </button>

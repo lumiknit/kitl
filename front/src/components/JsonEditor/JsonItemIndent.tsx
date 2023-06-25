@@ -13,8 +13,8 @@ type JsonItemIndentProps = {
 
 const JsonItemIndent = (props: JsonItemIndentProps) => {
   // Indent guid size is 4px * 5 = 20px
-  const levelCount = 5;
-  const levelWidth = 4;
+  const levelCount = 4;
+  const levelWidth = 6;
   const levelStyles = 4;
 
   const x = levelWidth * (props.level % levelCount);
