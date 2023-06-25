@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import * as jh from './helper';
+import JsonItemIndent from './JsonItemIndent';
 import JsonItemEdit from './JsonItemEdit';
 import JsonItemType from './JsonItemType';
 
@@ -26,7 +27,6 @@ const JsonItem = (props: JsonItemProps) => {
   });
 
   const jsonType = jh.jsonTypeOf(state.value);
-  const symbol = jh.jsonTypeSymbols[jsonType];
 
   const enterTypeMode = () => {
     setState({
@@ -55,19 +55,26 @@ const JsonItem = (props: JsonItemProps) => {
     props.updateValue(value);
   };
 
+  let item;
   switch(state.mode) {
-  case JsonItemMode.Edit: return (
-    <JsonItemEdit
+  case JsonItemMode.Edit:
+    item = <JsonItemEdit
       value={state.value}
       onModeClick={enterTypeMode}
-      updateValue={updateValue} />
-  );
-  case JsonItemMode.Type: return (
-    <JsonItemType
+      updateValue={updateValue} />;
+    break;
+  case JsonItemMode.Type:
+    item = <JsonItemType
       value={state.value}
-      onTypeSelect={changeType} />
-  );
+      onTypeSelect={changeType} />;
+    break;
   }
+  return (
+    <div className="json-item-line">
+      <JsonItemIndent level={11} />
+      {item}
+    </div>
+  );
 };
 
 export default JsonItem;

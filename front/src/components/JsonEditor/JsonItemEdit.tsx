@@ -1,6 +1,8 @@
 import { useState } from 'react';
 
 import * as jh from './helper';
+import BI from '../Util/BI';
+import JsonItem from './JsonItem';
 
 import 'bootstrap/dist/css/bootstrap.css';
 
@@ -12,18 +14,18 @@ type JsonItemEditProps = {
   updateValue: (value: any) => void,
 };
 
-const jsonConst = (name: string, onModeClick: () => void) => (
+const jsonConst = (icon: any, onModeClick: () => void) => (
   <div className="input-group">
     <button type="button"
       className="btn btn-primary p-2"
       onClick={onModeClick}>
-      {name}
+      {icon}
     </button>
   </div>
 );
 
 const jsonLiteral = (
-  symbol: string,
+  icon: any,
   value: any,
   parse: (value: string) => any,
   onModeClick: () => void,
@@ -37,7 +39,7 @@ const jsonLiteral = (
       <button type="button"
         className="btn btn-primary p-2"
         onClick={onModeClick}>
-        {symbol}
+        {icon}
       </button>
       <input type="text"
         className="form-control"
@@ -49,7 +51,7 @@ const jsonLiteral = (
 
 const JsonItemEdit = (props: JsonItemEditProps) => {
   const jsonType = jh.jsonTypeOf(props.value);
-  const symbol = jh.jsonTypeSymbols[jsonType];
+  const icon = <BI iconName={jh.jsonTypeIcons[jsonType]} />;
 
   const updateNumber = (value: string) => {
     const newValue = Number(value);
@@ -63,39 +65,42 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
     props.updateValue(value);
   }
 
+  let line;
+
   switch(jsonType) {
   case jh.JsonType.NULL:
-    return jsonConst('null', props.onModeClick);
   case jh.JsonType.FALSE:
-    return jsonConst('false', props.onModeClick);
   case jh.JsonType.TRUE:
-    return jsonConst('true', props.onModeClick);
+    return jsonConst(icon, props.onModeClick);
   case jh.JsonType.NUMBER:
     return jsonLiteral(
-      symbol,
+      icon,
       props.value,
       updateNumber,
       props.onModeClick,
     );
   case jh.JsonType.STRING:
     return jsonLiteral(
-      symbol,
+      icon,
       props.value,
       updateString,
       props.onModeClick,
     );
   default:
     return (
+      <>
       <div className="input-group">
         <button type="button"
           className="btn btn-primary p-2"
           onClick={props.onModeClick}>
-          {symbol}
+          {icon}
         </button>
         <input type="text"
           className="form-control"
           defaultValue={props.value} />
       </div>
+      <JsonItem value={1} />
+      </>
     );
   }
 };

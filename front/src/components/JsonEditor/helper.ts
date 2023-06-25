@@ -1,3 +1,5 @@
+// JSON Helpers
+
 type JsonKey = number | string;
 type JsonPath = JsonKey[];
 
@@ -26,10 +28,20 @@ const jsonTypeSymbols = [
   'N',
   'F',
   'T',
-  '1',
+  '123',
   '"',
-  '[',
-  '{',
+  '[]',
+  '{}',
+];
+
+const jsonTypeIcons = [
+  "dash-circle-dotted", // NULL
+  "exclamation-circle", // False
+  "check-circle", // True
+  "123", // Number
+  "quote", // String
+  "list-ol", // Array
+  "braces", // Object
 ];
 
 const jsonTypeOf = (value: any): JsonType => {
@@ -85,12 +97,40 @@ export type {
   JsonPath,
 };
 
+// Edit mode
+
+enum EditMode {
+  Text = 0,
+  Tree = 1,
+  Select = 2,
+}
+
+const editModeLabels = [
+  "Text",
+  "Tree",
+  "Select",
+];
+
+const editModeIcons = [
+  "body-text",
+  "view-stacked",
+  "pencil-square",
+];
+
+const isTextMode = (mode: EditMode) => mode === EditMode.Text;
+
 export {
   NUMBER_OF_TYPES,
   JsonType,
   jsonTypes,
   jsonTypeSymbols,
+  jsonTypeIcons,
   jsonTypeOf,
   emptyJsonValueOfType,
   updateJsonValue,
+
+  EditMode,
+  editModeLabels,
+  editModeIcons,
+  isTextMode,
 };

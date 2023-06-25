@@ -1,6 +1,98 @@
 .json-editor {
   width: 100%;
   height: 100%;
-  overflow-x: auto;
-  overflow-y: auto;
+  padding: 4px;
+  background-color: #ffffff;
+}
+
+.json-editor-header {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  padding: 4px;
+}
+
+.json-editor-body {
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  padding-top: 40px;
+}
+
+textarea.json-text-area {
+  width: 100%;
+  border: 0;
+  background-color: transparent;
+  font-family: monospace;
+  resize: none;
+}
+
+textarea.json-text-area-invalid {
+  color: red;
+}
+
+.json-item-line {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%;
+}
+
+.json-item-indent {
+  margin-right: 2px;
+  display: inline-block;
+  /* Must include flex 0 0 w; */
+}
+
+.json-item-indent-left {
+  display: inline-block;
+  height: 100%;
+  border-right-style: solid;
+  border-right-width: 1px;
+  /* Must include width: x; */
+}
+
+.json-item-indent-right {
+  display: inline-block;
+  height: 100%;
+  /* Must include width: x; */
+}
+
+.json-item-indent-0 {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.json-item-indent-1 {
+  background-color: #f9267240;
+  border-color: #f92672;
+}
+
+.json-item-indent-2 {
+  background-color: #66d9ef40;
+  border-color: #66d9ef;
+}
+
+.json-item-indent-3 {
+  background-color: #ae81ff40;
+  border-color: #ae81ff;
+}
+
+.json-item-indent-4 {
+  background-color: #a6e22e40;
+  border-color: #a6e22e;
+}
+
+.test-wrap {
+  border: 1px dashed #ff0000;
+  position: relative;
+  left: 20px;
+  top: 80px;
+  width: 80%;
+  height: 80vh;
 }

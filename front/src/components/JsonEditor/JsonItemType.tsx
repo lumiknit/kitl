@@ -2,6 +2,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 
 import './JsonEditor.css';
 import * as jh from './helper';
+import BI from '../Util/BI';
 
 type JsonTypeSelectProps = {
   value: any,
@@ -12,19 +13,19 @@ const JsonTypeSelect = (props: JsonTypeSelectProps) => {
   const valueType = jh.jsonTypeOf(props.value);
 
   const btnGroup = () => {
-    const arr = Array(jh.jsonTypeSymbols.length);
-    for(let i = 0; i < jh.jsonTypeSymbols.length; i++) {
-      let className = `btn btn-outline-primary p-2`;
+    const arr = Array(jh.jsonTypeIcons.length);
+    for(let i = 0; i < jh.jsonTypeIcons.length; i++) {
+      let btnClass = `btn btn-outline-primary p-2`;
       if(i === valueType) {
-        className = `btn btn-primary p-2`;
+        btnClass = `btn btn-primary p-2`;
       }
       arr.push(
         <button
           type="button"
-          className={className}
+          className={btnClass}
           onClick={() => props.onTypeSelect(i)}
           key={i}>
-            {jh.jsonTypeSymbols[i]}
+            <BI iconName={jh.jsonTypeIcons[i]} />
         </button>
       );
     }
