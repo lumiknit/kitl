@@ -1,16 +1,15 @@
 import { useState } from 'react';
 
 import * as jh from './helper';
-import JsonItemIndent from './JsonItemIndent';
 import JsonItemEdit from './JsonItemEdit';
 import JsonItemType from './JsonItemType';
-
 
 import 'bootstrap/dist/css/bootstrap.css';
 
 import './JsonEditor.css';
 
 type JsonItemProps = {
+  depth: number | undefined,
   value: any,
   updateValue: (value: any) => void,
 };
@@ -21,9 +20,11 @@ enum JsonItemMode {
 }
 
 const JsonItem = (props: JsonItemProps) => {
+  const depth = props.depth ?? 0;
   const [state, setState] = useState({
     value: props.value,
     mode: JsonItemMode.Edit,
+    cnt: 0,
   });
 
   const jsonType = jh.jsonTypeOf(state.value);
@@ -32,6 +33,7 @@ const JsonItem = (props: JsonItemProps) => {
     setState({
       value: state.value,
       mode: JsonItemMode.Type,
+      cnt: state.cnt,
     });
   };
 
@@ -47,34 +49,35 @@ const JsonItem = (props: JsonItemProps) => {
     setState({
       value: newValue,
       mode: JsonItemMode.Edit,
+      cnt: state.cnt,
     });
   };
 
-  const updateValue = (value: any) => {
+  const updateValue = (value: any, render?: boolean) => {
     state.value = value;
     props.updateValue(value);
+    if(render) {
+      setState({
+        value: state.value,
+        mode: state.mode,
+        cnt: state.cnt + 1,
+      });
+    }
   };
 
-  let item;
   switch(state.mode) {
   case JsonItemMode.Edit:
-    item = <JsonItemEdit
+    return <JsonItemEdit
+      depth={depth}
       value={state.value}
       onModeClick={enterTypeMode}
       updateValue={updateValue} />;
-    break;
   case JsonItemMode.Type:
-    item = <JsonItemType
+    return <JsonItemType
+      depth={depth}
       value={state.value}
       onTypeSelect={changeType} />;
-    break;
   }
-  return (
-    <div className="json-item-line">
-      <JsonItemIndent level={11} />
-      {item}
-    </div>
-  );
 };
 
 export default JsonItem;

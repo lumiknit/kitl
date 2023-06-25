@@ -3,8 +3,10 @@ import 'bootstrap/dist/css/bootstrap.css';
 import './JsonEditor.css';
 import * as jh from './helper';
 import BI from '../Util/BI';
+import JsonItemIndent from './JsonItemIndent';
 
 type JsonTypeSelectProps = {
+  depth: number,
   value: any,
   onTypeSelect: (newType: number) => void,
 };
@@ -33,8 +35,11 @@ const JsonTypeSelect = (props: JsonTypeSelectProps) => {
   }
 
   return (
-    <div className="input-group" role="group">
-      {btnGroup()}
+    <div className="json-item-line">
+      <JsonItemIndent level={props.depth} />
+      <div className="input-group" role="group">
+        {btnGroup()}
+      </div>
     </div>
   );
 };
