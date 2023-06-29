@@ -1,27 +1,38 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-import '@popperjs/core';
-import 'bootstrap/dist/js/bootstrap.bundle';
+import "@popperjs/core";
+import "bootstrap/dist/js/bootstrap.bundle";
 
-import JsonEditorHeader from './JsonEditorHeader';
-import JsonItemType from './JsonItemType';
-import JsonItem from './JsonItem';
-import JsonTextArea from './JsonTextArea';
-import * as jh from './helper';
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "./JsonEditor.css";
 
-import 'bootstrap/dist/css/bootstrap.css';
+import * as jh from "./helper";
+import * as jc from "./config";
 
-import './JsonEditor.css';
+import JsonEditorHeader from "./JsonEditorHeader";
+import JsonItem from "./JsonItem";
+import JsonTextArea from "./JsonTextArea";
+
+import "bootstrap/dist/css/bootstrap.css";
+
+import "./JsonEditor.css";
+import "./JsonIndent.css";
 
 type JsonEditorState = {
-  mode: jh.EditMode,
-  valueBox: any[1],
-  cnt: number,
-}
+  // Mode
+  mode: jc.EditMode;
+  // Configs
+  showStringEscape: boolean;
+  // Other states
+  valueBox: any[1];
+  cnt: number;
+};
 
 const JsonEditor = () => {
   const [state, setState] = useState<JsonEditorState>({
-    mode: jh.EditMode.Tree,
+    mode: jc.EditMode.Tree,
+    showStringEscape: false,
     valueBox: [null],
     cnt: 0,
   });
@@ -31,30 +42,47 @@ const JsonEditor = () => {
     console.log("JsonEditor.updateValue", value);
   };
 
-  const updateMode = (mode: jh.EditMode) => {
-    const newState = {...state};
+  // Header callbacks
+  const updateMode = (mode: jc.EditMode) => {
+    const newState = { ...state };
     newState.mode = mode;
     setState(newState);
+  };
+  const toggleStringEscape = () => {
+    const newState = { ...state };
+    newState.showStringEscape = !newState.showStringEscape;
+    setState(newState);
+  };
+
+  // Items config
+  const config: jc.Config = {
+    editMode: state.mode,
+    showStringEscape: state.showStringEscape,
   };
 
   return (
     <div className="test-wrap">
-    <div className="json-editor">
-      <JsonEditorHeader
-        mode={state.mode}
-        updateMode={updateMode}
-      />
-      <div className="json-editor-body">
-        { jh.isTextMode(state.mode) ?
-          <JsonTextArea
-            value={state.valueBox[0]}
-            updateValue={updateValue} /> :
-          <JsonItem
-            value={state.valueBox[0]}
-            updateValue={updateValue} />
-        }
+      <div className="json-editor">
+        <JsonEditorHeader
+          mode={state.mode}
+          updateMode={updateMode}
+          showStringEscape={state.showStringEscape}
+          toggleStringEscape={toggleStringEscape}
+        />
+        <div className="json-editor-body">
+          {jc.isTextMode(state.mode) ? (
+            <JsonTextArea value={state.valueBox[0]} updateValue={updateValue} />
+          ) : (
+            <JsonItem
+              index="root"
+              value={state.valueBox[0]}
+              depth={0}
+              updateValue={updateValue}
+              config={config}
+            />
+          )}
+        </div>
       </div>
-    </div>
     </div>
   );
 };

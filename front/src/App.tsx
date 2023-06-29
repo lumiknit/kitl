@@ -1,6 +1,6 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-import JsonEditor from './components/JsonEditor/JsonEditor.tsx';
+import JsonEditor from "./components/JsonEditor/JsonEditor.tsx";
 
 const App = () => (
   <Router>

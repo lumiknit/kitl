@@ -1,72 +1,89 @@
-import { useState } from 'react';
+import BI from "../Util/BI";
+import BICheckBox from "../Util/BICheckBox";
 
-import * as jh from './helper';
-import BI from '../Util/BI';
-
-import '@popperjs/core';
-import 'bootstrap/dist/js/bootstrap.bundle';
-
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import './JsonEditor.css';
+import * as jh from "./helper";
+import * as jc from "./config";
 
 type JsonEditorHeaderProps = {
-  mode: jh.EditMode,
-  updateMode: (mode: jh.EditMode) => void,
-}
+  // Mode
+  mode: jc.EditMode;
+  updateMode: (mode: jc.EditMode) => void;
+  // Configs
+  showStringEscape: boolean;
+  toggleStringEscape: () => void;
+};
 
 const JsonEditorHeader = (props: JsonEditorHeaderProps) => {
   const menuButton = (
     <button className="btn btn-warning" data-bs-toggle="dropdown">
-      <BI iconName={jh.editModeIcons[props.mode]} />
+      <BI iconName={jc.editModeIcons[props.mode]} />
     </button>
   );
   const dropDownMenu = (
     <ul className="dropdown-menu">
-      {
-        jh.editModeLabels.map((label, idx) => {
-          return <li key={idx}>
+      {jc.editModeLabels.map((label, idx) => {
+        return (
+          <li key={idx}>
             <a
               className="dropdown-item"
               href="#"
-              onClick={() => props.updateMode(idx)}>
-              <BI iconName={jh.editModeIcons[idx]} />&nbsp;
+              onClick={() => props.updateMode(idx)}
+            >
+              <BI iconName={jh.editModeIcons[idx]} />
+              &nbsp;
               {label}
             </a>
-          </li>;
-        })
-      }
+          </li>
+        );
+      })}
+      <li>
+        {" "}
+        <hr />{" "}
+      </li>
+      <li>
+        <a
+          className="dropdown-item"
+          href="#"
+          onClick={props.toggleStringEscape}
+        >
+          <BICheckBox checked={props.showStringEscape} />
+          &nbsp; Show string escapes
+        </a>
+      </li>
     </ul>
   );
   let controls = [];
-  switch(props.mode) {
-  case jh.EditMode.Text:
-  case jh.EditMode.Tree:
-    controls = [
-      <input key="0" type="text"
-        className="form-control"
-        placeholder="Path" />,
-      <button key="1" className="btn btn-secondary">
-        <BI iconName="arrow-clockwise" />
-      </button>,
-      <button key="2" className="btn btn-secondary">
-        <BI iconName="save" />
-      </button>,
-    ];
-    break;
-  case jh.EditMode.Select:
-    controls = [
-      <button key="0" className="btn btn-secondary w-auto">
-        <BI iconName="scissors" />
-      </button>,
-      <button key="1" className="btn btn-secondary w-auto">
-        <BI iconName="files" />
-      </button>,
-      <button key="2" className="btn btn-secondary w-auto">
-        <BI iconName="eraser" />
-      </button>,
-    ];
-    break;
+  switch (props.mode) {
+    case jh.EditMode.Text:
+    case jh.EditMode.Tree:
+      controls = [
+        <input
+          key="0"
+          type="text"
+          className="form-control"
+          placeholder="Path"
+        />,
+        <button key="1" className="btn btn-secondary">
+          <BI iconName="arrow-clockwise" />
+        </button>,
+        <button key="2" className="btn btn-secondary">
+          <BI iconName="save" />
+        </button>,
+      ];
+      break;
+    case jh.EditMode.Select:
+      controls = [
+        <button key="0" className="btn btn-secondary w-auto">
+          <BI iconName="scissors" />
+        </button>,
+        <button key="1" className="btn btn-secondary w-auto">
+          <BI iconName="files" />
+        </button>,
+        <button key="2" className="btn btn-secondary w-auto">
+          <BI iconName="eraser" />
+        </button>,
+      ];
+      break;
   }
   return (
     <div className="json-editor-header">

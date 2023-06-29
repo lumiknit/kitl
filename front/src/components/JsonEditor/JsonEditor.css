@@ -43,56 +43,26 @@ textarea.json-text-area-invalid {
   width: 100%;
 }
 
-.json-item-indent {
-  margin-right: 2px;
-  display: inline-block;
-  /* Must include flex 0 0 w; */
+.json-item-line-content {
+  width: 100%;
 }
 
-.json-item-indent-left {
-  display: inline-block;
-  height: 100%;
-  border-right-style: solid;
-  border-right-width: 1px;
-  /* Must include width: x; */
-}
-
-.json-item-indent-right {
-  display: inline-block;
-  height: 100%;
-  /* Must include width: x; */
-}
-
-.json-item-indent-0 {
-  background-color: transparent;
-  border-color: transparent;
-}
-
-.json-item-indent-1 {
-  background-color: #f9267240;
-  border-color: #f92672;
-}
-
-.json-item-indent-2 {
-  background-color: #66d9ef40;
-  border-color: #66d9ef;
-}
-
-.json-item-indent-3 {
-  background-color: #ae81ff40;
-  border-color: #ae81ff;
-}
-
-.json-item-indent-4 {
-  background-color: #a6e22e40;
-  border-color: #a6e22e;
+.json-item-index {
+  display: block;
+  font-size: 0.7rem;
+  width: 100%;
+  margin: 0rem;
+  margin-left: 0.5rem;
+  line-height: 1.2;
+  color: #999999;
+  cursor: pointer;
 }
 
 .test-wrap {
   border: 1px dashed #ff0000;
   position: relative;
   left: 20px;
-  top: 80px;
-  width: 80%;
-  height: 80vh;
+  top: 4px;
+  width: 90%;
+  height: 90vh;
 }

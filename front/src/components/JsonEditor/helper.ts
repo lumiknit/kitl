@@ -1,10 +1,10 @@
 // JSON Helpers
 
-type JsonKey = number | string;
-type JsonPath = JsonKey[];
+export type JsonKey = number | string;
+export type JsonPath = JsonKey[];
 
-const NUMBER_OF_TYPES = 7;
-enum JsonType {
+export const NUMBER_OF_TYPES = 7;
+export enum JsonType {
   NULL = 0,
   FALSE = 1,
   TRUE = 2,
@@ -14,27 +14,19 @@ enum JsonType {
   OBJECT = 6,
 }
 
-const jsonTypes = [
-  'null',
-  'false',
-  'true',
-  'number',
-  'string',
-  'array',
-  'object',
+export const jsonTypes = [
+  "null",
+  "false",
+  "true",
+  "number",
+  "string",
+  "array",
+  "object",
 ];
 
-const jsonTypeSymbols = [
-  'N',
-  'F',
-  'T',
-  '123',
-  '"',
-  '[]',
-  '{}',
-];
+export const jsonTypeSymbols = ["N", "F", "T", "123", '"', "[]", "{}"];
 
-const jsonTypeIcons = [
+export const jsonTypeIcons = [
   "dash-circle-dotted", // NULL
   "exclamation-circle", // False
   "check-circle", // True
@@ -44,18 +36,18 @@ const jsonTypeIcons = [
   "braces", // Object
 ];
 
-const jsonTypeOf = (value: any): JsonType => {
-  if(value === null) {
+export const jsonTypeOf = (value: any): JsonType => {
+  if (value === null) {
     return JsonType.NULL;
   }
-  switch(typeof value) {
-    case 'boolean':
+  switch (typeof value) {
+    case "boolean":
       return value ? JsonType.TRUE : JsonType.FALSE;
-    case 'number':
+    case "number":
       return JsonType.NUMBER;
-    case 'string':
+    case "string":
       return JsonType.STRING;
-    case 'object':
+    case "object":
       if (Array.isArray(value)) {
         return JsonType.ARRAY;
       }
@@ -65,7 +57,7 @@ const jsonTypeOf = (value: any): JsonType => {
   }
 };
 
-const emptyJsonValueOfType = (type: JsonType) => {
+export const emptyJsonValueOfType = (type: JsonType) => {
   switch (type) {
     case JsonType.FALSE:
       return false;
@@ -74,7 +66,7 @@ const emptyJsonValueOfType = (type: JsonType) => {
     case JsonType.NUMBER:
       return 0;
     case JsonType.STRING:
-      return '';
+      return "";
     case JsonType.ARRAY:
       return [];
     case JsonType.OBJECT:
@@ -84,53 +76,14 @@ const emptyJsonValueOfType = (type: JsonType) => {
   }
 };
 
-const updateJsonValue = (
-  parent: any,
-  key: JsonKey,
-  value: any,
-) => {
+export const updateJsonValue = (parent: any, key: JsonKey, value: any) => {
   parent[key] = value;
 };
 
-export type {
-  JsonKey,
-  JsonPath,
-};
-
-// Edit mode
-
-enum EditMode {
-  Text = 0,
-  Tree = 1,
-  Select = 2,
-}
-
-const editModeLabels = [
-  "Text",
-  "Tree",
-  "Select",
-];
-
-const editModeIcons = [
-  "body-text",
-  "view-stacked",
-  "pencil-square",
-];
-
-const isTextMode = (mode: EditMode) => mode === EditMode.Text;
-
-export {
-  NUMBER_OF_TYPES,
-  JsonType,
-  jsonTypes,
-  jsonTypeSymbols,
-  jsonTypeIcons,
-  jsonTypeOf,
-  emptyJsonValueOfType,
-  updateJsonValue,
-
-  EditMode,
-  editModeLabels,
-  editModeIcons,
-  isTextMode,
+export const jsonBtnColorClass = (depth: number, outline?: boolean) => {
+  const N = 7;
+  if (outline) {
+    return `json-btn-outline-depth-${depth % N}`;
+  }
+  return `json-btn-depth-${depth % N}`;
 };

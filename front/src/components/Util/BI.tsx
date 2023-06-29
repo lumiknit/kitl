@@ -1,9 +1,8 @@
-import 'bootstrap-icons/font/bootstrap-icons.css';
-
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 type BIProps = {
-  iconName: string,
-}
+  iconName: string;
+};
 
 const BI = (props: BIProps) => {
   const iconClass = `bi bi-${props.iconName}`;

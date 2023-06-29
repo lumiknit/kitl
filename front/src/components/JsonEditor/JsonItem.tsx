@@ -1,17 +1,21 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-import * as jh from './helper';
-import JsonItemEdit from './JsonItemEdit';
-import JsonItemType from './JsonItemType';
+import * as jh from "./helper";
+import * as jc from "./config";
+import JsonItemEdit from "./JsonItemEdit";
+import JsonItemType from "./JsonItemType";
 
-import 'bootstrap/dist/css/bootstrap.css';
+import "bootstrap/dist/css/bootstrap.css";
 
-import './JsonEditor.css';
+import "./JsonEditor.css";
+import "./JsonIndent.css";
 
 type JsonItemProps = {
-  depth: number | undefined,
-  value: any,
-  updateValue: (value: any) => void,
+  depth?: number;
+  index: number | string;
+  value: any;
+  updateValue: (value: any) => void;
+  config: jc.Config;
 };
 
 enum JsonItemMode {
@@ -41,7 +45,7 @@ const JsonItem = (props: JsonItemProps) => {
     // Check mode into Edit
     console.log(newType);
     let newValue = state.value;
-    if(newType !== jsonType) {
+    if (newType !== jsonType) {
       newValue = jh.emptyJsonValueOfType(newType);
       // Update value contained in parent
       props.updateValue(newValue);
@@ -56,7 +60,7 @@ const JsonItem = (props: JsonItemProps) => {
   const updateValue = (value: any, render?: boolean) => {
     state.value = value;
     props.updateValue(value);
-    if(render) {
+    if (render) {
       setState({
         value: state.value,
         mode: state.mode,
@@ -65,19 +69,31 @@ const JsonItem = (props: JsonItemProps) => {
     }
   };
 
-  switch(state.mode) {
-  case JsonItemMode.Edit:
-    return <JsonItemEdit
-      depth={depth}
-      value={state.value}
-      onModeClick={enterTypeMode}
-      updateValue={updateValue} />;
-  case JsonItemMode.Type:
-    return <JsonItemType
-      depth={depth}
-      value={state.value}
-      onTypeSelect={changeType} />;
+  let content = null;
+  switch (state.mode) {
+    case JsonItemMode.Edit:
+      content = (
+        <JsonItemEdit
+          depth={depth}
+          index={props.index}
+          value={state.value}
+          onModeClick={enterTypeMode}
+          updateValue={updateValue}
+        />
+      );
+      break;
+    case JsonItemMode.Type:
+      content = (
+        <JsonItemType
+          depth={depth}
+          index={props.index}
+          value={state.value}
+          onTypeSelect={changeType}
+        />
+      );
+      break;
   }
+  return content;
 };
 
 export default JsonItem;
