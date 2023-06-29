@@ -13,6 +13,7 @@ import "./JsonIndent.css";
 type JsonItemProps = {
   depth?: number;
   index: number | string;
+  path: string;
   value: jh.Json;
   updateValue: (value: jh.Json) => void;
   config: jc.Config;
@@ -43,7 +44,6 @@ const JsonItem = (props: JsonItemProps) => {
 
   const changeType = (newType: number) => {
     // Check mode into Edit
-    console.log(newType);
     let newValue = state.value;
     if (newType !== jsonType) {
       newValue = jh.emptyJsonValueOfType(newType);
@@ -76,9 +76,11 @@ const JsonItem = (props: JsonItemProps) => {
         <JsonItemEdit
           depth={depth}
           index={props.index}
+          path={props.path}
           value={state.value}
           onModeClick={enterTypeMode}
           updateValue={updateValue}
+          config={props.config}
         />
       );
       break;
@@ -87,6 +89,7 @@ const JsonItem = (props: JsonItemProps) => {
         <JsonItemType
           depth={depth}
           index={props.index}
+          path={props.path}
           value={state.value}
           onTypeSelect={changeType}
         />

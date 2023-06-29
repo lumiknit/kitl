@@ -34,8 +34,8 @@ export const jsonTypes = [
 export const jsonTypeSymbols = ["N", "F", "T", "123", '"', "[]", "{}"];
 
 export const jsonTypeIcons = [
-  "dash-circle-dotted", // NULL
-  "exclamation-circle", // False
+  "dash-square-dotted", // NULL
+  "exclamation-diamond", // False
   "check-circle", // True
   "123", // Number
   "quote", // String
@@ -95,9 +95,36 @@ export const updateJsonValue = (parent: Json, key: JsonKey, value: Json) => {
 };
 
 export const jsonBtnColorClass = (depth: number, outline?: boolean) => {
-  const N = 7;
+  const N = 6;
   if (outline) {
     return `json-btn-outline-depth-${depth % N}`;
   }
   return `json-btn-depth-${depth % N}`;
+};
+
+// String escapes
+
+export const escapeString = (str: string) => {
+  const escaped = JSON.stringify(str).slice(1, -1);
+  // Change escaped quotes to single quotes
+  return escaped.replace('\\"', '"');
+};
+
+export const unescapeString = (str: string) => {
+  // Change quotes to escaped quotes
+  const quoteEscaped = str.replace('"', '\\"');
+  const newlineEscaped = quoteEscaped.replace("\n", "\\n");
+  // Check if escape matched correctly
+  let i = 0;
+  for (; i < newlineEscaped.length; i++) {
+    if (newlineEscaped[i] === "\\") {
+      i++;
+    }
+  }
+  if (i > newlineEscaped.length) {
+    // Append one more backslash
+    return JSON.parse(`"${newlineEscaped}\\"`);
+  } else {
+    return JSON.parse(`"${newlineEscaped}"`);
+  }
 };

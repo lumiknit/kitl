@@ -37,13 +37,6 @@ textarea.json-text-area-invalid {
 }
 
 .json-item-line {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  width: 100%;
-}
-
-.json-item-line-content {
   width: 100%;
 }
 
@@ -51,11 +44,30 @@ textarea.json-text-area-invalid {
   display: block;
   font-size: 0.7rem;
   width: 100%;
-  margin: 0rem;
-  margin-left: 0.5rem;
+  overflow-x: hidden;
+  margin: 0;
+  padding-right: 16px;
   line-height: 1.2;
   color: #999999;
   cursor: pointer;
+}
+
+.json-item-edit-text {
+  cursor: text;
+}
+
+textarea.json-item-edit-text-area {
+  font-family: monospace;
+  resize: none;
+}
+
+pre {
+  flex: 0 1 100%;
+  font-family: monospace;
+  font-size: 16px;
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .test-wrap {

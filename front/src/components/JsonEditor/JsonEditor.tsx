@@ -39,7 +39,6 @@ const JsonEditor = () => {
 
   const updateValue = (value: jh.Json) => {
     state.valueBox[0] = value;
-    console.log("JsonEditor.updateValue", value);
   };
 
   // Header callbacks
@@ -48,6 +47,7 @@ const JsonEditor = () => {
     newState.mode = mode;
     setState(newState);
   };
+
   const toggleStringEscape = () => {
     const newState = { ...state };
     newState.showStringEscape = !newState.showStringEscape;
@@ -74,7 +74,8 @@ const JsonEditor = () => {
             <JsonTextArea value={state.valueBox[0]} updateValue={updateValue} />
           ) : (
             <JsonItem
-              index="root"
+              index=""
+              path=""
               value={state.valueBox[0]}
               depth={0}
               updateValue={updateValue}

@@ -7,6 +7,7 @@ import "./JsonIndent.css";
 
 type JsonItemIndexProps = {
   index: number | string;
+  path: string;
   updateIndex: (index: number | string) => void;
 };
 
@@ -65,10 +66,10 @@ const JsonItemIndex = (props: JsonItemIndexProps) => {
   } else {
     return (
       <div
-        className="json-item-index"
+        className="json-item-index text-truncate"
         onClick={() => setState({ editing: true })}
       >
-        {props.index}
+        &nbsp;{props.path}
       </div>
     );
   }

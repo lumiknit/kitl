@@ -7,12 +7,13 @@ import BI from "../Util/BI";
 
 import * as jh from "./helper";
 
-import JsonItemIndent from "./JsonItemIndent";
+import JsonItemLine from "./JsonItemLine";
 import JsonItemIndex from "./JsonItemIndex";
 
 type JsonTypeSelectProps = {
   depth: number;
   index: number | string;
+  path: string;
   value: jh.Json;
   onTypeSelect: (newType: number) => void;
 };
@@ -39,16 +40,17 @@ const JsonTypeSelect = (props: JsonTypeSelectProps) => {
     return arr;
   };
 
+  const style = {
+    paddingLeft: `${props.depth * 2}px`,
+  };
+
   return (
-    <div className="json-item-line">
-      <JsonItemIndent level={props.depth} />
-      <div>
-        <JsonItemIndex index={props.index} />
-        <div className="input-group" role="group">
-          {btnGroup()}
-        </div>
+    <JsonItemLine depth={props.depth}>
+      <JsonItemIndex index={props.index} path={props.path} />
+      <div className="input-group" role="group">
+        {btnGroup()}
       </div>
-    </div>
+    </JsonItemLine>
   );
 };
 

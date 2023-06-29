@@ -8,11 +8,10 @@
  * index: bg fg
  * 0: #ff5794 #ffffff # red
  * 1: #faa230 #000000 # orange
- * 2: #ffc109 #000000 # yellow
- * 3: #a7e22e #000000 # green
- * 4: #66cce1 #000000 # cyan
- * 5: #5596f1 #ffffff # blue
- * 6: #aa7dfc #ffffff # purple
+ * 2: #a7e22e #000000 # green
+ * 3: #66cce1 #000000 # cyan
+ * 4: #5596f1 #ffffff # blue
+ * 5: #aa7dfc #ffffff # purple
  */
 
 /* Buttons */
@@ -77,94 +76,75 @@
 
 /* Color 2 */
 .json-btn-depth-2 {
-  background-color: #ffc109;
-  color: #000000;
-}
-.json-btn-depth-2:hover {
-  background-color: #ffc10980;
-  color: #000000;
-}
-.json-btn-outline-depth-2 {
-  border-color: #ffc109;
-  color: #ffc109;
-}
-.json-btn-outline-depth-2:hover {
-  border-color: #ffc10980;
-  background-color: #ffc10980;
-  color: #000000;
-}
-
-/* Color 3 */
-.json-btn-depth-3 {
   background-color: #a7e22e;
   color: #000000;
 }
-.json-btn-depth-3:hover {
+.json-btn-depth-2:hover {
   background-color: #a7e22e80;
   color: #000000;
 }
-.json-btn-outline-depth-3 {
+.json-btn-outline-depth-2 {
   border-color: #a7e22e;
   color: #a7e22e;
 }
-.json-btn-outline-depth-3:hover {
+.json-btn-outline-depth-2:hover {
   border-color: #a7e22e80;
   background-color: #a7e22e80;
   color: #000000;
 }
 
-/* Color 4 */
-.json-btn-depth-4 {
+/* Color 3 */
+.json-btn-depth-3 {
   background-color: #66cce1;
   color: #000000;
 }
-.json-btn-depth-4:hover {
+.json-btn-depth-3:hover {
   background-color: #66cce180;
   color: #000000;
 }
-.json-btn-outline-depth-4 {
+.json-btn-outline-depth-3 {
   border-color: #66cce1;
   color: #66cce1;
 }
-.json-btn-outline-depth-4:hover {
+.json-btn-outline-depth-3:hover {
   border-color: #66cce180;
   background-color: #66cce180;
   color: #000000;
 }
 
-/* Color 5 */
-.json-btn-depth-5 {
+/* Color 4 */
+.json-btn-depth-4 {
   background-color: #5596f1;
   color: #ffffff;
 }
-.json-btn-depth-5:hover {
+.json-btn-depth-4:hover {
   background-color: #5596f180;
   color: #ffffff;
 }
-.json-btn-outline-depth-5 {
+.json-btn-outline-depth-4 {
   border-color: #5596f1;
   color: #5596f1;
 }
-.json-btn-outline-depth-5:hover {
+.json-btn-outline-depth-4:hover {
   border-color: #5596f180;
   background-color: #5596f180;
   color: #ffffff;
 }
 
-/* Color 6 */
-.json-btn-depth-6 {
+/* Color 5 */
+.json-btn-depth-5 {
   background-color: #aa7dfc;
   color: #ffffff;
 }
-.json-btn-depth-6:hover {
+.json-btn-depth-5:hover {
   background-color: #aa7dfc80;
   color: #ffffff;
 }
-.json-btn-outline-depth-6 {
+.json-btn-outline-depth-5 {
   border-color: #aa7dfc;
   color: #aa7dfc;
 }
-.json-btn-outline-depth-6:hover {
+.json-btn-outline-depth-5:hover {
   border-color: #aa7dfc80;
   background-color: #aa7dfc80;
   color: #ffffff;
