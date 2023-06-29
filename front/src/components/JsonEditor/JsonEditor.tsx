@@ -25,7 +25,7 @@ type JsonEditorState = {
   // Configs
   showStringEscape: boolean;
   // Other states
-  valueBox: any[1];
+  valueBox: jh.Json[];
   cnt: number;
 };
 
@@ -37,7 +37,7 @@ const JsonEditor = () => {
     cnt: 0,
   });
 
-  const updateValue = (value: any) => {
+  const updateValue = (value: jh.Json) => {
     state.valueBox[0] = value;
     console.log("JsonEditor.updateValue", value);
   };

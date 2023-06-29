@@ -43,7 +43,7 @@ export const jsonTypeIcons = [
   "braces", // Object
 ];
 
-export const jsonTypeOf = (value: any): JsonType => {
+export const jsonTypeOf = (value: Json): JsonType => {
   if (value === null) {
     return JsonType.NULL;
   }
@@ -83,8 +83,15 @@ export const emptyJsonValueOfType = (type: JsonType) => {
   }
 };
 
-export const updateJsonValue = (parent: any, key: JsonKey, value: any) => {
-  parent[key] = value;
+export const updateJsonValue = (parent: Json, key: JsonKey, value: Json) => {
+  if (Array.isArray(parent)) {
+    if (typeof key === "number") {
+      parent[key] = value;
+    }
+    return;
+  } else if (typeof parent === "object" && parent !== null) {
+    parent[key] = value;
+  }
 };
 
 export const jsonBtnColorClass = (depth: number, outline?: boolean) => {
