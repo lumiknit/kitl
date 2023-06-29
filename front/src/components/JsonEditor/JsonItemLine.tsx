@@ -1,8 +1,8 @@
-import React, { ReactElement } from "react";
+import { ReactElement } from "react";
 
 type JsonItemLineProps = {
   depth: number;
-  children: ReactElement[];
+  children: ReactElement | ReactElement[];
 };
 
 const JsonItemLine = (props: JsonItemLineProps) => {

@@ -36,8 +36,7 @@ const JsonEditorHeader = (props: JsonEditorHeaderProps) => {
         );
       })}
       <li>
-        {" "}
-        <hr />{" "}
+        <hr />
       </li>
       <li>
         <a
@@ -47,6 +46,15 @@ const JsonEditorHeader = (props: JsonEditorHeaderProps) => {
         >
           <BICheckBox checked={props.showStringEscape} />
           &nbsp; Show string escapes
+        </a>
+      </li>
+      <li>
+        <hr />
+      </li>
+      <li>
+        <a className="dropdown-item" href="#">
+          <BI iconName="download" />
+          &nbsp; Download
         </a>
       </li>
     </ul>

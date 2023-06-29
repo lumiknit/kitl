@@ -46,7 +46,7 @@ const jsonLiteral = (
   icon: ReactElement,
   depth: number,
   value: string,
-  updateValue: (value: string) => void,
+  updateValue: (value: string) => boolean,
   onModeClick: () => void
 ) => {
   return (
@@ -162,12 +162,15 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
     case jh.JsonType.ARRAY:
       {
         if (!Array.isArray(props.value) || props.value === null) {
-          break;
+          throw "Expect array, but got " + typeof props.value;
         }
         const jsonBtnColorClass = jh.jsonBtnColorClass(props.depth);
         const jsonBtnColorClassNext = jh.jsonBtnColorClass(props.depth + 1);
         const indexRef = createRef<HTMLInputElement>();
         const onClickAdd = () => {
+          if (!Array.isArray(props.value)) {
+            throw "Expect array, but got " + typeof props.value;
+          }
           if (indexRef.current === null) {
             return;
           }
@@ -226,13 +229,24 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
       break;
     case jh.JsonType.OBJECT:
       {
-        if (typeof props.value !== "object" || props.value === null) {
-          break;
+        if (
+          typeof props.value !== "object" ||
+          props.value === null ||
+          Array.isArray(props.value)
+        ) {
+          throw "Expect object, but got " + typeof props.value;
         }
         const jsonBtnColorClass = jh.jsonBtnColorClass(props.depth);
         const jsonBtnColorClassNext = jh.jsonBtnColorClass(props.depth + 1);
         const indexRef = createRef<HTMLInputElement>();
         const onClickAdd = () => {
+          if (
+            props.value === null ||
+            typeof props.value !== "object" ||
+            Array.isArray(props.value)
+          ) {
+            throw "Expect object, but got " + typeof props.value;
+          }
           if (indexRef.current === null) {
             return;
           }
@@ -286,7 +300,13 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
     <>
       <JsonItemLine depth={props.depth}>
         <div className="json-item-line-content">
-          <JsonItemIndex index={props.index} path={props.path} />
+          <JsonItemIndex
+            index={props.index}
+            path={props.path}
+            updateIndex={() => {
+              throw "Not implemented";
+            }}
+          />
           {lineItem}
         </div>
       </JsonItemLine>

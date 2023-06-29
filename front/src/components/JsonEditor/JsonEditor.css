@@ -73,8 +73,8 @@ pre {
 .test-wrap {
   border: 1px dashed #ff0000;
   position: relative;
-  left: 20px;
-  top: 4px;
-  width: 90%;
+  left: 0px;
+  top: 0px;
+  width: 100vw;
   height: 90vh;
 }

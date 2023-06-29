@@ -40,13 +40,15 @@ const JsonTypeSelect = (props: JsonTypeSelectProps) => {
     return arr;
   };
 
-  const style = {
-    paddingLeft: `${props.depth * 2}px`,
-  };
-
   return (
     <JsonItemLine depth={props.depth}>
-      <JsonItemIndex index={props.index} path={props.path} />
+      <JsonItemIndex
+        index={props.index}
+        path={props.path}
+        updateIndex={() => {
+          throw "Not implemented";
+        }}
+      />
       <div className="input-group" role="group">
         {btnGroup()}
       </div>
