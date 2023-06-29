@@ -1,6 +1,8 @@
 import { useEffect, createRef } from "react";
 import "./JsonEditor.css";
 
+import * as jh from "./helper";
+
 const indentTA = (value: string, start: number, end: number) => {
   // Indent selection and return new value and range
   let s = start;
@@ -47,8 +49,8 @@ const unindentTA = (value: string, start: number, end: number) => {
 };
 
 type JsonTextAreaProps = {
-  value: any;
-  updateValue: (newValue: any) => void;
+  value: jh.Json;
+  updateValue: (newValue: jh.Json) => void;
 };
 
 const JsonTextArea = (props: JsonTextAreaProps) => {

@@ -14,12 +14,16 @@ import "./JsonIndent.css";
 type JsonItemEditProps = {
   depth: number;
   index: number | string;
-  value: any;
+  value: jh.Json;
   onModeClick: () => void;
-  updateValue: (value: any, render?: boolean) => void;
+  updateValue: (value: jh.Json, render?: boolean) => void;
 };
 
-const jsonConst = (icon: any, depth: number, onModeClick: () => void) => (
+const jsonConst = (
+  icon: ReactElement,
+  depth: number,
+  onModeClick: () => void
+) => (
   <div className="input-group">
     <button
       type="button"
@@ -32,10 +36,10 @@ const jsonConst = (icon: any, depth: number, onModeClick: () => void) => (
 );
 
 const jsonLiteral = (
-  icon: any,
+  icon: ReactElement,
   depth: number,
-  value: any,
-  parse: (value: string) => any,
+  value: string,
+  parse: (value: string) => void,
   onModeClick: () => void
 ) => {
   const onInput = (event: React.FormEvent<HTMLInputElement>) => {
@@ -77,14 +81,24 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
     props.updateValue(value);
   };
 
-  const updateElement = (key: any) => {
-    return (value: any) => {
-      props.value[key] = value;
+  const updateElement = (key: jh.JsonKey) => {
+    return (value: jh.Json) => {
+      if (Array.isArray(props.value)) {
+        if (typeof key === "number") {
+          props.value[key] = value;
+        }
+      } else if (
+        props.value !== null &&
+        typeof props.value === "object" &&
+        typeof key === "string"
+      ) {
+        props.value[key] = value;
+      }
     };
   };
 
   let lineItem;
-  let lineNext: ReactElement[] = [];
+  const lineNext: ReactElement[] = [];
 
   switch (jsonType) {
     case jh.JsonType.NULL:
@@ -96,7 +110,7 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
       lineItem = jsonLiteral(
         icon,
         props.depth,
-        props.value,
+        String(props.value),
         updateNumber,
         props.onModeClick
       );
@@ -105,13 +119,16 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
       lineItem = jsonLiteral(
         icon,
         props.depth,
-        props.value,
+        String(props.value),
         updateString,
         props.onModeClick
       );
       break;
     case jh.JsonType.ARRAY:
       {
+        if (!Array.isArray(props.value) || props.value === null) {
+          break;
+        }
         const jsonBtnColorClass = jh.jsonBtnColorClass(props.depth);
         const jsonBtnColorClassNext = jh.jsonBtnColorClass(props.depth + 1);
         lineItem = (
@@ -153,23 +170,7 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
       }
       break;
     default:
-      lineItem = (
-        <div className="input-group">
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={props.onModeClick}
-          >
-            {icon}
-          </button>
-          <input
-            type="text"
-            className="form-control"
-            defaultValue={props.value}
-          />
-        </div>
-      );
-      lineNext = [<JsonItem key="0" value={1} />];
+      lineItem = <div className="input-group">Unimplemented</div>;
   }
   return (
     <>

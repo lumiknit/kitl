@@ -13,8 +13,8 @@ import "./JsonIndent.css";
 type JsonItemProps = {
   depth?: number;
   index: number | string;
-  value: any;
-  updateValue: (value: any) => void;
+  value: jh.Json;
+  updateValue: (value: jh.Json) => void;
   config: jc.Config;
 };
 
@@ -57,7 +57,7 @@ const JsonItem = (props: JsonItemProps) => {
     });
   };
 
-  const updateValue = (value: any, render?: boolean) => {
+  const updateValue = (value: jh.Json, render?: boolean) => {
     state.value = value;
     props.updateValue(value);
     if (render) {

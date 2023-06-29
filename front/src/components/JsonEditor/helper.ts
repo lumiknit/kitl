@@ -1,5 +1,12 @@
 // JSON Helpers
 
+export type Json =
+  | null
+  | boolean
+  | number
+  | string
+  | Json[]
+  | { [key: string]: Json };
 export type JsonKey = number | string;
 export type JsonPath = JsonKey[];
 

@@ -1,7 +1,6 @@
 import BI from "../Util/BI";
 import BICheckBox from "../Util/BICheckBox";
 
-import * as jh from "./helper";
 import * as jc from "./config";
 
 type JsonEditorHeaderProps = {
@@ -29,7 +28,7 @@ const JsonEditorHeader = (props: JsonEditorHeaderProps) => {
               href="#"
               onClick={() => props.updateMode(idx)}
             >
-              <BI iconName={jh.editModeIcons[idx]} />
+              <BI iconName={jc.editModeIcons[idx]} />
               &nbsp;
               {label}
             </a>
@@ -54,8 +53,8 @@ const JsonEditorHeader = (props: JsonEditorHeaderProps) => {
   );
   let controls = [];
   switch (props.mode) {
-    case jh.EditMode.Text:
-    case jh.EditMode.Tree:
+    case jc.EditMode.Text:
+    case jc.EditMode.Tree:
       controls = [
         <input
           key="0"
@@ -71,7 +70,7 @@ const JsonEditorHeader = (props: JsonEditorHeaderProps) => {
         </button>,
       ];
       break;
-    case jh.EditMode.Select:
+    case jc.EditMode.Select:
       controls = [
         <button key="0" className="btn btn-secondary w-auto">
           <BI iconName="scissors" />

@@ -2,15 +2,18 @@ import "bootstrap/dist/css/bootstrap.css";
 
 import "./JsonEditor.css";
 import "./JsonIndent.css";
-import * as jh from "./helper";
+
 import BI from "../Util/BI";
+
+import * as jh from "./helper";
+
 import JsonItemIndent from "./JsonItemIndent";
 import JsonItemIndex from "./JsonItemIndex";
 
 type JsonTypeSelectProps = {
   depth: number;
   index: number | string;
-  value: any;
+  value: jh.Json;
   onTypeSelect: (newType: number) => void;
 };
 

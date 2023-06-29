@@ -1,7 +1,5 @@
 import { useState } from "react";
 
-import * as jh from "./helper";
-
 import "bootstrap/dist/css/bootstrap.css";
 
 import "./JsonEditor.css";
