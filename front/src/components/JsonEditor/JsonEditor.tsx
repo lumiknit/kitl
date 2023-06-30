@@ -85,10 +85,8 @@ const JsonEditor = () => {
             <JsonTextArea value={state.valueBox[0]} updateValue={updateValue} />
           ) : (
             <JsonItem
-              index=""
-              path=""
+              position={new jh.Position(0, "", "")}
               value={state.valueBox[0]}
-              depth={0}
               updateValue={updateValue}
               config={config}
             />

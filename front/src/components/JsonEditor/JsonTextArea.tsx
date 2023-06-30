@@ -10,7 +10,7 @@ const indentTA = (value: string, start: number, end: number) => {
     s--;
   }
   const lines = value.substring(s, end).split("\n");
-  const indentedLines = lines.map((line) => "  " + line);
+  const indentedLines = lines.map(line => "  " + line);
   const indentedValue = indentedLines.join("\n");
   const newValue = value.substring(0, s) + indentedValue + value.substring(end);
   const newStart = start + 2;

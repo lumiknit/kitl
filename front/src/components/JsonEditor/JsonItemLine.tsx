@@ -1,23 +1,22 @@
 import { ReactElement } from "react";
 
+import * as jh from "./helper";
 import JsonItemIndex from "./JsonItemIndex";
 
 type JsonItemLineProps = {
-  depth: number;
-  index: number | string;
-  path: string;
+  position: jh.Position;
   children: ReactElement | ReactElement[];
 };
 
 const JsonItemLine = (props: JsonItemLineProps) => {
   const style = {
-    paddingLeft: `${props.depth * 2}px`,
+    paddingLeft: `${props.position.depth * 2}px`,
   };
   return (
     <div className="json-item-line" style={style}>
       <JsonItemIndex
-        index={props.index}
-        path={props.path}
+        index={props.position.index}
+        path={props.position.path}
         updateIndex={() => {
           throw "Not implemented";
         }}

@@ -50,15 +50,13 @@ const JsonItemIndex = (props: JsonItemIndexProps) => {
         <button
           className="btn btn-danger py-1"
           type="button"
-          onClick={removeIndex}
-        >
+          onClick={removeIndex}>
           <i className="bi bi-trash" />
         </button>
         <button
           className="btn btn-success py-1"
           type="button"
-          onClick={updateIndex}
-        >
+          onClick={updateIndex}>
           <i className="bi bi-check" />
         </button>
       </div>
@@ -67,8 +65,7 @@ const JsonItemIndex = (props: JsonItemIndexProps) => {
     return (
       <div
         className="json-item-index text-truncate"
-        onClick={() => setState({ editing: true })}
-      >
+        onClick={() => setState({ editing: true })}>
         &nbsp;{props.path}
       </div>
     );

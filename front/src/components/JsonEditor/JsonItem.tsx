@@ -11,9 +11,7 @@ import "./JsonEditor.css";
 import "./JsonIndent.css";
 
 type JsonItemProps = {
-  depth?: number;
-  index: number | string;
-  path: string;
+  position: jh.Position;
   value: jh.Json;
   updateValue: (value: jh.Json) => void;
   config: jc.Config;
@@ -25,7 +23,6 @@ enum JsonItemMode {
 }
 
 const JsonItem = (props: JsonItemProps) => {
-  const depth = props.depth ?? 0;
   const [state, setState] = useState({
     value: props.value,
     mode: JsonItemMode.Edit,
@@ -74,9 +71,7 @@ const JsonItem = (props: JsonItemProps) => {
     case JsonItemMode.Edit:
       content = (
         <JsonItemEdit
-          depth={depth}
-          index={props.index}
-          path={props.path}
+          position={props.position}
           value={state.value}
           onModeClick={enterTypeMode}
           updateValue={updateValue}
@@ -87,9 +82,7 @@ const JsonItem = (props: JsonItemProps) => {
     case JsonItemMode.Type:
       content = (
         <JsonItemType
-          depth={depth}
-          index={props.index}
-          path={props.path}
+          position={props.position}
           value={state.value}
           onTypeSelect={changeType}
         />

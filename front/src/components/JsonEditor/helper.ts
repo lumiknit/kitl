@@ -128,3 +128,25 @@ export const unescapeString = (str: string) => {
     return JSON.parse(`"${newlineEscaped}"`);
   }
 };
+
+// Position Helper
+
+export class Position {
+  depth: number;
+  index: number | string;
+  path: string;
+
+  constructor(depth: number, index: number | string, path: string) {
+    this.depth = depth;
+    this.index = index;
+    this.path = path;
+  }
+
+  child(childIndex: number | string) {
+    return new Position(
+      this.depth + 1,
+      childIndex,
+      this.path.length > 0 ? `${childIndex} < ${this.path}` : `${childIndex}`
+    );
+  }
+}

@@ -14,9 +14,7 @@ import "./JsonEditor.css";
 import "./JsonIndent.css";
 
 type JsonItemEditProps = {
-  depth: number;
-  index: number | string;
-  path: string;
+  position: jh.Position;
   value: jh.Json;
   onModeClick: () => void;
   updateValue: (value: jh.Json, render?: boolean) => void;
@@ -118,7 +116,9 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
         if (!Array.isArray(props.value) || props.value === null) {
           throw "Expect array, but got " + typeof props.value;
         }
-        const jsonBtnColorClassNext = jh.jsonBtnColorClass(props.depth + 1);
+        const jsonBtnColorClassNext = jh.jsonBtnColorClass(
+          props.position.depth + 1
+        );
         const indexRef = createRef<HTMLInputElement>();
         const onClickAdd = () => {
           if (!Array.isArray(props.value)) {
@@ -153,8 +153,7 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
             key="1"
             type="button"
             className={`btn ${jsonBtnColorClassNext} py-1`}
-            onClick={onClickAdd}
-          >
+            onClick={onClickAdd}>
             <BI iconName="plus-square" />
           </button>,
         ];
@@ -162,11 +161,9 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
           lineNext.push(
             <JsonItem
               key={`${state.cnt} ${i}`}
-              index={i}
-              path={i + " < " + props.path}
+              position={props.position.child(i)}
               value={props.value[i]}
               updateValue={updateElement(i)}
-              depth={props.depth + 1}
               config={props.config}
             />
           );
@@ -182,7 +179,9 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
         ) {
           throw "Expect object, but got " + typeof props.value;
         }
-        const jsonBtnColorClassNext = jh.jsonBtnColorClass(props.depth + 1);
+        const jsonBtnColorClassNext = jh.jsonBtnColorClass(
+          props.position.depth + 1
+        );
         const indexRef = createRef<HTMLInputElement>();
         const onClickAdd = () => {
           if (
@@ -213,8 +212,7 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
             key="1"
             type="button"
             className={`btn ${jsonBtnColorClassNext} py-1`}
-            onClick={onClickAdd}
-          >
+            onClick={onClickAdd}>
             <BI iconName="plus-square" />
           </button>,
         ];
@@ -222,11 +220,9 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
           lineNext.push(
             <JsonItem
               key={`${state.cnt}\u0001${key}`}
-              index={key}
-              path={key + " < " + props.path}
+              position={props.position.child(key)}
               value={props.value[key]}
               updateValue={updateElement(key)}
-              depth={props.depth + 1}
               config={props.config}
             />
           );
@@ -238,19 +234,15 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
   }
   return (
     <>
-      <JsonItemLine depth={props.depth} index={props.index} path={props.path}>
+      <JsonItemLine position={props.position}>
         <div className="input-group">
-          <button
-            type="button"
-            className="btn btn-outline-secondary p-1"
-          >
+          <button type="button" className="btn btn-outline-secondary p-1">
             <BI iconName="dash" />
           </button>
           <button
             type="button"
-            className={`btn ${jh.jsonBtnColorClass(props.depth)} py-1`}
-            onClick={props.onModeClick}
-          >
+            className={`btn ${jh.jsonBtnColorClass(props.position.depth)} py-1`}
+            onClick={props.onModeClick}>
             {icon}
           </button>
           {lineItems}

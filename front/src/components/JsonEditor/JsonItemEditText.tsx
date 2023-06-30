@@ -87,8 +87,7 @@ const JsonItemEditText = (props: JsonItemEditTextProps) => {
     return (
       <div
         className="form-control py-1 json-item-edit-text"
-        onClick={enterEditMode}
-      >
+        onClick={enterEditMode}>
         {state.value === "" ? (
           <span className="text-muted"></span>
         ) : (

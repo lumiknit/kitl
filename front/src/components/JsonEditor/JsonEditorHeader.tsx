@@ -28,8 +28,7 @@ const JsonEditorHeader = (props: JsonEditorHeaderProps) => {
             <a
               className="dropdown-item"
               href="#"
-              onClick={() => props.updateMode(idx)}
-            >
+              onClick={() => props.updateMode(idx)}>
               <BI iconName={jc.editModeIcons[idx]} />
               &nbsp;
               {label}
@@ -44,8 +43,7 @@ const JsonEditorHeader = (props: JsonEditorHeaderProps) => {
         <a
           className="dropdown-item"
           href="#"
-          onClick={props.toggleStringEscape}
-        >
+          onClick={props.toggleStringEscape}>
           <BICheckBox checked={props.showStringEscape} />
           &nbsp; Show string escapes
         </a>
