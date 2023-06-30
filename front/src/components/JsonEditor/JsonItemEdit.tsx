@@ -32,6 +32,47 @@ const jsonLiteral = (
   updateValue: (value: string) => boolean
 ) => [<JsonItemEditText key="0" value={value} updateValue={updateValue} />];
 
+const updateNumber =
+  (updateValue: (value: jh.Json) => void) => 
+  (value: string) => {
+    const newValue = Number(value);
+    if (isNaN(newValue)) {
+      return false;
+    }
+    updateValue(newValue);
+    return true;
+};
+
+const updateEscapedString =
+  (updateValue: (value: jh.Json) => void) =>
+  (value: string) => {
+    try {
+      updateValue(jh.unescapeString(value));
+      return true;
+    } catch(e) {
+      return false;
+    }
+  };
+
+const updateElement =
+  (container: jh.Json, key: jh.JsonKey) =>
+  (value: jh.Json) => {
+    if (Array.isArray(container)) {
+      if (typeof key === "number") {
+        container[key] = value;
+        return;
+      }
+    } else if (
+      container !== null &&
+      typeof container === "object" &&
+      typeof key === "string"
+    ) {
+      container[key] = value;
+      return;
+    }
+    throw "Invalid container type or key";
+  };
+
 const JsonItemEdit = (props: JsonItemEditProps) => {
   const [state, setState] = useState({
     cnt: 0,
@@ -46,22 +87,6 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
   const jsonType = jh.jsonTypeOf(props.value);
   const icon = <BI iconName={jh.jsonTypeIcons[jsonType]} />;
 
-  const updateElement = (key: jh.JsonKey) => {
-    return (value: jh.Json) => {
-      if (Array.isArray(props.value)) {
-        if (typeof key === "number") {
-          props.value[key] = value;
-        }
-      } else if (
-        props.value !== null &&
-        typeof props.value === "object" &&
-        typeof key === "string"
-      ) {
-        props.value[key] = value;
-      }
-    };
-  };
-
   let lineItems: ReactElement[] = [];
   const lineNext: ReactElement[] = [];
 
@@ -72,43 +97,31 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
       lineItems = jsonConst(String(props.value));
       break;
     case jh.JsonType.NUMBER:
-      {
-        const updateNumber = (value: string) => {
-          const newValue = Number(value);
-          if (isNaN(newValue)) {
-            return false;
-          }
-          props.updateValue(newValue);
-          return true;
-        };
-        lineItems = jsonLiteral(String(props.value), updateNumber);
+      if (typeof props.value !== "number") {
+        throw "Expect number, but got " + typeof props.value;
       }
+      lineItems = jsonLiteral(
+        String(props.value),
+        updateNumber(props.updateValue),
+      );
       break;
     case jh.JsonType.STRING:
-      {
-        if (typeof props.value !== "string") {
-          break;
-        }
-        let value;
-        let update;
-        if (props.config.showStringEscape) {
-          value = jh.escapeString(props.value);
-          update = (value: string) => {
-            try {
-              props.updateValue(jh.unescapeString(value));
-              return true;
-            } catch (e) {
-              return false;
-            }
-          };
-        } else {
-          value = props.value;
-          update = (value: string) => {
+      if (typeof props.value !== "string") {
+        throw "Expect string, but got " + typeof props.value;
+      }
+      if(props.config.showStringEscape) {
+        lineItems = jsonLiteral(
+          jh.escapeString(props.value),
+          updateEscapedString(props.updateValue),
+        );
+      } else {
+        lineItems = jsonLiteral(
+          props.value,
+          (value: string) => {
             props.updateValue(value);
             return true;
-          };
-        }
-        lineItems = jsonLiteral(value, update);
+          },
+        );
       }
       break;
     case jh.JsonType.ARRAY:
@@ -163,7 +176,7 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
               key={`${state.cnt} ${i}`}
               position={props.position.child(i)}
               value={props.value[i]}
-              updateValue={updateElement(i)}
+              updateValue={updateElement(props.value, i)}
               config={props.config}
             />
           );
@@ -222,7 +235,7 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
               key={`${state.cnt}\u0001${key}`}
               position={props.position.child(key)}
               value={props.value[key]}
-              updateValue={updateElement(key)}
+              updateValue={updateElement(props.value, key)}
               config={props.config}
             />
           );
@@ -236,15 +249,18 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
     <>
       <JsonItemLine position={props.position}>
         <div className="input-group">
+          {/* Handle */}
           <button type="button" className="btn btn-outline-secondary p-1">
             <BI iconName="dash" />
           </button>
+          {/* Type button */}
           <button
             type="button"
             className={`btn ${jh.jsonBtnColorClass(props.position.depth)} py-1`}
             onClick={props.onModeClick}>
             {icon}
           </button>
+          {/* Main items */}
           {lineItems}
         </div>
       </JsonItemLine>

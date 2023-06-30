@@ -64,6 +64,9 @@ export const jsonTypeOf = (value: Json): JsonType => {
   }
 };
 
+export const isObject = (value: Json): boolean =>
+  value !== null && typeof value === "object" && !Array.isArray(value);
+
 export const emptyJsonValueOfType = (type: JsonType) => {
   switch (type) {
     case JsonType.FALSE:
