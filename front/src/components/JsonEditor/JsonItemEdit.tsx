@@ -7,7 +7,7 @@ import JsonItemIndex from "./JsonItemIndex";
 import JsonItemEditText from "./JsonItemEditText";
 
 import * as jh from "./helper";
-import * as jc from "./config";
+import * as jc from "./JsonEditorContext";
 
 import "bootstrap/dist/css/bootstrap.css";
 

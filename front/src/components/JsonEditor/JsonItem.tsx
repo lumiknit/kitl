@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import * as jh from "./helper";
-import * as jc from "./config";
+import * as jc from "./JsonEditorContext";
 import JsonItemEdit from "./JsonItemEdit";
 import JsonItemType from "./JsonItemType";
 

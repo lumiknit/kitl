@@ -1,7 +1,7 @@
 import BI from "../Util/BI";
 import BICheckBox from "../Util/BICheckBox";
 
-import * as jc from "./config";
+import * as jc from "./JsonEditorContext";
 
 type JsonEditorHeaderProps = {
   // Mode
@@ -10,6 +10,8 @@ type JsonEditorHeaderProps = {
   // Configs
   showStringEscape: boolean;
   toggleStringEscape: () => void;
+  // Actions
+  downloadJson: () => void;
 };
 
 const JsonEditorHeader = (props: JsonEditorHeaderProps) => {
@@ -52,7 +54,7 @@ const JsonEditorHeader = (props: JsonEditorHeaderProps) => {
         <hr />
       </li>
       <li>
-        <a className="dropdown-item" href="#">
+        <a className="dropdown-item" href="#" onClick={props.downloadJson}>
           <BI iconName="download" />
           &nbsp; Download
         </a>

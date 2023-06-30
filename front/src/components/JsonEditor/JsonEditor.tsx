@@ -8,7 +8,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "./JsonEditor.css";
 
 import * as jh from "./helper";
-import * as jc from "./config";
+import * as jc from "./JsonEditorContext";
 
 import JsonEditorHeader from "./JsonEditorHeader";
 import JsonItem from "./JsonItem";
@@ -68,6 +68,7 @@ const JsonEditor = () => {
           updateMode={updateMode}
           showStringEscape={state.showStringEscape}
           toggleStringEscape={toggleStringEscape}
+          downloadJson={() => { alert("download"); }}
         />
         <div className="json-editor-body">
           {jc.isTextMode(state.mode) ? (

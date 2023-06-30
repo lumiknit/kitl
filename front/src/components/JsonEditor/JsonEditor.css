@@ -61,10 +61,10 @@ textarea.json-item-edit-text-area {
   resize: none;
 }
 
-pre {
+pre.json-item-edit-text-view {
   flex: 0 1 100%;
-  font-family: monospace;
-  font-size: 16px;
+  font-family: sans-serif;
+  font-size: 0.75rem;
   margin: 0;
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -77,4 +77,8 @@ pre {
   top: 0px;
   width: 100vw;
   height: 90vh;
+}
+
+.form-control::placeholder {
+  color: #88888888;
 }

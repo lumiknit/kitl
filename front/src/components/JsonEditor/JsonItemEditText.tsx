@@ -77,7 +77,10 @@ const JsonItemEditText = (props: JsonItemEditTextProps) => {
         {state.value === "" ? (
           <span className="text-muted">empty</span>
         ) : (
-          <pre className="m-0">{state.value}</pre>
+          <pre
+            className="m-0 json-item-edit-text-view">
+            {state.value}
+          </pre>
         )}
       </div>
     );
