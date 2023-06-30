@@ -16,4 +16,3 @@ export type Config = {
   editMode: EditMode;
   showStringEscape: boolean;
 };
-

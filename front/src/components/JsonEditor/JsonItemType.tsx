@@ -8,7 +8,6 @@ import BI from "../Util/BI";
 import * as jh from "./helper";
 
 import JsonItemLine from "./JsonItemLine";
-import JsonItemIndex from "./JsonItemIndex";
 
 type JsonTypeSelectProps = {
   depth: number;
@@ -41,15 +40,8 @@ const JsonTypeSelect = (props: JsonTypeSelectProps) => {
   };
 
   return (
-    <JsonItemLine depth={props.depth}>
-      <JsonItemIndex
-        index={props.index}
-        path={props.path}
-        updateIndex={() => {
-          throw "Not implemented";
-        }}
-      />
-      <div className="input-group" role="group">
+    <JsonItemLine depth={props.depth} index={props.index} path={props.path}>
+      <div className="btn-group btn-group-justified w-100" role="group">
         {btnGroup()}
       </div>
     </JsonItemLine>

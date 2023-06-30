@@ -82,13 +82,13 @@ const JsonEditorHeader = (props: JsonEditorHeaderProps) => {
       break;
     case jc.EditMode.Select:
       controls = [
-        <button key="0" className="btn btn-secondary w-auto">
+        <button key="0" className="btn btn-secondary flex-grow-1">
           <BI iconName="scissors" />
         </button>,
-        <button key="1" className="btn btn-secondary w-auto">
+        <button key="1" className="btn btn-secondary flex-grow-1">
           <BI iconName="files" />
         </button>,
-        <button key="2" className="btn btn-secondary w-auto">
+        <button key="2" className="btn btn-secondary flex-grow-1">
           <BI iconName="eraser" />
         </button>,
       ];

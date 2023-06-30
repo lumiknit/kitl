@@ -52,6 +52,20 @@ const JsonItemEditText = (props: JsonItemEditTextProps) => {
       resizeTextArea();
     };
 
+    const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      // Tab as insert tab character
+      if (e.key === "Tab") {
+        e.preventDefault();
+        const target = e.currentTarget;
+        const start = target.selectionStart;
+        const end = target.selectionEnd;
+        const value = target.value;
+        target.value = value.substring(0, start) + "\t" + value.substring(end);
+        target.selectionStart = target.selectionEnd = start + 1;
+        resizeTextArea();
+      }
+    };
+
     return (
       <textarea
         ref={ref}
@@ -59,6 +73,7 @@ const JsonItemEditText = (props: JsonItemEditTextProps) => {
         defaultValue={state.value}
         onBlur={discardChanges}
         onInput={onInput}
+        onKeyDown={onKeyDown}
         autoFocus={true}
         placeholder="empty"
       />
@@ -75,12 +90,9 @@ const JsonItemEditText = (props: JsonItemEditTextProps) => {
         onClick={enterEditMode}
       >
         {state.value === "" ? (
-          <span className="text-muted">empty</span>
+          <span className="text-muted"></span>
         ) : (
-          <pre
-            className="m-0 json-item-edit-text-view">
-            {state.value}
-          </pre>
+          <pre className="m-0 json-item-edit-text-view">{state.value}</pre>
         )}
       </div>
     );

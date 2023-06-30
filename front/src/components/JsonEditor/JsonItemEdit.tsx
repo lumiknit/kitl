@@ -3,7 +3,6 @@ import { ReactElement, createRef, useState } from "react";
 import BI from "../Util/BI";
 import JsonItem from "./JsonItem";
 import JsonItemLine from "./JsonItemLine";
-import JsonItemIndex from "./JsonItemIndex";
 import JsonItemEditText from "./JsonItemEditText";
 
 import * as jh from "./helper";
@@ -24,44 +23,16 @@ type JsonItemEditProps = {
   config: jc.Config;
 };
 
-const jsonConst = (
-  icon: ReactElement,
-  label: string,
-  depth: number,
-  onModeClick: () => void
-) => (
-  <div className="input-group">
-    <button
-      type="button"
-      className={`btn ${jh.jsonBtnColorClass(depth)} py-1`}
-      onClick={onModeClick}
-    >
-      {icon}
-    </button>
-    <span className="input-group-text py-1">{label}</span>
-  </div>
-);
+const jsonConst = (label: string) => [
+  <span key="0" className="input-group-text py-1 flex-grow-1">
+    {label}
+  </span>,
+];
 
 const jsonLiteral = (
-  icon: ReactElement,
-  depth: number,
   value: string,
-  updateValue: (value: string) => boolean,
-  onModeClick: () => void
-) => {
-  return (
-    <div className="input-group">
-      <button
-        type="button"
-        className={`btn ${jh.jsonBtnColorClass(depth)} py-1`}
-        onClick={onModeClick}
-      >
-        {icon}
-      </button>
-      <JsonItemEditText value={value} updateValue={updateValue} />
-    </div>
-  );
-};
+  updateValue: (value: string) => boolean
+) => [<JsonItemEditText key="0" value={value} updateValue={updateValue} />];
 
 const JsonItemEdit = (props: JsonItemEditProps) => {
   const [state, setState] = useState({
@@ -93,19 +64,14 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
     };
   };
 
-  let lineItem;
+  let lineItems: ReactElement[] = [];
   const lineNext: ReactElement[] = [];
 
   switch (jsonType) {
     case jh.JsonType.NULL:
     case jh.JsonType.FALSE:
     case jh.JsonType.TRUE:
-      lineItem = jsonConst(
-        icon,
-        String(props.value),
-        props.depth,
-        props.onModeClick
-      );
+      lineItems = jsonConst(String(props.value));
       break;
     case jh.JsonType.NUMBER:
       {
@@ -117,13 +83,7 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
           props.updateValue(newValue);
           return true;
         };
-        lineItem = jsonLiteral(
-          icon,
-          props.depth,
-          String(props.value),
-          updateNumber,
-          props.onModeClick
-        );
+        lineItems = jsonLiteral(String(props.value), updateNumber);
       }
       break;
     case jh.JsonType.STRING:
@@ -150,13 +110,7 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
             return true;
           };
         }
-        lineItem = jsonLiteral(
-          icon,
-          props.depth,
-          value,
-          update,
-          props.onModeClick
-        );
+        lineItems = jsonLiteral(value, update);
       }
       break;
     case jh.JsonType.ARRAY:
@@ -164,7 +118,6 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
         if (!Array.isArray(props.value) || props.value === null) {
           throw "Expect array, but got " + typeof props.value;
         }
-        const jsonBtnColorClass = jh.jsonBtnColorClass(props.depth);
         const jsonBtnColorClassNext = jh.jsonBtnColorClass(props.depth + 1);
         const indexRef = createRef<HTMLInputElement>();
         const onClickAdd = () => {
@@ -188,30 +141,23 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
           indexRef.current.value = "";
           rerender();
         };
-        lineItem = (
-          <div className="input-group">
-            <button
-              type="button"
-              className={`btn ${jsonBtnColorClass} py-1`}
-              onClick={props.onModeClick}
-            >
-              {icon}
-            </button>
-            <input
-              ref={indexRef}
-              type="text"
-              className="form-control py-1"
-              placeholder="new index"
-            />
-            <button
-              type="button"
-              className={`btn ${jsonBtnColorClassNext} py-1`}
-              onClick={onClickAdd}
-            >
-              <BI iconName="plus-square" />
-            </button>
-          </div>
-        );
+        lineItems = [
+          <input
+            key="0"
+            ref={indexRef}
+            type="text"
+            className="form-control py-1"
+            placeholder="new index"
+          />,
+          <button
+            key="1"
+            type="button"
+            className={`btn ${jsonBtnColorClassNext} py-1`}
+            onClick={onClickAdd}
+          >
+            <BI iconName="plus-square" />
+          </button>,
+        ];
         for (let i = 0; i < props.value.length; i++) {
           lineNext.push(
             <JsonItem
@@ -236,7 +182,6 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
         ) {
           throw "Expect object, but got " + typeof props.value;
         }
-        const jsonBtnColorClass = jh.jsonBtnColorClass(props.depth);
         const jsonBtnColorClassNext = jh.jsonBtnColorClass(props.depth + 1);
         const indexRef = createRef<HTMLInputElement>();
         const onClickAdd = () => {
@@ -256,30 +201,23 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
           indexRef.current.value = "";
           rerender();
         };
-        lineItem = (
-          <div className="input-group">
-            <button
-              type="button"
-              className={`btn ${jsonBtnColorClass} py-1`}
-              onClick={props.onModeClick}
-            >
-              {icon}
-            </button>
-            <input
-              ref={indexRef}
-              type="text"
-              className="form-control py-1"
-              placeholder="new key"
-            />
-            <button
-              type="button"
-              className={`btn ${jsonBtnColorClassNext} py-1`}
-              onClick={onClickAdd}
-            >
-              <BI iconName="plus-square" />
-            </button>
-          </div>
-        );
+        lineItems = [
+          <input
+            key="0"
+            ref={indexRef}
+            type="text"
+            className="form-control py-1"
+            placeholder="new key"
+          />,
+          <button
+            key="1"
+            type="button"
+            className={`btn ${jsonBtnColorClassNext} py-1`}
+            onClick={onClickAdd}
+          >
+            <BI iconName="plus-square" />
+          </button>,
+        ];
         for (const key in props.value) {
           lineNext.push(
             <JsonItem
@@ -295,19 +233,27 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
         }
       }
       break;
+    default:
+      throw "Unknown json type: " + jsonType;
   }
   return (
     <>
-      <JsonItemLine depth={props.depth}>
-        <div className="json-item-line-content">
-          <JsonItemIndex
-            index={props.index}
-            path={props.path}
-            updateIndex={() => {
-              throw "Not implemented";
-            }}
-          />
-          {lineItem}
+      <JsonItemLine depth={props.depth} index={props.index} path={props.path}>
+        <div className="input-group">
+          <button
+            type="button"
+            className="btn btn-outline-secondary p-1"
+          >
+            <BI iconName="dash" />
+          </button>
+          <button
+            type="button"
+            className={`btn ${jh.jsonBtnColorClass(props.depth)} py-1`}
+            onClick={props.onModeClick}
+          >
+            {icon}
+          </button>
+          {lineItems}
         </div>
       </JsonItemLine>
       {lineNext}

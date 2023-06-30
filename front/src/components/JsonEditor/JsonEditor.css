@@ -30,6 +30,9 @@ textarea.json-text-area {
   background-color: transparent;
   font-family: monospace;
   resize: none;
+  -moz-tab-size: 2;
+  -o-tab-size: 2;
+  tab-size: 2;
 }
 
 textarea.json-text-area-invalid {
@@ -59,15 +62,20 @@ textarea.json-text-area-invalid {
 textarea.json-item-edit-text-area {
   font-family: monospace;
   resize: none;
+  -moz-tab-size: 2;
+  -o-tab-size: 2;
+  tab-size: 2;
 }
 
 pre.json-item-edit-text-view {
   flex: 0 1 100%;
   font-family: sans-serif;
-  font-size: 0.75rem;
   margin: 0;
   white-space: pre-wrap;
   word-wrap: break-word;
+  -moz-tab-size: 2;
+  -o-tab-size: 2;
+  tab-size: 2;
 }
 
 .test-wrap {

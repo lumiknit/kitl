@@ -9,15 +9,11 @@ import "./JsonEditor.css";
 
 import * as jh from "./helper";
 import * as jc from "./JsonEditorContext";
+import * as utils from "./utils";
 
 import JsonEditorHeader from "./JsonEditorHeader";
 import JsonItem from "./JsonItem";
 import JsonTextArea from "./JsonTextArea";
-
-import "bootstrap/dist/css/bootstrap.css";
-
-import "./JsonEditor.css";
-import "./JsonIndent.css";
 
 type JsonEditorState = {
   // Mode
@@ -25,14 +21,24 @@ type JsonEditorState = {
   // Configs
   showStringEscape: boolean;
   // Other states
+  path: string;
   valueBox: jh.Json[];
   cnt: number;
+};
+
+const getFilenameFromState = (state: JsonEditorState) => {
+  // Split by slash
+  const path =
+    state.path === "" ? "noname" : state.path.split("/").slice(-1)[0];
+  // If extension is not json, append it
+  return path.endsWith(".json") ? path : path + ".json";
 };
 
 const JsonEditor = () => {
   const [state, setState] = useState<JsonEditorState>({
     mode: jc.EditMode.Tree,
     showStringEscape: false,
+    path: "",
     valueBox: [null],
     cnt: 0,
   });
@@ -68,7 +74,11 @@ const JsonEditor = () => {
           updateMode={updateMode}
           showStringEscape={state.showStringEscape}
           toggleStringEscape={toggleStringEscape}
-          downloadJson={() => { alert("download"); }}
+          downloadJson={() => {
+            const filename = getFilenameFromState(state);
+            const content = JSON.stringify(state.valueBox[0]);
+            utils.downloadTextFile(filename, content);
+          }}
         />
         <div className="json-editor-body">
           {jc.isTextMode(state.mode) ? (
