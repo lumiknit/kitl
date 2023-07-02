@@ -7,10 +7,12 @@ import BI from "../Util/BI";
 
 import * as jh from "./helper";
 
+import { UpdateIndexFn } from "./JsonItem";
 import JsonItemLine from "./JsonItemLine";
 
-type JsonTypeSelectProps = {
+export type JsonTypeSelectProps = {
   position: jh.Position;
+  updateIndex: UpdateIndexFn;
   value: jh.Json;
   onTypeSelect: (newType: number) => void;
 };
@@ -40,7 +42,13 @@ const JsonTypeSelect = (props: JsonTypeSelectProps) => {
   };
 
   return (
-    <JsonItemLine position={props.position}>
+    <JsonItemLine
+      position={props.position}
+      updateIndex={props.updateIndex}
+      editingIndex={false}
+      updateEditingIndex={() => {
+        return;
+      }}>
       <div className="btn-group btn-group-justified w-100" role="group">
         {btnGroup()}
       </div>

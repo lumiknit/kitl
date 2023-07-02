@@ -1,7 +1,7 @@
 import { ReactElement, createRef, useState } from "react";
 
 import BI from "../Util/BI";
-import JsonItem from "./JsonItem";
+import JsonItem, { UpdateIndexFn } from "./JsonItem";
 import JsonItemLine from "./JsonItemLine";
 import JsonItemEditText from "./JsonItemEditText";
 
@@ -13,8 +13,9 @@ import "bootstrap/dist/css/bootstrap.css";
 import "./JsonEditor.css";
 import "./JsonIndent.css";
 
-type JsonItemEditProps = {
+export type JsonItemEditProps = {
   position: jh.Position;
+  updateIndex: UpdateIndexFn;
   value: jh.Json;
   onModeClick: () => void;
   updateValue: (value: jh.Json, render?: boolean) => void;
@@ -33,30 +34,27 @@ const jsonLiteral = (
 ) => [<JsonItemEditText key="0" value={value} updateValue={updateValue} />];
 
 const updateNumber =
-  (updateValue: (value: jh.Json) => void) => 
-  (value: string) => {
+  (updateValue: (value: jh.Json) => void) => (value: string) => {
     const newValue = Number(value);
     if (isNaN(newValue)) {
       return false;
     }
     updateValue(newValue);
     return true;
-};
+  };
 
 const updateEscapedString =
-  (updateValue: (value: jh.Json) => void) =>
-  (value: string) => {
+  (updateValue: (value: jh.Json) => void) => (value: string) => {
     try {
       updateValue(jh.unescapeString(value));
       return true;
-    } catch(e) {
+    } catch (e) {
       return false;
     }
   };
 
 const updateElement =
-  (container: jh.Json, key: jh.JsonKey) =>
-  (value: jh.Json) => {
+  (container: jh.Json, key: jh.JsonKey) => (value: jh.Json) => {
     if (Array.isArray(container)) {
       if (typeof key === "number") {
         container[key] = value;
@@ -75,14 +73,25 @@ const updateElement =
 
 const JsonItemEdit = (props: JsonItemEditProps) => {
   const [state, setState] = useState({
+    editingIndex: false,
     cnt: 0,
   });
 
   const rerender = () => {
     setState({
+      editingIndex: state.editingIndex,
       cnt: state.cnt + 1,
     });
   };
+
+  const updateEditingIndex = (editingIndex: boolean) => {
+    setState({
+      editingIndex: editingIndex,
+      cnt: state.cnt,
+    });
+  };
+
+  const editIndex = () => updateEditingIndex(!state.editingIndex);
 
   const jsonType = jh.jsonTypeOf(props.value);
   const icon = <BI iconName={jh.jsonTypeIcons[jsonType]} />;
@@ -102,26 +111,23 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
       }
       lineItems = jsonLiteral(
         String(props.value),
-        updateNumber(props.updateValue),
+        updateNumber(props.updateValue)
       );
       break;
     case jh.JsonType.STRING:
       if (typeof props.value !== "string") {
         throw "Expect string, but got " + typeof props.value;
       }
-      if(props.config.showStringEscape) {
+      if (props.config.showStringEscape) {
         lineItems = jsonLiteral(
           jh.escapeString(props.value),
-          updateEscapedString(props.updateValue),
+          updateEscapedString(props.updateValue)
         );
       } else {
-        lineItems = jsonLiteral(
-          props.value,
-          (value: string) => {
-            props.updateValue(value);
-            return true;
-          },
-        );
+        lineItems = jsonLiteral(props.value, (value: string) => {
+          props.updateValue(value);
+          return true;
+        });
       }
       break;
     case jh.JsonType.ARRAY:
@@ -154,6 +160,30 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
           indexRef.current.value = "";
           rerender();
         };
+        const updateArrayIndex: UpdateIndexFn = (oldIndex, newIndex) => {
+          if (!Array.isArray(props.value) || props.value === null) {
+            throw "Unexpected value for updateArrayIndex";
+          }
+          const oi = Number(oldIndex);
+          if (isNaN(oi)) {
+            alert("Wrong old index for array");
+            throw "Unexpected oldIndex type for updateArrayIndex";
+          }
+          let ni = undefined;
+          if (newIndex !== undefined) {
+            ni = Number(newIndex);
+            if (isNaN(ni)) {
+              alert("Wrong new index for array");
+              throw "Unexpected newIndex type for updateArrayIndex";
+            }
+          }
+          const val = props.value[oi];
+          props.value.splice(oi, 1);
+          if (ni !== undefined) {
+            props.value.splice(ni, 0, val);
+          }
+          rerender();
+        };
         lineItems = [
           <input
             key="0"
@@ -175,6 +205,7 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
             <JsonItem
               key={`${state.cnt} ${i}`}
               position={props.position.child(i)}
+              updateIndex={updateArrayIndex}
               value={props.value[i]}
               updateValue={updateElement(props.value, i)}
               config={props.config}
@@ -213,6 +244,28 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
           indexRef.current.value = "";
           rerender();
         };
+        const updateObjectIndex: UpdateIndexFn = (oldIndex, newIndex) => {
+          if (
+            typeof props.value !== "object" ||
+            props.value === null ||
+            Array.isArray(props.value)
+          ) {
+            throw "Unexpected value for updateArrayIndex";
+          }
+          if (typeof oldIndex !== "string") {
+            alert("Wrong old index for object");
+            throw "Unexpected oldIndex type for updateArrayIndex";
+          }
+          if (typeof newIndex !== "string" && newIndex !== undefined) {
+            alert("Wrong new index for object");
+          }
+          const val = props.value[oldIndex];
+          delete props.value[oldIndex];
+          if (newIndex !== undefined) {
+            props.value[newIndex] = val;
+          }
+          rerender();
+        };
         lineItems = [
           <input
             key="0"
@@ -234,6 +287,7 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
             <JsonItem
               key={`${state.cnt}\u0001${key}`}
               position={props.position.child(key)}
+              updateIndex={updateObjectIndex}
               value={props.value[key]}
               updateValue={updateElement(props.value, key)}
               config={props.config}
@@ -247,10 +301,17 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
   }
   return (
     <>
-      <JsonItemLine position={props.position}>
+      <JsonItemLine
+        position={props.position}
+        updateIndex={props.updateIndex}
+        editingIndex={state.editingIndex}
+        updateEditingIndex={updateEditingIndex}>
         <div className="input-group">
           {/* Handle */}
-          <button type="button" className="btn btn-outline-secondary p-1">
+          <button
+            type="button"
+            className="btn btn-outline-secondary p-1"
+            onClick={editIndex}>
             <BI iconName="dash" />
           </button>
           {/* Type button */}

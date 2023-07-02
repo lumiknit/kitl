@@ -4,9 +4,8 @@ type BIProps = {
   iconName: string;
 };
 
-const BI = (props: BIProps) => {
-  const iconClass = `bi bi-${props.iconName}`;
-  return <i className={iconClass} />;
-};
+const BI = (props: BIProps) => (
+  <i className={`bi bi-${props.iconName}`} />
+);
 
 export default BI;

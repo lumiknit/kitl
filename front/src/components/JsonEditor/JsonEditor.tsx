@@ -86,6 +86,10 @@ const JsonEditor = () => {
           ) : (
             <JsonItem
               position={new jh.Position(0, "", "")}
+              updateIndex={() => {
+                alert("Cannot update index of root object!");
+                throw new Error("Cannot update index of root object!");
+              }}
               value={state.valueBox[0]}
               updateValue={updateValue}
               config={config}

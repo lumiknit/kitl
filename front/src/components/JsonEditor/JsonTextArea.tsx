@@ -48,7 +48,7 @@ const unindentTA = (value: string, start: number, end: number) => {
   };
 };
 
-type JsonTextAreaProps = {
+export type JsonTextAreaProps = {
   value: jh.Json;
   updateValue: (newValue: jh.Json) => void;
 };

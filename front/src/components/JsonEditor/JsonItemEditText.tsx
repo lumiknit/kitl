@@ -1,6 +1,6 @@
 import { useState, useEffect, createRef } from "react";
 
-type JsonItemEditTextProps = {
+export type JsonItemEditTextProps = {
   value: string;
   updateValue: (value: string) => boolean;
 };
