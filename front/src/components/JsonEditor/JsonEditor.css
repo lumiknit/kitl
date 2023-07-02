@@ -78,15 +78,6 @@ pre.json-item-edit-text-view {
   tab-size: 2;
 }
 
-.test-wrap {
-  border: 1px dashed #ff0000;
-  position: relative;
-  left: 0px;
-  top: 0px;
-  width: 100vw;
-  height: 90vh;
-}
-
 .form-control::placeholder {
   color: #88888888;
 }

@@ -67,35 +67,33 @@ const JsonEditor = () => {
   };
 
   return (
-    <div className="test-wrap">
-      <div className="json-editor">
-        <JsonEditorHeader
-          mode={state.mode}
-          updateMode={updateMode}
-          showStringEscape={state.showStringEscape}
-          toggleStringEscape={toggleStringEscape}
-          downloadJson={() => {
-            const filename = getFilenameFromState(state);
-            const content = JSON.stringify(state.valueBox[0]);
-            utils.downloadTextFile(filename, content);
-          }}
-        />
-        <div className="json-editor-body">
-          {jc.isTextMode(state.mode) ? (
-            <JsonTextArea value={state.valueBox[0]} updateValue={updateValue} />
-          ) : (
-            <JsonItem
-              position={new jh.Position(0, "", "")}
-              updateIndex={() => {
-                alert("Cannot update index of root object!");
-                throw new Error("Cannot update index of root object!");
-              }}
-              value={state.valueBox[0]}
-              updateValue={updateValue}
-              config={config}
-            />
-          )}
-        </div>
+    <div className="json-editor">
+      <JsonEditorHeader
+        mode={state.mode}
+        updateMode={updateMode}
+        showStringEscape={state.showStringEscape}
+        toggleStringEscape={toggleStringEscape}
+        downloadJson={() => {
+          const filename = getFilenameFromState(state);
+          const content = JSON.stringify(state.valueBox[0]);
+          utils.downloadTextFile(filename, content);
+        }}
+      />
+      <div className="json-editor-body">
+        {jc.isTextMode(state.mode) ? (
+          <JsonTextArea value={state.valueBox[0]} updateValue={updateValue} />
+        ) : (
+          <JsonItem
+            position={new jh.Position(0, "", "")}
+            updateIndex={() => {
+              alert("Cannot update index of root object!");
+              throw new Error("Cannot update index of root object!");
+            }}
+            value={state.valueBox[0]}
+            updateValue={updateValue}
+            config={config}
+          />
+        )}
       </div>
     </div>
   );
