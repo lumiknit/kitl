@@ -1,0 +1,96 @@
+.flow-editor-header {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  padding: 4px;
+}
+
+/* Node shape */
+
+.react-flow__node-def {
+  font-size: 0.8rem;
+  font-family: monospace;
+  color: #888;
+  background: transparent;
+  border: 2px dashed #888;
+  border-right: 0;
+  border-radius: 0;
+  width: 2rem;
+  height: 10rem;
+  padding: 0 0.5rem;
+  text-align: center;
+}
+
+.react-flow__node-op {
+  font-size: 1rem;
+  font-family: monospace;
+  background: #fff;
+  border: 1px solid #888;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  text-align: center;
+}
+
+.react-flow__node-const {
+  font-size: 1rem;
+  font-family: monospace;
+  background: #fff;
+  border: 1px solid #888;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  text-align: center;
+}
+
+.react-flow__node-select {
+  font-size: 1rem;
+  color: #888;
+  background: #fff;
+  border: 1px solid #888;
+  border-radius: 0 0 1rem 1rem;
+  padding: 0.3rem 1.5rem;
+  text-align: center;
+}
+
+.react-flow__node-mem {
+  font-size: 1rem;
+  color: #888;
+  background: #fff;
+  border: 1px dashed #888;
+  border-radius: 0;
+  padding: 0.25rem 0.5rem;
+  text-align: center;
+}
+
+/* Handles */
+
+.react-flow__handle {
+  width: 0.6rem;
+  height: 0.6rem;
+}
+
+.react-flow__handle-left {
+  border: 1px solid #888;
+  background-color: #fff;
+  left: -0.35rem;
+}
+
+.react-flow__handle-top {
+  border: 1px solid #888;
+  background-color: #fff;
+  top: -0.35rem;
+}
+
+.react-flow__handle-right {
+  border: 1px solid #fff;
+  background-color: #888;
+  right: -0.35rem;
+}
+
+.react-flow__handle-bottom {
+  border: 1px solid #fff;
+  background-color: #888;
+  bottom: -0.35rem;
+}
