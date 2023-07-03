@@ -16,27 +16,33 @@ const addNodeModeControls = (props: FlowEditorHeaderProps) => {
   return [
     <button
       key="fn"
-      className="btn btn-outline-secondary flex-grow-1"
+      className="btn btn-outline-secondary flex-grow-1 px-0"
       onClick={() => props.addNode("op", "f")}>
       <BI iconName="code-square" />
     </button>,
     <button
       key="mem"
-      className="btn btn-outline-secondary flex-grow-1"
+      className="btn btn-outline-primary flex-grow-1 px-0"
       onClick={() => props.addNode("mem", null)}>
       <BI iconName="clipboard" />
     </button>,
     <button
       key="select"
-      className="btn btn-outline-secondary flex-grow-1"
+      className="btn btn-outline-danger flex-grow-1 px-0"
       onClick={() => props.addNode("select", null)}>
       <BI iconName="toggles2" />
     </button>,
     <button
       key="const"
-      className="btn btn-outline-secondary flex-grow-1"
-      onClick={() => props.addNode("const", { a: 10 })}>
+      className="btn btn-outline-secondary flex-grow-1 px-0"
+      onClick={() => props.addNode("const", "abc\tasd\naskdl")}>
       <BI iconName="filetype-json" />
+    </button>,
+    <button
+      key="comment"
+      className="btn btn-outline-success flex-grow-1 px-0"
+      onClick={() => props.addNode("comment", "Comment")}>
+      <BI iconName="chat-square-dots" />
     </button>,
     <button key="del" className="btn btn-danger">
       <BI iconName="trash" />

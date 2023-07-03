@@ -6,6 +6,30 @@ type OpNodeProps = {
   isConnectable: boolean;
 };
 
+const opNameSymbol: { [key: string]: string } = {
+  "->": "→",
+  "<-": "←",
+  "<->": "↔",
+  "=>": "⇒",
+  ">=": "≥",
+  "<=": "≤",
+  "==": "=",
+  "!=": "≠",
+  "+-": "±",
+  "++": "++",
+  "_|_": "⊥",
+  "&&": "∧",
+  "||": "∨",
+  "!!": "‼",
+  "|>": "▷",
+  "<|": "◁",
+  "<-<": "↢",
+  ">->": "↣",
+  "-<": "⤙",
+  ">-": "⤚",
+  "><": "⋈",
+}
+
 const OpNode = (props: OpNodeProps) => {
   return (
     <>
@@ -23,7 +47,11 @@ const OpNode = (props: OpNodeProps) => {
         onConnect={params => console.log("handle onConnect", params)}
         isConnectable={props.isConnectable}
       />
-      <div> {props.data} </div>
+      <div> {
+        opNameSymbol[props.data] !== undefined ?
+        opNameSymbol[props.data] :
+        props.data
+      } </div>
       <Handle
         id="clo"
         type="source"

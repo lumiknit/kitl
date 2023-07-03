@@ -22,14 +22,15 @@ const shortenData = (data: any) => {
         return "{}";
       }
       const key = keys[0];
-      return `{${key}:...} (#=${keys.length})`;
+      return `{${key}:...}`;
     }
   } else if (typeof data === "string") {
     const MAX_LENGTH = 14;
-    if (data.length > MAX_LENGTH) {
-      return `"${data.slice(0, MAX_LENGTH)}.."`;
+    const z = JSON.stringify(data);
+    if (z.length > MAX_LENGTH) {
+      return `${z.slice(0, MAX_LENGTH - 3)}..."`;
     } else {
-      return `"${data}"`;
+      return `${z}`;
     }
   } else {
     return String(data);

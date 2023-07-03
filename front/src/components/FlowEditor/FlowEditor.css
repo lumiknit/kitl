@@ -27,7 +27,7 @@
 .react-flow__node-op {
   font-size: 1rem;
   font-family: monospace;
-  background: #fff;
+  background: #fff8;
   border: 1px solid #888;
   border-radius: 0.25rem;
   padding: 0.25rem 0.75rem;
@@ -37,7 +37,7 @@
 .react-flow__node-const {
   font-size: 1rem;
   font-family: monospace;
-  background: #fff;
+  background: #fff8;
   border: 1px solid #888;
   border-radius: 9999px;
   padding: 0.25rem 0.75rem;
@@ -46,22 +46,39 @@
 
 .react-flow__node-select {
   font-size: 1rem;
-  color: #888;
-  background: #fff;
+  color: #ed553b;
+  background: #fff8;
   border: 1px solid #888;
   border-radius: 0 0 1rem 1rem;
+  border-corner-shape: bevel;
   padding: 0.3rem 1.5rem;
   text-align: center;
 }
 
 .react-flow__node-mem {
   font-size: 1rem;
-  color: #888;
-  background: #fff;
+  color: #085ed7;
+  background: #fff8;
   border: 1px dashed #888;
   border-radius: 0;
   padding: 0.25rem 0.5rem;
   text-align: center;
+}
+
+.react-flow__node-comment {
+  font-family: sans-serif;
+  font-size: 1rem;
+  color: #46923c;
+  background: #fff8;
+  border: 0;
+  border-left: 4px solid #46923c;
+  border-radius: 0;
+  padding: 0.25rem 0.5rem;
+  text-align: left;
+}
+
+.react-flow__node.selected {
+  box-shadow: 0 1px 4px #888f;
 }
 
 /* Handles */
@@ -69,6 +86,10 @@
 .react-flow__handle {
   width: 0.6rem;
   height: 0.6rem;
+}
+
+.react-flow__handle.connecting {
+  box-shadow: 0 0 5px #085ed7;
 }
 
 .react-flow__handle-left {

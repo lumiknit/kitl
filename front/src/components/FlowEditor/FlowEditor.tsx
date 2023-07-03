@@ -24,11 +24,18 @@ import OpNode from "./CustomNodes/OpNode";
 import ConstNode from "./CustomNodes/ConstNode";
 import SelectNode from "./CustomNodes/SelectNode";
 import MemNode from "./CustomNodes/MemNode";
+import CommentNode from "./CustomNodes/CommentNode";
 
 import FlowEditorHeader from "./FlowEditorHeader";
 
 const getID = () => {
-  return Math.random().toString(36).substring(7);
+  const now = new Date();
+  const offset = now.getTimezoneOffset() * 60 * 1000;
+  const utcMS = now.getTime() + offset;
+  const utcSec = Math.round(utcMS / 1000);
+  const timeString = utcSec.toString(36);
+  const randomString = Math.random().toString(36).substring(7);
+  return `${timeString}-${randomString}`
 };
 
 const nodeTypes = {
@@ -37,6 +44,7 @@ const nodeTypes = {
   const: ConstNode,
   select: SelectNode,
   mem: MemNode,
+  comment: CommentNode,
 };
 
 const initNodes: Node[] = [
@@ -56,9 +64,12 @@ type FlowEditorState = {
 };
 
 const FlowEditor = () => {
-  const instance: ReactFlowInstance[] = [];
+  let instance: ReactFlowInstance | undefined = undefined;
   const [nodes, setNodes, onNodesChange] = useNodesState(initNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [state, setState] = useState<FlowEditorState>({
+    mode: fh.EditingMode.AddNode,
+  });
 
   const onConnect = useCallback((params: Connection | Edge) => {
     const targetNode = params.target;
@@ -69,13 +80,32 @@ const FlowEditor = () => {
         return !(e.target === targetNode && e.targetHandle === targetHandle);
       });
       // Add the new edge
-      return [...newEdges, params];
+      return addEdge(params, newEdges);
     });
   }, []);
 
-  const [state, setState] = useState<FlowEditorState>({
-    mode: fh.EditingMode.AddNode,
-  });
+  const onInit = (rfi: ReactFlowInstance) => {
+    instance = rfi;
+    console.log(instance);
+  };
+
+  const onNodeDoubleClick = (event, node) => {
+    // TODO: Edit node
+    switch(node.type) {
+      case "op":
+        break;
+      case "const":
+        break;
+      case "comment":
+        break;
+    }
+    alert(node);
+  };
+
+  const onEdgeDoubleClick = (event, edge) => {
+    // Remove the edge
+    setEdges(es => es.filter(e => e.id !== edge.id));
+  };
 
   const updateMode = (mode: fh.EditingMode) => {
     const newState = { ...state };
@@ -87,8 +117,9 @@ const FlowEditor = () => {
     // Find viewport center
     let x = 0;
     let y = 0;
-    if (instance[0] !== undefined) {
-      const viewport = instance[0].getViewport();
+    console.log(instance);
+    if (instance !== undefined) {
+      const viewport = instance.getViewport();
       console.log(viewport);
       x = viewport.x;
       y = viewport.y;
@@ -119,23 +150,9 @@ const FlowEditor = () => {
         fitView
         nodesDraggable
         onlyRenderVisibleElements
-        onInit={rfi => {
-          instance[0] = rfi;
-          console.log(rfi);
-        }}
-        onNodeDoubleClick={(event, node) => {
-          // TODO: Edit node
-          if (node.type === "op") {
-            // Edit function name
-          } else if (node.type === "const") {
-            // Edit JSON
-          }
-          alert(node);
-        }}
-        onEdgeDoubleClick={(event, edge) => {
-          // Remove the edge
-          setEdges(es => es.filter(e => e.id !== edge.id));
-        }}
+        onInit={onInit}
+        onNodeDoubleClick={onNodeDoubleClick}
+        onEdgeDoubleClick={onEdgeDoubleClick}
         proOptions={{
           hideAttribution: true,
         }}>
