@@ -41,7 +41,15 @@ const addNodeModeControls = (props: FlowEditorHeaderProps) => {
     <button
       key="comment"
       className="btn btn-outline-success flex-grow-1 px-0"
-      onClick={() => props.addNode("comment", "Comment")}>
+      onClick={() => props.addNode("comment", `
+# abc
+Hello, world! **boom** test \`abc\`
+\`\`\`json
+{
+  "abc": 123
+}
+\`\`\`
+      `)}>
       <BI iconName="chat-square-dots" />
     </button>,
     <button key="del" className="btn btn-danger">

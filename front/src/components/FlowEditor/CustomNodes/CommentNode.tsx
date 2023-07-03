@@ -1,5 +1,8 @@
 import { memo } from "react";
 
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
 export type CommentNodeProps = {
   data: string;
   isConnectable: boolean;
@@ -8,7 +11,7 @@ export type CommentNodeProps = {
 const CommentNode = (props: CommentNodeProps) => {
   return (
     <>
-      <div> {props.data} </div>
+      <ReactMarkdown children={props.data} remarkPlugins={[remarkGfm]} />
     </>
   );
 };
