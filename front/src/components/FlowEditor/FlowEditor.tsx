@@ -63,7 +63,7 @@ const FlowEditor = () => {
   const onConnect = useCallback((params: Connection | Edge) => {
     const targetNode = params.target;
     const targetHandle = params.targetHandle;
-    setEdges(es => {
+    setEdges((es) => {
       // Remove any existing edges from the target handle
       const newEdges = es.filter(e => {
         return !(e.target === targetNode && e.targetHandle === targetHandle);
