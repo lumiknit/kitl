@@ -4,6 +4,8 @@ import BICheckBox from "../Util/BICheckBox";
 import * as jc from "./JsonEditorContext";
 
 type JsonEditorHeaderProps = {
+  // Path
+  path: string;
   // Mode
   mode: jc.EditMode;
   updateMode: (mode: jc.EditMode) => void;
@@ -69,6 +71,8 @@ const JsonEditorHeader = (props: JsonEditorHeaderProps) => {
           type="text"
           className="form-control"
           placeholder="Path"
+          value={props.path}
+          disabled
         />,
         <button key="1" className="btn btn-secondary">
           <BI iconName="arrow-clockwise" />

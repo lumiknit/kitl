@@ -6,11 +6,8 @@ import ReactFlow, {
   Connection,
   Controls,
   addEdge,
-  useNodesState,
-  useEdgesState,
   Node,
   Edge,
-  ReactFlowInstance,
   NodeMouseHandler,
   EdgeMouseHandler,
   useStoreApi,
@@ -49,25 +46,10 @@ const nodeTypes = {
   comment: CommentNode,
 };
 
-const defNode = (name: string) => {
-  return {
-    id: "##def",
-    type: "def",
-    data: name,
-    position: {
-      x: 0,
-      y: 0,
-    },
-    draggable: false,
-    selectable: false,
-    deletable: false,
-  };
-};
-
-const initNodes: Node[] = [defNode("main_function")];
-
 export type FlowEditorProps = {
+  context: fh.FlowContext;
   openJsonEditor: (path: string, data: any) => void;
+  openCodeArea: (path: string, data: any) => void;
 };
 
 type FlowEditorState = {
@@ -75,9 +57,6 @@ type FlowEditorState = {
 };
 
 const FlowEditor = (props: FlowEditorProps) => {
-  let instance: ReactFlowInstance | undefined = undefined;
-  const [nodes, setNodes, onNodesChange] = useNodesState(initNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [state, setState] = useState<FlowEditorState>({
     mode: fh.EditingMode.AddNode,
   });
@@ -99,7 +78,7 @@ const FlowEditor = (props: FlowEditorProps) => {
   const onConnect = useCallback((params: Connection | Edge) => {
     const targetNode = params.target;
     const targetHandle = params.targetHandle;
-    setEdges(es => {
+    props.context.setEdges(es => {
       // Remove any existing edges from the target handle
       const newEdges = es.filter(e => {
         return !(e.target === targetNode && e.targetHandle === targetHandle);
@@ -109,27 +88,23 @@ const FlowEditor = (props: FlowEditorProps) => {
     });
   }, []);
 
-  const onInit = (rfi: ReactFlowInstance) => {
-    instance = rfi;
-    console.log(instance);
-  };
-
   const onNodeDoubleClick: NodeMouseHandler = (_event, node: Node) => {
     // TODO: Edit node
     switch (node.type) {
       case "op":
         break;
       case "const":
-        props.openJsonEditor("const:" + node.id, node.data);
+        props.openJsonEditor("nd-c:" + node.id, node.data);
         break;
       case "comment":
+        props.openCodeArea("nd-cmt:" + node.id, node.data);
         break;
     }
   };
 
   const onEdgeDoubleClick: EdgeMouseHandler = (_event, edge: Edge) => {
     // Remove the edge
-    setEdges(es => es.filter(e => e.id !== edge.id));
+    props.context.setEdges(es => es.filter(e => e.id !== edge.id));
   };
 
   const updateMode = (mode: fh.EditingMode) => {
@@ -150,16 +125,16 @@ const FlowEditor = (props: FlowEditorProps) => {
         y: y,
       },
     };
-    setNodes(ns => [...ns, newNode]);
+    props.context.setNodes(nodes => [...nodes, newNode]);
   };
 
   return (
     <>
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
+        nodes={props.context.nodes}
+        edges={props.context.edges}
+        onNodesChange={props.context.onNodesChange}
+        onEdgesChange={props.context.onEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
         snapGrid={[10, 10]}
@@ -167,7 +142,6 @@ const FlowEditor = (props: FlowEditorProps) => {
         fitView
         nodesDraggable
         onlyRenderVisibleElements
-        onInit={onInit}
         onNodeDoubleClick={onNodeDoubleClick}
         onEdgeDoubleClick={onEdgeDoubleClick}
         proOptions={{

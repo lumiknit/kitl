@@ -5,14 +5,7 @@ import EditorRoot from "./components/EditorRoot.tsx";
 const App = () => (
   <Router>
     <Routes>
-      <Route
-        path="/"
-        element={
-          <>
-            <EditorRoot editing="flow" />
-          </>
-        }
-      />
+      <Route path="/" element={<EditorRoot />} />
       <Route path="/test" element={<h1>Test</h1>} />
     </Routes>
   </Router>

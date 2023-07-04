@@ -3,6 +3,7 @@ import React, { MouseEventHandler } from "react";
 import "./Modal.css";
 
 export type ModalProps = {
+  fullHeight: boolean;
   open: boolean;
   onClose?: () => void;
   children?: React.ReactNode | React.ReactNode[];
@@ -18,9 +19,13 @@ const Modal = (props: ModalProps) => {
   };
 
   if (props.open) {
+    let contentClass = "m-modal-content";
+    if (props.fullHeight) {
+      contentClass += " h-100";
+    }
     return (
       <div className="m-modal" onClick={handleModalClick}>
-        <div className="m-modal-content">{props.children}</div>
+        <div className={contentClass}>{props.children}</div>
       </div>
     );
   } else {

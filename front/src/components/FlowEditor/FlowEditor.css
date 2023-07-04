@@ -67,6 +67,7 @@
 .react-flow__node-comment {
   font-family: sans-serif;
   font-size: 0.75rem;
+  max-width: 20rem;
   color: #46923c;
   background: #fff8;
   border: 0;

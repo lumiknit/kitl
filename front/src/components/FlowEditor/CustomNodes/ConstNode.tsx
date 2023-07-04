@@ -1,8 +1,9 @@
 import { memo } from "react";
 import { Handle, Position } from "reactflow";
+import * as jh from "../../JsonEditor/helper";
 
 export type ConstNodeProps = {
-  data: any;
+  data: jh.Json;
   isConnectable: boolean;
 };
 

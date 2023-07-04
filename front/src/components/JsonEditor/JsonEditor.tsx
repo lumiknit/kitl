@@ -72,6 +72,7 @@ const JsonEditor = (props: JsonEditorProps) => {
   return (
     <div className="json-editor">
       <JsonEditorHeader
+        path={state.path}
         mode={state.mode}
         updateMode={updateMode}
         showStringEscape={state.showStringEscape}
