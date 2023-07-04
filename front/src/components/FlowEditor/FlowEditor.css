@@ -16,10 +16,9 @@
   color: #888;
   background: transparent;
   border: 2px dashed #888;
-  border-right: 0;
+  border-left: 0;
+  border-top: 0;
   border-radius: 0;
-  width: 2rem;
-  height: 10rem;
   padding: 0 0.5rem;
   text-align: center;
 }
@@ -84,6 +83,7 @@
 /* Handles */
 
 .react-flow__handle {
+  font-size: 0.5em;
   width: 0.6rem;
   height: 0.6rem;
 }
@@ -92,26 +92,38 @@
   box-shadow: 0 0 5px #085ed7;
 }
 
-.react-flow__handle-left {
+.flow-handle-ctx {
+  border: 1px dotted #888;
+  background-color: #fff;
+}
+
+.flow-handle-arg {
   border: 1px solid #888;
   background-color: #fff;
+}
+
+.flow-handle-fn {
+  border: 1px dotted #fff;
+  background-color: #888;
+}
+
+.flow-handle-ret {
+  border: 1px solid #fff;
+  background-color: #888;
+}
+
+.react-flow__handle-left {
   left: -0.35rem;
 }
 
 .react-flow__handle-top {
-  border: 1px solid #888;
-  background-color: #fff;
   top: -0.35rem;
 }
 
 .react-flow__handle-right {
-  border: 1px solid #fff;
-  background-color: #888;
   right: -0.35rem;
 }
 
 .react-flow__handle-bottom {
-  border: 1px solid #fff;
-  background-color: #888;
   bottom: -0.35rem;
 }

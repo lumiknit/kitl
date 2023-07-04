@@ -308,11 +308,12 @@ const JsonItemEdit = (props: JsonItemEditProps) => {
         updateEditingIndex={updateEditingIndex}>
         <div className="input-group">
           {/* Handle */}
+
           <button
             type="button"
             className="btn btn-outline-secondary p-1"
             onClick={editIndex}>
-            <BI iconName="dash" />
+            ⠿
           </button>
           {/* Type button */}
           <button

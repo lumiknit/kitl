@@ -15,12 +15,14 @@ const MemNode = (props: MemNodeProps) => {
         type="target"
         position={Position.Top}
         isConnectable={props.isConnectable}
+        className="flow-handle-arg"
       />
       <Handle
         id="ret"
         type="source"
         position={Position.Bottom}
         isConnectable={props.isConnectable}
+        className="flow-handle-ret"
       />
     </>
   );

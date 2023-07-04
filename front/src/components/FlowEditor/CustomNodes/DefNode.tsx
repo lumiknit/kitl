@@ -9,26 +9,29 @@ export type DefNodeProps = {
 const DefNode = (props: DefNodeProps) => {
   return (
     <>
-      <div> {props.data} </div>
+      <div style={{ bottom: 0 }}> {props.data} </div>
       <Handle
         id="ctx"
         type="source"
-        position={Position.Left}
+        position={Position.Right}
         isConnectable={props.isConnectable}
-        style={{ top: "1rem" }}
+        style={{ top: "90%" }}
+        className="flow-handle-ctx"
       />
       <Handle
         id="arg"
         type="source"
-        position={Position.Top}
+        position={Position.Right}
         isConnectable={props.isConnectable}
-        style={{ left: "1rem" }}
+        style={{ top: "0%" }}
+        className="flow-handle-arg"
       />
       <Handle
         id="ret"
         type="target"
         position={Position.Bottom}
         isConnectable={props.isConnectable}
+        className="flow-handle-ret"
       />
     </>
   );

@@ -27,7 +27,7 @@ const JsonTypeSelect = (props: JsonTypeSelectProps) => {
         props.position.depth,
         i !== valueType
       );
-      const btnClass = `btn ${btnColorClass} py-1`;
+      const btnClass = `btn ${btnColorClass} py-1 px-0`;
       arr.push(
         <button
           type="button"

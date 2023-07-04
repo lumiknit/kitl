@@ -1,7 +1,7 @@
 import { memo } from "react";
 
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 export type CommentNodeProps = {
   data: string;

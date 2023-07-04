@@ -15,6 +15,11 @@ import JsonEditorHeader from "./JsonEditorHeader";
 import JsonItem from "./JsonItem";
 import JsonTextArea from "./JsonTextArea";
 
+type JsonEditorProps = {
+  path: string;
+  valueBox: jh.Json[];
+};
+
 type JsonEditorState = {
   // Mode
   mode: jc.EditMode;
@@ -22,7 +27,6 @@ type JsonEditorState = {
   showStringEscape: boolean;
   // Other states
   path: string;
-  valueBox: jh.Json[];
   cnt: number;
 };
 
@@ -34,17 +38,16 @@ const getFilenameFromState = (state: JsonEditorState) => {
   return path.endsWith(".json") ? path : path + ".json";
 };
 
-const JsonEditor = () => {
+const JsonEditor = (props: JsonEditorProps) => {
   const [state, setState] = useState<JsonEditorState>({
     mode: jc.EditMode.Tree,
     showStringEscape: false,
-    path: "",
-    valueBox: [null],
+    path: props.path,
     cnt: 0,
   });
 
   const updateValue = (value: jh.Json) => {
-    state.valueBox[0] = value;
+    props.valueBox[0] = value;
   };
 
   // Header callbacks
@@ -75,13 +78,13 @@ const JsonEditor = () => {
         toggleStringEscape={toggleStringEscape}
         downloadJson={() => {
           const filename = getFilenameFromState(state);
-          const content = JSON.stringify(state.valueBox[0]);
+          const content = JSON.stringify(props.valueBox[0]);
           utils.downloadTextFile(filename, content);
         }}
       />
       <div className="json-editor-body">
         {jc.isTextMode(state.mode) ? (
-          <JsonTextArea value={state.valueBox[0]} updateValue={updateValue} />
+          <JsonTextArea value={props.valueBox[0]} updateValue={updateValue} />
         ) : (
           <JsonItem
             position={new jh.Position(0, "", "")}
@@ -89,7 +92,7 @@ const JsonEditor = () => {
               alert("Cannot update index of root object!");
               throw new Error("Cannot update index of root object!");
             }}
-            value={state.valueBox[0]}
+            value={props.valueBox[0]}
             updateValue={updateValue}
             config={config}
           />

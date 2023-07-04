@@ -28,7 +28,7 @@ const opNameSymbol: { [key: string]: string } = {
   "-<": "⤙",
   ">-": "⤚",
   "><": "⋈",
-}
+};
 
 const OpNode = (props: OpNodeProps) => {
   return (
@@ -39,6 +39,7 @@ const OpNode = (props: OpNodeProps) => {
         position={Position.Left}
         onConnect={params => console.log("handle onConnect", params)}
         isConnectable={props.isConnectable}
+        className="flow-handle-ctx"
       />
       <Handle
         id="arg"
@@ -46,23 +47,27 @@ const OpNode = (props: OpNodeProps) => {
         position={Position.Top}
         onConnect={params => console.log("handle onConnect", params)}
         isConnectable={props.isConnectable}
+        className="flow-handle-arg"
       />
-      <div> {
-        opNameSymbol[props.data] !== undefined ?
-        opNameSymbol[props.data] :
-        props.data
-      } </div>
+      <div>
+        {" "}
+        {opNameSymbol[props.data] !== undefined
+          ? opNameSymbol[props.data]
+          : props.data}{" "}
+      </div>
       <Handle
         id="clo"
         type="source"
         position={Position.Right}
         isConnectable={props.isConnectable}
+        className="flow-handle-fn"
       />
       <Handle
         id="ret"
         type="source"
         position={Position.Bottom}
         isConnectable={props.isConnectable}
+        className="flow-handle-ret"
       />
     </>
   );

@@ -46,6 +46,7 @@ const ConstNode = (props: ConstNodeProps) => {
         type="source"
         position={Position.Bottom}
         isConnectable={props.isConnectable}
+        className="flow-handle-ret"
       />
     </>
   );

@@ -8,7 +8,7 @@ export type FlowEditorHeaderProps = {
   addNode: (type: string, data: any) => void;
 };
 
-const fileModeControls = (props: FlowEditorHeaderProps) => {
+const fileModeControls = (_props: FlowEditorHeaderProps) => {
   return [<input key="0" type="text" className="form-control" />];
 };
 
@@ -41,7 +41,10 @@ const addNodeModeControls = (props: FlowEditorHeaderProps) => {
     <button
       key="comment"
       className="btn btn-outline-success flex-grow-1 px-0"
-      onClick={() => props.addNode("comment", `
+      onClick={() =>
+        props.addNode(
+          "comment",
+          `
 # abc
 Hello, world! **boom** test \`abc\`
 \`\`\`json
@@ -49,7 +52,9 @@ Hello, world! **boom** test \`abc\`
   "abc": 123
 }
 \`\`\`
-      `)}>
+      `
+        )
+      }>
       <BI iconName="chat-square-dots" />
     </button>,
     <button key="del" className="btn btn-danger">
@@ -58,7 +63,7 @@ Hello, world! **boom** test \`abc\`
   ];
 };
 
-const editModeControls = (props: FlowEditorHeaderProps) => {
+const editModeControls = (_props: FlowEditorHeaderProps) => {
   return [
     <button key="0" className="btn btn-secondary">
       <BI iconName="arrow-clockwise" />

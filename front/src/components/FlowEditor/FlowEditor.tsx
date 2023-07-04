@@ -1,4 +1,4 @@
-import { ReactInstance, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 
 import ReactFlow, {
   Background,
@@ -8,10 +8,12 @@ import ReactFlow, {
   addEdge,
   useNodesState,
   useEdgesState,
-  useReactFlow,
   Node,
   Edge,
   ReactFlowInstance,
+  NodeMouseHandler,
+  EdgeMouseHandler,
+  useStoreApi,
 } from "reactflow";
 
 import "reactflow/dist/style.css";
@@ -35,7 +37,7 @@ const getID = () => {
   const utcSec = Math.round(utcMS / 1000);
   const timeString = utcSec.toString(36);
   const randomString = Math.random().toString(36).substring(7);
-  return `${timeString}-${randomString}`
+  return `${timeString}-${randomString}`;
 };
 
 const nodeTypes = {
@@ -47,23 +49,32 @@ const nodeTypes = {
   comment: CommentNode,
 };
 
-const initNodes: Node[] = [
-  {
+const defNode = (name: string) => {
+  return {
     id: "##def",
     type: "def",
-    data: "my_func",
+    data: name,
     position: {
       x: 0,
       y: 0,
     },
-  },
-];
+    draggable: false,
+    selectable: false,
+    deletable: false,
+  };
+};
+
+const initNodes: Node[] = [defNode("main_function")];
+
+export type FlowEditorProps = {
+  openJsonEditor: (path: string, data: any) => void;
+};
 
 type FlowEditorState = {
   mode: fh.EditingMode;
 };
 
-const FlowEditor = () => {
+const FlowEditor = (props: FlowEditorProps) => {
   let instance: ReactFlowInstance | undefined = undefined;
   const [nodes, setNodes, onNodesChange] = useNodesState(initNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -71,10 +82,24 @@ const FlowEditor = () => {
     mode: fh.EditingMode.AddNode,
   });
 
+  const storeApi = useStoreApi();
+
+  const getCenter = () => {
+    const {
+      height,
+      width,
+      transform: [tx, ty, zoom],
+    } = storeApi.getState();
+    const zoomMultiplier = 1 / zoom;
+    const x = (width / 2 - tx) * zoomMultiplier;
+    const y = (height / 2 - ty) * zoomMultiplier;
+    return [x, y];
+  };
+
   const onConnect = useCallback((params: Connection | Edge) => {
     const targetNode = params.target;
     const targetHandle = params.targetHandle;
-    setEdges((es) => {
+    setEdges(es => {
       // Remove any existing edges from the target handle
       const newEdges = es.filter(e => {
         return !(e.target === targetNode && e.targetHandle === targetHandle);
@@ -89,20 +114,20 @@ const FlowEditor = () => {
     console.log(instance);
   };
 
-  const onNodeDoubleClick = (event, node) => {
+  const onNodeDoubleClick: NodeMouseHandler = (_event, node: Node) => {
     // TODO: Edit node
-    switch(node.type) {
+    switch (node.type) {
       case "op":
         break;
       case "const":
+        props.openJsonEditor("const:" + node.id, node.data);
         break;
       case "comment":
         break;
     }
-    alert(node);
   };
 
-  const onEdgeDoubleClick = (event, edge) => {
+  const onEdgeDoubleClick: EdgeMouseHandler = (_event, edge: Edge) => {
     // Remove the edge
     setEdges(es => es.filter(e => e.id !== edge.id));
   };
@@ -115,15 +140,7 @@ const FlowEditor = () => {
 
   const addNode = (type: string, data: any) => {
     // Find viewport center
-    let x = 0;
-    let y = 0;
-    console.log(instance);
-    if (instance !== undefined) {
-      const viewport = instance.getViewport();
-      console.log(viewport);
-      x = viewport.x;
-      y = viewport.y;
-    }
+    const [x, y] = getCenter();
     const newNode: Node = {
       id: getID(),
       type: type,
