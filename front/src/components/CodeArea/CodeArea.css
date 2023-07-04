@@ -1,0 +1,10 @@
+textarea.code-area {
+  width: 100%;
+  border: 0;
+  background-color: transparent;
+  font-family: monospace;
+  resize: none;
+  -moz-tab-size: 2;
+  -o-tab-size: 2;
+  tab-size: 2;
+}

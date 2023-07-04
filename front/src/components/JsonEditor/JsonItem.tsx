@@ -10,8 +10,14 @@ import "bootstrap/dist/css/bootstrap.css";
 import "./JsonEditor.css";
 import "./JsonIndent.css";
 
-type JsonItemProps = {
+export type UpdateIndexFn = (
+  oldIndex: number | string,
+  newIndex: number | string | undefined
+) => void;
+
+export type JsonItemProps = {
   position: jh.Position;
+  updateIndex: UpdateIndexFn;
   value: jh.Json;
   updateValue: (value: jh.Json) => void;
   config: jc.Config;
@@ -72,6 +78,7 @@ const JsonItem = (props: JsonItemProps) => {
       content = (
         <JsonItemEdit
           position={props.position}
+          updateIndex={props.updateIndex}
           value={state.value}
           onModeClick={enterTypeMode}
           updateValue={updateValue}
@@ -83,6 +90,7 @@ const JsonItem = (props: JsonItemProps) => {
       content = (
         <JsonItemType
           position={props.position}
+          updateIndex={props.updateIndex}
           value={state.value}
           onTypeSelect={changeType}
         />

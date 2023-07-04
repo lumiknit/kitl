@@ -1,7 +1,5 @@
 import { useEffect, createRef } from "react";
-import "./JsonEditor.css";
-
-import * as jh from "./helper";
+import "./CodeArea.css";
 
 const indentTA = (value: string, start: number, end: number) => {
   // Indent selection and return new value and range
@@ -48,14 +46,13 @@ const unindentTA = (value: string, start: number, end: number) => {
   };
 };
 
-export type JsonTextAreaProps = {
-  value: jh.Json;
-  updateValue: (newValue: jh.Json) => void;
+export type CodeAreaProps = {
+  valueBox: string[];
+  autoFocus?: boolean;
 };
 
-const JsonTextArea = (props: JsonTextAreaProps) => {
+const CodeArea = (props: CodeAreaProps) => {
   const refTA = createRef<HTMLTextAreaElement>();
-  const initalValue = JSON.stringify(props.value, null, 2);
 
   const resizeTextArea = (target: HTMLTextAreaElement) => {
     target.style.height = "0";
@@ -110,19 +107,14 @@ const JsonTextArea = (props: JsonTextAreaProps) => {
   };
 
   const onInput = (event: React.FormEvent<HTMLTextAreaElement>) => {
-    // Check if valid JSON
-    const target = event.currentTarget;
-    const value = target.value;
-    try {
-      const newValue = JSON.parse(value);
-      props.updateValue(newValue);
-      target.classList.remove("json-text-area-invalid");
-    } catch (e) {
-      // Textarea warning
-      target.classList.add("json-text-area-invalid");
-    }
     // Resize text area
+    const target = event.currentTarget;
     resizeTextArea(target);
+  };
+
+  const onChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    // Update value
+    props.valueBox[0] = event.currentTarget.value;
   };
 
   useEffect(() => {
@@ -134,12 +126,14 @@ const JsonTextArea = (props: JsonTextAreaProps) => {
   return (
     <textarea
       ref={refTA}
-      className="json-text-area"
-      defaultValue={initalValue}
+      className="code-area"
+      defaultValue={props.valueBox[0]}
+      onChange={onChange}
       onInput={onInput}
       onKeyDown={onKeyDown}
+      autoFocus={props.autoFocus}
     />
   );
 };
 
-export default JsonTextArea;
+export default CodeArea;

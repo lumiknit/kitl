@@ -1,10 +1,14 @@
 import { ReactElement } from "react";
 
 import * as jh from "./helper";
+import { UpdateIndexFn } from "./JsonItem";
 import JsonItemIndex from "./JsonItemIndex";
 
-type JsonItemLineProps = {
+export type JsonItemLineProps = {
   position: jh.Position;
+  updateIndex: UpdateIndexFn;
+  editingIndex: boolean;
+  updateEditingIndex: (editing: boolean) => void;
   children: ReactElement | ReactElement[];
 };
 
@@ -17,9 +21,9 @@ const JsonItemLine = (props: JsonItemLineProps) => {
       <JsonItemIndex
         index={props.position.index}
         path={props.position.path}
-        updateIndex={() => {
-          throw "Not implemented";
-        }}
+        updateIndex={props.updateIndex}
+        editing={props.editingIndex}
+        updateEditing={props.updateEditingIndex}
       />
       {props.children}
     </div>

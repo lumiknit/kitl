@@ -1,50 +1,59 @@
-import { useState } from "react";
+import { createRef, useEffect } from "react";
 
 import "bootstrap/dist/css/bootstrap.css";
 
 import "./JsonEditor.css";
 import "./JsonIndent.css";
 
-type JsonItemIndexProps = {
+export type JsonItemIndexProps = {
   index: number | string;
   path: string;
-  updateIndex: (index: number | string) => void;
-};
-
-type JsonItemIndexState = {
   editing: boolean;
+  updateEditing: (editing: boolean) => void;
+  updateIndex: (
+    oldIndex: number | string,
+    newIndex: number | string | undefined
+  ) => void;
 };
 
 const JsonItemIndex = (props: JsonItemIndexProps) => {
-  const [state, setState] = useState<JsonItemIndexState>({
-    editing: false,
-  });
-
-  const discardChanges = () => {
-    setState({
-      editing: false,
-    });
-  };
+  const refInput = createRef<HTMLInputElement>();
 
   const updateIndex = () => {
-    alert("updateIndex");
+    const oldIndex = props.index;
+    const newIndex = refInput.current?.value;
+    if (newIndex !== "") {
+      // Ignore empty index
+      props.updateIndex(oldIndex, newIndex);
+    }
+    props.updateEditing(false);
   };
 
   const removeIndex = () => {
-    alert("removeIndex");
+    const oldIndex = props.index;
+    props.updateIndex(oldIndex, undefined);
+    props.updateEditing(false);
   };
 
-  if (state.editing) {
+  useEffect(() => {
+    const input = refInput.current;
+    if (input === null) return;
+    input.selectionStart = 0;
+    input.selectionEnd = input.value.length;
+  });
+
+  if (props.editing) {
     return (
       <div className="input-group">
         <span className="input-group-text py-1">
           <i className="bi bi-key" />
         </span>
         <input
+          ref={refInput}
           type="text"
           className="form-control py-1"
           defaultValue={props.index}
-          onBlur={discardChanges}
+          placeholder={String(props.index)}
           autoFocus
         />
         <button
@@ -65,7 +74,7 @@ const JsonItemIndex = (props: JsonItemIndexProps) => {
     return (
       <div
         className="json-item-index text-truncate"
-        onClick={() => setState({ editing: true })}>
+        onClick={() => props.updateEditing(true)}>
         &nbsp;{props.path}
       </div>
     );

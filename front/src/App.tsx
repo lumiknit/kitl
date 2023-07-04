@@ -1,11 +1,11 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-import JsonEditor from "./components/JsonEditor/JsonEditor.tsx";
+import EditorRoot from "./components/EditorRoot.tsx";
 
 const App = () => (
   <Router>
     <Routes>
-      <Route path="/" element={JsonEditor()} />
+      <Route path="/" element={<EditorRoot />} />
       <Route path="/test" element={<h1>Test</h1>} />
     </Routes>
   </Router>
