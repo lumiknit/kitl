@@ -1,33 +1,16 @@
 import { memo } from "react";
 import { Handle, Position } from "reactflow";
 
-type OpNodeProps = {
-  data: string;
-  isConnectable: boolean;
+import opNameSymbol from "./opsym";
+
+export type Op = {
+  module: string;
+  name: string;
 };
 
-const opNameSymbol: { [key: string]: string } = {
-  "->": "→",
-  "<-": "←",
-  "<->": "↔",
-  "=>": "⇒",
-  ">=": "≥",
-  "<=": "≤",
-  "==": "=",
-  "!=": "≠",
-  "+-": "±",
-  "++": "++",
-  "_|_": "⊥",
-  "&&": "∧",
-  "||": "∨",
-  "!!": "‼",
-  "|>": "▷",
-  "<|": "◁",
-  "<-<": "↢",
-  ">->": "↣",
-  "-<": "⤙",
-  ">-": "⤚",
-  "><": "⋈",
+type OpNodeProps = {
+  data: Op;
+  isConnectable: boolean;
 };
 
 const OpNode = (props: OpNodeProps) => {
@@ -49,11 +32,15 @@ const OpNode = (props: OpNodeProps) => {
         isConnectable={props.isConnectable}
         className="flow-handle-arg"
       />
-      <div>
-        {" "}
-        {opNameSymbol[props.data] !== undefined
-          ? opNameSymbol[props.data]
-          : props.data}{" "}
+      {props.data.module !== "" ? (
+        <div className="flow-node-op-module">{props.data.module}:</div>
+      ) : (
+        ""
+      )}
+      <div className="flow-node-op-name">
+        {opNameSymbol[props.data.name] !== undefined
+          ? opNameSymbol[props.data.name]
+          : props.data.name}
       </div>
       <Handle
         id="clo"

@@ -5,9 +5,12 @@ import FlowEditor from "./FlowEditor/FlowEditor";
 import * as jh from "./JsonEditor/helper";
 
 import "./EditorMain.css";
-import JsonEditorModal from "./Modal/JsonEditorModal";
+
 import { useEmptyFlowContext } from "./FlowEditor/helper";
+
+import JsonEditorModal from "./Modal/JsonEditorModal";
 import CodeAreaModal from "./Modal/CodeAreaModal";
+import OpNodeModal from "./Modal/OpNodeModal";
 
 export type JsonEditorState = {
   open: boolean;
@@ -21,13 +24,25 @@ const closedJsonEditorState: JsonEditorState = {
   valueBox: [],
 };
 
-export type CodeAreaModal = {
+export type CodeAreaState = {
   open: boolean;
   path: string;
   valueBox: string[];
 };
 
-const closedCodeAreaState: CodeAreaModal = {
+const closedCodeAreaState: CodeAreaState = {
+  open: false,
+  path: "",
+  valueBox: [],
+};
+
+export type OpNodeState = {
+  open: boolean;
+  path: string;
+  valueBox: string[];
+};
+
+const closedOpNodeState: OpNodeState = {
   open: false,
   path: "",
   valueBox: [],
@@ -62,9 +77,23 @@ const updateCommentNodeData = (id: string, value: string) => (nodes: Node[]) =>
     };
   });
 
+const updateOpNodeData =
+  (id: string, mod: string, name: string) => (nodes: Node[]) =>
+    nodes.map(node => {
+      if (node.id !== id) return node;
+      return {
+        ...node,
+        data: {
+          module: mod,
+          name: name,
+        },
+      };
+    });
+
 export type EditorMainState = {
   jsonEditorState: JsonEditorState;
-  codeAreaState: CodeAreaModal;
+  codeAreaState: CodeAreaState;
+  opNodeState: OpNodeState;
 };
 
 const EditorMain = () => {
@@ -72,6 +101,7 @@ const EditorMain = () => {
   const [state, setState] = useState<EditorMainState>({
     jsonEditorState: closedJsonEditorState,
     codeAreaState: closedCodeAreaState,
+    opNodeState: closedOpNodeState,
   });
 
   const openJsonEditor = (path: string, data: any) => {
@@ -132,6 +162,36 @@ const EditorMain = () => {
     setState(newState);
   };
 
+  const openOpNode = (path: string, data: { module: string; name: string }) => {
+    const newState = { ...state };
+    newState.opNodeState = {
+      open: true,
+      path: path,
+      valueBox: [data.module, data.name],
+    };
+    setState(newState);
+  };
+
+  const closeOpNode = () => {
+    try {
+      const [pType, id] = parsePath(state.opNodeState.path);
+      if (pType !== "nd-op") {
+        throw new Error(
+          "Path is not correct, do not update value: " +
+            state.codeAreaState.path
+        );
+      }
+      const mod = state.opNodeState.valueBox[0];
+      const name = state.opNodeState.valueBox[1];
+      context.setNodes(updateOpNodeData(id, mod, name));
+    } catch (e) {
+      console.warn("Failed to update value: " + e);
+    }
+    const newState = { ...state };
+    newState.opNodeState = closedOpNodeState;
+    setState(newState);
+  };
+
   return (
     <div className="editor-root">
       {/* Modals */}
@@ -147,10 +207,17 @@ const EditorMain = () => {
         path={state.codeAreaState.path}
         valueBox={state.codeAreaState.valueBox}
       />
+      <OpNodeModal
+        open={state.opNodeState.open}
+        onClose={closeOpNode}
+        path={state.opNodeState.path}
+        valueBox={state.opNodeState.valueBox}
+      />
       {/* Main editor */}
       <FlowEditor
         openJsonEditor={openJsonEditor}
         openCodeArea={openCodeArea}
+        openOpNode={openOpNode}
         context={context}
       />
     </div>

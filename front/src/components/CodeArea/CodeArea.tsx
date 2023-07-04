@@ -48,6 +48,7 @@ const unindentTA = (value: string, start: number, end: number) => {
 
 export type CodeAreaProps = {
   valueBox: string[];
+  autoFocus?: boolean;
 };
 
 const CodeArea = (props: CodeAreaProps) => {
@@ -130,6 +131,7 @@ const CodeArea = (props: CodeAreaProps) => {
       onChange={onChange}
       onInput={onInput}
       onKeyDown={onKeyDown}
+      autoFocus={props.autoFocus}
     />
   );
 };

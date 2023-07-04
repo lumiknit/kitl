@@ -19,7 +19,7 @@ import "./FlowEditor.css";
 import * as fh from "./helper";
 
 import DefNode from "./CustomNodes/DefNode";
-import OpNode from "./CustomNodes/OpNode";
+import OpNode, { Op } from "./CustomNodes/OpNode";
 import ConstNode from "./CustomNodes/ConstNode";
 import SelectNode from "./CustomNodes/SelectNode";
 import MemNode from "./CustomNodes/MemNode";
@@ -49,7 +49,8 @@ const nodeTypes = {
 export type FlowEditorProps = {
   context: fh.FlowContext;
   openJsonEditor: (path: string, data: any) => void;
-  openCodeArea: (path: string, data: any) => void;
+  openCodeArea: (path: string, data: string) => void;
+  openOpNode: (path: string, data: Op) => void;
 };
 
 type FlowEditorState = {
@@ -92,6 +93,7 @@ const FlowEditor = (props: FlowEditorProps) => {
     // TODO: Edit node
     switch (node.type) {
       case "op":
+        props.openOpNode("nd-op:" + node.id, node.data);
         break;
       case "const":
         props.openJsonEditor("nd-c:" + node.id, node.data);
@@ -128,6 +130,10 @@ const FlowEditor = (props: FlowEditorProps) => {
     props.context.setNodes(nodes => [...nodes, newNode]);
   };
 
+  const deleteSelectedNode = () => {
+    props.context.setNodes(nodes => nodes.filter(node => !node.selected));
+  };
+
   return (
     <>
       <ReactFlow
@@ -159,6 +165,7 @@ const FlowEditor = (props: FlowEditorProps) => {
         mode={state.mode}
         updateMode={updateMode}
         addNode={addNode}
+        deleteSelectedNode={deleteSelectedNode}
       />
     </>
   );

@@ -6,6 +6,7 @@ export type FlowEditorHeaderProps = {
   mode: fh.EditingMode;
   updateMode: (mode: fh.EditingMode) => void;
   addNode: (type: string, data: any) => void;
+  deleteSelectedNode: () => void;
 };
 
 const fileModeControls = (_props: FlowEditorHeaderProps) => {
@@ -15,9 +16,14 @@ const fileModeControls = (_props: FlowEditorHeaderProps) => {
 const addNodeModeControls = (props: FlowEditorHeaderProps) => {
   return [
     <button
-      key="fn"
+      key="op"
       className="btn btn-outline-secondary flex-grow-1 px-0"
-      onClick={() => props.addNode("op", "f")}>
+      onClick={() =>
+        props.addNode("op", {
+          module: "",
+          name: "op",
+        })
+      }>
       <BI iconName="code-square" />
     </button>,
     <button
@@ -46,7 +52,10 @@ const addNodeModeControls = (props: FlowEditorHeaderProps) => {
       }>
       <BI iconName="chat-square-dots" />
     </button>,
-    <button key="del" className="btn btn-danger">
+    <button
+      key="del"
+      className="btn btn-danger"
+      onClick={props.deleteSelectedNode}>
       <BI iconName="trash" />
     </button>,
   ];

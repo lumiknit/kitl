@@ -1,19 +1,18 @@
-import * as jh from "../JsonEditor/helper";
 import CodeArea from "../CodeArea/CodeArea";
 import Modal from "./Modal";
 
-export type JsonEditorModalProps = {
+export type CodeAreaModelProps = {
   open: boolean;
   onClose?: () => void;
   path: string;
   valueBox: string[];
 };
 
-const CodeAreaModal = (props: JsonEditorModalProps) => {
+const CodeAreaModal = (props: CodeAreaModelProps) => {
   return (
-    <Modal open={props.open} onClose={props.onClose} fullHeight={true}>
+    <Modal open={props.open} onClose={props.onClose} fullHeight={false}>
       <h1> {props.path} </h1>
-      <CodeArea valueBox={props.valueBox} />
+      <CodeArea valueBox={props.valueBox} autoFocus />
     </Modal>
   );
 };
