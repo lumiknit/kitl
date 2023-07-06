@@ -3,10 +3,10 @@
 export enum EditMode {
   Text = 0,
   Tree = 1,
-  Select = 2,
+  Edit = 2,
 }
 
-export const editModeLabels = ["Text", "Tree", "Select"];
+export const editModeLabels = ["Text", "Tree", "Select & Edit"];
 
 export const editModeIcons = ["body-text", "view-stacked", "pencil-square"];
 

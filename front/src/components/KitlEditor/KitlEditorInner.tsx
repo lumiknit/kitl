@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { Node } from "reactflow";
 
-import FlowEditor from "./FlowEditor/FlowEditor";
-import * as jh from "./JsonEditor/helper";
+import FlowEditor from "../FlowEditor/FlowEditor";
+import * as jh from "../JsonEditor/helper";
 
-import "./EditorMain.css";
+import "./KitlEditor.css";
 
-import { useEmptyFlowContext } from "./FlowEditor/helper";
+import JsonEditorModal from "../Modal/JsonEditorModal";
+import CodeAreaModal from "../Modal/CodeAreaModal";
+import OpNodeModal from "../Modal/OpNodeModal";
 
-import JsonEditorModal from "./Modal/JsonEditorModal";
-import CodeAreaModal from "./Modal/CodeAreaModal";
-import OpNodeModal from "./Modal/OpNodeModal";
+import * as kc from "./context";
 
 export type JsonEditorState = {
   open: boolean;
@@ -90,15 +90,16 @@ const updateOpNodeData =
       };
     });
 
-export type EditorMainState = {
+export type KitlEditorInnerState = {
   jsonEditorState: JsonEditorState;
   codeAreaState: CodeAreaState;
   opNodeState: OpNodeState;
 };
 
-const EditorMain = () => {
-  const context = useEmptyFlowContext("editor-main", "editor-main");
-  const [state, setState] = useState<EditorMainState>({
+const KitlEditorInner = () => {
+  const context = kc.newKitlContext("editor-main", "editor-main");
+
+  const [state, setState] = useState<KitlEditorInnerState>({
     jsonEditorState: closedJsonEditorState,
     codeAreaState: closedCodeAreaState,
     opNodeState: closedOpNodeState,
@@ -124,7 +125,7 @@ const EditorMain = () => {
         );
       }
       const value = state.jsonEditorState.valueBox[0];
-      context.setNodes(updateConstNodeData(id, value));
+      context.flowContext.setNodes(updateConstNodeData(id, value));
     } catch (e) {
       console.warn("Failed to update value: " + e);
     }
@@ -153,7 +154,7 @@ const EditorMain = () => {
         );
       }
       const value = state.codeAreaState.valueBox[0];
-      context.setNodes(updateCommentNodeData(id, value));
+      context.flowContext.setNodes(updateCommentNodeData(id, value));
     } catch (e) {
       console.warn("Failed to update value: " + e);
     }
@@ -183,7 +184,7 @@ const EditorMain = () => {
       }
       const mod = state.opNodeState.valueBox[0];
       const name = state.opNodeState.valueBox[1];
-      context.setNodes(updateOpNodeData(id, mod, name));
+      context.flowContext.setNodes(updateOpNodeData(id, mod, name));
     } catch (e) {
       console.warn("Failed to update value: " + e);
     }
@@ -218,10 +219,10 @@ const EditorMain = () => {
         openJsonEditor={openJsonEditor}
         openCodeArea={openCodeArea}
         openOpNode={openOpNode}
-        context={context}
+        context={context.flowContext}
       />
     </div>
   );
 };
 
-export default EditorMain;
+export default KitlEditorInner;

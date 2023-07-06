@@ -9,6 +9,8 @@ import "./JsonEditor.css";
 
 import * as jh from "./helper";
 import * as jc from "./JsonEditorContext";
+import * as je from "./edit";
+je.test();
 import * as utils from "./utils";
 
 import JsonEditorHeader from "./JsonEditorHeader";

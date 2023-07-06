@@ -11,12 +11,14 @@ import ReactFlow, {
   NodeMouseHandler,
   EdgeMouseHandler,
   useStoreApi,
+  EdgeChange,
 } from "reactflow";
 
 import "reactflow/dist/style.css";
 import "./FlowEditor.css";
 
 import * as fh from "./helper";
+import * as fc from './context';
 
 import DefNode from "./CustomNodes/DefNode";
 import OpNode, { Op } from "./CustomNodes/OpNode";
@@ -47,7 +49,7 @@ const nodeTypes = {
 };
 
 export type FlowEditorProps = {
-  context: fh.FlowContext;
+  context: fc.FlowContext;
   openJsonEditor: (path: string, data: any) => void;
   openCodeArea: (path: string, data: string) => void;
   openOpNode: (path: string, data: Op) => void;
@@ -81,13 +83,25 @@ const FlowEditor = (props: FlowEditorProps) => {
     const targetHandle = params.targetHandle;
     props.context.setEdges(es => {
       // Remove any existing edges from the target handle
-      const newEdges = es.filter(e => {
+      /*const newEdges = es.filter(e => {
         return !(e.target === targetNode && e.targetHandle === targetHandle);
-      });
+      });*/
+      return addEdge(params, es);
       // Add the new edge
-      return addEdge(params, newEdges);
+      //return addEdge(params, newEdges);
     });
   }, []);
+
+  let updatingGraphError = false;
+  const onEdgesChangeWrapper = (edges: EdgeChange[]) => {
+    props.context.onEdgesChange(edges);
+    if(updatingGraphError) return;
+    updatingGraphError = true;
+    fc.updateGraphError(props.context);
+    console.log(props.context.hasCycle);
+    console.log(props.context.hasMultipleSource);
+    updatingGraphError = false;
+  };
 
   const onNodeDoubleClick: NodeMouseHandler = (_event, node: Node) => {
     // TODO: Edit node
@@ -137,10 +151,10 @@ const FlowEditor = (props: FlowEditorProps) => {
   return (
     <>
       <ReactFlow
-        nodes={props.context.nodes}
-        edges={props.context.edges}
+        nodes={props.context.initNodes}
+        edges={props.context.initEdges}
         onNodesChange={props.context.onNodesChange}
-        onEdgesChange={props.context.onEdgesChange}
+        onEdgesChange={onEdgesChangeWrapper}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
         snapGrid={[10, 10]}

@@ -18,7 +18,7 @@ type JsonEditorHeaderProps = {
 
 const JsonEditorHeader = (props: JsonEditorHeaderProps) => {
   const menuButton = (
-    <button className="btn btn-warning" data-bs-toggle="dropdown">
+    <button className="btn btn-primary" data-bs-toggle="dropdown">
       <BI iconName={jc.editModeIcons[props.mode]} />
     </button>
   );
@@ -82,16 +82,25 @@ const JsonEditorHeader = (props: JsonEditorHeaderProps) => {
         </button>,
       ];
       break;
-    case jc.EditMode.Select:
+    case jc.EditMode.Edit:
       controls = [
-        <button key="0" className="btn btn-secondary flex-grow-1">
+        <button key="undo" className="btn btn-warning py-1 px-0 flex-grow-1">
+          <BI iconName="arrow-counterclockwise" />
+        </button>,
+        <button key="redo" className="btn btn-warning py-1 px-0 flex-grow-1">
+          <BI iconName="arrow-clockwise" />
+        </button>,
+        <button key="cut" className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
           <BI iconName="scissors" />
         </button>,
-        <button key="1" className="btn btn-secondary flex-grow-1">
+        <button key="copy" className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
           <BI iconName="files" />
         </button>,
-        <button key="2" className="btn btn-secondary flex-grow-1">
-          <BI iconName="eraser" />
+        <button key="paste" className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
+          <BI iconName="clipboard" />
+        </button>,
+        <button key="delete" className="btn btn-danger py-1 px-0 flex-grow-1">
+          <BI iconName="trash" />
         </button>,
       ];
       break;
