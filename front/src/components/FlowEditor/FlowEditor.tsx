@@ -18,7 +18,7 @@ import "reactflow/dist/style.css";
 import "./FlowEditor.css";
 
 import * as fh from "./helper";
-import * as fc from './context';
+import * as fc from "./context";
 
 import DefNode from "./CustomNodes/DefNode";
 import OpNode, { Op } from "./CustomNodes/OpNode";
@@ -95,7 +95,7 @@ const FlowEditor = (props: FlowEditorProps) => {
   let updatingGraphError = false;
   const onEdgesChangeWrapper = (edges: EdgeChange[]) => {
     props.context.onEdgesChange(edges);
-    if(updatingGraphError) return;
+    if (updatingGraphError) return;
     updatingGraphError = true;
     fc.updateGraphError(props.context);
     console.log(props.context.hasCycle);

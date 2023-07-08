@@ -1,17 +1,14 @@
-import * as fc from '../FlowEditor/context';
+import * as fc from "../FlowEditor/context";
 
 export type KitlContext = {
   // FlowEditor context
   path: string;
   name: string;
-  
+
   flowContext: fc.FlowContext;
 };
 
-export const newKitlContext = (
-  path: string,
-  valueJson: string,
-) => {
+export const newKitlContext = (path: string, valueJson: string) => {
   console.warn("value parsing is not implemented");
   return {
     path,

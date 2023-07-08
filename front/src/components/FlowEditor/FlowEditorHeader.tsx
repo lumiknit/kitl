@@ -69,13 +69,19 @@ const editModeControls = (_props: FlowEditorHeaderProps) => {
     <button key="redo" className="btn btn-warning py-1 px-0 flex-grow-1">
       <BI iconName="arrow-clockwise" />
     </button>,
-    <button key="cut" className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
+    <button
+      key="cut"
+      className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
       <BI iconName="scissors" />
     </button>,
-    <button key="copy" className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
+    <button
+      key="copy"
+      className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
       <BI iconName="files" />
     </button>,
-    <button key="paste" className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
+    <button
+      key="paste"
+      className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
       <BI iconName="clipboard" />
     </button>,
     <button key="delete" className="btn btn-danger py-1 px-0 flex-grow-1">

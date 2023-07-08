@@ -1,144 +1,185 @@
-import * as jh from './helper';
-
-enum ActionType {
-  Insert,
-  Update,
-  Delete,
-}
-
-const getJsonParent = (value: jh.Json, path: jh.JsonPath): jh.Json => {
-  if(path.length === 0) {
-    throw `There are no path!`;
-  } else {
-    for(let i = 0; i < path.length - 1; i++) {
-      if(typeof value !== 'object' || value === null) {
-        throw `Cannot access non-object value!`;
-      }
-      const idx = path[i];
-      if(Array.isArray(value)) {
-        if(typeof idx !== 'number') {
-          throw `Cannot access non-number index of array!`;
-        }
-        value = value[idx];
-      } else {
-        if(typeof idx !== 'string') {
-          throw `Cannot access non-string key of object!`;
-        }
-        value = value[idx];
-      }
-    }
-    return value;
-  }
-};
-
-const setJsonValue = (parent: jh.Json, key: jh.JsonKey, value: jh.Json) => {
-  if(typeof parent !== 'object' || parent === null) {
-    throw `Cannot access non-object parent!`;
-  }
-  if(Array.isArray(parent)) {
-    if(typeof key !== 'number') {
-      throw `Cannot access non-number index of array!`;
-    }
-    const oldValue = parent[key];
-    parent[key] = value;
-    return oldValue;
-  } else {
-    if(typeof key !== 'string') {
-      throw `Cannot access non-string key of object!`;
-    }
-    const oldValue = parent[key];
-    parent[key] = value;
-    return oldValue;
-  }
-};
+import * as jh from "./helper";
 
 class Action {
-  type: ActionType;
   path: jh.JsonPath;
-  oldValue: jh.Json;
-  value: jh.Json;
 
-  constructor(type: ActionType, path: jh.JsonPath, value?: jh.Json, oldValue?: jh.Json) {
-    this.type = type;
+  constructor(path: jh.JsonPath) {
     this.path = path;
-    if(value === undefined) value = null;
-    this.value = value;
-    if(oldValue === undefined) oldValue = null;
-    this.oldValue = oldValue;
   }
 
-  apply(json: jh.Json) {
-    if(this.path.length === 0) {
-      return this.value;
+  inverse(): Action {
+    throw "Unimplemented, use inherited class";
+  }
+
+  updateRoot(_value: jh.Json): jh.Json {
+    throw "Unimplemented, use inherited class";
+  }
+
+  updateArray(_parent: jh.JsonArray, _key: number): jh.Json {
+    throw "Unimplemented, use inherited class";
+  }
+
+  updateObject(_parent: jh.JsonObject, _key: string): jh.Json {
+    throw "Unimplemented, use inherited class";
+  }
+
+  apply(json: jh.Json): jh.Json {
+    if (this.path.length === 0) {
+      // In this case, just return the valuee
+      return this.updateRoot(json);
     }
-    const parent = getJsonParent(json, this.path);
+    // Otherwise, create parents list, instead of recursive edit
+    const parents = new Array(this.path.length);
+    parents[0] = json;
+    // Dive to the path
+    for (let i = 0; i < this.path.length - 1; i++) {
+      const p = parents[i];
+      if (typeof p !== "object" || p === null) {
+        throw `Cannot access non-object parent ${p} during traverse ${this.path}`;
+      }
+      const idx = this.path[i];
+      if (Array.isArray(p)) {
+        if (typeof idx !== "number") {
+          throw `Index of array must be a number`;
+        }
+        parents[i + 1] = parents[i][idx];
+      } else {
+        if (typeof idx !== "string") {
+          throw `Index of object must be a string`;
+        }
+        parents[i + 1] = parents[i][idx];
+      }
+    }
+    // Update the value
+    let v = parents[this.path.length - 1];
+    if (typeof v !== "object" || v === null) {
+      throw `Cannot access non-object parent ${v} during traverse ${this.path}`;
+    }
     const idx = this.path[this.path.length - 1];
-    switch(this.type) {
-      case ActionType.Insert:
-        if(typeof parent !== 'object' || parent === null) {
-          throw `Cannot access non-object parent!`;
-        }
-        if(Array.isArray(parent)) {
-          if(typeof idx !== 'number') {
-            throw `Cannot access non-number index of array!`;
-          }
-          parent.splice(idx, 0, this.value);
-        } else {
-          if(typeof idx !== 'string') {
-            throw `Cannot access non-string key of object!`;
-          }
-          parent[idx] = this.value;
-        }
-        break;
-      case ActionType.Update: {
-        this.oldValue = setJsonValue(parent, idx, this.value);
-      } break;
-      case ActionType.Delete:
-        if(typeof parent !== 'object' || parent === null) {
-          throw `Cannot access non-object parent!`;
-        }
-        if(Array.isArray(parent)) {
-          if(typeof idx !== 'number') {
-            throw `Cannot access non-number index of array!`;
-          }
-          this.oldValue = parent.splice(idx, 1)[0];
-        } else {
-          if(typeof idx !== 'string') {
-            throw `Cannot access non-string key of object!`;
-          }
-          this.oldValue = parent[idx];
-          delete parent[idx];
-        }
-        break;
+    if (Array.isArray(v)) {
+      if (typeof idx !== "number") {
+        throw `Index of array must be a number`;
+      }
+      v = this.updateArray(v, idx);
+    } else {
+      if (typeof idx !== "string") {
+        throw `Index of object must be a string`;
+      }
+      v = this.updateObject(v, idx);
     }
-    return json;
+    // Pack to upward
+    for (let i = this.path.length - 2; i >= 0; i--) {
+      const p = parents[i];
+      const k = this.path[i];
+      if (Array.isArray(p) && typeof k === "number") {
+        const t = [...p];
+        t[k] = v;
+        v = t;
+      } else if (typeof p === "object" && p !== null && typeof k === "string") {
+        v = { ...p, [k]: v };
+      } else {
+        throw "Unreachable";
+      }
+    }
+    // Return new root
+    return v;
+  }
+}
+
+export class InsertAction extends Action {
+  value: jh.Json;
+
+  constructor(path: jh.JsonPath, value: jh.Json) {
+    super(path);
+    this.value = value;
   }
 
   inverse() {
-    let t = this.type;
-    switch(t) {
-      case ActionType.Insert:
-        t = ActionType.Delete;
-        break;
-      case ActionType.Delete:
-        t = ActionType.Insert;
-        break;
-    }
-    return new Action(t, this.path, this.oldValue, this.value);
+    return new DeleteAction(this.path, this.value);
+  }
+
+  updateRoot(_value: jh.Json): jh.Json {
+    return this.value;
+  }
+
+  updateArray(parent: jh.JsonArray, key: number): jh.Json {
+    return parent.slice(0, key).concat([this.value], parent.slice(key));
+  }
+
+  updateObject(parent: jh.JsonObject, key: string): jh.Json {
+    return { ...parent, [key]: this.value };
   }
 }
 
-export const insertAction = (path: jh.JsonPath, value: jh.Json) => {
-  return new Action(ActionType.Insert, path, value);
-};
+export class DeleteAction extends Action {
+  oldValue: jh.Json;
 
-export const updateAction = (path: jh.JsonPath, value: jh.Json) => {
-  return new Action(ActionType.Update, path, value);
-};
+  constructor(path: jh.JsonPath, oldValue?: jh.Json) {
+    super(path);
+    if (oldValue === undefined) {
+      this.oldValue = null;
+    } else {
+      this.oldValue = oldValue;
+    }
+  }
 
-export const deleteAction = (path: jh.JsonPath) => {
-  return new Action(ActionType.Delete, path);
-};
+  inverse() {
+    return new InsertAction(this.path, this.oldValue);
+  }
+
+  updateRoot(parent: jh.Json): jh.Json {
+    this.oldValue = parent;
+    return null;
+  }
+
+  updateArray(parent: jh.JsonArray, key: number): jh.Json {
+    this.oldValue = parent[key];
+    return parent.slice(0, key).concat(parent.slice(key + 1));
+  }
+
+  updateObject(parent: jh.JsonObject, key: string): jh.Json {
+    this.oldValue = parent[key];
+    const newO = { ...parent };
+    delete newO[key];
+    return newO;
+  }
+}
+
+export class UpdateAction extends Action {
+  value: jh.Json;
+  oldValue: jh.Json;
+
+  constructor(path: jh.JsonPath, value: jh.Json, oldValue?: jh.Json) {
+    super(path);
+    this.value = value;
+    if (oldValue === undefined) {
+      this.oldValue = null;
+    } else {
+      this.oldValue = oldValue;
+    }
+  }
+
+  inverse() {
+    return new UpdateAction(this.path, this.oldValue, this.value);
+  }
+
+  updateRoot(value: jh.Json): jh.Json {
+    this.oldValue = value;
+    return this.value;
+  }
+
+  updateArray(parent: jh.JsonArray, key: number): jh.Json {
+    this.oldValue = parent[key];
+    const newA = [...parent];
+    newA[key] = this.value;
+    return newA;
+  }
+
+  updateObject(parent: jh.JsonObject, key: string): jh.Json {
+    this.oldValue = parent[key];
+    return { ...parent, [key]: this.value };
+  }
+}
 
 export class JsonEdit {
   value: jh.Json;
@@ -148,7 +189,7 @@ export class JsonEdit {
   hCurr: number;
   hTail: number;
 
-  constructor(value: any, maxHistory = 128) {
+  constructor(value: jh.Json, maxHistory = 128) {
     this.value = value;
     this.history = new Array(maxHistory);
     this.maxHistory = maxHistory;
@@ -158,7 +199,7 @@ export class JsonEdit {
   }
 
   apply(actions: Action[]) {
-    for(const action of actions) {
+    for (const action of actions) {
       this.value = action.apply(this.value);
     }
     // Push to history
@@ -167,38 +208,50 @@ export class JsonEdit {
     // If there was undid histories, remove all of them
     this.hHead = this.hCurr;
     // Move tail if stack is full
-    if(this.hHead === this.hTail) {
+    if (this.hHead === this.hTail) {
       this.hTail = (this.hTail + 1) % this.maxHistory;
     }
   }
 
+  insert(path: jh.JsonPath, value: jh.Json) {
+    return this.apply([new InsertAction(path, value)]);
+  }
+
+  delete(path: jh.JsonPath) {
+    return this.apply([new DeleteAction(path)]);
+  }
+
+  update(path: jh.JsonPath, value: jh.Json) {
+    return this.apply([new UpdateAction(path, value)]);
+  }
+
   undo() {
-    if(this.hCurr === this.hTail) {
+    if (this.hCurr === this.hTail) {
       return false;
     }
     this.hCurr = (this.hCurr + this.maxHistory - 1) % this.maxHistory;
     const actions = this.history[this.hCurr];
     // Loop inverse order
-    for(let i = actions.length - 1; i >= 0; i--) {
-      actions[i].inverse().apply(this.value);
+    for (let i = actions.length - 1; i >= 0; i--) {
+      this.value = actions[i].inverse().apply(this.value);
     }
     return true;
   }
 
   redo() {
-    if(this.hCurr === this.hHead) {
+    if (this.hCurr === this.hHead) {
       return false;
     }
     const actions = this.history[this.hCurr];
-    for(const action of actions) {
-      action.apply(this.value);
+    for (const action of actions) {
+      this.value = action.apply(this.value);
     }
     this.hCurr = (this.hCurr + 1) % this.maxHistory;
     return true;
   }
 
   historySize() {
-    if(this.hHead <= this.hTail) {
+    if (this.hHead <= this.hTail) {
       return this.hHead + this.maxHistory - this.hTail;
     } else {
       return this.hHead - this.hTail;

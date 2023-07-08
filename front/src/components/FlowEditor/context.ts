@@ -71,27 +71,24 @@ export const useEmptyFlowContext = (
   };
 };
 
-export const markErrorEdges = (
-  context: FlowContext,
-  errors: Set<string>,
-) => {
-  context.instance.setEdges((edges) =>
-    edges.map((e) => {
-      if(errors.has(e.id)) {
-        return {...e, className: "flow-edge-error"};
+export const markErrorEdges = (context: FlowContext, errors: Set<string>) => {
+  context.instance.setEdges(edges =>
+    edges.map(e => {
+      if (errors.has(e.id)) {
+        return { ...e, className: "flow-edge-error" };
       } else {
         return e;
       }
-    }));
+    })
+  );
 };
 
-export const unmarkErrorEdges = (
-  context: FlowContext
-) => {
-  context.instance.setEdges((edges) =>
-    edges.map((e) => {
-      return {...e, className: "flow-edge-error"};
-    }));
+export const unmarkErrorEdges = (context: FlowContext) => {
+  context.instance.setEdges(edges =>
+    edges.map(e => {
+      return { ...e, className: "flow-edge-error" };
+    })
+  );
   context.hasMultipleSource = false;
   context.hasCycle = false;
 };
@@ -106,17 +103,17 @@ export const updateGraphError = (context: FlowContext) => {
   // Get incoming edges
   const nodeMap = new Map<string, Edge[]>(); // node to incoming edge
   const inMap = new Map<string, Edge[]>(); // handle to incoming edge
-  for(const e of context.instance.getEdges()) {
+  for (const e of context.instance.getEdges()) {
     // Set nodeMap
     let arr = nodeMap.get(e.target);
-    if(arr === undefined) {
+    if (arr === undefined) {
       arr = [];
       nodeMap.set(e.target, arr);
     }
     // Set inMap
     const tgt = `${e.target}::${e.targetHandle}`;
     arr = inMap.get(tgt);
-    if(arr === undefined) {
+    if (arr === undefined) {
       arr = [];
       inMap.set(tgt, arr);
     }
@@ -125,15 +122,15 @@ export const updateGraphError = (context: FlowContext) => {
   console.log(inMap);
 
   // Find multiple incomings
-  for(const k of inMap.keys()) {
+  for (const k of inMap.keys()) {
     const arr = inMap.get(k);
     console.log(k, arr);
-    if(arr === undefined) continue;
-    
-    if(arr.length > 1) {
+    if (arr === undefined) continue;
+
+    if (arr.length > 1) {
       // Multiple incoming edges
       context.hasMultipleSource = true;
-      for(const e of arr) {
+      for (const e of arr) {
         errors.add(e.id);
       }
     }
@@ -145,11 +142,11 @@ export const updateGraphError = (context: FlowContext) => {
   const idx = new Array<number>();
   stack.push("##def");
   idx.push(0);
-  while(stack.length > 0) {
+  while (stack.length > 0) {
     const id = stack[stack.length - 1];
     const i = idx[idx.length - 1];
     const arr = nodeMap.get(id);
-    if(arr === undefined || i >= arr.length) {
+    if (arr === undefined || i >= arr.length) {
       stack.pop();
       idx.pop();
       visited.delete(id);
@@ -157,7 +154,7 @@ export const updateGraphError = (context: FlowContext) => {
     } else {
       const e = arr[i];
       const v = visited.get(e.id);
-      if(v === undefined) {
+      if (v === undefined) {
         // Not visited
         visited.set(e.id, e);
         stack.push(e.source);
@@ -168,9 +165,9 @@ export const updateGraphError = (context: FlowContext) => {
         context.hasCycle = true;
         // Track cycle
         let cur = e.source;
-        while(cur !== id) {
+        while (cur !== id) {
           const e = visited.get(cur);
-          if(e === undefined) break;
+          if (e === undefined) break;
           errors.add(e.id);
           cur = e.source;
         }
