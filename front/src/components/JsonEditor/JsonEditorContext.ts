@@ -1,5 +1,6 @@
 import * as jh from './helper';
 import * as je from './edit';
+import { faFile, faFileLines, faGripVertical, faSquarePen } from '@fortawesome/free-solid-svg-icons';
 
 // Edit mode
 
@@ -11,7 +12,11 @@ export enum EditMode {
 
 export const editModeLabels = ["Text", "Tree", "Select & Edit"];
 
-export const editModeIcons = ["body-text", "view-stacked", "pencil-square"];
+export const editModeIcons = [
+  faFileLines,
+  faGripVertical,
+  faSquarePen,
+];
 
 export type JsonEditorContextValue = {
   // File information

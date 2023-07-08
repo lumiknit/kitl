@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { Handle, Position } from "reactflow";
-import BI from "../../Util/BI";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClipboard } from "@fortawesome/free-solid-svg-icons";
 
 export type MemNodeProps = {
   isConnectable: boolean;
@@ -9,7 +10,7 @@ export type MemNodeProps = {
 const MemNode = (props: MemNodeProps) => {
   return (
     <>
-      <BI iconName="clipboard" />
+      <FontAwesomeIcon icon={faClipboard} />
       <Handle
         id="arg"
         type="target"

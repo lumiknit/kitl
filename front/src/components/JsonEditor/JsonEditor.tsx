@@ -4,7 +4,6 @@ import "@popperjs/core";
 import "bootstrap/dist/js/bootstrap.bundle";
 
 import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
 import "./JsonEditor.css";
 
 import * as jh from "./helper";

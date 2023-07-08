@@ -1,6 +1,7 @@
+import { faCodeFork } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { memo } from "react";
 import { Handle, Position } from "reactflow";
-import BI from "../../Util/BI";
 
 export type SelectNodeProps = {
   isConnectable: boolean;
@@ -9,7 +10,7 @@ export type SelectNodeProps = {
 const SelectNode = (props: SelectNodeProps) => {
   return (
     <>
-      <BI iconName="toggles2" />
+      <FontAwesomeIcon icon={faCodeFork} />
       <Handle
         id="cond"
         type="target"

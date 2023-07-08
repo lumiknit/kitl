@@ -1,15 +1,15 @@
 import { useMemo } from "react";
-import BI from "../Util/BI";
-import BICheckBox from "../Util/BICheckBox";
 
 import * as jctx from "./JsonEditorContext";
 import { useJsonEditorContext } from "./JsonEditorProvider";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faArrowRight, faArrowsRotate, faClipboard, faCopy, faDeleteLeft, faDownload, faFloppyDisk, faRotateLeft, faRotateRight, faScissors, faSquare, faSquareCheck } from "@fortawesome/free-solid-svg-icons";
 
 const menuButton = (ctx: jctx.JsonEditorContext) => {
   const mode = ctx.value.editMode;
   return (
     <button className="btn btn-primary" data-bs-toggle="dropdown">
-      <BI iconName={jctx.editModeIcons[mode]} />
+      <FontAwesomeIcon icon={jctx.editModeIcons[mode]} />
     </button>
   );
 };
@@ -25,7 +25,7 @@ const dropDownMenu = (ctx: jctx.JsonEditorContext) => {
         className="dropdown-item"
         href="#"
         onClick={() => ctx.updateMode(i)}>
-        <BI iconName={icon} />
+        <FontAwesomeIcon icon={icon} />
         &nbsp;
         {label}
       </a>
@@ -37,13 +37,13 @@ const dropDownMenu = (ctx: jctx.JsonEditorContext) => {
       className="dropdown-item"
       href="#"
       onClick={() => ctx.toggleStringEscape()}>
-      <BICheckBox checked={ctx.value.showStringEscape} />
+      <FontAwesomeIcon icon={ctx.value.showStringEscape ? faSquareCheck : faSquare} />
       &nbsp; Show string escapes
     </a>
   );
   menus.push(
     <a className="dropdown-item" href="#" onClick={ctx.downloadJson}>
-      <BI iconName="download" />
+      <FontAwesomeIcon icon={faDownload} />
       &nbsp; Download
     </a>
   );
@@ -71,10 +71,10 @@ const fileControls = (ctx: jctx.JsonEditorContext) => {
       disabled
     />,
     <button key="1" className="btn btn-secondary">
-      <BI iconName="arrow-clockwise" />
+      <FontAwesomeIcon icon={faArrowsRotate} />
     </button>,
     <button key="2" className="btn btn-secondary">
-      <BI iconName="save" />
+      <FontAwesomeIcon icon={faFloppyDisk} />
     </button>,
   ];
 };
@@ -82,28 +82,28 @@ const fileControls = (ctx: jctx.JsonEditorContext) => {
 const editControls = (ctx: jctx.JsonEditorContext) => {
   return [
     <button key="undo" className="btn btn-warning py-1 px-0 flex-grow-1">
-      <BI iconName="arrow-counterclockwise" />
+      <FontAwesomeIcon icon={faRotateLeft} />
     </button>,
     <button key="redo" className="btn btn-warning py-1 px-0 flex-grow-1">
-      <BI iconName="arrow-clockwise" />
+      <FontAwesomeIcon icon={faRotateRight} />
     </button>,
     <button
       key="cut"
       className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
-      <BI iconName="scissors" />
+      <FontAwesomeIcon icon={faScissors} />
     </button>,
     <button
       key="copy"
       className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
-      <BI iconName="files" />
+      <FontAwesomeIcon icon={faCopy} />
     </button>,
     <button
       key="paste"
       className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
-      <BI iconName="clipboard" />
+      <FontAwesomeIcon icon={faClipboard} />
     </button>,
     <button key="delete" className="btn btn-danger py-1 px-0 flex-grow-1">
-      <BI iconName="trash" />
+      <FontAwesomeIcon icon={faDeleteLeft} />
     </button>,
   ];
 };
