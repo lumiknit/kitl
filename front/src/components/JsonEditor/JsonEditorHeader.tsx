@@ -1,124 +1,144 @@
+import { useMemo } from "react";
 import BI from "../Util/BI";
 import BICheckBox from "../Util/BICheckBox";
 
-import * as jc from "./JsonEditorContext";
+import * as jctx from "./JsonEditorContext";
+import { useJsonEditorContext } from "./JsonEditorProvider";
 
-type JsonEditorHeaderProps = {
-  // Path
-  path: string;
-  // Mode
-  mode: jc.EditMode;
-  updateMode: (mode: jc.EditMode) => void;
-  // Configs
-  showStringEscape: boolean;
-  toggleStringEscape: () => void;
-  // Actions
-  downloadJson: () => void;
-};
-
-const JsonEditorHeader = (props: JsonEditorHeaderProps) => {
-  const menuButton = (
+const menuButton = (ctx: jctx.JsonEditorContext) => {
+  const mode = ctx.value.editMode;
+  return (
     <button className="btn btn-primary" data-bs-toggle="dropdown">
-      <BI iconName={jc.editModeIcons[props.mode]} />
+      <BI iconName={jctx.editModeIcons[mode]} />
     </button>
   );
-  const dropDownMenu = (
-    <ul className="dropdown-menu">
-      {jc.editModeLabels.map((label, idx) => {
-        return (
-          <li key={idx}>
-            <a
-              className="dropdown-item"
-              href="#"
-              onClick={() => props.updateMode(idx)}>
-              <BI iconName={jc.editModeIcons[idx]} />
-              &nbsp;
-              {label}
-            </a>
-          </li>
-        );
-      })}
-      <li>
-        <hr />
-      </li>
-      <li>
-        <a
-          className="dropdown-item"
-          href="#"
-          onClick={props.toggleStringEscape}>
-          <BICheckBox checked={props.showStringEscape} />
-          &nbsp; Show string escapes
-        </a>
-      </li>
-      <li>
-        <hr />
-      </li>
-      <li>
-        <a className="dropdown-item" href="#" onClick={props.downloadJson}>
-          <BI iconName="download" />
-          &nbsp; Download
-        </a>
-      </li>
-    </ul>
-  );
-  let controls = [];
-  switch (props.mode) {
-    case jc.EditMode.Text:
-    case jc.EditMode.Tree:
-      controls = [
-        <input
-          key="0"
-          type="text"
-          className="form-control"
-          placeholder="Path"
-          value={props.path}
-          disabled
-        />,
-        <button key="1" className="btn btn-secondary">
-          <BI iconName="arrow-clockwise" />
-        </button>,
-        <button key="2" className="btn btn-secondary">
-          <BI iconName="save" />
-        </button>,
-      ];
-      break;
-    case jc.EditMode.Edit:
-      controls = [
-        <button key="undo" className="btn btn-warning py-1 px-0 flex-grow-1">
-          <BI iconName="arrow-counterclockwise" />
-        </button>,
-        <button key="redo" className="btn btn-warning py-1 px-0 flex-grow-1">
-          <BI iconName="arrow-clockwise" />
-        </button>,
-        <button
-          key="cut"
-          className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
-          <BI iconName="scissors" />
-        </button>,
-        <button
-          key="copy"
-          className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
-          <BI iconName="files" />
-        </button>,
-        <button
-          key="paste"
-          className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
-          <BI iconName="clipboard" />
-        </button>,
-        <button key="delete" className="btn btn-danger py-1 px-0 flex-grow-1">
-          <BI iconName="trash" />
-        </button>,
-      ];
-      break;
+};
+
+const dropDownMenu = (ctx: jctx.JsonEditorContext) => {
+  const menus = [
+  ];
+  for(let i = 0; i < jctx.editModeLabels.length; i++) {
+    const label = jctx.editModeLabels[i];
+    const icon = jctx.editModeIcons[i];
+    menus.push(
+      <a
+        className="dropdown-item"
+        href="#"
+        onClick={() => ctx.updateMode(i)}>
+        <BI iconName={icon} />
+        &nbsp;
+        {label}
+      </a>
+    );
   }
+  menus.push(<hr />);
+  menus.push(
+    <a
+      className="dropdown-item"
+      href="#"
+      onClick={() => ctx.toggleStringEscape()}>
+      <BICheckBox checked={ctx.value.showStringEscape} />
+      &nbsp; Show string escapes
+    </a>
+  );
+  menus.push(
+    <a className="dropdown-item" href="#" onClick={ctx.downloadJson}>
+      <BI iconName="download" />
+      &nbsp; Download
+    </a>
+  );
   return (
-    <div className="json-editor-header">
-      <div className="input-group shadow-sm">
-        {menuButton}
-        {dropDownMenu}
-        {controls}
-      </div>
-    </div>
+    <ul className="dropdown-menu">
+      {
+        menus.map((menu, idx) => (
+          <li key={idx}>
+            {menu}
+          </li>
+        ))
+      }
+    </ul>
+  )
+};
+
+const fileControls = (ctx: jctx.JsonEditorContext) => {
+  return [
+    <input
+      key="0"
+      type="text"
+      className="form-control"
+      placeholder="Path"
+      value={ctx.value.path}
+      disabled
+    />,
+    <button key="1" className="btn btn-secondary">
+      <BI iconName="arrow-clockwise" />
+    </button>,
+    <button key="2" className="btn btn-secondary">
+      <BI iconName="save" />
+    </button>,
+  ];
+};
+
+const editControls = (ctx: jctx.JsonEditorContext) => {
+  return [
+    <button key="undo" className="btn btn-warning py-1 px-0 flex-grow-1">
+      <BI iconName="arrow-counterclockwise" />
+    </button>,
+    <button key="redo" className="btn btn-warning py-1 px-0 flex-grow-1">
+      <BI iconName="arrow-clockwise" />
+    </button>,
+    <button
+      key="cut"
+      className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
+      <BI iconName="scissors" />
+    </button>,
+    <button
+      key="copy"
+      className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
+      <BI iconName="files" />
+    </button>,
+    <button
+      key="paste"
+      className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
+      <BI iconName="clipboard" />
+    </button>,
+    <button key="delete" className="btn btn-danger py-1 px-0 flex-grow-1">
+      <BI iconName="trash" />
+    </button>,
+  ];
+};
+
+const controls = (ctx: jctx.JsonEditorContext) => {
+  const mode = ctx.value.editMode;
+  switch (mode) {
+  case jctx.EditMode.Text:
+  case jctx.EditMode.Tree:
+    return fileControls(ctx);
+  case jctx.EditMode.Edit:
+    return editControls(ctx);
+  }
+};
+
+const JsonEditorHeader = () => {
+  const ctx = useJsonEditorContext();
+  return useMemo(
+    () => {
+      console.log("[RENDER] JsonEditorHeader");
+      return (
+        <div className="json-editor-header">
+          <div className="input-group shadow-sm">
+            {menuButton(ctx)}
+            {dropDownMenu(ctx)}
+            {controls(ctx)}
+          </div>
+        </div>
+      );
+    },
+    [
+      ctx.value.editMode,
+      ctx.value.path,
+      ctx.value.showStringEscape,
+    ],
   );
 };
 

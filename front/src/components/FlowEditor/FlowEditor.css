@@ -26,8 +26,9 @@
 .react-flow__node-op {
   font-size: 1rem;
   font-family: monospace;
-  background: #fff8;
-  border: 1px solid #888;
+  color: #363d47;
+  background: #c1ccd2;
+  border: 1px solid #c1ccd2;
   border-radius: 0.25rem;
   padding: 0.5rem 0.75rem;
   text-align: center;
@@ -43,8 +44,9 @@
 .react-flow__node-const {
   font-size: 1rem;
   font-family: monospace;
-  background: #fff8;
-  border: 1px solid #888;
+  color: #363d47;
+  background: #ffbe00;
+  border: 1px solid #ffbe00;
   border-radius: 9999px;
   padding: 0.25rem 0.75rem;
   text-align: center;
@@ -52,9 +54,9 @@
 
 .react-flow__node-select {
   font-size: 1rem;
-  color: #ed553b;
-  background: #fff8;
-  border: 1px solid #888;
+  color: #fff;
+  background: #ed553b;
+  border: 1px solid #ed553b;
   border-radius: 0 0 1rem 1rem;
   border-corner-shape: bevel;
   padding: 0.3rem 1.5rem;
@@ -63,10 +65,10 @@
 
 .react-flow__node-mem {
   font-size: 1rem;
-  color: #085ed7;
-  background: #fff8;
-  border: 1px dashed #888;
-  border-radius: 0;
+  color: #fff;
+  background: #085ed7;
+  border: 1px solid #085ed7;
+  border-radius: 0.25rem;
   padding: 0.25rem 0.5rem;
   text-align: center;
 }
@@ -101,23 +103,23 @@
 }
 
 .flow-handle-ctx {
-  border: 1px dotted #888;
+  border: 1px dotted #363d47;
   background-color: #fff;
 }
 
 .flow-handle-arg {
-  border: 1px solid #888;
+  border: 1px solid #363d47;
   background-color: #fff;
 }
 
 .flow-handle-fn {
   border: 1px dotted #fff;
-  background-color: #888;
+  background-color: #363d47;
 }
 
 .flow-handle-ret {
   border: 1px solid #fff;
-  background-color: #888;
+  background-color: #363d47;
 }
 
 .react-flow__handle-left {
