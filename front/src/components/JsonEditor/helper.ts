@@ -1,10 +1,16 @@
 // JSON Helpers
 
+import { fa1, faCircle, faCircleCheck, faCircleXmark, faListOl, faQuoteLeft, faTableList } from "@fortawesome/free-solid-svg-icons";
+
 export type JsonArray = Json[];
 export type JsonObject = { [key: string]: Json };
 export type Json = null | boolean | number | string | JsonArray | JsonObject;
 export type JsonKey = number | string;
 export type JsonPath = JsonKey[];
+
+export const pathToString = (path: JsonPath) => {
+  return path.join(" < ");
+};
 
 export const NUMBER_OF_TYPES = 7;
 export enum JsonType {
@@ -16,6 +22,10 @@ export enum JsonType {
   ARRAY = 5,
   OBJECT = 6,
 }
+
+export const jsonTypesShort = [
+  0, 3, 4, 5 ,6,
+];
 
 export const jsonTypes = [
   "null",
@@ -30,13 +40,13 @@ export const jsonTypes = [
 export const jsonTypeSymbols = ["N", "F", "T", "123", '"', "[]", "{}"];
 
 export const jsonTypeIcons = [
-  "dash-square-dotted", // NULL
-  "exclamation-diamond", // False
-  "check-circle", // True
-  "123", // Number
-  "quote", // String
-  "list-ol", // Array
-  "braces", // Object
+  faCircle, // Null
+  faCircleXmark, // False
+  faCircleCheck, // True
+  fa1, // Number
+  faQuoteLeft, // String
+  faListOl, // Array
+  faTableList, // Object
 ];
 
 export const jsonTypeOf = (value: Json): JsonType => {

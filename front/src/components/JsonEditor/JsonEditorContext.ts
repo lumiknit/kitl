@@ -76,6 +76,7 @@ export class JsonEditorContext {
   updateMode(mode: EditMode) {
     const newValue = { ...this.value };
     newValue.editMode = mode;
+    newValue.textModeError = undefined;
     this.updateValue(newValue);
   }
 

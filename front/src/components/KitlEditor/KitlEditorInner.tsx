@@ -144,6 +144,10 @@ const KitlEditorInner = () => {
     setState(newState);
   };
 
+  const onChangeCodeArea = (value: string) => {
+    state.codeAreaState.valueBox[0] = value;
+  };
+
   const closeCodeArea = () => {
     try {
       const [pType, id] = parsePath(state.codeAreaState.path);
@@ -206,7 +210,8 @@ const KitlEditorInner = () => {
         open={state.codeAreaState.open}
         onClose={closeCodeArea}
         path={state.codeAreaState.path}
-        valueBox={state.codeAreaState.valueBox}
+        defaultValue={state.codeAreaState.valueBox[0]}
+        onChange={onChangeCodeArea}
       />
       <OpNodeModal
         open={state.opNodeState.open}

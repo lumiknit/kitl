@@ -5,6 +5,7 @@ import "bootstrap/dist/js/bootstrap.bundle";
 
 import "bootstrap/dist/css/bootstrap.css";
 import "./JsonEditor.css";
+import "./JsonIndent.css";
 
 import * as jh from "./helper";
 import {

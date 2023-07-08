@@ -2,6 +2,7 @@ import CodeArea from "../CodeArea/CodeArea";
 
 import JsonEditorHeader from "./JsonEditorHeader";
 import { useJsonEditorContext } from "./JsonEditorProvider";
+import JsonItem from "./JsonItem";
 
 const JsonEditorRoot = () => {
   console.log("[RENDER] JsonEditorRoot");
@@ -34,7 +35,12 @@ const JsonEditorRoot = () => {
       />
     );
   } else {
-    body = null;
+    body = (
+      <JsonItem
+        path={[]}
+        value={ctx.value.edit.value}
+      />
+    );
   }
   return (
     <div className="json-editor">

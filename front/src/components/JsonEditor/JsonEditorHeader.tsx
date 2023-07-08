@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import * as jctx from "./JsonEditorContext";
 import { useJsonEditorContext } from "./JsonEditorProvider";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faArrowRight, faArrowsRotate, faClipboard, faCopy, faDeleteLeft, faDownload, faFloppyDisk, faRotateLeft, faRotateRight, faScissors, faSquare, faSquareCheck } from "@fortawesome/free-solid-svg-icons";
+import { faArrowsRotate, faClipboard, faCopy, faDeleteLeft, faDownload, faFloppyDisk, faRotateLeft, faRotateRight, faScissors, faSquare, faSquareCheck } from "@fortawesome/free-solid-svg-icons";
 
 const menuButton = (ctx: jctx.JsonEditorContext) => {
   const mode = ctx.value.editMode;
