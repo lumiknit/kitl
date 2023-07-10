@@ -1,0 +1,267 @@
+$flow-node-color-bg: #fff;
+$flow-node-color-fg: #363d47;
+$flow-node-color-op: #c1ccd2;
+$flow-node-color-def: #888;
+$flow-node-color-const: #ffbe00;
+$flow-node-color-select: #ed553b;
+$flow-node-color-mem: #085ed7;
+$flow-node-color-comment: #46923c;
+
+/* Node shape */
+
+.react-flow__node-start {
+  font-size: 0.8rem;
+  font-family: sans-serif;
+  color: $flow-node-color-def;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px dashed $flow-node-color-def;
+  min-width: 5rem;
+  padding: 0.1rem 0rem;
+  text-align: center;
+}
+
+.react-flow__node-end {
+  font-size: 0.8rem;
+  font-family: sans-serif;
+  color: $flow-node-color-def;
+  background: transparent;
+  border: 0;
+  border-top: 1px dashed $flow-node-color-def;
+  min-width: 5rem;
+  padding: 0.1rem 0rem;
+  text-align: center;
+}
+
+.react-flow__node-op {
+  font-size: 1rem;
+  font-family: monospace;
+  color: $flow-node-color-fg;
+  background: $flow-node-color-op;
+  border-radius: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  text-align: center;
+  line-height: 1;
+}
+
+.react-flow__node-op .flow-node-op-module {
+  font-size: 0.3rem;
+  color: $flow-node-color-def;
+  text-align: left;
+}
+
+.react-flow__node-const {
+  font-size: 1rem;
+  font-family: sans-serif;
+  color: $flow-node-color-fg;
+  background: $flow-node-color-const;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  text-align: center;
+}
+
+.react-flow__node-select {
+  font-size: 1rem;
+  color: $flow-node-color-bg;
+  background: $flow-node-color-select;
+  border-radius: 0.25rem 0.25rem 1rem 1rem;
+  padding: 0.3rem 1.5rem;
+  text-align: center;
+}
+
+.react-flow__node-mem {
+  font-size: 1rem;
+  color: $flow-node-color-bg;
+  background: $flow-node-color-mem;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.6rem;
+  text-align: center;
+}
+
+.react-flow__node-comment {
+  font-family: sans-serif;
+  font-size: 0.75rem;
+  max-width: 20rem;
+  color: $flow-node-color-comment;
+  background: rgba($flow-node-color-bg, 0.5);
+  border: 0;
+  border-left: 4px solid $flow-node-color-comment;
+  border-radius: 0;
+  padding: 0.25rem 0.5rem;
+  text-align: left;
+}
+
+.react-flow__node.selected {
+  box-shadow: 0 1px 4px rgba($flow-node-color-fg, 0.8);
+}
+
+/* Handles */
+
+.react-flow__handle {
+  width: 0.6rem;
+  height: 0.6rem;
+}
+
+.react-flow__handle.connecting {
+  box-shadow: 0 0 5px $flow-node-color-mem;
+}
+
+/* Handle mixins */
+
+@mixin flow-handle-style-dotted {
+  border-width: 1px;
+  border-style: dotted;
+}
+
+@mixin flow-handle-style-solid {
+  border-width: 1px;
+  border-style: solid;
+}
+
+@mixin flow-handle-in-def {
+  border-color: $flow-node-color-def;
+  background-color: $flow-node-color-bg;
+}
+
+@mixin flow-handle-out-def {
+  border-color: $flow-node-color-bg;
+  background-color: $flow-node-color-def;
+}
+
+@mixin flow-handle-in-op {
+  border-color: $flow-node-color-op;
+  background-color: $flow-node-color-bg;
+}
+
+@mixin flow-handle-out-op {
+  border-color: $flow-node-color-bg;
+  background-color: $flow-node-color-op;
+}
+
+@mixin flow-handle-in-const {
+  border-color: $flow-node-color-const;
+  background-color: $flow-node-color-bg;
+}
+
+@mixin flow-handle-out-const {
+  border-color: $flow-node-color-bg;
+  background-color: $flow-node-color-const;
+}
+
+@mixin flow-handle-in-select {
+  border-color: $flow-node-color-select;
+  background-color: $flow-node-color-bg;
+}
+
+@mixin flow-handle-out-select {
+  border-color: $flow-node-color-bg;
+  background-color: $flow-node-color-select;
+}
+
+@mixin flow-handle-in-mem {
+  border-color: $flow-node-color-mem;
+  background-color: $flow-node-color-bg;
+}
+
+@mixin flow-handle-out-mem {
+  border-color: $flow-node-color-bg;
+  background-color: $flow-node-color-mem;
+}
+
+/* Handle definitions */
+
+.flow-handle-def-ctx {
+  @include flow-handle-style-dotted;
+  @include flow-handle-in-def;
+}
+
+.flow-handle-def-arg {
+  @include flow-handle-style-solid;
+  @include flow-handle-in-def;
+}
+
+.flow-handle-def-fn {
+  @include flow-handle-style-dotted;
+  @include flow-handle-out-def;
+}
+
+.flow-handle-def-ret {
+  @include flow-handle-style-solid;
+  @include flow-handle-out-def;
+}
+
+.flow-handle-op-ctx {
+  @include flow-handle-style-dotted;
+  @include flow-handle-in-op;
+}
+
+.flow-handle-op-arg {
+  @include flow-handle-style-solid;
+  @include flow-handle-in-op;
+}
+
+.flow-handle-op-fn {
+  @include flow-handle-style-dotted;
+  @include flow-handle-out-op;
+}
+
+.flow-handle-op-ret {
+  @include flow-handle-style-solid;
+  @include flow-handle-out-op;
+}
+
+.flow-handle-const-ret {
+  @include flow-handle-style-solid;
+  @include flow-handle-out-const;
+}
+
+.flow-handle-mem-arg {
+  @include flow-handle-style-solid;
+  @include flow-handle-in-mem;
+}
+
+.flow-handle-mem-ret {
+  @include flow-handle-style-solid;
+  @include flow-handle-out-mem;
+}
+
+.flow-handle-select-arg {
+  @include flow-handle-style-solid;
+  @include flow-handle-in-select;
+}
+
+.flow-handle-select-ctx {
+  @include flow-handle-style-dotted;
+  @include flow-handle-in-select;
+}
+
+.flow-handle-select-ret {
+  @include flow-handle-style-solid;
+  @include flow-handle-out-select;
+}
+
+/* Handle position */
+
+$handle_off: 0.3rem;
+
+.react-flow__handle-left {
+  left: -$handle_off;
+}
+
+.react-flow__handle-top {
+  top: -$handle_off;
+}
+
+.react-flow__handle-right {
+  right: -$handle_off;
+}
+
+.react-flow__handle-bottom {
+  bottom: -$handle_off;
+}
+
+/* Edge */
+
+.flow-edge-error {
+  box-shadow: 0 0 5px $flow-node-color-select;
+}

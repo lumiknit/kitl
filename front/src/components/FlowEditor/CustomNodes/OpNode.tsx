@@ -22,7 +22,7 @@ const OpNode = (props: OpNodeProps) => {
         position={Position.Left}
         onConnect={params => console.log("handle onConnect", params)}
         isConnectable={props.isConnectable}
-        className="flow-handle-ctx"
+        className="flow-handle-op-ctx"
       />
       <Handle
         id="arg"
@@ -30,7 +30,7 @@ const OpNode = (props: OpNodeProps) => {
         position={Position.Top}
         onConnect={params => console.log("handle onConnect", params)}
         isConnectable={props.isConnectable}
-        className="flow-handle-arg"
+        className="flow-handle-op-arg"
       />
       {props.data.module !== "" ? (
         <div className="flow-node-op-module">{props.data.module}:</div>
@@ -47,14 +47,14 @@ const OpNode = (props: OpNodeProps) => {
         type="source"
         position={Position.Right}
         isConnectable={props.isConnectable}
-        className="flow-handle-fn"
+        className="flow-handle-op-fn"
       />
       <Handle
         id="ret"
         type="source"
         position={Position.Bottom}
         isConnectable={props.isConnectable}
-        className="flow-handle-ret"
+        className="flow-handle-op-ret"
       />
     </>
   );

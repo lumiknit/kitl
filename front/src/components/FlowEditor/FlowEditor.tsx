@@ -11,16 +11,20 @@ import ReactFlow, {
   NodeMouseHandler,
   EdgeMouseHandler,
   useStoreApi,
+  NodeChange,
   EdgeChange,
+  NodePositionChange,
 } from "reactflow";
 
 import "reactflow/dist/style.css";
 import "./FlowEditor.css";
+import "./FlowEditorNode.scss";
 
 import * as fh from "./helper";
 import * as fc from "./context";
 
-import DefNode from "./CustomNodes/DefNode";
+import StartNode from "./CustomNodes/StartNode";
+import EndNode from "./CustomNodes/EndNode";
 import OpNode, { Op } from "./CustomNodes/OpNode";
 import ConstNode from "./CustomNodes/ConstNode";
 import SelectNode from "./CustomNodes/SelectNode";
@@ -40,7 +44,8 @@ const getID = () => {
 };
 
 const nodeTypes = {
-  def: DefNode,
+  start: StartNode,
+  end: EndNode,
   op: OpNode,
   const: ConstNode,
   select: SelectNode,
@@ -83,14 +88,30 @@ const FlowEditor = (props: FlowEditorProps) => {
     const targetHandle = params.targetHandle;
     props.context.setEdges(es => {
       // Remove any existing edges from the target handle
-      /*const newEdges = es.filter(e => {
+      const newEdges = es.filter(e => {
         return !(e.target === targetNode && e.targetHandle === targetHandle);
-      });*/
-      return addEdge(params, es);
+      });
       // Add the new edge
-      //return addEdge(params, newEdges);
+      return addEdge(params, newEdges);
     });
   }, []);
+
+  const onNodesChangeWrapper = (changes: NodeChange[]) => {
+    for(const change of changes) {
+      if(change.type === 'position') {
+        if(change.id === "##end") {
+          if(change.position !== undefined) {
+            change.position.x = 0;
+          }
+          if(change.positionAbsolute !== undefined) {
+            change.positionAbsolute.x = 0;
+          }
+        }
+      }
+    }
+
+    return props.context.onNodesChange(changes);
+  };
 
   let updatingGraphError = false;
   const onEdgesChangeWrapper = (edges: EdgeChange[]) => {
@@ -153,7 +174,7 @@ const FlowEditor = (props: FlowEditorProps) => {
       <ReactFlow
         nodes={props.context.initNodes}
         edges={props.context.initEdges}
-        onNodesChange={props.context.onNodesChange}
+        onNodesChange={onNodesChangeWrapper}
         onEdgesChange={onEdgesChangeWrapper}
         onConnect={onConnect}
         nodeTypes={nodeTypes}

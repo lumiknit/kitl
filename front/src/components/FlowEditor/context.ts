@@ -33,10 +33,10 @@ export type FlowContext = {
   hasMultipleSource: boolean;
 };
 
-const defNode = (name: string) => {
-  return {
-    id: "##def",
-    type: "def",
+const initialNodes = (name: string) => [
+  {
+    id: "##start",
+    type: "start",
     data: name,
     position: {
       x: 0,
@@ -45,14 +45,25 @@ const defNode = (name: string) => {
     draggable: false,
     selectable: false,
     deletable: false,
-  };
-};
+  },
+  {
+    id: "##end",
+    type: "end",
+    data: name,
+    position: {
+      x: 0,
+      y: 128,
+    },
+    selectable: false,
+    deletable: false,
+  },
+];
 
 export const useEmptyFlowContext = (
   name: string,
   path: string
 ): FlowContext => {
-  const initNodes: Node[] = [defNode(name)];
+  const initNodes: Node[] = initialNodes(name);
   const initEdges: Edge[] = [];
   const [nodes, setNodes, onNodesChange] = useNodesState(initNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initEdges);
