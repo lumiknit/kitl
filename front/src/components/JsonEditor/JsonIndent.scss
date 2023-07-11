@@ -17,12 +17,30 @@
  */
 
 $json-indent-colors: (
-  0: (bg: #ff5794, fg: #ffffff),
-  1: (bg: #faa230, fg: #000000),
-  2: (bg: #a7e22e, fg: #000000),
-  3: (bg: #66cce1, fg: #000000),
-  4: (bg: #5596f1, fg: #ffffff),
-  5: (bg: #aa7dfc, fg: #ffffff),
+  0: (
+    bg: #ff5794,
+    fg: #ffffff,
+  ),
+  1: (
+    bg: #faa230,
+    fg: #000000,
+  ),
+  2: (
+    bg: #a7e22e,
+    fg: #000000,
+  ),
+  3: (
+    bg: #66cce1,
+    fg: #000000,
+  ),
+  4: (
+    bg: #5596f1,
+    fg: #ffffff,
+  ),
+  5: (
+    bg: #aa7dfc,
+    fg: #ffffff,
+  ),
 );
 
 /* Buttons */

@@ -1,6 +1,14 @@
 // JSON Helpers
 
-import { fa1, faCircle, faCircleCheck, faCircleXmark, faListOl, faQuoteLeft, faTableList } from "@fortawesome/free-solid-svg-icons";
+import {
+  fa1,
+  faCircle,
+  faCircleCheck,
+  faCircleXmark,
+  faListOl,
+  faQuoteLeft,
+  faTableList,
+} from "@fortawesome/free-solid-svg-icons";
 
 export type JsonArray = Json[];
 export type JsonObject = { [key: string]: Json };
@@ -23,9 +31,7 @@ export enum JsonType {
   OBJECT = 6,
 }
 
-export const jsonTypesShort = [
-  0, 3, 4, 5 ,6,
-];
+export const jsonTypesShort = [0, 3, 4, 5, 6];
 
 export const jsonTypes = [
   "null",

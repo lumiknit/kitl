@@ -225,8 +225,12 @@ export class JsonEdit {
     return this.apply([new UpdateAction(path, value)]);
   }
 
+  undoable() {
+    return this.hCurr !== this.hTail;
+  }
+
   undo() {
-    if (this.hCurr === this.hTail) {
+    if (!this.undoable()) {
       return false;
     }
     this.hCurr = (this.hCurr + this.maxHistory - 1) % this.maxHistory;
@@ -238,8 +242,12 @@ export class JsonEdit {
     return true;
   }
 
+  redoable() {
+    return this.hCurr !== this.hHead;
+  }
+
   redo() {
-    if (this.hCurr === this.hHead) {
+    if (!this.redoable()) {
       return false;
     }
     const actions = this.history[this.hCurr];

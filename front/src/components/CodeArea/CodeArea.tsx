@@ -112,14 +112,14 @@ const CodeArea = (props: CodeAreaProps) => {
     // Resize text area
     const target = event.currentTarget;
     resizeTextArea(target);
-    if(props.onChange !== undefined) {
+    if (props.onChange !== undefined) {
       props.onChange(event.currentTarget.value);
     }
   };
 
   const onChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     // Update value
-    if(props.onChange !== undefined) {
+    if (props.onChange !== undefined) {
       props.onChange(event.currentTarget.value);
     }
   };
@@ -131,8 +131,7 @@ const CodeArea = (props: CodeAreaProps) => {
   });
 
   const className =
-    props.errorMsg !== undefined ?
-    "code-area code-area-error" : "code-area";
+    props.errorMsg !== undefined ? "code-area code-area-error" : "code-area";
   console.log(props.errorMsg);
 
   return (
@@ -146,12 +145,9 @@ const CodeArea = (props: CodeAreaProps) => {
         onKeyDown={onKeyDown}
         autoFocus={props.autoFocus}
       />
-      {
-        props.errorMsg !== undefined ?
-        <div className="code-area-error-msg">
-          {props.errorMsg}
-        </div> : null
-      }
+      {props.errorMsg !== undefined ? (
+        <div className="code-area-error-msg">{props.errorMsg}</div>
+      ) : null}
     </div>
   );
 };

@@ -8,7 +8,7 @@ const JsonEditorRoot = () => {
   console.log("[RENDER] JsonEditorRoot");
   const ctx = useJsonEditorContext();
   let body = undefined;
-  if(ctx.isTextMode()) {
+  if (ctx.isTextMode()) {
     const defaultValue = JSON.stringify(ctx.value.edit.value, undefined, 2);
     const onChange = (value: string) => {
       console.log("Changed:", value);
@@ -17,8 +17,8 @@ const JsonEditorRoot = () => {
         ctx.value.edit.update([], newValue);
         ctx.value.textModeError = undefined;
         ctx.updated();
-      } catch(e) {
-        if(e instanceof SyntaxError) {
+      } catch (e) {
+        if (e instanceof SyntaxError) {
           ctx.value.textModeError = e.message;
           ctx.updated();
         } else {
@@ -35,19 +35,12 @@ const JsonEditorRoot = () => {
       />
     );
   } else {
-    body = (
-      <JsonItem
-        path={[]}
-        value={ctx.value.edit.value}
-      />
-    );
+    body = <JsonItem path={[]} value={ctx.value.edit.value} />;
   }
   return (
     <div className="json-editor">
       <JsonEditorHeader />
-      <div className="json-editor-body">
-        {body}
-      </div>
+      <div className="json-editor-body">{body}</div>
     </div>
   );
   /*return (

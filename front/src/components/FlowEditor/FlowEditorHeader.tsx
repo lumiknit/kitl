@@ -1,5 +1,20 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowsSplitUpAndLeft, faClipboard, faCodeFork, faComment, faCommentDots, faCopy, faDeleteLeft, faDownLong, faFileLines, faPaste, faRotateLeft, faRotateRight, faScissors, faSquareCaretDown } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowsSplitUpAndLeft,
+  faClipboard,
+  faCodeFork,
+  faComment,
+  faCommentDots,
+  faCopy,
+  faDeleteLeft,
+  faDownLong,
+  faFileLines,
+  faPaste,
+  faRotateLeft,
+  faRotateRight,
+  faScissors,
+  faSquareCaretDown,
+} from "@fortawesome/free-solid-svg-icons";
 import * as fh from "./helper";
 
 export type FlowEditorHeaderProps = {

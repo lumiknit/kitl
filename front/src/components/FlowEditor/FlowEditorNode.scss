@@ -15,7 +15,7 @@ $flow-node-colors: (
   const: $flow-node-color-const,
   select: $flow-node-color-select,
   mem: $flow-node-color-mem,
-  comment: $flow-node-color-comment
+  comment: $flow-node-color-comment,
 );
 
 @use "sass:list";
@@ -117,12 +117,7 @@ $flow-node-colors: (
 
 $handle_off: 0.3rem;
 
-@each $_, $pos in (
-  left: left,
-  top: top,
-  right: right,
-  bottom: bottom,
-) {
+@each $_, $pos in (left: left, top: top, right: right, bottom: bottom) {
   .react-flow__handle-#{$pos} {
     #{$pos}: -$handle_off;
   }
@@ -150,19 +145,34 @@ $handle_off: 0.3rem;
 }
 
 /* Handle definitions */
-@each $type, $style in (
-  ctx: (in, dotted),
-  arg: (in, solid),
-  fn: (out, dotted),
-  ret: (out, solid),
-) {
+@each $type,
+  $style
+    in (
+      ctx: (
+        in,
+        dotted,
+      ),
+      arg: (
+        in,
+        solid,
+      ),
+      fn: (
+        out,
+        dotted,
+      ),
+      ret: (
+        out,
+        solid,
+      )
+    )
+{
   @each $key, $color in $flow-node-colors {
     .flow-handle-#{$key}-#{$type} {
       @include flow-handle-border-style(list.nth($style, 2));
       @include flow-handle-border-color(
         list.nth($style, 1),
         $color,
-        $flow-node-color-bg,
+        $flow-node-color-bg
       );
     }
   }

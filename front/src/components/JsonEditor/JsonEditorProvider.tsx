@@ -1,20 +1,18 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext } from "react";
 
 import {
   JsonEditorContext,
   JsonEditorContextValue,
   newContextValue,
-} from './JsonEditorContext';
+} from "./JsonEditorContext";
 
 // -- Context and Provider
 
-const Context = createContext(new JsonEditorContext(
-  newContextValue(
-    "",
-    null,
-  ),
-  () => { return; },
-));
+const Context = createContext(
+  new JsonEditorContext(newContextValue("", null), () => {
+    return;
+  })
+);
 
 export const useJsonEditorContext = () => useContext(Context);
 
@@ -23,15 +21,11 @@ type JsonEditorProviderProps = {
   setCtx: (ctx: JsonEditorContextValue) => void;
 
   children: React.ReactNode | React.ReactNode[];
-}
+};
 
 const JsonEditorProvider = (props: JsonEditorProviderProps) => {
   return (
-    <Context.Provider
-      value={new JsonEditorContext(
-        props.ctx,
-        props.setCtx,
-      )}>
+    <Context.Provider value={new JsonEditorContext(props.ctx, props.setCtx)}>
       {props.children}
     </Context.Provider>
   );

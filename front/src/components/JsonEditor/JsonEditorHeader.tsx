@@ -3,7 +3,19 @@ import { useMemo } from "react";
 import * as jctx from "./JsonEditorContext";
 import { useJsonEditorContext } from "./JsonEditorProvider";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowsRotate, faClipboard, faCopy, faDeleteLeft, faDownload, faFloppyDisk, faRotateLeft, faRotateRight, faScissors, faSquare, faSquareCheck } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowsRotate,
+  faClipboard,
+  faCopy,
+  faDeleteLeft,
+  faDownload,
+  faFloppyDisk,
+  faRotateLeft,
+  faRotateRight,
+  faScissors,
+  faSquare,
+  faSquareCheck,
+} from "@fortawesome/free-solid-svg-icons";
 
 const menuButton = (ctx: jctx.JsonEditorContext) => {
   const mode = ctx.value.editMode;
@@ -15,16 +27,12 @@ const menuButton = (ctx: jctx.JsonEditorContext) => {
 };
 
 const dropDownMenu = (ctx: jctx.JsonEditorContext) => {
-  const menus = [
-  ];
-  for(let i = 0; i < jctx.editModeLabels.length; i++) {
+  const menus = [];
+  for (let i = 0; i < jctx.editModeLabels.length; i++) {
     const label = jctx.editModeLabels[i];
     const icon = jctx.editModeIcons[i];
     menus.push(
-      <a
-        className="dropdown-item"
-        href="#"
-        onClick={() => ctx.updateMode(i)}>
+      <a className="dropdown-item" href="#" onClick={() => ctx.updateMode(i)}>
         <FontAwesomeIcon icon={icon} />
         &nbsp;
         {label}
@@ -37,7 +45,9 @@ const dropDownMenu = (ctx: jctx.JsonEditorContext) => {
       className="dropdown-item"
       href="#"
       onClick={() => ctx.toggleStringEscape()}>
-      <FontAwesomeIcon icon={ctx.value.showStringEscape ? faSquareCheck : faSquare} />
+      <FontAwesomeIcon
+        icon={ctx.value.showStringEscape ? faSquareCheck : faSquare}
+      />
       &nbsp; Show string escapes
     </a>
   );
@@ -49,15 +59,11 @@ const dropDownMenu = (ctx: jctx.JsonEditorContext) => {
   );
   return (
     <ul className="dropdown-menu">
-      {
-        menus.map((menu, idx) => (
-          <li key={idx}>
-            {menu}
-          </li>
-        ))
-      }
+      {menus.map((menu, idx) => (
+        <li key={idx}>{menu}</li>
+      ))}
     </ul>
-  )
+  );
 };
 
 const fileControls = (ctx: jctx.JsonEditorContext) => {
@@ -80,11 +86,29 @@ const fileControls = (ctx: jctx.JsonEditorContext) => {
 };
 
 const editControls = (ctx: jctx.JsonEditorContext) => {
+  const undoable = ctx.value.edit.undoable();
+  const redoable = ctx.value.edit.redoable();
+  const undo = () => {
+    ctx.value.edit.undo();
+    ctx.updated();
+  };
+  const redo = () => {
+    ctx.value.edit.redo();
+    ctx.updated();
+  };
   return [
-    <button key="undo" className="btn btn-warning py-1 px-0 flex-grow-1">
+    <button
+      key="undo"
+      className="btn btn-warning py-1 px-0 flex-grow-1"
+      disabled={!undoable}
+      onClick={undo}>
       <FontAwesomeIcon icon={faRotateLeft} />
     </button>,
-    <button key="redo" className="btn btn-warning py-1 px-0 flex-grow-1">
+    <button
+      key="redo"
+      className="btn btn-warning py-1 px-0 flex-grow-1"
+      disabled={!redoable}
+      onClick={redo}>
       <FontAwesomeIcon icon={faRotateRight} />
     </button>,
     <button
@@ -111,35 +135,28 @@ const editControls = (ctx: jctx.JsonEditorContext) => {
 const controls = (ctx: jctx.JsonEditorContext) => {
   const mode = ctx.value.editMode;
   switch (mode) {
-  case jctx.EditMode.Text:
-  case jctx.EditMode.Tree:
-    return fileControls(ctx);
-  case jctx.EditMode.Edit:
-    return editControls(ctx);
+    case jctx.EditMode.Text:
+    case jctx.EditMode.Tree:
+      return fileControls(ctx);
+    case jctx.EditMode.Edit:
+      return editControls(ctx);
   }
 };
 
 const JsonEditorHeader = () => {
   const ctx = useJsonEditorContext();
-  return useMemo(
-    () => {
-      console.log("[RENDER] JsonEditorHeader");
-      return (
-        <div className="json-editor-header">
-          <div className="input-group shadow-sm">
-            {menuButton(ctx)}
-            {dropDownMenu(ctx)}
-            {controls(ctx)}
-          </div>
+  return useMemo(() => {
+    console.log("[RENDER] JsonEditorHeader");
+    return (
+      <div className="json-editor-header">
+        <div className="input-group shadow-sm">
+          {menuButton(ctx)}
+          {dropDownMenu(ctx)}
+          {controls(ctx)}
         </div>
-      );
-    },
-    [
-      ctx.value.editMode,
-      ctx.value.path,
-      ctx.value.showStringEscape,
-    ],
-  );
+      </div>
+    );
+  }, [ctx]);
 };
 
 export default JsonEditorHeader;

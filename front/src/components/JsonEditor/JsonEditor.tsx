@@ -8,9 +8,7 @@ import "./JsonEditor.css";
 import "./JsonIndent.scss";
 
 import * as jh from "./helper";
-import {
-  newContextValue,
-} from "./JsonEditorContext";
+import { newContextValue } from "./JsonEditorContext";
 
 import JsonEditorProvider from "./JsonEditorProvider";
 import JsonEditorRoot from "./JsonEditorRoot";
@@ -25,22 +23,15 @@ const JsonEditor = (props: JsonEditorProps) => {
   console.log("[RENDER] JsonEditor");
   const path = props.path !== undefined ? props.path : "";
   const value = props.defaultVaule !== undefined ? props.defaultVaule : null;
-  const [ctxValue, setCtxValue] = useState(newContextValue(
-    path,
-    value,
-  ));
-  if(props.onChange !== undefined) {
+  const [ctxValue, setCtxValue] = useState(newContextValue(path, value));
+  if (props.onChange !== undefined) {
     props.onChange(ctxValue.edit.value);
   }
   return (
-    <JsonEditorProvider
-      ctx={ctxValue}
-      setCtx={setCtxValue}
-    >
+    <JsonEditorProvider ctx={ctxValue} setCtx={setCtxValue}>
       <JsonEditorRoot />
     </JsonEditorProvider>
   );
-
 };
 
 export default JsonEditor;

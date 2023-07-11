@@ -9,7 +9,10 @@ export type StartNodeProps = {
 const StartNode = (props: StartNodeProps) => {
   return (
     <>
-      <div style={{ bottom: 0 }}> <b>Fn</b> {props.data} </div>
+      <div style={{ bottom: 0 }}>
+        {" "}
+        <b>Fn</b> {props.data}{" "}
+      </div>
       <Handle
         id="ctx"
         type="source"

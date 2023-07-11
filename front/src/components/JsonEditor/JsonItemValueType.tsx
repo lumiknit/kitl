@@ -1,60 +1,49 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import * as jh from './helper';
-import { faGripVertical } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import * as jh from "./helper";
+import JsonItemValueContainer from "./JsonItemValueContainer";
 
 export type JsonItemValueTypeProps = {
   path: jh.JsonPath;
   value: jh.Json;
-  changeType: (type: jh.JsonType) => void;
+  changeType: (type?: jh.JsonType) => void;
 };
 
 const JsonItemValueShow = (props: JsonItemValueTypeProps) => {
   const indent = props.path.length;
   const indentColor = indent % 6;
 
-  const btnHandle = `btn json-btn-depth-${indentColor} p-1`;
   const btnType = `btn json-btn-outline-depth-${indentColor} p-1 flex-grow-1`;
   const typeBtns = [];
+  const ty = jh.jsonTypeOf(props.value);
+  const list = [0, 3, 4, 5, 6];
   // Insert null/false/true
-  let firstIcon = jh.jsonTypeIcons[0];
-  let firstType = jh.JsonType.NULL;
-  if(props.value === false) {
-    firstIcon = jh.jsonTypeIcons[1];
-    firstType = jh.JsonType.FALSE;
-  } else if(props.value === true) {
-    firstIcon = jh.jsonTypeIcons[2];
-    firstType = jh.JsonType.TRUE;
+  if (props.value === false) {
+    list[0] = 1;
+  } else if (props.value === true) {
+    list[0] = 2;
   }
-  typeBtns.push(
-    <button
-      key={0}
-      className={btnType}
-      type="button"
-      onClick={() => props.changeType(firstType)}
-    >
-      <FontAwesomeIcon icon={firstIcon} />
-    </button>
-  );
-  for(let i = 3; i < jh.jsonTypeIcons.length; i++) {
+  for (const i of list) {
+    if (i === ty) {
+      continue;
+    }
     const icon = jh.jsonTypeIcons[i];
     typeBtns.push(
       <button
         key={i}
         className={btnType}
         type="button"
-        onClick={() => props.changeType(i)}
-      >
+        onClick={() => props.changeType(i)}>
         <FontAwesomeIcon icon={icon} />
       </button>
     );
   }
   return (
-    <div className="json-item-value-type input-group">
-      <button className={btnHandle} type="button">
-        <FontAwesomeIcon icon={faGripVertical} />
-      </button>
+    <JsonItemValueContainer
+      path={props.path}
+      value={props.value}
+      changeType={props.changeType}>
       {typeBtns}
-    </div>
+    </JsonItemValueContainer>
   );
 };
 

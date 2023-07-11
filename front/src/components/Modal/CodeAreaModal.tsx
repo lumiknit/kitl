@@ -16,7 +16,8 @@ const CodeAreaModal = (props: CodeAreaModelProps) => {
       <CodeArea
         defaultValue={props.defaultValue}
         onChange={props.onChange}
-        autoFocus />
+        autoFocus
+      />
     </Modal>
   );
 };

@@ -1,6 +1,11 @@
-import * as jh from './helper';
-import * as je from './edit';
-import { faFile, faFileLines, faGripVertical, faSquarePen } from '@fortawesome/free-solid-svg-icons';
+import * as jh from "./helper";
+import * as je from "./edit";
+import {
+  faFile,
+  faFileLines,
+  faGripVertical,
+  faSquarePen,
+} from "@fortawesome/free-solid-svg-icons";
 
 // Edit mode
 
@@ -12,11 +17,7 @@ export enum EditMode {
 
 export const editModeLabels = ["Text", "Tree", "Select & Edit"];
 
-export const editModeIcons = [
-  faFileLines,
-  faGripVertical,
-  faSquarePen,
-];
+export const editModeIcons = [faFileLines, faGripVertical, faSquarePen];
 
 export type JsonEditorContextValue = {
   // File information
@@ -33,7 +34,7 @@ export type JsonEditorContextValue = {
 
 export const newContextValue = (
   path: string,
-  value: jh.Json,
+  value: jh.Json
 ): JsonEditorContextValue => {
   return {
     path: path,
@@ -52,7 +53,7 @@ export class JsonEditorContext {
   // Constructor
   constructor(
     value: JsonEditorContextValue,
-    updateValue: (value: JsonEditorContextValue) => void,
+    updateValue: (value: JsonEditorContextValue) => void
   ) {
     this.value = value;
     this.updateValue = updateValue;

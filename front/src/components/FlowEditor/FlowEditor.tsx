@@ -97,13 +97,13 @@ const FlowEditor = (props: FlowEditorProps) => {
   }, []);
 
   const onNodesChangeWrapper = (changes: NodeChange[]) => {
-    for(const change of changes) {
-      if(change.type === 'position') {
-        if(change.id === "##end") {
-          if(change.position !== undefined) {
+    for (const change of changes) {
+      if (change.type === "position") {
+        if (change.id === "##end") {
+          if (change.position !== undefined) {
             change.position.x = 0;
           }
-          if(change.positionAbsolute !== undefined) {
+          if (change.positionAbsolute !== undefined) {
             change.positionAbsolute.x = 0;
           }
         }

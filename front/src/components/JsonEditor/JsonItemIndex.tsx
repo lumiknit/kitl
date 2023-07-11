@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import * as jh from './helper';
+import { useMemo } from "react";
+import * as jh from "./helper";
 
 export type JsonItemIndexProps = {
   path: jh.JsonPath;
@@ -7,11 +7,7 @@ export type JsonItemIndexProps = {
 
 const JsonItemIndex = (props: JsonItemIndexProps) => {
   return useMemo(() => {
-    return (
-      <div className="json-item-index">
-        {jh.pathToString(props.path)}
-      </div>
-    );
+    return <div className="json-item-index">{jh.pathToString(props.path)}</div>;
   }, [props.path]);
 };
 

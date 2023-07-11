@@ -9,7 +9,10 @@ export type EndNodeProps = {
 const EndNode = (props: EndNodeProps) => {
   return (
     <>
-      <div style={{ bottom: 0 }}> <b>Ret</b> {props.data} </div>
+      <div style={{ bottom: 0 }}>
+        {" "}
+        <b>Ret</b> {props.data}{" "}
+      </div>
       <Handle
         id="arg"
         type="target"
