@@ -7,6 +7,19 @@ $flow-node-color-select: #ed553b;
 $flow-node-color-mem: #085ed7;
 $flow-node-color-comment: #46923c;
 
+$flow-node-colors: (
+  bg: $flow-node-color-bg,
+  fg: $flow-node-color-fg,
+  op: $flow-node-color-op,
+  def: $flow-node-color-def,
+  const: $flow-node-color-const,
+  select: $flow-node-color-select,
+  mem: $flow-node-color-mem,
+  comment: $flow-node-color-comment
+);
+
+@use "sass:list";
+
 /* Node shape */
 
 .react-flow__node-start {
@@ -102,162 +115,57 @@ $flow-node-color-comment: #46923c;
   height: 0.6rem;
 }
 
+$handle_off: 0.3rem;
+
+@each $_, $pos in (
+  left: left,
+  top: top,
+  right: right,
+  bottom: bottom,
+) {
+  .react-flow__handle-#{$pos} {
+    #{$pos}: -$handle_off;
+  }
+}
+
 .react-flow__handle.connecting {
   box-shadow: 0 0 5px $flow-node-color-mem;
 }
 
 /* Handle mixins */
 
-@mixin flow-handle-style-dotted {
+@mixin flow-handle-border-style($style) {
   border-width: 1px;
-  border-style: dotted;
+  border-style: $style;
 }
 
-@mixin flow-handle-style-solid {
-  border-width: 1px;
-  border-style: solid;
-}
-
-@mixin flow-handle-in-def {
-  border-color: $flow-node-color-def;
-  background-color: $flow-node-color-bg;
-}
-
-@mixin flow-handle-out-def {
-  border-color: $flow-node-color-bg;
-  background-color: $flow-node-color-def;
-}
-
-@mixin flow-handle-in-op {
-  border-color: $flow-node-color-op;
-  background-color: $flow-node-color-bg;
-}
-
-@mixin flow-handle-out-op {
-  border-color: $flow-node-color-bg;
-  background-color: $flow-node-color-op;
-}
-
-@mixin flow-handle-in-const {
-  border-color: $flow-node-color-const;
-  background-color: $flow-node-color-bg;
-}
-
-@mixin flow-handle-out-const {
-  border-color: $flow-node-color-bg;
-  background-color: $flow-node-color-const;
-}
-
-@mixin flow-handle-in-select {
-  border-color: $flow-node-color-select;
-  background-color: $flow-node-color-bg;
-}
-
-@mixin flow-handle-out-select {
-  border-color: $flow-node-color-bg;
-  background-color: $flow-node-color-select;
-}
-
-@mixin flow-handle-in-mem {
-  border-color: $flow-node-color-mem;
-  background-color: $flow-node-color-bg;
-}
-
-@mixin flow-handle-out-mem {
-  border-color: $flow-node-color-bg;
-  background-color: $flow-node-color-mem;
+@mixin flow-handle-border-color($style, $fg, $bg) {
+  @if $style == in {
+    border-color: $fg;
+    background-color: $bg;
+  } @else {
+    border-color: $bg;
+    background-color: $fg;
+  }
 }
 
 /* Handle definitions */
-
-.flow-handle-def-ctx {
-  @include flow-handle-style-dotted;
-  @include flow-handle-in-def;
-}
-
-.flow-handle-def-arg {
-  @include flow-handle-style-solid;
-  @include flow-handle-in-def;
-}
-
-.flow-handle-def-fn {
-  @include flow-handle-style-dotted;
-  @include flow-handle-out-def;
-}
-
-.flow-handle-def-ret {
-  @include flow-handle-style-solid;
-  @include flow-handle-out-def;
-}
-
-.flow-handle-op-ctx {
-  @include flow-handle-style-dotted;
-  @include flow-handle-in-op;
-}
-
-.flow-handle-op-arg {
-  @include flow-handle-style-solid;
-  @include flow-handle-in-op;
-}
-
-.flow-handle-op-fn {
-  @include flow-handle-style-dotted;
-  @include flow-handle-out-op;
-}
-
-.flow-handle-op-ret {
-  @include flow-handle-style-solid;
-  @include flow-handle-out-op;
-}
-
-.flow-handle-const-ret {
-  @include flow-handle-style-solid;
-  @include flow-handle-out-const;
-}
-
-.flow-handle-mem-arg {
-  @include flow-handle-style-solid;
-  @include flow-handle-in-mem;
-}
-
-.flow-handle-mem-ret {
-  @include flow-handle-style-solid;
-  @include flow-handle-out-mem;
-}
-
-.flow-handle-select-arg {
-  @include flow-handle-style-solid;
-  @include flow-handle-in-select;
-}
-
-.flow-handle-select-ctx {
-  @include flow-handle-style-dotted;
-  @include flow-handle-in-select;
-}
-
-.flow-handle-select-ret {
-  @include flow-handle-style-solid;
-  @include flow-handle-out-select;
-}
-
-/* Handle position */
-
-$handle_off: 0.3rem;
-
-.react-flow__handle-left {
-  left: -$handle_off;
-}
-
-.react-flow__handle-top {
-  top: -$handle_off;
-}
-
-.react-flow__handle-right {
-  right: -$handle_off;
-}
-
-.react-flow__handle-bottom {
-  bottom: -$handle_off;
+@each $type, $style in (
+  ctx: (in, dotted),
+  arg: (in, solid),
+  fn: (out, dotted),
+  ret: (out, solid),
+) {
+  @each $key, $color in $flow-node-colors {
+    .flow-handle-#{$key}-#{$type} {
+      @include flow-handle-border-style(list.nth($style, 2));
+      @include flow-handle-border-color(
+        list.nth($style, 1),
+        $color,
+        $flow-node-color-bg,
+      );
+    }
+  }
 }
 
 /* Edge */

@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as jh from './helper';
-import { faCaretDown, faGripVertical } from '@fortawesome/free-solid-svg-icons';
+import { faGripVertical } from '@fortawesome/free-solid-svg-icons';
 
 export type JsonItemValueTypeProps = {
   path: jh.JsonPath;

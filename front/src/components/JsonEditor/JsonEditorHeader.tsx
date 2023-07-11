@@ -102,7 +102,7 @@ const editControls = (ctx: jctx.JsonEditorContext) => {
       className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
       <FontAwesomeIcon icon={faClipboard} />
     </button>,
-    <button key="delete" className="btn btn-danger py-1 px-0 flex-grow-1">
+    <button key="delete" className="btn btn-danger py-1">
       <FontAwesomeIcon icon={faDeleteLeft} />
     </button>,
   ];
