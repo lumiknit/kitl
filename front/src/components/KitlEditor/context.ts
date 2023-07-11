@@ -8,7 +8,7 @@ export type KitlContext = {
   flowContext: fc.FlowContext;
 };
 
-export const newKitlContext = (path: string, valueJson: string) => {
+export const newKitlContext = (path: string) => {
   console.warn("value parsing is not implemented");
   return {
     path,

@@ -97,7 +97,7 @@ export type KitlEditorInnerState = {
 };
 
 const KitlEditorInner = () => {
-  const context = kc.newKitlContext("editor-main", "editor-main");
+  const context = kc.newKitlContext("editor-main");
 
   const [state, setState] = useState<KitlEditorInnerState>({
     jsonEditorState: closedJsonEditorState,
@@ -116,6 +116,12 @@ const KitlEditorInner = () => {
   };
 
   const closeJsonEditor = () => {
+    const newState = { ...state };
+    newState.jsonEditorState = closedJsonEditorState;
+    setState(newState);
+  };
+
+  const onChangeJsonEditor = (value: jh.Json) => {
     try {
       const [pType, id] = parsePath(state.jsonEditorState.path);
       if (pType !== "nd-c") {
@@ -124,14 +130,10 @@ const KitlEditorInner = () => {
             state.jsonEditorState.path
         );
       }
-      const value = state.jsonEditorState.valueBox[0];
       context.flowContext.setNodes(updateConstNodeData(id, value));
     } catch (e) {
       console.warn("Failed to update value: " + e);
     }
-    const newState = { ...state };
-    newState.jsonEditorState = closedJsonEditorState;
-    setState(newState);
   };
 
   const openCodeArea = (path: string, data: string) => {
@@ -204,7 +206,8 @@ const KitlEditorInner = () => {
         open={state.jsonEditorState.open}
         onClose={closeJsonEditor}
         path={state.jsonEditorState.path}
-        valueBox={state.jsonEditorState.valueBox}
+        defaultValue={state.jsonEditorState.valueBox[0]}
+        onChange={onChangeJsonEditor}
       />
       <CodeAreaModal
         open={state.codeAreaState.open}

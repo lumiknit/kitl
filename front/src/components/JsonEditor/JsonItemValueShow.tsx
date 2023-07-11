@@ -1,26 +1,154 @@
 import * as jh from "./helper";
 import JsonItemValueContainer from "./JsonItemValueContainer";
+import JsonItemValueBool from "./JsonItemValueBool";
+import JsonItemValueLiteral from "./JsonItemValueLiteral";
+import { useJsonEditorContext } from "./JsonEditorProvider";
+import { useMemo } from "react";
 
 export type JsonItemValueShowProps = {
   path: jh.JsonPath;
   value: jh.Json;
-  changeType: (type?: jh.JsonType) => void;
+  changeType: (toggle: boolean, type?: jh.JsonType) => void;
+};
+
+const displayNumber = (value: jh.Json): string => {
+  return String(value);
+};
+
+const parseNumber = (value: string): jh.Json => {
+  const n = Number(value);
+  if (isNaN(n)) {
+    return null;
+  } else {
+    return n;
+  }
+};
+
+const displayEscapedString = (value: jh.Json): string => {
+  return JSON.stringify(value).slice(1, -1);
+};
+
+const parseEscapedString = (value: string): jh.Json => {
+  try {
+    const p = JSON.parse(`"${value}"`);
+    if (typeof p === "string") {
+      return p;
+    }
+    return null;
+  } catch (e) {
+    return null;
+  }
+};
+
+const displayString = (value: jh.Json): string => {
+  return String(value);
+};
+
+const parseString = (value: string): jh.Json => {
+  return value;
 };
 
 const JsonItemValueShow = (props: JsonItemValueShowProps) => {
-  return (
-    <JsonItemValueContainer
-      path={props.path}
-      value={props.value}
-      changeType={props.changeType}>
-      <input
-        className="form-control"
-        type="text"
-        defaultValue={String(props.value)}
-        readOnly
-      />
-    </JsonItemValueContainer>
-  );
+  const ctx = useJsonEditorContext();
+  return useMemo(() => {
+    const ty = jh.jsonTypeOf(props.value);
+    const updateValue = (value: jh.Json) => {
+      ctx.value.edit.update(props.path, value);
+      ctx.updated();
+    };
+
+    let body = null;
+    switch (ty) {
+      case jh.JsonType.NULL:
+      case jh.JsonType.FALSE:
+      case jh.JsonType.TRUE:
+        {
+          body = (
+            <JsonItemValueBool
+              indent={props.path.length}
+              type={ty}
+              changeType={props.changeType}
+            />
+          );
+        }
+        break;
+      case jh.JsonType.NUMBER:
+        {
+          body = (
+            <JsonItemValueLiteral
+              indent={props.path.length}
+              value={props.value}
+              display={displayNumber}
+              parse={parseNumber}
+              updateValue={updateValue}
+            />
+          );
+        }
+        break;
+      case jh.JsonType.STRING:
+        {
+          let display: (value: jh.Json) => string;
+          let parse: (value: string) => jh.Json;
+          if (ctx.value.showStringEscape) {
+            display = displayEscapedString;
+            parse = parseEscapedString;
+          } else {
+            display = displayString;
+            parse = parseString;
+          }
+          body = (
+            <JsonItemValueLiteral
+              indent={props.path.length}
+              value={props.value}
+              display={display}
+              parse={parse}
+              updateValue={updateValue}
+            />
+          );
+        }
+        break;
+      case jh.JsonType.ARRAY:
+        {
+          if (!Array.isArray(props.value)) {
+            throw new Error("Invalid array");
+          }
+          body = (
+            <input
+              className="form-control py-1"
+              type="text"
+              defaultValue={`Array[${props.value.length}]`}
+              disabled
+              readOnly
+            />
+          );
+        }
+        break;
+      case jh.JsonType.OBJECT:
+        {
+          if (typeof props.value !== "object" || props.value === null) {
+            throw new Error("Invalid object");
+          }
+          body = (
+            <input
+              className="form-control py-1"
+              type="text"
+              defaultValue={`Object[${Object.keys(props.value).length}]`}
+              disabled
+              readOnly
+            />
+          );
+        }
+        break;
+    }
+    return (
+      <JsonItemValueContainer
+        path={props.path}
+        value={props.value}
+        changeType={props.changeType}>
+        {body}
+      </JsonItemValueContainer>
+    );
+  }, [ctx.toggleStringEscape, props.path, props.value]);
 };
 
 export default JsonItemValueShow;

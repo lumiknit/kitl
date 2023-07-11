@@ -1,7 +1,6 @@
 import * as jh from "./helper";
 import * as je from "./edit";
 import {
-  faFile,
   faFileLines,
   faGripVertical,
   faSquarePen,
@@ -26,6 +25,7 @@ export type JsonEditorContextValue = {
   // Editing content
   edit: je.JsonEdit;
   textModeError?: string;
+  onValueChange?: (value: jh.Json) => void;
 
   // Edit status and configurations
   editMode: EditMode;
@@ -39,7 +39,7 @@ export const newContextValue = (
   return {
     path: path,
     edit: new je.JsonEdit(value),
-    editMode: EditMode.Text,
+    editMode: EditMode.Tree,
     showStringEscape: false,
   };
 };
@@ -60,6 +60,9 @@ export class JsonEditorContext {
   }
 
   updated() {
+    if (this.value.onValueChange) {
+      this.value.onValueChange(this.value.edit.value);
+    }
     this.updateValue({ ...this.value });
   }
 

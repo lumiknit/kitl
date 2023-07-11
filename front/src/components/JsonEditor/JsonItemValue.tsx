@@ -14,12 +14,14 @@ const JsonItemValue = (props: JsonItemValueProps) => {
   const ty = jh.jsonTypeOf(props.value);
   const ctx = useJsonEditorContext();
   const [state, setState] = useState({
-    editingType: true,
+    editingType: false,
   });
-  const changeType = (newType?: jh.JsonType) => {
-    setState({
-      editingType: !state.editingType,
-    });
+  const changeType = (toggle: boolean, newType?: jh.JsonType) => {
+    if (toggle) {
+      setState({
+        editingType: !state.editingType,
+      });
+    }
     if (newType !== undefined && newType !== ty) {
       ctx.value.edit.update(props.path, jh.emptyJsonValueOfType(newType));
       ctx.updated();

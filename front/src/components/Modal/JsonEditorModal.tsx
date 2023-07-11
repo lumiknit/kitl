@@ -5,14 +5,19 @@ import Modal from "./Modal";
 export type JsonEditorModalProps = {
   open: boolean;
   onClose?: () => void;
+  defaultValue: jh.Json;
+  onChange?: (value: jh.Json) => void;
   path: string;
-  valueBox: jh.Json[];
 };
 
 const JsonEditorModal = (props: JsonEditorModalProps) => {
   return (
     <Modal open={props.open} onClose={props.onClose} fullHeight={true}>
-      <JsonEditor path={props.path} valueBox={props.valueBox} />
+      <JsonEditor
+        path={props.path}
+        defaultValue={props.defaultValue}
+        onChange={props.onChange}
+      />
     </Modal>
   );
 };

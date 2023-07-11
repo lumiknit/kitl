@@ -21,10 +21,8 @@
   overflow-y: hidden;
 }
 
-textarea.json-text-area {
+textarea.json-item-value-literal {
   width: 100%;
-  border: 0;
-  background-color: transparent;
   font-family: monospace;
   resize: none;
   -moz-tab-size: 2;
@@ -32,8 +30,12 @@ textarea.json-text-area {
   tab-size: 2;
 }
 
-textarea.json-text-area-invalid {
-  color: red;
+.json-item-value-literal-view {
+  word-break: break-all;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  cursor: pointer;
+  user-select: none;
 }
 
 .json-item-line {
@@ -50,29 +52,6 @@ textarea.json-text-area-invalid {
   line-height: 1.2;
   color: #999999;
   cursor: pointer;
-}
-
-.json-item-edit-text {
-  cursor: text;
-}
-
-textarea.json-item-edit-text-area {
-  font-family: monospace;
-  resize: none;
-  -moz-tab-size: 2;
-  -o-tab-size: 2;
-  tab-size: 2;
-}
-
-pre.json-item-edit-text-view {
-  flex: 0 1 100%;
-  font-family: sans-serif;
-  margin: 0;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  -moz-tab-size: 2;
-  -o-tab-size: 2;
-  tab-size: 2;
 }
 
 .form-control::placeholder {

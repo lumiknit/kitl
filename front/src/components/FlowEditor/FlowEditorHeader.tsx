@@ -1,13 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faArrowsSplitUpAndLeft,
   faClipboard,
   faCodeFork,
-  faComment,
   faCommentDots,
   faCopy,
   faDeleteLeft,
-  faDownLong,
   faFileLines,
   faPaste,
   faRotateLeft,

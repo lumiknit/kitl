@@ -13,7 +13,6 @@ import ReactFlow, {
   useStoreApi,
   NodeChange,
   EdgeChange,
-  NodePositionChange,
 } from "reactflow";
 
 import "reactflow/dist/style.css";

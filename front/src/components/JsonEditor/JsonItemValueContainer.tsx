@@ -6,7 +6,7 @@ import * as jh from "./helper";
 export type JsonItemValueContainerProps = {
   path: jh.JsonPath;
   value: jh.Json;
-  changeType: (type?: jh.JsonType) => void;
+  changeType: (toggle: boolean, type?: jh.JsonType) => void;
   children: ReactElement | ReactElement[];
 };
 
@@ -27,7 +27,7 @@ const JsonItemValueContainer = (props: JsonItemValueContainerProps) => {
       <button
         className={btnHandle}
         type="button"
-        onClick={() => props.changeType()}>
+        onClick={() => props.changeType(true)}>
         <FontAwesomeIcon icon={icon} />
       </button>
       {props.children}

@@ -5,7 +5,7 @@ import JsonItemValueContainer from "./JsonItemValueContainer";
 export type JsonItemValueTypeProps = {
   path: jh.JsonPath;
   value: jh.Json;
-  changeType: (type?: jh.JsonType) => void;
+  changeType: (toggle: boolean, type?: jh.JsonType) => void;
 };
 
 const JsonItemValueShow = (props: JsonItemValueTypeProps) => {
@@ -32,7 +32,7 @@ const JsonItemValueShow = (props: JsonItemValueTypeProps) => {
         key={i}
         className={btnType}
         type="button"
-        onClick={() => props.changeType(i)}>
+        onClick={() => props.changeType(true, i)}>
         <FontAwesomeIcon icon={icon} />
       </button>
     );
@@ -41,7 +41,7 @@ const JsonItemValueShow = (props: JsonItemValueTypeProps) => {
     <JsonItemValueContainer
       path={props.path}
       value={props.value}
-      changeType={props.changeType}>
+      changeType={() => props.changeType(true)}>
       {typeBtns}
     </JsonItemValueContainer>
   );
