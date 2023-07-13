@@ -13,6 +13,11 @@ import ReactFlow, {
   useStoreApi,
   NodeChange,
   EdgeChange,
+  SelectionMode,
+  ConnectionMode,
+  ConnectionLineType,
+  OnSelectionChangeFunc,
+  MarkerType,
 } from "reactflow";
 
 import "reactflow/dist/style.css";
@@ -171,19 +176,66 @@ const FlowEditor = (props: FlowEditorProps) => {
   return (
     <>
       <ReactFlow
+        /* Basic props */
         nodes={props.context.initNodes}
         edges={props.context.initEdges}
         onNodesChange={onNodesChangeWrapper}
         onEdgesChange={onEdgesChangeWrapper}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
+        /* Flow View */
+        fitView
+        minZoom={0.5}
+        maxZoom={5}
         snapGrid={[10, 10]}
         snapToGrid
-        fitView
-        nodesDraggable
         onlyRenderVisibleElements
+        translateExtent={[[-1024, -1024], [Infinity, Infinity]]}
+        nodeExtent={[[0, 0], [Infinity, Infinity]]}
+        /* Edge Specific */
+        edgeUpdaterRadius={16}
+        edgesUpdatable={true}
+        defaultEdgeOptions={{
+          animated: false,
+          /*style: {
+            strokeWidth: 1.5,
+            stroke: "#9ec2e6",
+          },*/
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+            //color: "#9ec2e6",
+            //strokeWidth: 2,
+          }
+        }}
+        /* General Event Handler */
+        /* Node Event Handler */
         onNodeDoubleClick={onNodeDoubleClick}
+        /* Edge Event Handler */
         onEdgeDoubleClick={onEdgeDoubleClick}
+        /* Selection Event Handler */
+        /* Interaction */
+        nodesDraggable={true}
+        nodesConnectable={true}
+        nodesFocusable={false}
+        edgesFocusable={false}
+        elementsSelectable={true}
+        autoPanOnConnect={true}
+        autoPanOnNodeDrag={true}
+        panOnDrag={true}
+        selectionOnDrag={false}
+        selectionMode={SelectionMode.Partial}
+        panOnScroll={false}
+        zoomOnScroll={true}
+        zoomOnPinch={true}
+        zoomOnDoubleClick={false}
+        selectNodesOnDrag={true}
+        elevateNodesOnSelect={true}
+        connectOnClick={true}
+        connectionMode={ConnectionMode.Strict}
+        disableKeyboardA11y={false}
+        /* Connection Line */
+        connectionRadius={24}
+        connectionLineType={ConnectionLineType.Bezier}
         proOptions={{
           hideAttribution: true,
         }}>

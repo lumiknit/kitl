@@ -18,7 +18,13 @@ $flow-node-colors: (
   comment: $flow-node-color-comment,
 );
 
+$flow-edge-colors: (
+  default: #6f86a0,
+  selected: #ed553b,
+);
+
 @use "sass:list";
+@use "sass:map";
 
 /* Node shape */
 
@@ -180,6 +186,18 @@ $handle_off: 0.3rem;
 
 /* Edge */
 
-.flow-edge-error {
-  box-shadow: 0 0 5px $flow-node-color-select;
+.react-flow__edge path.react-flow__edge-path {
+  stroke: map.get($flow-edge-colors, default);
+  stroke-width: 1.5;
+}
+
+marker.react-flow__arrowhead polyline {
+  stroke: map.get($flow-edge-colors, default);
+  fill: map.get($flow-edge-colors, default);
+}
+
+.react-flow__edge.selected path.react-flow__edge-path {
+  stroke: map.get($flow-edge-colors, default);
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 2px rgba($flow-node-color-fg, 0.5));
 }
