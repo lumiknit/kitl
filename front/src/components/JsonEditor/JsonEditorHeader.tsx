@@ -17,11 +17,47 @@ import {
   faSquareCheck,
 } from "@fortawesome/free-solid-svg-icons";
 
+<<<<<<< HEAD
 const menuButton = (ctx: jctx.JsonEditorContext) => {
   const mode = ctx.value.editMode;
   return (
     <button className="btn btn-primary" data-bs-toggle="dropdown">
       <FontAwesomeIcon icon={jctx.editModeIcons[mode]} />
+||||||| 3ee2a90
+type JsonEditorHeaderProps = {
+  // Mode
+  mode: jc.EditMode;
+  updateMode: (mode: jc.EditMode) => void;
+  // Configs
+  showStringEscape: boolean;
+  toggleStringEscape: () => void;
+  // Actions
+  downloadJson: () => void;
+};
+
+const JsonEditorHeader = (props: JsonEditorHeaderProps) => {
+  const menuButton = (
+    <button className="btn btn-warning" data-bs-toggle="dropdown">
+      <BI iconName={jc.editModeIcons[props.mode]} />
+=======
+type JsonEditorHeaderProps = {
+  // Path
+  path: string;
+  // Mode
+  mode: jc.EditMode;
+  updateMode: (mode: jc.EditMode) => void;
+  // Configs
+  showStringEscape: boolean;
+  toggleStringEscape: () => void;
+  // Actions
+  downloadJson: () => void;
+};
+
+const JsonEditorHeader = (props: JsonEditorHeaderProps) => {
+  const menuButton = (
+    <button className="btn btn-warning" data-bs-toggle="dropdown">
+      <BI iconName={jc.editModeIcons[props.mode]} />
+>>>>>>> main
     </button>
   );
 };
@@ -64,6 +100,7 @@ const dropDownMenu = (ctx: jctx.JsonEditorContext) => {
       ))}
     </ul>
   );
+<<<<<<< HEAD
 };
 
 const fileControls = (ctx: jctx.JsonEditorContext) => {
@@ -140,6 +177,75 @@ const controls = (ctx: jctx.JsonEditorContext) => {
       return fileControls(ctx);
     case jctx.EditMode.Edit:
       return editControls(ctx);
+||||||| 3ee2a90
+  let controls = [];
+  switch (props.mode) {
+    case jc.EditMode.Text:
+    case jc.EditMode.Tree:
+      controls = [
+        <input
+          key="0"
+          type="text"
+          className="form-control"
+          placeholder="Path"
+        />,
+        <button key="1" className="btn btn-secondary">
+          <BI iconName="arrow-clockwise" />
+        </button>,
+        <button key="2" className="btn btn-secondary">
+          <BI iconName="save" />
+        </button>,
+      ];
+      break;
+    case jc.EditMode.Select:
+      controls = [
+        <button key="0" className="btn btn-secondary flex-grow-1">
+          <BI iconName="scissors" />
+        </button>,
+        <button key="1" className="btn btn-secondary flex-grow-1">
+          <BI iconName="files" />
+        </button>,
+        <button key="2" className="btn btn-secondary flex-grow-1">
+          <BI iconName="eraser" />
+        </button>,
+      ];
+      break;
+=======
+  let controls = [];
+  switch (props.mode) {
+    case jc.EditMode.Text:
+    case jc.EditMode.Tree:
+      controls = [
+        <input
+          key="0"
+          type="text"
+          className="form-control"
+          placeholder="Path"
+          value={props.path}
+          disabled
+        />,
+        <button key="1" className="btn btn-secondary">
+          <BI iconName="arrow-clockwise" />
+        </button>,
+        <button key="2" className="btn btn-secondary">
+          <BI iconName="save" />
+        </button>,
+      ];
+      break;
+    case jc.EditMode.Select:
+      controls = [
+        <button key="0" className="btn btn-secondary flex-grow-1">
+          <BI iconName="scissors" />
+        </button>,
+        <button key="1" className="btn btn-secondary flex-grow-1">
+          <BI iconName="files" />
+        </button>,
+        <button key="2" className="btn btn-secondary flex-grow-1">
+          <BI iconName="eraser" />
+        </button>,
+      ];
+      break;
+>>>>>>> main
   }
 };
 

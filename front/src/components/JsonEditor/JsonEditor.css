@@ -18,7 +18,14 @@
   z-index: 0;
   width: 100%;
   overflow-x: hidden;
+<<<<<<< HEAD
   overflow-y: hidden;
+||||||| 3ee2a90
+  overflow-y: scroll;
+  padding-top: 40px;
+=======
+  overflow-y: scroll;
+>>>>>>> main
 }
 
 textarea.json-item-value-literal {
@@ -54,6 +61,65 @@ textarea.json-item-value-literal {
   cursor: pointer;
 }
 
+<<<<<<< HEAD
+||||||| 3ee2a90
+.json-item-edit-text {
+  cursor: text;
+}
+
+textarea.json-item-edit-text-area {
+  font-family: monospace;
+  resize: none;
+  -moz-tab-size: 2;
+  -o-tab-size: 2;
+  tab-size: 2;
+}
+
+pre.json-item-edit-text-view {
+  flex: 0 1 100%;
+  font-family: sans-serif;
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  -moz-tab-size: 2;
+  -o-tab-size: 2;
+  tab-size: 2;
+}
+
+.test-wrap {
+  border: 1px dashed #ff0000;
+  position: relative;
+  left: 0px;
+  top: 0px;
+  width: 100vw;
+  height: 90vh;
+}
+
+=======
+.json-item-edit-text {
+  cursor: text;
+}
+
+textarea.json-item-edit-text-area {
+  font-family: monospace;
+  resize: none;
+  -moz-tab-size: 2;
+  -o-tab-size: 2;
+  tab-size: 2;
+}
+
+pre.json-item-edit-text-view {
+  flex: 0 1 100%;
+  font-family: sans-serif;
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  -moz-tab-size: 2;
+  -o-tab-size: 2;
+  tab-size: 2;
+}
+
+>>>>>>> main
 .form-control::placeholder {
   color: #88888888;
 }
