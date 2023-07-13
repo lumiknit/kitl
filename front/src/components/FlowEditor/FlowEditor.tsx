@@ -16,7 +16,6 @@ import ReactFlow, {
   SelectionMode,
   ConnectionMode,
   ConnectionLineType,
-  OnSelectionChangeFunc,
   MarkerType,
 } from "reactflow";
 
@@ -190,8 +189,14 @@ const FlowEditor = (props: FlowEditorProps) => {
         snapGrid={[10, 10]}
         snapToGrid
         onlyRenderVisibleElements
-        translateExtent={[[-1024, -1024], [Infinity, Infinity]]}
-        nodeExtent={[[0, 0], [Infinity, Infinity]]}
+        translateExtent={[
+          [-1024, -1024],
+          [Infinity, Infinity],
+        ]}
+        nodeExtent={[
+          [0, 0],
+          [Infinity, Infinity],
+        ]}
         /* Edge Specific */
         edgeUpdaterRadius={16}
         edgesUpdatable={true}
@@ -205,7 +210,7 @@ const FlowEditor = (props: FlowEditorProps) => {
             type: MarkerType.ArrowClosed,
             //color: "#9ec2e6",
             //strokeWidth: 2,
-          }
+          },
         }}
         /* General Event Handler */
         /* Node Event Handler */
