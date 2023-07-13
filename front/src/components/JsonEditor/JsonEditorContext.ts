@@ -1,18 +1,92 @@
+import * as jh from "./helper";
+import * as je from "./edit";
+import {
+  faFileLines,
+  faGripVertical,
+  faSquarePen,
+} from "@fortawesome/free-solid-svg-icons";
+
 // Edit mode
 
 export enum EditMode {
   Text = 0,
   Tree = 1,
-  Select = 2,
+  Edit = 2,
 }
 
-export const editModeLabels = ["Text", "Tree", "Select"];
+export const editModeLabels = ["Text", "Tree", "Select & Edit"];
 
-export const editModeIcons = ["body-text", "view-stacked", "pencil-square"];
+export const editModeIcons = [faFileLines, faGripVertical, faSquarePen];
 
-export const isTextMode = (mode: EditMode) => mode === EditMode.Text;
+export type JsonEditorContextValue = {
+  // File information
+  path: string;
 
-export type Config = {
+  // Editing content
+  edit: je.JsonEdit;
+  textModeError?: string;
+  onValueChange?: (value: jh.Json) => void;
+
+  // Edit status and configurations
   editMode: EditMode;
   showStringEscape: boolean;
 };
+
+export const newContextValue = (
+  path: string,
+  value: jh.Json
+): JsonEditorContextValue => {
+  return {
+    path: path,
+    edit: new je.JsonEdit(value),
+    editMode: EditMode.Tree,
+    showStringEscape: false,
+  };
+};
+
+export class JsonEditorContext {
+  value: JsonEditorContextValue;
+  updateValue: (value: JsonEditorContextValue) => void;
+
+  // -- Methods
+
+  // Constructor
+  constructor(
+    value: JsonEditorContextValue,
+    updateValue: (value: JsonEditorContextValue) => void
+  ) {
+    this.value = value;
+    this.updateValue = updateValue;
+  }
+
+  updated() {
+    if (this.value.onValueChange) {
+      this.value.onValueChange(this.value.edit.value);
+    }
+    this.updateValue({ ...this.value });
+  }
+
+  // Value
+  downloadJson() {
+    // TODO: Implement
+    throw new Error("Not implemented");
+  }
+
+  // context
+  isTextMode() {
+    return this.value.editMode === EditMode.Text;
+  }
+
+  updateMode(mode: EditMode) {
+    const newValue = { ...this.value };
+    newValue.editMode = mode;
+    newValue.textModeError = undefined;
+    this.updateValue(newValue);
+  }
+
+  toggleStringEscape() {
+    const newValue = { ...this.value };
+    newValue.showStringEscape = !newValue.showStringEscape;
+    this.updateValue(newValue);
+  }
+}

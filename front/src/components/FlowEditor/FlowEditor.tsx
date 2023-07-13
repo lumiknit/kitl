@@ -11,14 +11,23 @@ import ReactFlow, {
   NodeMouseHandler,
   EdgeMouseHandler,
   useStoreApi,
+  NodeChange,
+  EdgeChange,
+  SelectionMode,
+  ConnectionMode,
+  ConnectionLineType,
+  MarkerType,
 } from "reactflow";
 
 import "reactflow/dist/style.css";
 import "./FlowEditor.css";
+import "./FlowEditorNode.scss";
 
 import * as fh from "./helper";
+import * as fc from "./context";
 
-import DefNode from "./CustomNodes/DefNode";
+import StartNode from "./CustomNodes/StartNode";
+import EndNode from "./CustomNodes/EndNode";
 import OpNode, { Op } from "./CustomNodes/OpNode";
 import ConstNode from "./CustomNodes/ConstNode";
 import SelectNode from "./CustomNodes/SelectNode";
@@ -38,7 +47,8 @@ const getID = () => {
 };
 
 const nodeTypes = {
-  def: DefNode,
+  start: StartNode,
+  end: EndNode,
   op: OpNode,
   const: ConstNode,
   select: SelectNode,
@@ -47,7 +57,7 @@ const nodeTypes = {
 };
 
 export type FlowEditorProps = {
-  context: fh.FlowContext;
+  context: fc.FlowContext;
   openJsonEditor: (path: string, data: any) => void;
   openCodeArea: (path: string, data: string) => void;
   openOpNode: (path: string, data: Op) => void;
@@ -88,6 +98,34 @@ const FlowEditor = (props: FlowEditorProps) => {
       return addEdge(params, newEdges);
     });
   }, []);
+
+  const onNodesChangeWrapper = (changes: NodeChange[]) => {
+    for (const change of changes) {
+      if (change.type === "position") {
+        if (change.id === "##end") {
+          if (change.position !== undefined) {
+            change.position.x = 0;
+          }
+          if (change.positionAbsolute !== undefined) {
+            change.positionAbsolute.x = 0;
+          }
+        }
+      }
+    }
+
+    return props.context.onNodesChange(changes);
+  };
+
+  let updatingGraphError = false;
+  const onEdgesChangeWrapper = (edges: EdgeChange[]) => {
+    props.context.onEdgesChange(edges);
+    if (updatingGraphError) return;
+    updatingGraphError = true;
+    fc.updateGraphError(props.context);
+    console.log(props.context.hasCycle);
+    console.log(props.context.hasMultipleSource);
+    updatingGraphError = false;
+  };
 
   const onNodeDoubleClick: NodeMouseHandler = (_event, node: Node) => {
     // TODO: Edit node
@@ -137,19 +175,72 @@ const FlowEditor = (props: FlowEditorProps) => {
   return (
     <>
       <ReactFlow
-        nodes={props.context.nodes}
-        edges={props.context.edges}
-        onNodesChange={props.context.onNodesChange}
-        onEdgesChange={props.context.onEdgesChange}
+        /* Basic props */
+        nodes={props.context.initNodes}
+        edges={props.context.initEdges}
+        onNodesChange={onNodesChangeWrapper}
+        onEdgesChange={onEdgesChangeWrapper}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
+        /* Flow View */
+        fitView
+        minZoom={0.5}
+        maxZoom={5}
         snapGrid={[10, 10]}
         snapToGrid
-        fitView
-        nodesDraggable
         onlyRenderVisibleElements
+        translateExtent={[
+          [-1024, -1024],
+          [Infinity, Infinity],
+        ]}
+        nodeExtent={[
+          [0, 0],
+          [Infinity, Infinity],
+        ]}
+        /* Edge Specific */
+        edgeUpdaterRadius={16}
+        edgesUpdatable={true}
+        defaultEdgeOptions={{
+          animated: false,
+          /*style: {
+            strokeWidth: 1.5,
+            stroke: "#9ec2e6",
+          },*/
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+            //color: "#9ec2e6",
+            //strokeWidth: 2,
+          },
+        }}
+        /* General Event Handler */
+        /* Node Event Handler */
         onNodeDoubleClick={onNodeDoubleClick}
+        /* Edge Event Handler */
         onEdgeDoubleClick={onEdgeDoubleClick}
+        /* Selection Event Handler */
+        /* Interaction */
+        nodesDraggable={true}
+        nodesConnectable={true}
+        nodesFocusable={false}
+        edgesFocusable={false}
+        elementsSelectable={true}
+        autoPanOnConnect={true}
+        autoPanOnNodeDrag={true}
+        panOnDrag={true}
+        selectionOnDrag={false}
+        selectionMode={SelectionMode.Partial}
+        panOnScroll={false}
+        zoomOnScroll={true}
+        zoomOnPinch={true}
+        zoomOnDoubleClick={false}
+        selectNodesOnDrag={true}
+        elevateNodesOnSelect={true}
+        connectOnClick={true}
+        connectionMode={ConnectionMode.Strict}
+        disableKeyboardA11y={false}
+        /* Connection Line */
+        connectionRadius={24}
+        connectionLineType={ConnectionLineType.Bezier}
         proOptions={{
           hideAttribution: true,
         }}>

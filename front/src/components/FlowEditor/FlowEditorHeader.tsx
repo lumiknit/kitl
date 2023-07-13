@@ -1,5 +1,17 @@
-import BI from "../Util/BI";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faClipboard,
+  faCodeFork,
+  faCommentDots,
+  faCopy,
+  faDeleteLeft,
+  faFileLines,
+  faPaste,
+  faRotateLeft,
+  faRotateRight,
+  faScissors,
+  faSquareCaretDown,
+} from "@fortawesome/free-solid-svg-icons";
 import * as fh from "./helper";
 
 export type FlowEditorHeaderProps = {
@@ -24,25 +36,25 @@ const addNodeModeControls = (props: FlowEditorHeaderProps) => {
           name: "op",
         })
       }>
-      <BI iconName="code-square" />
+      <FontAwesomeIcon icon={faSquareCaretDown} />
     </button>,
     <button
       key="mem"
       className="btn btn-outline-primary flex-grow-1 px-0"
       onClick={() => props.addNode("mem", null)}>
-      <BI iconName="clipboard" />
+      <FontAwesomeIcon icon={faClipboard} />
     </button>,
     <button
       key="select"
       className="btn btn-outline-danger flex-grow-1 px-0"
       onClick={() => props.addNode("select", null)}>
-      <BI iconName="toggles2" />
+      <FontAwesomeIcon icon={faCodeFork} />
     </button>,
     <button
       key="const"
       className="btn btn-outline-secondary flex-grow-1 px-0"
       onClick={() => props.addNode("const", null)}>
-      <BI iconName="filetype-json" />
+      <FontAwesomeIcon icon={faFileLines} />
     </button>,
     <button
       key="comment"
@@ -50,24 +62,42 @@ const addNodeModeControls = (props: FlowEditorHeaderProps) => {
       onClick={() =>
         props.addNode("comment", "**Double click** to edit *MD* comment")
       }>
-      <BI iconName="chat-square-dots" />
+      <FontAwesomeIcon icon={faCommentDots} />
     </button>,
     <button
       key="del"
       className="btn btn-danger"
       onClick={props.deleteSelectedNode}>
-      <BI iconName="trash" />
+      <FontAwesomeIcon icon={faDeleteLeft} />
     </button>,
   ];
 };
 
 const editModeControls = (_props: FlowEditorHeaderProps) => {
   return [
-    <button key="0" className="btn btn-secondary">
-      <BI iconName="arrow-clockwise" />
+    <button key="undo" className="btn btn-warning py-1 px-0 flex-grow-1">
+      <FontAwesomeIcon icon={faRotateLeft} />
     </button>,
-    <button key="1" className="btn btn-secondary">
-      <BI iconName="save" />
+    <button key="redo" className="btn btn-warning py-1 px-0 flex-grow-1">
+      <FontAwesomeIcon icon={faRotateRight} />
+    </button>,
+    <button
+      key="cut"
+      className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
+      <FontAwesomeIcon icon={faScissors} />
+    </button>,
+    <button
+      key="copy"
+      className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
+      <FontAwesomeIcon icon={faCopy} />
+    </button>,
+    <button
+      key="paste"
+      className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
+      <FontAwesomeIcon icon={faPaste} />
+    </button>,
+    <button key="delete" className="btn btn-danger py-1 px-0 flex-grow-1">
+      <FontAwesomeIcon icon={faDeleteLeft} />
     </button>,
   ];
 };
@@ -89,7 +119,7 @@ const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
   // Menu button
   const menuButton = (
     <button className="btn btn-primary" data-bs-toggle="dropdown">
-      <BI iconName={fh.editingModeIcons[props.mode]} />
+      <FontAwesomeIcon icon={fh.editingModeIcons[props.mode]} />
     </button>
   );
   // Drop down menu
@@ -98,7 +128,7 @@ const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
   for (let i = 0; i < fh.editingModeLabels.length; i++) {
     dropDownItems.push(
       <a className="dropdown-item" href="#" onClick={() => props.updateMode(i)}>
-        <BI iconName={fh.editingModeIcons[i]} />
+        <FontAwesomeIcon icon={fh.editingModeIcons[i]} />
         &nbsp;
         {fh.editingModeLabels[i]}
       </a>

@@ -5,14 +5,19 @@ export type CodeAreaModelProps = {
   open: boolean;
   onClose?: () => void;
   path: string;
-  valueBox: string[];
+  defaultValue: string;
+  onChange?: (value: string) => void;
 };
 
 const CodeAreaModal = (props: CodeAreaModelProps) => {
   return (
     <Modal open={props.open} onClose={props.onClose} fullHeight={false}>
       <h1> {props.path} </h1>
-      <CodeArea valueBox={props.valueBox} autoFocus />
+      <CodeArea
+        defaultValue={props.defaultValue}
+        onChange={props.onChange}
+        autoFocus
+      />
     </Modal>
   );
 };

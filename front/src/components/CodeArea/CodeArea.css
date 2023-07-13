@@ -1,10 +1,36 @@
+div.code-area {
+  width: 100%;
+  padding: 3px;
+}
+
 textarea.code-area {
   width: 100%;
-  border: 0;
+  border: 1px solid #0070ff;
+  border-radius: 0.25rem;
+  outline: transparent;
   background-color: transparent;
   font-family: monospace;
   resize: none;
   -moz-tab-size: 2;
   -o-tab-size: 2;
   tab-size: 2;
+}
+
+textarea.code-area:focus {
+  outline: 2px solid #0070ff;
+}
+
+textarea.code-area-error {
+  color: #f0143e;
+  border: 1px solid #f0143e;
+}
+
+textarea.code-area-error:focus {
+  outline: 2px solid #f0143e;
+}
+
+div.code-area-error-msg {
+  color: #f0143e;
+  font-size: 0.8rem;
+  font-style: italic;
 }

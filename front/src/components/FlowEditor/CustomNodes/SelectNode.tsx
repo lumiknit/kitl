@@ -1,6 +1,7 @@
+import { faCodeFork } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { memo } from "react";
 import { Handle, Position } from "reactflow";
-import BI from "../../Util/BI";
 
 export type SelectNodeProps = {
   isConnectable: boolean;
@@ -9,13 +10,13 @@ export type SelectNodeProps = {
 const SelectNode = (props: SelectNodeProps) => {
   return (
     <>
-      <BI iconName="toggles2" />
+      <FontAwesomeIcon icon={faCodeFork} />
       <Handle
         id="cond"
         type="target"
         position={Position.Left}
         isConnectable={props.isConnectable}
-        className="flow-handle-ctx"
+        className="flow-handle-select-ctx"
       />
       <Handle
         id="left"
@@ -23,7 +24,7 @@ const SelectNode = (props: SelectNodeProps) => {
         position={Position.Top}
         isConnectable={props.isConnectable}
         style={{ left: "25%" }}
-        className="flow-handle-arg"
+        className="flow-handle-select-arg"
       />
       <Handle
         id="right"
@@ -31,14 +32,14 @@ const SelectNode = (props: SelectNodeProps) => {
         position={Position.Top}
         isConnectable={props.isConnectable}
         style={{ left: "75%" }}
-        className="flow-handle-arg"
+        className="flow-handle-select-arg"
       />
       <Handle
         id="ret"
         type="source"
         position={Position.Bottom}
         isConnectable={props.isConnectable}
-        className="flow-handle-ret"
+        className="flow-handle-select-ret"
       />
     </>
   );

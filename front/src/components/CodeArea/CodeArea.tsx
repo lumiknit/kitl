@@ -47,8 +47,10 @@ const unindentTA = (value: string, start: number, end: number) => {
 };
 
 export type CodeAreaProps = {
-  valueBox: string[];
+  defaultValue?: string;
+  onChange?: (value: string) => void;
   autoFocus?: boolean;
+  errorMsg?: string;
 };
 
 const CodeArea = (props: CodeAreaProps) => {
@@ -110,11 +112,16 @@ const CodeArea = (props: CodeAreaProps) => {
     // Resize text area
     const target = event.currentTarget;
     resizeTextArea(target);
+    if (props.onChange !== undefined) {
+      props.onChange(event.currentTarget.value);
+    }
   };
 
   const onChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     // Update value
-    props.valueBox[0] = event.currentTarget.value;
+    if (props.onChange !== undefined) {
+      props.onChange(event.currentTarget.value);
+    }
   };
 
   useEffect(() => {
@@ -123,16 +130,25 @@ const CodeArea = (props: CodeAreaProps) => {
     }
   });
 
+  const className =
+    props.errorMsg !== undefined ? "code-area code-area-error" : "code-area";
+  console.log(props.errorMsg);
+
   return (
-    <textarea
-      ref={refTA}
-      className="code-area"
-      defaultValue={props.valueBox[0]}
-      onChange={onChange}
-      onInput={onInput}
-      onKeyDown={onKeyDown}
-      autoFocus={props.autoFocus}
-    />
+    <div className="code-area">
+      <textarea
+        ref={refTA}
+        className={className}
+        defaultValue={props.defaultValue || ""}
+        onChange={onChange}
+        onInput={onInput}
+        onKeyDown={onKeyDown}
+        autoFocus={props.autoFocus}
+      />
+      {props.errorMsg !== undefined ? (
+        <div className="code-area-error-msg">{props.errorMsg}</div>
+      ) : null}
+    </div>
   );
 };
 
