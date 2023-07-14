@@ -4,6 +4,7 @@ div.editor-root {
   height: calc(var(--vh, 1vh) * 100);
 }
 
-html, body {
+html,
+body {
   overscroll-behavior-y: contain;
 }

@@ -21,7 +21,7 @@ export type FlowEditorHeaderProps = {
   deleteSelectedNode: () => void;
 };
 
-const fileModeControls = (_props: FlowEditorHeaderProps) => {
+const fileModeControls = () => {
   return [<input key="0" type="text" className="form-control" />];
 };
 
@@ -73,7 +73,7 @@ const addNodeModeControls = (props: FlowEditorHeaderProps) => {
   ];
 };
 
-const editModeControls = (_props: FlowEditorHeaderProps) => {
+const editModeControls = () => {
   return [
     <button key="undo" className="btn btn-warning py-1 px-0 flex-grow-1">
       <FontAwesomeIcon icon={faRotateLeft} />
@@ -105,11 +105,11 @@ const editModeControls = (_props: FlowEditorHeaderProps) => {
 const controls = (props: FlowEditorHeaderProps) => {
   switch (props.mode) {
     case fh.EditingMode.File:
-      return fileModeControls(props);
+      return fileModeControls();
     case fh.EditingMode.AddNode:
       return addNodeModeControls(props);
     case fh.EditingMode.Edit:
-      return editModeControls(props);
+      return editModeControls();
     default:
       return <></>;
   }

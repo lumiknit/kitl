@@ -17,7 +17,8 @@ export type JsonKey = number | string;
 export type JsonPath = JsonKey[];
 
 export const pathToString = (path: JsonPath) => {
-  return path.join(" < ");
+  const reversed = path.slice().reverse();
+  return reversed.join(" < ");
 };
 
 export const NUMBER_OF_TYPES = 7;
@@ -106,6 +107,27 @@ export const updateJsonValue = (parent: Json, key: JsonKey, value: Json) => {
     return;
   } else if (typeof parent === "object" && parent !== null) {
     parent[key] = value;
+  }
+};
+
+export const longRandom = () => {
+  const a = Math.random().toString(36).slice(2);
+  const b = Math.random().toString(36).slice(2);
+  return `${a}${b}`;
+};
+
+export const nextJsonKey = (parent: Json): JsonKey => {
+  if (Array.isArray(parent)) {
+    return parent.length;
+  } else if (typeof parent === "object" && parent !== null) {
+    // Generate a key preventing collision
+    let key;
+    do {
+      key = longRandom();
+    } while (Object.prototype.hasOwnProperty.call(parent, key));
+    return key;
+  } else {
+    return 0;
   }
 };
 

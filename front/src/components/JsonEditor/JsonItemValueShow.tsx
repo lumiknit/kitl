@@ -4,14 +4,19 @@ import JsonItemValueBool from "./JsonItemValueBool";
 import JsonItemValueLiteral from "./JsonItemValueLiteral";
 import JsonItemAddButton from "./JsonItemAddButton";
 import { useJsonEditorContext } from "./JsonEditorProvider";
-import { ReactElement, useMemo } from "react";
+import { ReactElement, useMemo, useState } from "react";
 import JsonItemValueCollection from "./JsonItemValueCollection";
-import JsonItemValue from "./JsonItemValue";
+import JsonItemEllipsis from "./JsonItemEllipsis";
+import JsonItem from "./JsonItem";
 
 export type JsonItemValueShowProps = {
   path: jh.JsonPath;
   value: jh.Json;
   changeType: (toggle: boolean, type?: jh.JsonType) => void;
+};
+
+export type JsonItemValueShowState = {
+  folded: boolean;
 };
 
 const displayNumber = (value: jh.Json): string => {
@@ -53,11 +58,20 @@ const parseString = (value: string): jh.Json => {
 
 const JsonItemValueShow = (props: JsonItemValueShowProps) => {
   const ctx = useJsonEditorContext();
+  const [state, setState] = useState<JsonItemValueShowState>({
+    folded: false,
+  });
   return useMemo(() => {
     const ty = jh.jsonTypeOf(props.value);
     const updateValue = (value: jh.Json) => {
       ctx.value.edit.update(props.path, value);
       ctx.updated();
+    };
+
+    const toggleFolded = () => {
+      setState({
+        folded: !state.folded,
+      });
     };
 
     let body = null;
@@ -121,24 +135,41 @@ const JsonItemValueShow = (props: JsonItemValueShowProps) => {
               path={props.path}
               type="Array"
               size={props.value.length}
-              opened={true}
+              folded={state.folded}
+              toggleFolded={toggleFolded}
             />
           );
-          for(let i = 0; i < props.value.length; i++) {
+          if (!state.folded) {
+            for (let i = 0; i < props.value.length; i++) {
+              children.push(
+                <JsonItem
+                  key={`${ctx.value.edit.editCount}--item-${i}`}
+                  path={props.path.concat(i)}
+                  value={props.value[i]}
+                />
+              );
+            }
             children.push(
-              <JsonItemValue
-                key={`item-${i}`}
-                path={props.path.concat(i)}
-                value={props.value[i]}
+              <JsonItemAddButton
+                key={`${ctx.value.edit.editCount}--${props.value.length}`}
+                path={props.path}
+                onClick={() => {
+                  ctx.value.edit.insert(
+                    props.path.concat(jh.nextJsonKey(props.value)),
+                    null
+                  );
+                  ctx.updated();
+                }}
+              />
+            );
+          } else {
+            children.push(
+              <JsonItemEllipsis
+                key={`${ctx.value.edit.editCount}--${props.value.length}`}
+                path={props.path}
               />
             );
           }
-          children.push(
-            <JsonItemAddButton
-              key={props.value.length}
-              path={props.path}
-            />
-          );
         }
         break;
       case jh.JsonType.OBJECT:
@@ -153,25 +184,42 @@ const JsonItemValueShow = (props: JsonItemValueShowProps) => {
               path={props.path}
               type="Object"
               size={size}
-              opened={true}
+              folded={state.folded}
+              toggleFolded={toggleFolded}
             />
           );
-          for(const key in v) {
-            const value = v[key];
+          if (!state.folded) {
+            for (const key in v) {
+              const value = v[key];
+              children.push(
+                <JsonItem
+                  key={`${ctx.value.edit.editCount}--item-${key}`}
+                  path={props.path.concat(key)}
+                  value={value}
+                />
+              );
+            }
             children.push(
-              <JsonItemValue
-                key={`item-${key}`}
-                path={props.path.concat(key)}
-                value={value}
+              <JsonItemAddButton
+                key={`${ctx.value.edit.editCount}--${size}`}
+                path={props.path}
+                onClick={() => {
+                  ctx.value.edit.insert(
+                    props.path.concat(jh.nextJsonKey(props.value)),
+                    null
+                  );
+                  ctx.updated();
+                }}
+              />
+            );
+          } else {
+            children.push(
+              <JsonItemEllipsis
+                key={`${ctx.value.edit.editCount}--${size}`}
+                path={props.path}
               />
             );
           }
-          children.push(
-            <JsonItemAddButton
-              key={size}
-              path={props.path}
-            />
-          );
         }
         break;
     }
@@ -186,7 +234,7 @@ const JsonItemValueShow = (props: JsonItemValueShowProps) => {
         {children}
       </>
     );
-  }, [ctx.toggleStringEscape, props.path, props.value]);
+  }, [ctx.toggleStringEscape, props.path, props.value, state]);
 };
 
 export default JsonItemValueShow;

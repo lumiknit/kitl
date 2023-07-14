@@ -38,22 +38,29 @@ textarea.json-item-value-literal {
   user-select: none;
 }
 
-.json-item-line {
-  width: 100%;
+.form-control::placeholder {
+  color: #88888888;
+}
+
+.json-value-collection-border {
+  margin-top: 0.25rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: 0px;
+}
+
+.json-value-collection-add-btn {
+  border-radius: 100rem;
+  min-width: 4rem;
+}
+
+.json-item-value {
+  margin-top: 0.25rem;
 }
 
 .json-item-index {
-  display: block;
-  font-size: 0.7rem;
-  width: 100%;
-  overflow-x: hidden;
-  margin: 0;
-  padding-right: 16px;
-  line-height: 1.2;
-  color: #999999;
-  cursor: pointer;
-}
-
-.form-control::placeholder {
-  color: #88888888;
+  font-size: 0.8rem;
+  margin: 0.2rem;
+  line-height: 1;
 }

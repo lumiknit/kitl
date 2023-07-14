@@ -12,14 +12,17 @@ class Action {
   }
 
   updateRoot(_value: jh.Json): jh.Json {
+    console.log(_value);
     throw "Unimplemented, use inherited class";
   }
 
   updateArray(_parent: jh.JsonArray, _key: number): jh.Json {
+    console.log(_parent, _key);
     throw "Unimplemented, use inherited class";
   }
 
   updateObject(_parent: jh.JsonObject, _key: string): jh.Json {
+    console.log(_parent, _key);
     throw "Unimplemented, use inherited class";
   }
 
@@ -98,7 +101,7 @@ export class InsertAction extends Action {
     return new DeleteAction(this.path, this.value);
   }
 
-  updateRoot(_value: jh.Json): jh.Json {
+  updateRoot(): jh.Json {
     return this.value;
   }
 
@@ -188,6 +191,7 @@ export class JsonEdit {
   hHead: number;
   hCurr: number;
   hTail: number;
+  editCount: number;
 
   constructor(value: jh.Json, maxHistory = 128) {
     this.value = value;
@@ -196,6 +200,7 @@ export class JsonEdit {
     this.hHead = 0;
     this.hCurr = 0;
     this.hTail = 0;
+    this.editCount = 0;
   }
 
   apply(actions: Action[]) {
@@ -211,7 +216,10 @@ export class JsonEdit {
     if (this.hHead === this.hTail) {
       this.hTail = (this.hTail + 1) % this.maxHistory;
     }
+    this.editCount++;
   }
+
+  /* Base operations */
 
   insert(path: jh.JsonPath, value: jh.Json) {
     return this.apply([new InsertAction(path, value)]);

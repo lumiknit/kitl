@@ -53,15 +53,6 @@ const JsonItemValueLiteral = (props: JsonItemValueLiteralProps) => {
       resizeTextArea(target);
     };
 
-    const onChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-      // Update value
-      const target = event.currentTarget;
-      const value = props.parse(target.value);
-      if (value !== null) {
-        props.updateValue(value);
-      }
-    };
-
     const apply = () => {
       const target = refTA.current;
       if (target === null) {
@@ -82,7 +73,6 @@ const JsonItemValueLiteral = (props: JsonItemValueLiteralProps) => {
           defaultValue={props.display(props.value)}
           onKeyDown={onKeyDown}
           onInput={onInput}
-          onChange={onChange}
           onBlur={apply}
           autoFocus
         />

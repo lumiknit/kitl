@@ -20,20 +20,27 @@ const JsonItemValueContainer = (props: JsonItemValueContainerProps) => {
   const icon = jh.jsonTypeIcons[ty];
 
   return (
-    <div className="json-item-value-type input-group">
-      <button className={btnHandle} type="button">
-        <FontAwesomeIcon icon={faGripVertical} />
-      </button>
-      <button
-        className={btnHandle}
-        type="button"
-        onClick={() => props.changeType(true)}>
-        <FontAwesomeIcon icon={icon}
-          className="fa-fw"
-        />
-      </button>
-      {props.children}
-    </div>
+    <>
+      <div className="json-item-value input-group">
+        <button className={btnHandle} type="button">
+          <div
+            style={{
+              display: "inline-block",
+              width: indent * 2,
+              height: 1,
+            }}
+          />
+          <FontAwesomeIcon icon={faGripVertical} />
+        </button>
+        <button
+          className={btnHandle}
+          type="button"
+          onClick={() => props.changeType(true)}>
+          <FontAwesomeIcon icon={icon} className="fa-fw" />
+        </button>
+        {props.children}
+      </div>
+    </>
   );
 };
 

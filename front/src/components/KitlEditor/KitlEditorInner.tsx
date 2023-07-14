@@ -29,7 +29,6 @@ const KitlEditorInner = () => {
   });
 
   const openModal = (key: string) => (path: string, defaultValue: any) => {
-    console.log(key, path, defaultValue);
     return setState({
       ...state,
       [key]: {
@@ -40,7 +39,6 @@ const KitlEditorInner = () => {
   };
 
   const closeModal = (key: string) => () => {
-    console.log(`closeModal: ${key}`);
     kc.applySubEditingState(context, state.editingState);
     setState({
       ...state,
@@ -49,7 +47,6 @@ const KitlEditorInner = () => {
   };
 
   const onChange = (path: string) => (value: any) => {
-    console.log(`onChange: ${path} = ${value}`);
     setState({
       ...state,
       editingState: kc.addValueChange(state.editingState, path, value),

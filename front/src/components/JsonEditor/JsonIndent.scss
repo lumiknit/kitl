@@ -67,4 +67,15 @@ $json-indent-colors: (
     background-color: rgba(map.get($color, bg), 0.5);
     color: map.get($color, fg);
   }
+
+  .json-value-collection-ellipsis-#{$key} {
+    color: map.get($color, bg);
+  }
+
+  .json-value-collection-border-#{$key} {
+    border-top: 1px solid;
+    border-color: map.get($color, bg);
+    opacity: 1;
+    margin: 0;
+  }
 }
