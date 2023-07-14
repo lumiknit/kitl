@@ -28,7 +28,9 @@ const JsonItemValueContainer = (props: JsonItemValueContainerProps) => {
         className={btnHandle}
         type="button"
         onClick={() => props.changeType(true)}>
-        <FontAwesomeIcon icon={icon} />
+        <FontAwesomeIcon icon={icon}
+          className="fa-fw"
+        />
       </button>
       {props.children}
     </div>

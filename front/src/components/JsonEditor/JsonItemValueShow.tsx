@@ -2,8 +2,11 @@ import * as jh from "./helper";
 import JsonItemValueContainer from "./JsonItemValueContainer";
 import JsonItemValueBool from "./JsonItemValueBool";
 import JsonItemValueLiteral from "./JsonItemValueLiteral";
+import JsonItemAddButton from "./JsonItemAddButton";
 import { useJsonEditorContext } from "./JsonEditorProvider";
-import { useMemo } from "react";
+import { ReactElement, useMemo } from "react";
+import JsonItemValueCollection from "./JsonItemValueCollection";
+import JsonItemValue from "./JsonItemValue";
 
 export type JsonItemValueShowProps = {
   path: jh.JsonPath;
@@ -58,6 +61,7 @@ const JsonItemValueShow = (props: JsonItemValueShowProps) => {
     };
 
     let body = null;
+    const children: ReactElement[] = [];
     switch (ty) {
       case jh.JsonType.NULL:
       case jh.JsonType.FALSE:
@@ -113,40 +117,74 @@ const JsonItemValueShow = (props: JsonItemValueShowProps) => {
             throw new Error("Invalid array");
           }
           body = (
-            <input
-              className="form-control py-1"
-              type="text"
-              defaultValue={`Array[${props.value.length}]`}
-              disabled
-              readOnly
+            <JsonItemValueCollection
+              path={props.path}
+              type="Array"
+              size={props.value.length}
+              opened={true}
+            />
+          );
+          for(let i = 0; i < props.value.length; i++) {
+            children.push(
+              <JsonItemValue
+                key={`item-${i}`}
+                path={props.path.concat(i)}
+                value={props.value[i]}
+              />
+            );
+          }
+          children.push(
+            <JsonItemAddButton
+              key={props.value.length}
+              path={props.path}
             />
           );
         }
         break;
       case jh.JsonType.OBJECT:
         {
-          if (typeof props.value !== "object" || props.value === null) {
+          const v = props.value;
+          if (typeof v !== "object" || v === null || Array.isArray(v)) {
             throw new Error("Invalid object");
           }
+          const size = Object.keys(v).length;
           body = (
-            <input
-              className="form-control py-1"
-              type="text"
-              defaultValue={`Object[${Object.keys(props.value).length}]`}
-              disabled
-              readOnly
+            <JsonItemValueCollection
+              path={props.path}
+              type="Object"
+              size={size}
+              opened={true}
+            />
+          );
+          for(const key in v) {
+            const value = v[key];
+            children.push(
+              <JsonItemValue
+                key={`item-${key}`}
+                path={props.path.concat(key)}
+                value={value}
+              />
+            );
+          }
+          children.push(
+            <JsonItemAddButton
+              key={size}
+              path={props.path}
             />
           );
         }
         break;
     }
     return (
-      <JsonItemValueContainer
-        path={props.path}
-        value={props.value}
-        changeType={props.changeType}>
-        {body}
-      </JsonItemValueContainer>
+      <>
+        <JsonItemValueContainer
+          path={props.path}
+          value={props.value}
+          changeType={props.changeType}>
+          {body}
+        </JsonItemValueContainer>
+        {children}
+      </>
     );
   }, [ctx.toggleStringEscape, props.path, props.value]);
 };

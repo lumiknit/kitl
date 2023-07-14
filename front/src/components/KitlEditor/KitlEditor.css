@@ -5,6 +5,5 @@ div.editor-root {
 }
 
 html, body {
-  overflow: hidden;
   overscroll-behavior-y: contain;
 }
