@@ -29,21 +29,29 @@ const KitlEditorInner = () => {
   });
 
   const openModal = (key: string) => (path: string, defaultValue: any) => {
-    return setState({
-      ...state,
+    return setState(oldState => ({
+      ...oldState,
       [key]: {
         path: path,
         defaultValue: defaultValue,
       },
-    });
+    }));
   };
 
   const closeModal = (key: string) => () => {
     kc.applySubEditingState(context, state.editingState);
-    setState({
-      ...state,
+    setState(oldState => ({
+      ...oldState,
       [key]: undefined,
-    });
+    }));
+  };
+
+  const closeModalWithValue = (key: string, path: string) => (value: any) => {
+    kc.applySubEditing(context, path, value);
+    setState(oldState => ({
+      ...oldState,
+      [key]: undefined,
+    }));
   };
 
   const onChange = (path: string) => (value: any) => {
@@ -59,7 +67,10 @@ const KitlEditorInner = () => {
       {state.jsonEditorModal !== undefined ? (
         <JsonEditorModal
           open={true}
-          onClose={closeModal("jsonEditorModal")}
+          onClose={closeModalWithValue(
+            "jsonEditorModal",
+            state.jsonEditorModal.path
+          )}
           path={state.jsonEditorModal.path}
           defaultValue={state.jsonEditorModal.defaultValue}
           onChange={onChange(state.jsonEditorModal.path)}

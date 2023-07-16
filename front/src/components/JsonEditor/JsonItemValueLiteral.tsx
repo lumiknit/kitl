@@ -1,15 +1,17 @@
 import { useState, createRef, useEffect } from "react";
 
+import * as je from "./edit";
 import * as jh from "./helper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 
 export type JsonItemValueLiteralProps = {
   indent: number;
+  path: jh.JsonPath;
   value: jh.Json;
   display: (value: jh.Json) => string;
   parse: (value: string) => jh.Json;
-  updateValue: (value: jh.Json) => void;
+  updateEditing: (f: je.UpdateEdit) => void;
 };
 
 const JsonItemValueLiteral = (props: JsonItemValueLiteralProps) => {
@@ -60,7 +62,9 @@ const JsonItemValueLiteral = (props: JsonItemValueLiteralProps) => {
       }
       const value = props.parse(target.value);
       if (value !== null) {
-        props.updateValue(value);
+        props.updateEditing(
+          je.applyJsonEdit([new je.UpdateAction(props.path, value)])
+        );
       }
       setState({ editing: false });
     };

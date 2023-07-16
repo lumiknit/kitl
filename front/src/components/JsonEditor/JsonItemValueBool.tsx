@@ -1,11 +1,13 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import * as jh from "./helper";
+import * as je from "./edit";
 
 export type JsonItemValueBoolProps = {
   indent: number;
   type: jh.JsonType;
-  changeType: (toggle: boolean, type?: jh.JsonType) => void;
+  path: jh.JsonPath;
+  updateEditing: (f: je.UpdateEdit) => void;
 };
 
 const JsonItemValueBool = (props: JsonItemValueBoolProps) => {
@@ -23,7 +25,13 @@ const JsonItemValueBool = (props: JsonItemValueBoolProps) => {
         key={i}
         className={cls}
         type="button"
-        onClick={() => props.changeType(false, i)}>
+        onClick={() => {
+          props.updateEditing(
+            je.applyJsonEdit([
+              new je.UpdateAction(props.path, jh.emptyJsonValueOfType(i)),
+            ])
+          );
+        }}>
         <FontAwesomeIcon icon={icon} />
         &nbsp;
         {label}

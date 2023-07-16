@@ -1,39 +1,44 @@
-import { useState } from "react";
+import React, { useCallback, useState } from "react";
+import * as je from "./edit";
 import * as jh from "./helper";
 
 import JsonItemValueType from "./JsonItemValueType";
 import JsonItemValueShow from "./JsonItemValueShow";
-import { useJsonEditorContext } from "./JsonEditorProvider";
 
 export type JsonItemValueProps = {
   path: jh.JsonPath;
   value: jh.Json;
+  updateEditing: (f: je.UpdateEdit) => void;
 };
 
-const JsonItemValue = (props: JsonItemValueProps) => {
-  const ty = jh.jsonTypeOf(props.value);
-  const ctx = useJsonEditorContext();
+const JsonItemValue = React.memo((props: JsonItemValueProps) => {
   const [state, setState] = useState({
     editingType: false,
+    editingIndex: false,
   });
-  const changeType = (toggle: boolean, newType?: jh.JsonType) => {
-    if (toggle) {
-      setState({
-        editingType: !state.editingType,
-      });
-    }
-    if (newType !== undefined && newType !== ty) {
-      ctx.value.edit.update(props.path, jh.emptyJsonValueOfType(newType));
-      ctx.updated();
-    }
-  };
+
+  const toggleType = useCallback(() => {
+    setState({
+      ...state,
+      editingType: !state.editingType,
+    });
+  }, [state]);
+
+  const toggleIndex = useCallback(() => {
+    setState({
+      ...state,
+      editingIndex: !state.editingIndex,
+    });
+  }, [state]);
 
   if (state.editingType) {
     return (
       <JsonItemValueType
         path={props.path}
         value={props.value}
-        changeType={changeType}
+        updateEditing={props.updateEditing}
+        toggleType={toggleType}
+        toggleIndex={toggleIndex}
       />
     );
   } else {
@@ -41,10 +46,12 @@ const JsonItemValue = (props: JsonItemValueProps) => {
       <JsonItemValueShow
         path={props.path}
         value={props.value}
-        changeType={changeType}
+        updateEditing={props.updateEditing}
+        toggleType={toggleType}
+        toggleIndex={toggleIndex}
       />
     );
   }
-};
+});
 
 export default JsonItemValue;

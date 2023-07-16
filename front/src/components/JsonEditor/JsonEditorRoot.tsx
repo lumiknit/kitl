@@ -1,25 +1,35 @@
+import { useState } from "react";
+
 import CodeArea from "../CodeArea/CodeArea";
 
+import * as je from "./edit";
 import JsonEditorHeader from "./JsonEditorHeader";
 import { useJsonEditorContext } from "./JsonEditorProvider";
 import JsonItem from "./JsonItem";
 
-const JsonEditorRoot = () => {
-  console.log("[RENDER] JsonEditorRoot");
+export type JsonEditorRootProps = {
+  editing: je.JsonEdit;
+  updateEditing: (f: je.UpdateEdit) => void;
+};
+
+const JsonEditorRoot = (props: JsonEditorRootProps) => {
   const ctx = useJsonEditorContext();
   let body = undefined;
+  const [textModeError, setTextModeError] = useState<string | undefined>(
+    undefined
+  );
   if (ctx.isTextMode()) {
-    const defaultValue = JSON.stringify(ctx.value.edit.value, undefined, 2);
+    const defaultValue = JSON.stringify(props.editing.value, undefined, 2);
     const onChange = (value: string) => {
       try {
         const newValue = JSON.parse(value);
-        ctx.value.edit.update([], newValue);
-        ctx.value.textModeError = undefined;
-        ctx.updated();
+        props.updateEditing(
+          je.applyJsonEdit([new je.UpdateAction([], newValue)])
+        );
+        setTextModeError(undefined);
       } catch (e) {
         if (e instanceof SyntaxError) {
-          ctx.value.textModeError = e.message;
-          ctx.updated();
+          setTextModeError(e.message);
         } else {
           console.error(e);
         }
@@ -30,15 +40,24 @@ const JsonEditorRoot = () => {
         defaultValue={defaultValue}
         onChange={onChange}
         autoFocus
-        errorMsg={ctx.value.textModeError}
+        errorMsg={textModeError}
       />
     );
   } else {
-    body = <JsonItem path={[]} value={ctx.value.edit.value} />;
+    body = (
+      <JsonItem
+        path={[]}
+        value={props.editing.value}
+        updateEditing={props.updateEditing}
+      />
+    );
   }
   return (
     <div className="json-editor">
-      <JsonEditorHeader />
+      <JsonEditorHeader
+        editing={props.editing}
+        updateEditing={props.updateEditing}
+      />
       <div className="json-editor-body">{body}</div>
     </div>
   );

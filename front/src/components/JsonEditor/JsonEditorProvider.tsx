@@ -9,7 +9,7 @@ import {
 // -- Context and Provider
 
 const Context = createContext(
-  new JsonEditorContext(newContextValue("", null), () => {
+  new JsonEditorContext(newContextValue(""), () => {
     return;
   })
 );

@@ -1,5 +1,4 @@
 import * as jh from "./helper";
-import * as je from "./edit";
 import {
   faFileLines,
   faGripVertical,
@@ -22,23 +21,18 @@ export type JsonEditorContextValue = {
   // File information
   path: string;
 
-  // Editing content
-  edit: je.JsonEdit;
-  textModeError?: string;
-  onValueChange?: (value: jh.Json) => void;
-
   // Edit status and configurations
   editMode: EditMode;
+  textModeError?: string;
   showStringEscape: boolean;
+
+  // Other method
+  close?: (v: jh.Json) => void;
 };
 
-export const newContextValue = (
-  path: string,
-  value: jh.Json
-): JsonEditorContextValue => {
+export const newContextValue = (path: string): JsonEditorContextValue => {
   return {
     path: path,
-    edit: new je.JsonEdit(value),
     editMode: EditMode.Tree,
     showStringEscape: false,
   };
@@ -57,19 +51,6 @@ export class JsonEditorContext {
   ) {
     this.value = value;
     this.updateValue = updateValue;
-  }
-
-  updated() {
-    if (this.value.onValueChange) {
-      this.value.onValueChange(this.value.edit.value);
-    }
-    this.updateValue({ ...this.value });
-  }
-
-  // Value
-  downloadJson() {
-    // TODO: Implement
-    throw new Error("Not implemented");
   }
 
   // context
