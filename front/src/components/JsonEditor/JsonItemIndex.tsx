@@ -1,25 +1,31 @@
-import React, { useMemo } from "react";
 import * as jh from "./helper";
+import * as je from "./edit";
+import JsonItemIndexEdit from "./JsonItemIndexEdit";
+import JsonItemIndexShow from "./JsonItemIndexShow";
 
 export type JsonItemIndexProps = {
   path: jh.JsonPath;
+  value: jh.Json;
+  editing: boolean;
+  toggleIndex: () => void;
+  updateEditing: (f: je.UpdateEdit) => void;
 };
 
-const JsonItemIndex = React.memo((props: JsonItemIndexProps) => {
-  if (props.path.length === 0) return <></>;
-  else {
-    const arr = new Array(props.path.length);
-    const l = props.path.length;
-    for (let i = 0; i < l; i++) {
-      const cls = i === 0 ? "badge bg-primary m-0" : "badge bg-secondary m-0";
-      arr[i] = (
-        <span key={i} className={cls}>
-          {props.path[l - i - 1]}
-        </span>
-      );
-    }
-    return <div className="json-item-index text-truncate">{arr}</div>;
+const JsonItemIndex = (props: JsonItemIndexProps) => {
+  if (props.editing) {
+    return (
+      <JsonItemIndexEdit
+        path={props.path}
+        value={props.value}
+        toggleIndex={props.toggleIndex}
+        updateEditing={props.updateEditing}
+      />
+    );
+  } else {
+    return (
+      <JsonItemIndexShow path={props.path} toggleIndex={props.toggleIndex} />
+    );
   }
-});
+};
 
 export default JsonItemIndex;

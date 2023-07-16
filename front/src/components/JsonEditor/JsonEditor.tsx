@@ -26,7 +26,6 @@ const JsonEditorS = (props: JsonEditorProps) => {
   const value = props.defaultValue !== undefined ? props.defaultValue : null;
   const [editing, setEditing] = useState<je.JsonEdit>(je.newJsonEdit(value));
   if (editing.oldValue !== editing.value && props.onChange !== undefined) {
-    /*props.onChange(editing.value);*/
     editing.oldValue = editing.value;
   }
   return (

@@ -104,10 +104,7 @@ const fileControls = (
   ];
 };
 
-const editControls = (
-  ctx: jctx.JsonEditorContext,
-  props: JsonEditorHeaderProps
-) => {
+const editControls = (props: JsonEditorHeaderProps) => {
   const undoable = je.undoable(props.editing);
   const redoable = je.redoable(props.editing);
   const undo = () => {
@@ -160,14 +157,14 @@ const Controls = (props: JsonEditorHeaderProps) => {
     case jctx.EditMode.Tree:
       return fileControls(ctx, props);
     case jctx.EditMode.Edit:
-      return editControls(ctx, props);
+      return editControls(props);
   }
 };
 
 const JsonEditorHeader = (props: JsonEditorHeaderProps) => {
   return (
     <div className="json-editor-header">
-      <div className="input-group shadow-sm">
+      <div className="input-group shadow">
         <MenuButton />
         <DropDownMenu />
         <Controls {...props} />

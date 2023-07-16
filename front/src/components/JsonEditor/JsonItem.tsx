@@ -12,13 +12,29 @@ export type JsonItemProps = {
 
 const JsonItem = React.memo(
   (props: JsonItemProps) => {
+    const [state, setState] = React.useState({
+      editingIndex: false,
+    });
+    const toggleIndex = React.useCallback(() => {
+      setState({
+        ...state,
+        editingIndex: !state.editingIndex,
+      });
+    }, [state]);
     return (
       <div className="json-item">
-        <JsonItemIndex path={props.path} />
+        <JsonItemIndex
+          path={props.path}
+          value={props.value}
+          editing={state.editingIndex}
+          toggleIndex={toggleIndex}
+          updateEditing={props.updateEditing}
+        />
         <JsonItemValue
           path={props.path}
           value={props.value}
           updateEditing={props.updateEditing}
+          toggleIndex={toggleIndex}
         />
       </div>
     );
