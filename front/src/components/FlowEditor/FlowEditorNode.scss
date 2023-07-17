@@ -19,8 +19,8 @@ $flow-node-colors: (
 );
 
 $flow-edge-colors: (
-  default: #6f86a0,
-  selected: #ed553b,
+  default: #8492a3,
+  selected: #1697dc,
 );
 
 @use "sass:list";
@@ -188,7 +188,7 @@ $handle_off: 0.3rem;
 
 .react-flow__edge path.react-flow__edge-path {
   stroke: map.get($flow-edge-colors, default);
-  stroke-width: 1.5;
+  stroke-width: 1.2;
 }
 
 marker.react-flow__arrowhead polyline {
@@ -198,6 +198,10 @@ marker.react-flow__arrowhead polyline {
 
 .react-flow__edge.selected path.react-flow__edge-path {
   stroke: map.get($flow-edge-colors, default);
-  stroke-width: 1.5;
+  stroke-width: 2;
   filter: drop-shadow(0 0 2px rgba($flow-node-color-fg, 0.5));
+  -webkit-filter: drop-shadow(0 0 2px rgba($flow-node-color-fg, 0.5));
+  -moz-filter: drop-shadow(0 0 2px rgba($flow-node-color-fg, 0.5));
+  -ms-filter: drop-shadow(0 0 2px rgba($flow-node-color-fg, 0.5));
+  -o-filter: drop-shadow(0 0 2px rgba($flow-node-color-fg, 0.5));
 }
