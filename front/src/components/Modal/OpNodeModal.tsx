@@ -3,6 +3,8 @@ import { useRef } from "react";
 import * as h from "../helper";
 import Modal from "./Modal";
 import MobileKeyboard from "../MobileKeyboard/MobileKeyboard";
+import { faSquareCaretDown } from "@fortawesome/free-solid-svg-icons";
+import ModalHeader from "./ModalHeader";
 
 export type OpNodeValue = {
   module: string;
@@ -42,7 +44,11 @@ const OpNodeModal = (props: OpNodeProps) => {
   };
   return (
     <Modal open={props.open} onClose={onClose} fullHeight={false}>
-      <h1> {props.path} </h1>
+      <ModalHeader
+        icon={faSquareCaretDown}
+        title={props.path}
+        onClose={onClose}
+      />
       <label className="form-label">Module</label>
       <input
         ref={modRef}

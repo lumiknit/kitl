@@ -1,6 +1,8 @@
 import { useState } from "react";
 import CodeArea from "../CodeArea/CodeArea";
 import Modal from "./Modal";
+import ModalHeader from "./ModalHeader";
+import { faCode } from "@fortawesome/free-solid-svg-icons";
 
 export type CodeAreaModelProps = {
   open: boolean;
@@ -30,7 +32,7 @@ const CodeAreaModal = (props: CodeAreaModelProps) => {
 
   return (
     <Modal open={props.open} onClose={onClose} fullHeight={false}>
-      <h1> {props.path} </h1>
+      <ModalHeader icon={faCode} title={props.path} onClose={onClose} />
       <CodeArea
         defaultValue={props.defaultValue}
         onChange={onChange}

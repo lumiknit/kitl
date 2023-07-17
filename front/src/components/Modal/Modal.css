@@ -26,3 +26,12 @@ div.m-modal-content {
   border-radius: 0.5rem;
   box-shadow: 0 0 1rem #00000080;
 }
+
+.m-modal-header {
+  position: sticky;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+}
