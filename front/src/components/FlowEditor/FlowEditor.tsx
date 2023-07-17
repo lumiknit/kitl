@@ -228,14 +228,8 @@ const FlowEditor = (props: FlowEditorProps) => {
         edgesUpdatable={true}
         defaultEdgeOptions={{
           animated: false,
-          /*style: {
-            strokeWidth: 1.5,
-            stroke: "#9ec2e6",
-          },*/
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            //color: "#9ec2e6",
-            //strokeWidth: 2,
           },
         }}
         /* General Event Handler */

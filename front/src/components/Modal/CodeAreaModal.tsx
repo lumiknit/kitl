@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import CodeArea from "../CodeArea/CodeArea";
 import Modal from "./Modal";
 

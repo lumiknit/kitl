@@ -9,6 +9,10 @@ div.m-modal {
   padding: 2.5rem 1rem;
 }
 
+.full-modal div.m-modal {
+  padding: 0;
+}
+
 div.m-modal-content {
   position: relative;
 
