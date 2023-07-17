@@ -172,6 +172,32 @@ const FlowEditor = (props: FlowEditorProps) => {
     props.context.setNodes(nodes => nodes.filter(node => !node.selected));
   };
 
+  const onDoubleClick = (event: React.MouseEvent) => {
+    const target = event.target as HTMLElement;
+    if(!target.classList.contains("react-flow__pane")) return;
+    event.preventDefault();
+    const {
+      transform: [tx, ty, zoom],
+    } = storeApi.getState();
+    // Calculate clicked position
+    const zoomMultiplier = 1 / zoom;
+    const x = (event.clientX - tx) * zoomMultiplier;
+    const y = (event.clientY - ty) * zoomMultiplier;
+    const newNode: Node = {
+      id: getID(),
+      type: "op",
+      data: {
+        module: "",
+        name: "op",
+      },
+      position: {
+        x: x,
+        y: y,
+      },
+    };
+    props.context.setNodes(nodes => [...nodes, newNode]);
+  };
+
   return (
     <>
       <ReactFlow
@@ -188,7 +214,7 @@ const FlowEditor = (props: FlowEditorProps) => {
         maxZoom={5}
         snapGrid={[10, 10]}
         snapToGrid
-        onlyRenderVisibleElements
+        /*onlyRenderVisibleElements*/
         translateExtent={[
           [-1024, -1024],
           [Infinity, Infinity],
@@ -213,6 +239,7 @@ const FlowEditor = (props: FlowEditorProps) => {
           },
         }}
         /* General Event Handler */
+        onDoubleClick={onDoubleClick}
         /* Node Event Handler */
         onNodeDoubleClick={onNodeDoubleClick}
         /* Edge Event Handler */

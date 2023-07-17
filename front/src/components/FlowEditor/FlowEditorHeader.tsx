@@ -52,7 +52,7 @@ const addNodeModeControls = (props: FlowEditorHeaderProps) => {
     </button>,
     <button
       key="const"
-      className="btn btn-outline-secondary flex-grow-1 px-0"
+      className="btn btn-outline-warning flex-grow-1 px-0"
       onClick={() => props.addNode("const", null)}>
       <FontAwesomeIcon icon={faFileLines} />
     </button>,
