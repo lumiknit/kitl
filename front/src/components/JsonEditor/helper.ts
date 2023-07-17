@@ -17,7 +17,8 @@ export type JsonKey = number | string;
 export type JsonPath = JsonKey[];
 
 export const pathToString = (path: JsonPath) => {
-  return path.join(" < ");
+  const reversed = path.slice().reverse();
+  return reversed.join(" < ");
 };
 
 export const NUMBER_OF_TYPES = 7;
@@ -109,12 +110,47 @@ export const updateJsonValue = (parent: Json, key: JsonKey, value: Json) => {
   }
 };
 
-export const jsonBtnColorClass = (depth: number, outline?: boolean) => {
-  const N = 6;
-  if (outline) {
-    return `json-btn-outline-depth-${depth % N}`;
+export const longRandom = () => {
+  const a = Math.random().toString(36).slice(2);
+  const b = Math.random().toString(36).slice(2);
+  return `${a}${b}`;
+};
+
+export const nextJsonKey = (parent: Json): JsonKey => {
+  if (Array.isArray(parent)) {
+    return parent.length;
+  } else if (typeof parent === "object" && parent !== null) {
+    // Generate a key preventing collision
+    let key;
+    do {
+      key = longRandom();
+    } while (Object.prototype.hasOwnProperty.call(parent, key));
+    return key;
+  } else {
+    return 0;
   }
-  return `json-btn-depth-${depth % N}`;
+};
+
+const indentColorNum = 6;
+
+export const jsonBtnDepthClass = (depth: number) => {
+  const d = (depth + indentColorNum) % indentColorNum;
+  return `json-btn-depth-${d}`;
+};
+
+export const jsonBtnOutlineDepthClass = (depth: number) => {
+  const d = (depth + indentColorNum) % indentColorNum;
+  return `json-btn-outline-depth-${d}`;
+};
+
+export const jsonCollectionEllipsisClass = (depth: number) => {
+  const d = (depth + indentColorNum) % indentColorNum;
+  return `json-value-collection-ellipsis-${d}`;
+};
+
+export const jsonCollectionBorderClass = (depth: number) => {
+  const d = (depth + indentColorNum) % indentColorNum;
+  return `json-value-collection-border-${d}`;
 };
 
 // String escapes
@@ -161,7 +197,7 @@ export class Position {
     return new Position(
       this.depth + 1,
       childIndex,
-      this.path.length > 0 ? `${childIndex} < ${this.path}` : `${childIndex}`
+      this.path.length > 0 ? `${childIndex} < ${this.path}` : `${childIndex}`,
     );
   }
 }

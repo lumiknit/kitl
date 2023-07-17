@@ -1,6 +1,5 @@
 .json-editor {
   width: 100%;
-  height: 100%;
   padding: 0.25rem;
   background-color: #ffffff;
 }
@@ -19,6 +18,7 @@
   width: 100%;
   overflow-x: hidden;
   overflow-y: hidden;
+  padding-top: 0.5rem;
 }
 
 textarea.json-item-value-literal {
@@ -38,22 +38,28 @@ textarea.json-item-value-literal {
   user-select: none;
 }
 
-.json-item-line {
-  width: 100%;
+.form-control::placeholder {
+  color: #88888888;
+}
+
+.json-value-collection-border {
+  margin-top: 0.25rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: 0px;
+}
+
+.json-value-collection-add-btn {
+  border-radius: 100rem;
+  min-width: 4rem;
+}
+
+.json-item-value {
 }
 
 .json-item-index {
-  display: block;
-  font-size: 0.7rem;
-  width: 100%;
-  overflow-x: hidden;
-  margin: 0;
-  padding-right: 16px;
-  line-height: 1.2;
-  color: #999999;
-  cursor: pointer;
-}
-
-.form-control::placeholder {
-  color: #88888888;
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+  line-height: 1;
 }

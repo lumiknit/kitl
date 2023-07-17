@@ -6,7 +6,11 @@ div.m-modal {
   top: 0;
   bottom: 0;
   background-color: #00000040;
-  padding: 2.5rem 1.5rem;
+  padding: 2.5rem 1rem;
+}
+
+.full-modal div.m-modal {
+  padding: 0;
 }
 
 div.m-modal-content {
@@ -21,4 +25,13 @@ div.m-modal-content {
   background-color: #ffffff;
   border-radius: 0.5rem;
   box-shadow: 0 0 1rem #00000080;
+}
+
+.m-modal-header {
+  position: sticky;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
 }

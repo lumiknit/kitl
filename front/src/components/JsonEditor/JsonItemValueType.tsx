@@ -1,18 +1,39 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import * as je from "./edit";
 import * as jh from "./helper";
 import JsonItemValueContainer from "./JsonItemValueContainer";
 
 export type JsonItemValueTypeProps = {
   path: jh.JsonPath;
   value: jh.Json;
-  changeType: (toggle: boolean, type?: jh.JsonType) => void;
+  updateEditing: (f: je.UpdateEdit) => void;
+  toggleType: () => void;
+  toggleIndex: () => void;
 };
 
-const JsonItemValueShow = (props: JsonItemValueTypeProps) => {
-  const indent = props.path.length;
-  const indentColor = indent % 6;
+const changeType =
+  (
+    toggleType: () => void,
+    updateEditing: (f: je.UpdateEdit) => void,
+    ty: jh.JsonType,
+    path: jh.JsonPath,
+    newType?: jh.JsonType,
+  ) =>
+  () => {
+    toggleType();
+    if (newType !== undefined && newType !== ty) {
+      updateEditing(
+        je.applyJsonEdit([
+          new je.UpdateAction(path, jh.emptyJsonValueOfType(newType)),
+        ]),
+      );
+    }
+  };
 
-  const btnType = `btn json-btn-outline-depth-${indentColor} p-1 flex-grow-1`;
+const JsonItemValueShow = (props: JsonItemValueTypeProps) => {
+  const btnType = `btn ${jh.jsonBtnOutlineDepthClass(
+    props.path.length,
+  )} p-1 flex-grow-1`;
   const typeBtns = [];
   const ty = jh.jsonTypeOf(props.value);
   const list = [0, 3, 4, 5, 6];
@@ -32,16 +53,23 @@ const JsonItemValueShow = (props: JsonItemValueTypeProps) => {
         key={i}
         className={btnType}
         type="button"
-        onClick={() => props.changeType(true, i)}>
+        onClick={changeType(
+          props.toggleType,
+          props.updateEditing,
+          ty,
+          props.path,
+          i,
+        )}>
         <FontAwesomeIcon icon={icon} />
-      </button>
+      </button>,
     );
   }
   return (
     <JsonItemValueContainer
       path={props.path}
       value={props.value}
-      changeType={() => props.changeType(true)}>
+      toggleType={props.toggleType}
+      toggleIndex={props.toggleIndex}>
       {typeBtns}
     </JsonItemValueContainer>
   );

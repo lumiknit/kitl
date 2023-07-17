@@ -1,14 +1,27 @@
+import React, { ReactElement, useCallback, useState } from "react";
+
+import * as je from "./edit";
 import * as jh from "./helper";
 import JsonItemValueContainer from "./JsonItemValueContainer";
 import JsonItemValueBool from "./JsonItemValueBool";
 import JsonItemValueLiteral from "./JsonItemValueLiteral";
+import JsonItemAddButton from "./JsonItemAddButton";
 import { useJsonEditorContext } from "./JsonEditorProvider";
-import { useMemo } from "react";
+
+import JsonItemValueCollection from "./JsonItemValueCollection";
+import JsonItemEllipsis from "./JsonItemEllipsis";
+import JsonItem from "./JsonItem";
 
 export type JsonItemValueShowProps = {
   path: jh.JsonPath;
   value: jh.Json;
-  changeType: (toggle: boolean, type?: jh.JsonType) => void;
+  updateEditing: (f: je.UpdateEdit) => void;
+  toggleType: () => void;
+  toggleIndex: () => void;
+};
+
+export type JsonItemValueShowState = {
+  folded: boolean;
 };
 
 const displayNumber = (value: jh.Json): string => {
@@ -48,107 +61,169 @@ const parseString = (value: string): jh.Json => {
   return value;
 };
 
-const JsonItemValueShow = (props: JsonItemValueShowProps) => {
+const JsonItemValueShow = React.memo((props: JsonItemValueShowProps) => {
   const ctx = useJsonEditorContext();
-  return useMemo(() => {
-    const ty = jh.jsonTypeOf(props.value);
-    const updateValue = (value: jh.Json) => {
-      ctx.value.edit.update(props.path, value);
-      ctx.updated();
-    };
+  const [state, setState] = useState<JsonItemValueShowState>({
+    folded: false,
+  });
+  const ty = jh.jsonTypeOf(props.value);
 
-    let body = null;
-    switch (ty) {
-      case jh.JsonType.NULL:
-      case jh.JsonType.FALSE:
-      case jh.JsonType.TRUE:
-        {
-          body = (
-            <JsonItemValueBool
-              indent={props.path.length}
-              type={ty}
-              changeType={props.changeType}
-            />
-          );
+  const toggleFolded = () => {
+    setState({
+      folded: !state.folded,
+    });
+  };
+
+  const addItem = useCallback(() => {
+    const newPath = props.path.concat(jh.nextJsonKey(props.value));
+    props.updateEditing(je.applyJsonEdit([new je.InsertAction(newPath, null)]));
+  }, [props.path, props.updateEditing, props.value]);
+
+  let body = null;
+  const children: ReactElement[] = [];
+  switch (ty) {
+    case jh.JsonType.NULL:
+    case jh.JsonType.FALSE:
+    case jh.JsonType.TRUE:
+      {
+        body = (
+          <JsonItemValueBool
+            path={props.path}
+            type={ty}
+            updateEditing={props.updateEditing}
+          />
+        );
+      }
+      break;
+    case jh.JsonType.NUMBER:
+      {
+        body = (
+          <JsonItemValueLiteral
+            path={props.path}
+            value={props.value}
+            display={displayNumber}
+            parse={parseNumber}
+            updateEditing={props.updateEditing}
+          />
+        );
+      }
+      break;
+    case jh.JsonType.STRING:
+      {
+        let display: (value: jh.Json) => string;
+        let parse: (value: string) => jh.Json;
+        if (ctx.value.showStringEscape) {
+          display = displayEscapedString;
+          parse = parseEscapedString;
+        } else {
+          display = displayString;
+          parse = parseString;
         }
-        break;
-      case jh.JsonType.NUMBER:
-        {
-          body = (
-            <JsonItemValueLiteral
-              indent={props.path.length}
-              value={props.value}
-              display={displayNumber}
-              parse={parseNumber}
-              updateValue={updateValue}
-            />
-          );
+        body = (
+          <JsonItemValueLiteral
+            path={props.path}
+            value={props.value}
+            display={display}
+            parse={parse}
+            updateEditing={props.updateEditing}
+          />
+        );
+      }
+      break;
+    case jh.JsonType.ARRAY:
+      {
+        if (!Array.isArray(props.value)) {
+          throw new Error("Invalid array");
         }
-        break;
-      case jh.JsonType.STRING:
-        {
-          let display: (value: jh.Json) => string;
-          let parse: (value: string) => jh.Json;
-          if (ctx.value.showStringEscape) {
-            display = displayEscapedString;
-            parse = parseEscapedString;
-          } else {
-            display = displayString;
-            parse = parseString;
+        body = (
+          <JsonItemValueCollection
+            path={props.path}
+            type="Array"
+            size={props.value.length}
+            folded={state.folded}
+            toggleFolded={toggleFolded}
+          />
+        );
+        if (!state.folded) {
+          for (let i = 0; i < props.value.length; i++) {
+            children.push(
+              <JsonItem
+                key={i}
+                path={props.path.concat(i)}
+                value={props.value[i]}
+                updateEditing={props.updateEditing}
+              />,
+            );
           }
-          body = (
-            <JsonItemValueLiteral
-              indent={props.path.length}
-              value={props.value}
-              display={display}
-              parse={parse}
-              updateValue={updateValue}
-            />
+          children.push(
+            <JsonItemAddButton
+              key={"add"}
+              path={props.path}
+              onClick={addItem}
+            />,
+          );
+        } else {
+          children.push(
+            <JsonItemEllipsis key={"ellipsis"} path={props.path} />,
           );
         }
-        break;
-      case jh.JsonType.ARRAY:
-        {
-          if (!Array.isArray(props.value)) {
-            throw new Error("Invalid array");
+      }
+      break;
+    case jh.JsonType.OBJECT:
+      {
+        const v = props.value;
+        if (typeof v !== "object" || v === null || Array.isArray(v)) {
+          throw new Error("Invalid object");
+        }
+        const size = Object.keys(v).length;
+        body = (
+          <JsonItemValueCollection
+            path={props.path}
+            type="Object"
+            size={size}
+            folded={state.folded}
+            toggleFolded={toggleFolded}
+          />
+        );
+        if (!state.folded) {
+          for (const key in v) {
+            const value = v[key];
+            children.push(
+              <JsonItem
+                key={`item-${key}`}
+                path={props.path.concat(key)}
+                value={value}
+                updateEditing={props.updateEditing}
+              />,
+            );
           }
-          body = (
-            <input
-              className="form-control py-1"
-              type="text"
-              defaultValue={`Array[${props.value.length}]`}
-              disabled
-              readOnly
-            />
+          children.push(
+            <JsonItemAddButton
+              key={`add`}
+              path={props.path}
+              onClick={addItem}
+            />,
+          );
+        } else {
+          children.push(
+            <JsonItemEllipsis key={`ellipsis`} path={props.path} />,
           );
         }
-        break;
-      case jh.JsonType.OBJECT:
-        {
-          if (typeof props.value !== "object" || props.value === null) {
-            throw new Error("Invalid object");
-          }
-          body = (
-            <input
-              className="form-control py-1"
-              type="text"
-              defaultValue={`Object[${Object.keys(props.value).length}]`}
-              disabled
-              readOnly
-            />
-          );
-        }
-        break;
-    }
-    return (
+      }
+      break;
+  }
+  return (
+    <>
       <JsonItemValueContainer
         path={props.path}
         value={props.value}
-        changeType={props.changeType}>
+        toggleType={props.toggleType}
+        toggleIndex={props.toggleIndex}>
         {body}
       </JsonItemValueContainer>
-    );
-  }, [ctx.toggleStringEscape, props.path, props.value]);
-};
+      {children}
+    </>
+  );
+});
 
 export default JsonItemValueShow;

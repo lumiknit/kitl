@@ -7,6 +7,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "./JsonEditor.css";
 import "./JsonIndent.scss";
 
+import * as je from "./edit";
 import * as jh from "./helper";
 import { newContextValue } from "./JsonEditorContext";
 
@@ -17,18 +18,45 @@ type JsonEditorProps = {
   path?: string;
   defaultValue?: jh.Json;
   onChange?: (value: jh.Json) => void;
+  close?: (value: jh.Json) => void;
+  closeBtnRef: React.RefObject<HTMLButtonElement>;
+};
+
+const JsonEditorS = (props: JsonEditorProps) => {
+  const value = props.defaultValue !== undefined ? props.defaultValue : null;
+  const [editing, setEditing] = useState<je.JsonEdit>(je.newJsonEdit(value));
+  if (editing.oldValue !== editing.value && props.onChange !== undefined) {
+    editing.oldValue = editing.value;
+  }
+  return (
+    <>
+      <JsonEditorRoot editing={editing} updateEditing={setEditing} />
+      <button
+        type="button"
+        className="hidden"
+        hidden={true}
+        ref={props.closeBtnRef}
+        onClick={() => {
+          if (props.close !== undefined) props.close(editing.value);
+        }}
+      />
+    </>
+  );
 };
 
 const JsonEditor = (props: JsonEditorProps) => {
-  console.log("[RENDER] JsonEditor");
   const path = props.path !== undefined ? props.path : "";
-  const value = props.defaultValue !== undefined ? props.defaultValue : null;
-  const ctxVal = newContextValue(path, value);
-  ctxVal.onValueChange = props.onChange;
+
+  // Context Value State
+  const ctxVal = newContextValue(path);
   const [ctxValue, setCtxValue] = useState(ctxVal);
+  ctxValue.close = props.close;
+
+  // Editing State
+
   return (
     <JsonEditorProvider ctx={ctxValue} setCtx={setCtxValue}>
-      <JsonEditorRoot />
+      <JsonEditorS {...props} />
     </JsonEditorProvider>
   );
 };

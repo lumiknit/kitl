@@ -3,3 +3,21 @@ div.editor-root {
   width: 100vw;
   height: calc(var(--vh, 1vh) * 100);
 }
+
+div.editor-root-wide {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+div.editor-root-wide-item {
+  position: relative;
+  flex: 1;
+  height: 100%;
+}
+
+html,
+body {
+  overscroll-behavior-y: contain;
+}

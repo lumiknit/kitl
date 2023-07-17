@@ -1,6 +1,10 @@
 import { useRef } from "react";
 
+import * as h from "../helper";
 import Modal from "./Modal";
+import MobileKeyboard from "../MobileKeyboard/MobileKeyboard";
+import { faSquareCaretDown } from "@fortawesome/free-solid-svg-icons";
+import ModalHeader from "./ModalHeader";
 
 export type OpNodeValue = {
   module: string;
@@ -9,34 +13,48 @@ export type OpNodeValue = {
 
 export type OpNodeProps = {
   open: boolean;
-  onClose?: () => void;
+  onClose?: (value: OpNodeValue) => void;
   path: string;
-  onChange?: (value: any) => void;
   defaultValue: OpNodeValue;
 };
 
 const OpNodeModal = (props: OpNodeProps) => {
   const modRef = useRef<HTMLInputElement>(null);
   const opRef = useRef<HTMLInputElement>(null);
-  const onChange = () => {
-    const value = {
-      module: modRef.current?.value,
-      name: opRef.current?.value,
-    };
-    if (props.onChange) {
-      props.onChange(value);
+
+  const onClose = () => {
+    if (props.onClose !== undefined) {
+      props.onClose({
+        module: modRef.current?.value || "",
+        name: opRef.current?.value || "",
+      });
+    }
+  };
+
+  const mkInsert = (value: string) => {
+    const input = opRef.current;
+    if (input !== null) {
+      const s = input.selectionStart || 0;
+      const e = input.selectionEnd || 0;
+      const v = input.value;
+      input.value = v.slice(0, s) + value + v.slice(e);
+      input.selectionStart = s + value.length;
+      input.selectionEnd = s + value.length;
     }
   };
   return (
-    <Modal open={props.open} onClose={props.onClose} fullHeight={false}>
-      <h1> {props.path} </h1>
+    <Modal open={props.open} onClose={onClose} fullHeight={false}>
+      <ModalHeader
+        icon={faSquareCaretDown}
+        title={props.path}
+        onClose={onClose}
+      />
       <label className="form-label">Module</label>
       <input
         ref={modRef}
         type="text"
         className="form-control py-1"
         defaultValue={props.defaultValue.module}
-        onChange={onChange}
       />
       <label className="form-label">OpName</label>
       <input
@@ -44,9 +62,9 @@ const OpNodeModal = (props: OpNodeProps) => {
         type="text"
         className="form-control py-1"
         defaultValue={props.defaultValue.name}
-        onChange={onChange}
         autoFocus
       />
+      {h.isMobile() ? <MobileKeyboard insert={mkInsert} /> : null}
     </Modal>
   );
 };

@@ -12,14 +12,17 @@ class Action {
   }
 
   updateRoot(_value: jh.Json): jh.Json {
+    console.log(_value);
     throw "Unimplemented, use inherited class";
   }
 
   updateArray(_parent: jh.JsonArray, _key: number): jh.Json {
+    console.log(_parent, _key);
     throw "Unimplemented, use inherited class";
   }
 
   updateObject(_parent: jh.JsonObject, _key: string): jh.Json {
+    console.log(_parent, _key);
     throw "Unimplemented, use inherited class";
   }
 
@@ -98,7 +101,7 @@ export class InsertAction extends Action {
     return new DeleteAction(this.path, this.value);
   }
 
-  updateRoot(_value: jh.Json): jh.Json {
+  updateRoot(): jh.Json {
     return this.value;
   }
 
@@ -181,88 +184,76 @@ export class UpdateAction extends Action {
   }
 }
 
-export class JsonEdit {
+export type JsonEdit = {
   value: jh.Json;
+  oldValue?: jh.Json;
   maxHistory: number;
-  history: Action[][];
-  hHead: number;
-  hCurr: number;
-  hTail: number;
+  undoList: Action[][];
+  redoList: Action[][];
+};
 
-  constructor(value: jh.Json, maxHistory = 128) {
-    this.value = value;
-    this.history = new Array(maxHistory);
-    this.maxHistory = maxHistory;
-    this.hHead = 0;
-    this.hCurr = 0;
-    this.hTail = 0;
-  }
+export const newJsonEdit = (value: jh.Json, maxHistory = 128): JsonEdit => {
+  return {
+    value: value,
+    maxHistory: maxHistory,
+    undoList: [],
+    redoList: [],
+  };
+};
 
-  apply(actions: Action[]) {
-    for (const action of actions) {
-      this.value = action.apply(this.value);
-    }
-    // Push to history
-    this.history[this.hCurr] = actions;
-    this.hCurr = (this.hCurr + 1) % this.maxHistory;
-    // If there was undid histories, remove all of them
-    this.hHead = this.hCurr;
-    // Move tail if stack is full
-    if (this.hHead === this.hTail) {
-      this.hTail = (this.hTail + 1) % this.maxHistory;
-    }
+export const applyJsonEdit = (actions: Action[]) => (edit: JsonEdit) => {
+  let v = edit.value;
+  for (const action of actions) {
+    v = action.apply(v);
   }
+  return {
+    ...edit,
+    value: v,
+    undoList: [...edit.undoList, actions],
+    redoList: [],
+  };
+};
 
-  insert(path: jh.JsonPath, value: jh.Json) {
-    return this.apply([new InsertAction(path, value)]);
-  }
+export const undoable = (edit: JsonEdit) => {
+  return edit.undoList.length > 0;
+};
 
-  delete(path: jh.JsonPath) {
-    return this.apply([new DeleteAction(path)]);
-  }
+export const redoable = (edit: JsonEdit) => {
+  return edit.redoList.length > 0;
+};
 
-  update(path: jh.JsonPath, value: jh.Json) {
-    return this.apply([new UpdateAction(path, value)]);
+export const undo = (edit: JsonEdit) => {
+  if (!undoable(edit)) {
+    return edit;
   }
+  const actions = edit.undoList[edit.undoList.length - 1];
+  let v = edit.value;
+  for (let i = actions.length - 1; i >= 0; i--) {
+    v = actions[i].inverse().apply(v);
+  }
+  return {
+    ...edit,
+    value: v,
+    undoList: edit.undoList.slice(0, edit.undoList.length - 1),
+    redoList: [...edit.redoList, actions],
+  };
+};
 
-  undoable() {
-    return this.hCurr !== this.hTail;
+export const redo = (edit: JsonEdit) => {
+  if (!redoable(edit)) {
+    return edit;
   }
+  const actions = edit.redoList[edit.redoList.length - 1];
+  let v = edit.value;
+  for (const action of actions) {
+    v = action.apply(v);
+  }
+  return {
+    ...edit,
+    value: v,
+    undoList: [...edit.undoList, actions],
+    redoList: edit.redoList.slice(0, edit.redoList.length - 1),
+  };
+};
 
-  undo() {
-    if (!this.undoable()) {
-      return false;
-    }
-    this.hCurr = (this.hCurr + this.maxHistory - 1) % this.maxHistory;
-    const actions = this.history[this.hCurr];
-    // Loop inverse order
-    for (let i = actions.length - 1; i >= 0; i--) {
-      this.value = actions[i].inverse().apply(this.value);
-    }
-    return true;
-  }
-
-  redoable() {
-    return this.hCurr !== this.hHead;
-  }
-
-  redo() {
-    if (!this.redoable()) {
-      return false;
-    }
-    const actions = this.history[this.hCurr];
-    for (const action of actions) {
-      this.value = action.apply(this.value);
-    }
-    this.hCurr = (this.hCurr + 1) % this.maxHistory;
-    return true;
-  }
-
-  historySize() {
-    if (this.hHead <= this.hTail) {
-      return this.hHead + this.maxHistory - this.hTail;
-    } else {
-      return this.hHead - this.hTail;
-    }
-  }
-}
+export type UpdateEdit = (editing: JsonEdit) => JsonEdit;

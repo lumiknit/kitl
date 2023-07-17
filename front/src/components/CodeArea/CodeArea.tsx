@@ -132,7 +132,6 @@ const CodeArea = (props: CodeAreaProps) => {
 
   const className =
     props.errorMsg !== undefined ? "code-area code-area-error" : "code-area";
-  console.log(props.errorMsg);
 
   return (
     <div className="code-area">

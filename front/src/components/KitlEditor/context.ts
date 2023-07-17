@@ -10,7 +10,7 @@ export type KitlContext = {
 };
 
 export const newKitlContext = (path: string) => {
-  console.warn("value parsing is not implemented");
+  /*console.warn("value parsing is not implemented"); */
   return {
     path,
     name: path,
@@ -29,14 +29,14 @@ export const emptyKitlEditingState = (): KitlEditingState => ({
 export const addValueChange = (
   st: KitlEditingState,
   path: string,
-  value: any
+  value: any,
 ) => {
-  const newMap = new Map(st.valueChanges);
-  newMap.set(path, value);
-  return {
-    ...st,
-    valueChanges: newMap,
+  const newMap = new Map<string, any>(st.valueChanges);
+  const nm = newMap.set(path, value);
+  const newState = {
+    valueChanges: nm,
   };
+  return newState;
 };
 
 const parsePath = (path: string) => {
@@ -59,33 +59,37 @@ const updateNodeData = (id: string, value: any) => (nodes: Node[]) =>
     };
   });
 
+export const applySubEditing = (ctx: KitlContext, path: string, value: any) => {
+  const [pType, id] = parsePath(path);
+  switch (pType) {
+    case "nd-cmt":
+      {
+        // Comment Node
+        ctx.flowContext.setNodes(updateNodeData(id, value));
+      }
+      break;
+    case "nd-op":
+      {
+        // Operation Node
+        ctx.flowContext.setNodes(updateNodeData(id, value));
+      }
+      break;
+    case "nd-c":
+      {
+        // Const Node
+        ctx.flowContext.setNodes(updateNodeData(id, value));
+      }
+      break;
+  }
+};
+
 export const applySubEditingState = (
   ctx: KitlContext,
-  st: KitlEditingState
+  st: KitlEditingState,
 ) => {
   for (const path of st.valueChanges.keys()) {
-    const [pType, id] = parsePath(path);
     const value = st.valueChanges.get(path);
-    switch (pType) {
-      case "nd-cmt":
-        {
-          // Comment Node
-          ctx.flowContext.setNodes(updateNodeData(id, value));
-        }
-        break;
-      case "nd-op":
-        {
-          // Operation Node
-          ctx.flowContext.setNodes(updateNodeData(id, value));
-        }
-        break;
-      case "nd-c":
-        {
-          // Const Node
-          ctx.flowContext.setNodes(updateNodeData(id, value));
-        }
-        break;
-    }
+    applySubEditing(ctx, path, value);
   }
   st.valueChanges = new Map<string, any>();
 };

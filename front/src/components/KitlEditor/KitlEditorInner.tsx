@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import * as h from "../helper";
+
 import FlowEditor from "../FlowEditor/FlowEditor";
 
 import "./KitlEditor.css";
@@ -10,90 +12,132 @@ import OpNodeModal from "../Modal/OpNodeModal";
 
 import * as kc from "./context";
 
-export type EditorModalState = {
+export enum ModalEditorType {
+  JsonEditor = "jsonEditorModal",
+  CodeArea = "codeAreaModal",
+  OpNode = "opNodeModal",
+}
+
+export type ModalEditorState = {
+  type: ModalEditorType;
   path: string;
   defaultValue: any;
 };
 
 export type KitlEditorInnerState = {
   editingState: kc.KitlEditingState;
-  jsonEditorModal?: EditorModalState;
-  codeAreaModal?: EditorModalState;
-  opNodeModal?: EditorModalState;
+  modalEditorState?: ModalEditorState;
 };
 
-const KitlEditorInner = () => {
+export type KitlEditorInnerProps = {
+  innerHeight: number;
+};
+
+const KitlEditorInner = (props: KitlEditorInnerProps) => {
+  console.log(props);
   const context = kc.newKitlContext("editor-main");
   const [state, setState] = useState<KitlEditorInnerState>({
     editingState: kc.emptyKitlEditingState(),
   });
 
-  const openModal = (key: string) => (path: string, defaultValue: any) => {
-    console.log(key, path, defaultValue);
-    return setState({
-      ...state,
-      [key]: {
-        path: path,
-        defaultValue: defaultValue,
-      },
-    });
-  };
+  const openModal =
+    (ty: ModalEditorType) => (path: string, defaultValue: any) => {
+      return setState(oldState => ({
+        ...oldState,
+        modalEditorState: {
+          type: ty,
+          path: path,
+          defaultValue: defaultValue,
+        },
+      }));
+    };
 
-  const closeModal = (key: string) => () => {
-    console.log(`closeModal: ${key}`);
-    kc.applySubEditingState(context, state.editingState);
-    setState({
-      ...state,
-      [key]: undefined,
-    });
+  const closeModalWithValue = (path: string) => (value: any) => {
+    kc.applySubEditing(context, path, value);
+    setState(oldState => ({
+      ...oldState,
+      modalEditorState: undefined,
+    }));
   };
 
   const onChange = (path: string) => (value: any) => {
-    console.log(`onChange: ${path} = ${value}`);
     setState({
       ...state,
       editingState: kc.addValueChange(state.editingState, path, value),
     });
   };
 
-  return (
-    <div className="editor-root">
-      {/* Modals */}
-      {state.jsonEditorModal !== undefined ? (
-        <JsonEditorModal
-          open={true}
-          onClose={closeModal("jsonEditorModal")}
-          path={state.jsonEditorModal.path}
-          defaultValue={state.jsonEditorModal.defaultValue}
-          onChange={onChange(state.jsonEditorModal.path)}
-        />
-      ) : null}
-      {state.codeAreaModal !== undefined ? (
-        <CodeAreaModal
-          open={true}
-          onClose={closeModal("codeAreaModal")}
-          path={state.codeAreaModal.path}
-          defaultValue={state.codeAreaModal.defaultValue}
-          onChange={onChange(state.codeAreaModal.path)}
-        />
-      ) : null}
-      {state.opNodeModal !== undefined ? (
-        <OpNodeModal
-          open={true}
-          onClose={closeModal("opNodeModal")}
-          path={state.opNodeModal.path}
-          defaultValue={state.opNodeModal.defaultValue}
-          onChange={onChange(state.opNodeModal.path)}
-        />
-      ) : null}
-      <FlowEditor
-        openJsonEditor={openModal("jsonEditorModal")}
-        openCodeArea={openModal("codeAreaModal")}
-        openOpNode={openModal("opNodeModal")}
-        context={context.flowContext}
-      />
-    </div>
+  const modalOpened = state.modalEditorState !== undefined;
+
+  let modal = null;
+  if (state.modalEditorState !== undefined) {
+    switch (state.modalEditorState?.type) {
+      case ModalEditorType.JsonEditor:
+        modal = (
+          <JsonEditorModal
+            open={true}
+            onClose={closeModalWithValue(state.modalEditorState.path)}
+            path={state.modalEditorState.path}
+            defaultValue={state.modalEditorState.defaultValue}
+            onChange={onChange(state.modalEditorState.path)}
+          />
+        );
+        break;
+      case ModalEditorType.CodeArea:
+        modal = (
+          <CodeAreaModal
+            open={true}
+            onClose={closeModalWithValue(state.modalEditorState.path)}
+            path={state.modalEditorState.path}
+            defaultValue={state.modalEditorState.defaultValue}
+            onChange={onChange(state.modalEditorState.path)}
+          />
+        );
+        break;
+      case ModalEditorType.OpNode:
+        modal = (
+          <OpNodeModal
+            open={true}
+            onClose={closeModalWithValue(state.modalEditorState.path)}
+            path={state.modalEditorState.path}
+            defaultValue={state.modalEditorState.defaultValue}
+          />
+        );
+        break;
+      default:
+        modal = null;
+    }
+  }
+
+  const flowEditor = (
+    <FlowEditor
+      openJsonEditor={openModal(ModalEditorType.JsonEditor)}
+      openCodeArea={openModal(ModalEditorType.CodeArea)}
+      openOpNode={openModal(ModalEditorType.OpNode)}
+      context={context.flowContext}
+    />
   );
+  if (h.isMobile()) {
+    return (
+      <div className="editor-root">
+        {flowEditor}
+        {modalOpened ? modal : null}
+      </div>
+    );
+  } else {
+    return (
+      <div className="editor-root editor-root-wide">
+        <div className="editor-root-wide-item editor-root-wide-item-left">
+          {flowEditor}
+        </div>
+        {!modalOpened ? null : (
+          <div className="editor-root-wide-item editor-root-wide-item-right full-modal">
+            {modal}
+          </div>
+        )}
+      </div>
+    );
+  }
 };
 
 export default KitlEditorInner;

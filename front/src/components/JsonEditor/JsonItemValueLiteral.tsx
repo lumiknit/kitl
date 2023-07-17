@@ -1,15 +1,16 @@
 import { useState, createRef, useEffect } from "react";
 
+import * as je from "./edit";
 import * as jh from "./helper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 
 export type JsonItemValueLiteralProps = {
-  indent: number;
+  path: jh.JsonPath;
   value: jh.Json;
   display: (value: jh.Json) => string;
   parse: (value: string) => jh.Json;
-  updateValue: (value: jh.Json) => void;
+  updateEditing: (f: je.UpdateEdit) => void;
 };
 
 const JsonItemValueLiteral = (props: JsonItemValueLiteralProps) => {
@@ -17,7 +18,7 @@ const JsonItemValueLiteral = (props: JsonItemValueLiteralProps) => {
     editing: false,
   });
 
-  const btnClass = `btn json-btn-depth-${props.indent % 6}`;
+  const btnClass = `btn ${jh.jsonBtnDepthClass(props.path.length)}`;
 
   const refTA = createRef<HTMLTextAreaElement>();
 
@@ -53,15 +54,6 @@ const JsonItemValueLiteral = (props: JsonItemValueLiteralProps) => {
       resizeTextArea(target);
     };
 
-    const onChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-      // Update value
-      const target = event.currentTarget;
-      const value = props.parse(target.value);
-      if (value !== null) {
-        props.updateValue(value);
-      }
-    };
-
     const apply = () => {
       const target = refTA.current;
       if (target === null) {
@@ -69,7 +61,9 @@ const JsonItemValueLiteral = (props: JsonItemValueLiteralProps) => {
       }
       const value = props.parse(target.value);
       if (value !== null) {
-        props.updateValue(value);
+        props.updateEditing(
+          je.applyJsonEdit([new je.UpdateAction(props.path, value)]),
+        );
       }
       setState({ editing: false });
     };
@@ -82,7 +76,6 @@ const JsonItemValueLiteral = (props: JsonItemValueLiteralProps) => {
           defaultValue={props.display(props.value)}
           onKeyDown={onKeyDown}
           onInput={onInput}
-          onChange={onChange}
           onBlur={apply}
           autoFocus
         />
