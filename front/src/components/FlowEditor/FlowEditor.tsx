@@ -174,7 +174,7 @@ const FlowEditor = (props: FlowEditorProps) => {
 
   const onDoubleClick = (event: React.MouseEvent) => {
     const target = event.target as HTMLElement;
-    if(!target.classList.contains("react-flow__pane")) return;
+    if (!target.classList.contains("react-flow__pane")) return;
     event.preventDefault();
     const {
       transform: [tx, ty, zoom],

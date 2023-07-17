@@ -38,14 +38,6 @@ const KitlEditorInner = () => {
     }));
   };
 
-  const closeModal = (key: string) => () => {
-    kc.applySubEditingState(context, state.editingState);
-    setState(oldState => ({
-      ...oldState,
-      [key]: undefined,
-    }));
-  };
-
   const closeModalWithValue = (key: string, path: string) => (value: any) => {
     kc.applySubEditing(context, path, value);
     setState(oldState => ({
@@ -69,7 +61,7 @@ const KitlEditorInner = () => {
           open={true}
           onClose={closeModalWithValue(
             "jsonEditorModal",
-            state.jsonEditorModal.path
+            state.jsonEditorModal.path,
           )}
           path={state.jsonEditorModal.path}
           defaultValue={state.jsonEditorModal.defaultValue}
@@ -79,7 +71,10 @@ const KitlEditorInner = () => {
       {state.codeAreaModal !== undefined ? (
         <CodeAreaModal
           open={true}
-          onClose={closeModal("codeAreaModal")}
+          onClose={closeModalWithValue(
+            "codeAreaModal",
+            state.codeAreaModal.path,
+          )}
           path={state.codeAreaModal.path}
           defaultValue={state.codeAreaModal.defaultValue}
           onChange={onChange(state.codeAreaModal.path)}
@@ -88,10 +83,9 @@ const KitlEditorInner = () => {
       {state.opNodeModal !== undefined ? (
         <OpNodeModal
           open={true}
-          onClose={closeModal("opNodeModal")}
+          onClose={closeModalWithValue("opNodeModal", state.opNodeModal.path)}
           path={state.opNodeModal.path}
           defaultValue={state.opNodeModal.defaultValue}
-          onChange={onChange(state.opNodeModal.path)}
         />
       ) : null}
       <FlowEditor

@@ -29,7 +29,7 @@ export const emptyKitlEditingState = (): KitlEditingState => ({
 export const addValueChange = (
   st: KitlEditingState,
   path: string,
-  value: any
+  value: any,
 ) => {
   const newMap = new Map<string, any>(st.valueChanges);
   const nm = newMap.set(path, value);
@@ -85,7 +85,7 @@ export const applySubEditing = (ctx: KitlContext, path: string, value: any) => {
 
 export const applySubEditingState = (
   ctx: KitlContext,
-  st: KitlEditingState
+  st: KitlEditingState,
 ) => {
   for (const path of st.valueChanges.keys()) {
     const value = st.valueChanges.get(path);

@@ -11,7 +11,7 @@ import {
 const Context = createContext(
   new JsonEditorContext(newContextValue(""), () => {
     return;
-  })
+  }),
 );
 
 export const useJsonEditorContext = () => useContext(Context);

@@ -13,9 +13,9 @@ export type JsonItemValueCollectionProps = {
 
 const JsonItemValueCollection = (props: JsonItemValueCollectionProps) => {
   return useMemo(() => {
-    const indent = props.path.length + 1;
-    const indentColor = indent % 6;
-    const btnClass = `btn json-btn-depth-${indentColor} py-1 px-2`;
+    const btnClass = `btn ${jh.jsonBtnDepthClass(
+      props.path.length + 1,
+    )} py-1 px-2`;
     const icon = props.folded ? faCaretRight : faCaretDown;
     return (
       <>

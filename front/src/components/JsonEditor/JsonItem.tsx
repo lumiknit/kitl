@@ -45,7 +45,7 @@ const JsonItem = React.memo(
       prev.path.length === next.path.length &&
       prev.path.every((v, i) => v === next.path[i])
     );
-  }
+  },
 );
 
 export default JsonItem;

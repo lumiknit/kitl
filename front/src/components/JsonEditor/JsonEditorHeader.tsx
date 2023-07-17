@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 
 import * as jctx from "./JsonEditorContext";
 import * as je from "./edit";
@@ -31,12 +31,23 @@ const MenuButton = () => {
         <FontAwesomeIcon icon={jctx.editModeIcons[mode]} />
       </button>
     ),
-    [mode]
+    [mode],
   );
 };
 
-const DropDownMenu = () => {
+const DropDownMenu = (props: JsonEditorHeaderProps) => {
   const ctx = useJsonEditorContext();
+  const downloadJson = () => {
+    const v = JSON.stringify(props.editing.value, undefined, 2);
+    const blob = new Blob([v], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    const filename = ctx.value.path.replace(/[`~!@#$%^&\\|<>/?'":;]/, "_");
+    a.download = `${filename}.json`;
+    a.click();
+  };
+
   return useMemo(() => {
     const menus = [];
     for (let i = 0; i < jctx.editModeLabels.length; i++) {
@@ -47,7 +58,7 @@ const DropDownMenu = () => {
           <FontAwesomeIcon icon={icon} />
           &nbsp;
           {label}
-        </a>
+        </a>,
       );
     }
     menus.push(<hr />);
@@ -60,13 +71,13 @@ const DropDownMenu = () => {
           icon={ctx.value.showStringEscape ? faSquareCheck : faSquare}
         />
         &nbsp; Show string escapes
-      </a>
+      </a>,
     );
     menus.push(
-      <a className="dropdown-item" href="#">
+      <a className="dropdown-item" href="#" onClick={downloadJson}>
         <FontAwesomeIcon icon={faDownload} />
         &nbsp; Download
-      </a>
+      </a>,
     );
     return (
       <ul className="dropdown-menu">
@@ -80,7 +91,7 @@ const DropDownMenu = () => {
 
 const fileControls = (
   ctx: jctx.JsonEditorContext,
-  props: JsonEditorHeaderProps
+  props: JsonEditorHeaderProps,
 ) => {
   return [
     <input
@@ -149,7 +160,7 @@ const editControls = (props: JsonEditorHeaderProps) => {
   ];
 };
 
-const Controls = (props: JsonEditorHeaderProps) => {
+const Controls = React.memo((props: JsonEditorHeaderProps) => {
   const ctx = useJsonEditorContext();
   const mode = ctx.value.editMode;
   switch (mode) {
@@ -159,14 +170,14 @@ const Controls = (props: JsonEditorHeaderProps) => {
     case jctx.EditMode.Edit:
       return editControls(props);
   }
-};
+});
 
 const JsonEditorHeader = (props: JsonEditorHeaderProps) => {
   return (
     <div className="json-editor-header">
       <div className="input-group shadow">
         <MenuButton />
-        <DropDownMenu />
+        <DropDownMenu {...props} />
         <Controls {...props} />
       </div>
     </div>

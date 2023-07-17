@@ -16,7 +16,7 @@ const JsonEditorRoot = (props: JsonEditorRootProps) => {
   const ctx = useJsonEditorContext();
   let body = undefined;
   const [textModeError, setTextModeError] = useState<string | undefined>(
-    undefined
+    undefined,
   );
   if (ctx.isTextMode()) {
     const defaultValue = JSON.stringify(props.editing.value, undefined, 2);
@@ -24,7 +24,7 @@ const JsonEditorRoot = (props: JsonEditorRootProps) => {
       try {
         const newValue = JSON.parse(value);
         props.updateEditing(
-          je.applyJsonEdit([new je.UpdateAction([], newValue)])
+          je.applyJsonEdit([new je.UpdateAction([], newValue)]),
         );
         setTextModeError(undefined);
       } catch (e) {

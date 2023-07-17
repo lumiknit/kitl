@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 
 export type JsonItemValueLiteralProps = {
-  indent: number;
   path: jh.JsonPath;
   value: jh.Json;
   display: (value: jh.Json) => string;
@@ -19,7 +18,7 @@ const JsonItemValueLiteral = (props: JsonItemValueLiteralProps) => {
     editing: false,
   });
 
-  const btnClass = `btn json-btn-depth-${props.indent % 6}`;
+  const btnClass = `btn ${jh.jsonBtnDepthClass(props.path.length)}`;
 
   const refTA = createRef<HTMLTextAreaElement>();
 
@@ -63,7 +62,7 @@ const JsonItemValueLiteral = (props: JsonItemValueLiteralProps) => {
       const value = props.parse(target.value);
       if (value !== null) {
         props.updateEditing(
-          je.applyJsonEdit([new je.UpdateAction(props.path, value)])
+          je.applyJsonEdit([new je.UpdateAction(props.path, value)]),
         );
       }
       setState({ editing: false });

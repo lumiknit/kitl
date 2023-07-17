@@ -131,7 +131,7 @@ const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
         <FontAwesomeIcon icon={fh.editingModeIcons[i]} />
         &nbsp;
         {fh.editingModeLabels[i]}
-      </a>
+      </a>,
     );
   }
   // Insert separator

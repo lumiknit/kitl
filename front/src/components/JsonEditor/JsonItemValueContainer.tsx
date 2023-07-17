@@ -13,9 +13,7 @@ export type JsonItemValueContainerProps = {
 
 const Buttons = React.memo((props: JsonItemValueContainerProps) => {
   const indent = props.path.length;
-  const indentColor = indent % 6;
-
-  const btnHandle = `btn json-btn-depth-${indentColor} py-1 px-2`;
+  const btnHandle = `btn ${jh.jsonBtnDepthClass(indent)} py-1 px-2`;
 
   const ty = jh.jsonTypeOf(props.value);
   const icon = jh.jsonTypeIcons[ty];

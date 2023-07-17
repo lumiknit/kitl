@@ -6,12 +6,8 @@ import React from "react";
 
 const JsonItemEllipsis = React.memo(
   (props: { path: jh.JsonPath }) => {
-    const indent = props.path.length;
-    const indentColor = indent % 6;
-    const indentColor1 = (indent + 1) % 6;
-
-    const cls = `json-value-collection-border-${indentColor}`;
-    const eCls = `json-value-collection-ellipsis-${indentColor1}`;
+    const cls = jh.jsonCollectionBorderClass(props.path.length);
+    const eCls = jh.jsonCollectionEllipsisClass(props.path.length + 1);
     return (
       <div className="json-value-collection-border">
         <div className="flex-grow-1">
@@ -28,7 +24,7 @@ const JsonItemEllipsis = React.memo(
   },
   (prev, next) => {
     return prev.path.length === next.path.length;
-  }
+  },
 );
 
 export default JsonItemEllipsis;

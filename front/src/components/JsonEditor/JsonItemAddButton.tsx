@@ -9,13 +9,10 @@ export type JsonItemAddButtonProps = {
 };
 
 const JsonItemAddButton = (props: JsonItemAddButtonProps) => {
-  const indent = props.path.length;
-  const indentColor = indent % 6;
-  const indentColor1 = (indent + 1) % 6;
-
-  const cls = `json-value-collection-border-${indentColor}`;
-  const btnAdd = `btn btn-sm json-btn-depth-${indentColor1} json-value-collection-add-btn`;
-
+  const cls = jh.jsonCollectionBorderClass(props.path.length);
+  const btnAdd = `btn ${jh.jsonBtnDepthClass(
+    props.path.length,
+  )} json-value-collection-add-btn`;
   return (
     <div className="json-value-collection-border">
       <div className="flex-grow-1">

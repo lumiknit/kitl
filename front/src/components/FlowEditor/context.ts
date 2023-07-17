@@ -61,7 +61,7 @@ const initialNodes = (name: string) => [
 
 export const useEmptyFlowContext = (
   name: string,
-  path: string
+  path: string,
 ): FlowContext => {
   const initNodes: Node[] = initialNodes(name);
   const initEdges: Edge[] = [];
@@ -90,7 +90,7 @@ export const markErrorEdges = (context: FlowContext, errors: Set<string>) => {
       } else {
         return e;
       }
-    })
+    }),
   );
 };
 
@@ -98,7 +98,7 @@ export const unmarkErrorEdges = (context: FlowContext) => {
   context.instance.setEdges(edges =>
     edges.map(e => {
       return { ...e, className: "flow-edge-error" };
-    })
+    }),
   );
   context.hasMultipleSource = false;
   context.hasCycle = false;

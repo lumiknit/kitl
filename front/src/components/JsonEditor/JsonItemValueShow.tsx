@@ -88,7 +88,6 @@ const JsonItemValueShow = React.memo((props: JsonItemValueShowProps) => {
       {
         body = (
           <JsonItemValueBool
-            indent={props.path.length}
             path={props.path}
             type={ty}
             updateEditing={props.updateEditing}
@@ -100,7 +99,6 @@ const JsonItemValueShow = React.memo((props: JsonItemValueShowProps) => {
       {
         body = (
           <JsonItemValueLiteral
-            indent={props.path.length}
             path={props.path}
             value={props.value}
             display={displayNumber}
@@ -123,7 +121,6 @@ const JsonItemValueShow = React.memo((props: JsonItemValueShowProps) => {
         }
         body = (
           <JsonItemValueLiteral
-            indent={props.path.length}
             path={props.path}
             value={props.value}
             display={display}
@@ -155,7 +152,7 @@ const JsonItemValueShow = React.memo((props: JsonItemValueShowProps) => {
                 path={props.path.concat(i)}
                 value={props.value[i]}
                 updateEditing={props.updateEditing}
-              />
+              />,
             );
           }
           children.push(
@@ -163,11 +160,11 @@ const JsonItemValueShow = React.memo((props: JsonItemValueShowProps) => {
               key={"add"}
               path={props.path}
               onClick={addItem}
-            />
+            />,
           );
         } else {
           children.push(
-            <JsonItemEllipsis key={"ellipsis"} path={props.path} />
+            <JsonItemEllipsis key={"ellipsis"} path={props.path} />,
           );
         }
       }
@@ -197,7 +194,7 @@ const JsonItemValueShow = React.memo((props: JsonItemValueShowProps) => {
                 path={props.path.concat(key)}
                 value={value}
                 updateEditing={props.updateEditing}
-              />
+              />,
             );
           }
           children.push(
@@ -205,11 +202,11 @@ const JsonItemValueShow = React.memo((props: JsonItemValueShowProps) => {
               key={`add`}
               path={props.path}
               onClick={addItem}
-            />
+            />,
           );
         } else {
           children.push(
-            <JsonItemEllipsis key={`ellipsis`} path={props.path} />
+            <JsonItemEllipsis key={`ellipsis`} path={props.path} />,
           );
         }
       }

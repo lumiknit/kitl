@@ -1,3 +1,4 @@
+import * as h from "../helper";
 import * as jh from "./helper";
 import {
   faFileLines,
@@ -33,7 +34,7 @@ export type JsonEditorContextValue = {
 export const newContextValue = (path: string): JsonEditorContextValue => {
   return {
     path: path,
-    editMode: EditMode.Tree,
+    editMode: h.isMobile() ? EditMode.Tree : EditMode.Text,
     showStringEscape: false,
   };
 };
@@ -47,7 +48,7 @@ export class JsonEditorContext {
   // Constructor
   constructor(
     value: JsonEditorContextValue,
-    updateValue: (value: JsonEditorContextValue) => void
+    updateValue: (value: JsonEditorContextValue) => void,
   ) {
     this.value = value;
     this.updateValue = updateValue;

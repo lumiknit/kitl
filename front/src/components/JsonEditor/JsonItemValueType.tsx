@@ -17,7 +17,7 @@ const changeType =
     updateEditing: (f: je.UpdateEdit) => void,
     ty: jh.JsonType,
     path: jh.JsonPath,
-    newType?: jh.JsonType
+    newType?: jh.JsonType,
   ) =>
   () => {
     toggleType();
@@ -25,16 +25,15 @@ const changeType =
       updateEditing(
         je.applyJsonEdit([
           new je.UpdateAction(path, jh.emptyJsonValueOfType(newType)),
-        ])
+        ]),
       );
     }
   };
 
 const JsonItemValueShow = (props: JsonItemValueTypeProps) => {
-  const indent = props.path.length;
-  const indentColor = indent % 6;
-
-  const btnType = `btn json-btn-outline-depth-${indentColor} p-1 flex-grow-1`;
+  const btnType = `btn ${jh.jsonBtnOutlineDepthClass(
+    props.path.length,
+  )} p-1 flex-grow-1`;
   const typeBtns = [];
   const ty = jh.jsonTypeOf(props.value);
   const list = [0, 3, 4, 5, 6];
@@ -59,10 +58,10 @@ const JsonItemValueShow = (props: JsonItemValueTypeProps) => {
           props.updateEditing,
           ty,
           props.path,
-          i
+          i,
         )}>
         <FontAwesomeIcon icon={icon} />
-      </button>
+      </button>,
     );
   }
   return (
