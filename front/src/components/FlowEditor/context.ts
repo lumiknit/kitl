@@ -130,12 +130,10 @@ export const updateGraphError = (context: FlowContext) => {
     }
     arr.push(e);
   }
-  console.log(inMap);
 
   // Find multiple incomings
   for (const k of inMap.keys()) {
     const arr = inMap.get(k);
-    console.log(k, arr);
     if (arr === undefined) continue;
 
     if (arr.length > 1) {

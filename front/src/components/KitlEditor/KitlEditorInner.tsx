@@ -33,8 +33,8 @@ export type KitlEditorInnerProps = {
   innerHeight: number;
 };
 
-const KitlEditorInner = (props: KitlEditorInnerProps) => {
-  console.log(props);
+const KitlEditorInner = (_props: KitlEditorInnerProps) => {
+  ((x) => x)(_props);
   const context = kc.newKitlContext("editor-main");
   const [state, setState] = useState<KitlEditorInnerState>({
     editingState: kc.emptyKitlEditingState(),

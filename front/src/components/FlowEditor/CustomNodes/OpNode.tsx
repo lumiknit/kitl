@@ -20,7 +20,6 @@ const OpNode = (props: OpNodeProps) => {
         id="ctx"
         type="target"
         position={Position.Left}
-        onConnect={params => console.log("handle onConnect", params)}
         isConnectable={props.isConnectable}
         className="flow-handle-op-ctx"
       />
@@ -28,7 +27,6 @@ const OpNode = (props: OpNodeProps) => {
         id="arg"
         type="target"
         position={Position.Top}
-        onConnect={params => console.log("handle onConnect", params)}
         isConnectable={props.isConnectable}
         className="flow-handle-op-arg"
       />
