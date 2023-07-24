@@ -1,6 +1,7 @@
 $flow-node-color-bg: #fff;
 $flow-node-color-fg: #363d47;
-$flow-node-color-op: #c1ccd2;
+/*$flow-node-color-op: #c1ccd2;*/
+$flow-node-color-op: #363d47;
 $flow-node-color-def: #888;
 $flow-node-color-const: #ffbe00;
 $flow-node-color-select: #ed553b;
@@ -19,7 +20,7 @@ $flow-node-colors: (
 );
 
 $flow-edge-colors: (
-  default: #8492a3,
+  default: #5b626a,
   selected: #1697dc,
 );
 
@@ -28,16 +29,25 @@ $flow-edge-colors: (
 
 /* Node shape */
 
+.react-flow__node {
+  font-size: 1rem;
+  line-height: 1;
+  font-family: sans-serif;
+  padding: 0.3rem 0.75rem;
+  text-align: center;
+  min-width: 1rem;
+  min-height: 1rem;
+  background-color: #fff8;
+}
+
 .react-flow__node-start {
   font-size: 0.8rem;
-  font-family: sans-serif;
   color: $flow-node-color-def;
   background: transparent;
   border: 0;
-  border-bottom: 1px dashed $flow-node-color-def;
+  border-bottom: 0.1rem dashed $flow-node-color-def;
   min-width: 5rem;
   padding: 0.1rem 0rem;
-  text-align: center;
 }
 
 .react-flow__node-end {
@@ -46,21 +56,16 @@ $flow-edge-colors: (
   color: $flow-node-color-def;
   background: transparent;
   border: 0;
-  border-top: 1px dashed $flow-node-color-def;
+  border-top: 0.1rem dashed $flow-node-color-def;
   min-width: 5rem;
   padding: 0.1rem 0rem;
-  text-align: center;
 }
 
 .react-flow__node-op {
-  font-size: 1rem;
-  font-family: monospace;
-  color: $flow-node-color-fg;
-  background: $flow-node-color-op;
+  color: $flow-node-color-op;
+  border: 0.1rem solid $flow-node-color-op;
+  /*background: $flow-node-color-op;*/
   border-radius: 0.25rem;
-  padding: 0.5rem 0.75rem;
-  text-align: center;
-  line-height: 1;
 }
 
 .react-flow__node-op .flow-node-op-module {
@@ -70,31 +75,30 @@ $flow-edge-colors: (
 }
 
 .react-flow__node-const {
-  font-size: 1rem;
-  font-family: sans-serif;
   color: $flow-node-color-fg;
-  background: $flow-node-color-const;
+  /*background: $flow-node-color-const;*/
+  border: 0.1rem solid $flow-node-color-const;
   border-radius: 9999px;
-  padding: 0.25rem 0.75rem;
-  text-align: center;
 }
 
 .react-flow__node-select {
-  font-size: 1rem;
-  color: $flow-node-color-bg;
-  background: $flow-node-color-select;
+  /*color: $flow-node-color-bg;*/
+  color: $flow-node-color-select;
+  /*background: $flow-node-color-select;*/
+  border: 0.1rem solid $flow-node-color-select;
   border-radius: 0.25rem 0.25rem 1rem 1rem;
+  line-height: 1.4;
   padding: 0.3rem 1.5rem;
-  text-align: center;
 }
 
 .react-flow__node-mem {
-  font-size: 1rem;
-  color: $flow-node-color-bg;
-  background: $flow-node-color-mem;
+  /*color: $flow-node-color-bg;*/
+  color: $flow-node-color-mem;
+  /*background: $flow-node-color-mem;*/
+  border: 0.1rem solid $flow-node-color-mem;
   border-radius: 0.25rem;
+  line-height: 1.4;
   padding: 0.25rem 0.6rem;
-  text-align: center;
 }
 
 .react-flow__node-comment {
@@ -106,12 +110,12 @@ $flow-edge-colors: (
   border: 0;
   border-left: 4px solid $flow-node-color-comment;
   border-radius: 0;
-  padding: 0.25rem 0.5rem;
+  padding: 0.1rem 0.2rem;
   text-align: left;
 }
 
 .react-flow__node.selected {
-  box-shadow: 0 1px 4px rgba($flow-node-color-fg, 0.8);
+  box-shadow: 0 0.1rem 0.4rem rgba($flow-node-color-fg, 0.5);
 }
 
 /* Handles */
@@ -121,7 +125,7 @@ $flow-edge-colors: (
   height: 0.6rem;
 }
 
-$handle_off: 0.3rem;
+$handle_off: 0.35rem;
 
 @each $_, $pos in (left: left, top: top, right: right, bottom: bottom) {
   .react-flow__handle-#{$pos} {
@@ -136,7 +140,7 @@ $handle_off: 0.3rem;
 /* Handle mixins */
 
 @mixin flow-handle-border-style($style) {
-  border-width: 1px;
+  border-width: 0.1rem;
   border-style: $style;
 }
 
@@ -199,9 +203,5 @@ marker.react-flow__arrowhead polyline {
 .react-flow__edge.selected path.react-flow__edge-path {
   stroke: map.get($flow-edge-colors, default);
   stroke-width: 2;
-  filter: drop-shadow(0 0 2px rgba($flow-node-color-fg, 0.5));
-  -webkit-filter: drop-shadow(0 0 2px rgba($flow-node-color-fg, 0.5));
-  -moz-filter: drop-shadow(0 0 2px rgba($flow-node-color-fg, 0.5));
-  -ms-filter: drop-shadow(0 0 2px rgba($flow-node-color-fg, 0.5));
-  -o-filter: drop-shadow(0 0 2px rgba($flow-node-color-fg, 0.5));
+  filter: drop-shadow(0 0 2px rgba($flow-node-color-fg, 0.3));
 }

@@ -1,16 +1,16 @@
-import * as storage from './Storage';
+import * as storage from "./Storage";
 
 export type File = {
   key: string;
   type: storage.FileType.File;
   content: string;
-}
+};
 
 export type Directory = {
   key: string;
   type: storage.FileType.Directory;
-  children: {[key: string]: string};
-}
+  children: { [key: string]: string };
+};
 
 export type StorageItem = File | Directory;
 
@@ -28,7 +28,7 @@ export class BrowserStorage implements storage.IStorage {
   issueKey(): string {
     const name = this.localStoragePrefix + "_key-cnt";
     let cnt = Number(localStorage.getItem(name));
-    if(isNaN(cnt) || cnt < 0) {
+    if (isNaN(cnt) || cnt < 0) {
       cnt = 0;
     }
     localStorage.setItem(name, String(cnt + 1));
@@ -39,12 +39,12 @@ export class BrowserStorage implements storage.IStorage {
 
   getItem(key: string): any {
     const item = localStorage.getItem(this.localStoragePrefix + key);
-    if(item === null) {
+    if (item === null) {
       return undefined;
     }
     try {
       return JSON.parse(item);
-    } catch(e) {
+    } catch (e) {
       return undefined;
     }
   }
@@ -64,8 +64,8 @@ export class BrowserStorage implements storage.IStorage {
     // Try to get root
     const rootKey = "_root";
     const root = this.getItem(rootKey);
-    if(root !== undefined) {
-      if(root.type !== storage.FileType.Directory) {
+    if (root !== undefined) {
+      if (root.type !== storage.FileType.Directory) {
         throw new Error("Root is not a directory");
       }
       return root;
@@ -82,14 +82,14 @@ export class BrowserStorage implements storage.IStorage {
 
   getStorageItem(path: string): StorageItem | undefined {
     const [isAbsolute, p] = storage.pathSplit(path);
-    if(!isAbsolute) return;
+    if (!isAbsolute) return;
     let s: StorageItem = this.getRoot();
-    for(let i = 0; i < p.length; i++) {
-      if(s.type !== storage.FileType.Directory) return;
+    for (let i = 0; i < p.length; i++) {
+      if (s.type !== storage.FileType.Directory) return;
       const c = s.children[p[i]];
-      if(c === undefined) return;
+      if (c === undefined) return;
       s = this.getItem(c);
-      if(s === undefined) return;
+      if (s === undefined) return;
     }
     return s;
   }
@@ -99,7 +99,7 @@ export class BrowserStorage implements storage.IStorage {
   isFile(path: string): Promise<boolean> {
     const item = this.getStorageItem(path);
     return new Promise((resolve, reject) => {
-      if(item === undefined) {
+      if (item === undefined) {
         reject({
           msg: "File not found",
           path: path,
@@ -113,7 +113,7 @@ export class BrowserStorage implements storage.IStorage {
   isDirectory(path: string): Promise<boolean> {
     const item = this.getStorageItem(path);
     return new Promise((resolve, reject) => {
-      if(item === undefined) {
+      if (item === undefined) {
         reject({
           msg: "File not found",
           path: path,
@@ -129,14 +129,14 @@ export class BrowserStorage implements storage.IStorage {
   list(path: string): Promise<string[]> {
     const item = this.getStorageItem(path);
     return new Promise((resolve, reject) => {
-      if(item === undefined) {
+      if (item === undefined) {
         reject({
           msg: "File not found",
           path: path,
         });
         return;
       }
-      if(item.type !== storage.FileType.Directory) {
+      if (item.type !== storage.FileType.Directory) {
         reject({
           msg: "Not a directory",
           path: path,
@@ -151,21 +151,21 @@ export class BrowserStorage implements storage.IStorage {
     const [dir, file] = storage.splitFileName(path);
     const item = this.getStorageItem(dir);
     return new Promise((resolve, reject) => {
-      if(item === undefined) {
+      if (item === undefined) {
         reject({
           msg: "Path not found",
           path: dir,
         });
         return;
       }
-      if(item.type !== storage.FileType.Directory) {
+      if (item.type !== storage.FileType.Directory) {
         reject({
           msg: "Not a directory",
           path: dir,
         });
         return;
       }
-      if(item.children[file] !== undefined) {
+      if (item.children[file] !== undefined) {
         reject({
           msg: "File already exists",
           path: path,
@@ -184,7 +184,7 @@ export class BrowserStorage implements storage.IStorage {
       const newParent = {
         key: item.key,
         type: storage.FileType.Directory,
-        children: {...item.children, [file]: key},
+        children: { ...item.children, [file]: key },
       };
       this.setItem(item.key, newParent);
       resolve();
@@ -194,14 +194,14 @@ export class BrowserStorage implements storage.IStorage {
   read(path: string): Promise<string> {
     const item = this.getStorageItem(path);
     return new Promise((resolve, reject) => {
-      if(item === undefined) {
+      if (item === undefined) {
         reject({
           msg: "File not found",
           path: path,
         });
         return;
       }
-      if(item.type !== storage.FileType.File) {
+      if (item.type !== storage.FileType.File) {
         reject({
           msg: "Not a file",
           path: path,
@@ -216,24 +216,24 @@ export class BrowserStorage implements storage.IStorage {
     const [dir, file] = storage.splitFileName(path);
     let item = this.getStorageItem(path);
     return new Promise((resolve, reject) => {
-      if(item === undefined) {
+      if (item === undefined) {
         // Create new file
         const parent = this.getStorageItem(dir);
-        if(parent === undefined) {
+        if (parent === undefined) {
           reject({
             msg: "Path not found",
             path: dir,
           });
           return;
         }
-        if(parent.type !== storage.FileType.Directory) {
+        if (parent.type !== storage.FileType.Directory) {
           reject({
             msg: "Not a directory",
             path: dir,
           });
           return;
         }
-        if(parent.children[file] !== undefined) {
+        if (parent.children[file] !== undefined) {
           reject({
             msg: "File already exists",
             path: path,
@@ -245,7 +245,7 @@ export class BrowserStorage implements storage.IStorage {
         const newParent = {
           key: parent.key,
           type: storage.FileType.Directory,
-          children: {...parent.children, [file]: key},
+          children: { ...parent.children, [file]: key },
         };
         this.setItem(parent.key, newParent);
         // Create a file
@@ -255,7 +255,7 @@ export class BrowserStorage implements storage.IStorage {
           content: btoa(content),
         };
       }
-      if(item.type !== storage.FileType.File) {
+      if (item.type !== storage.FileType.File) {
         reject({
           msg: "Not a file",
           path: path,
@@ -276,21 +276,21 @@ export class BrowserStorage implements storage.IStorage {
     const [dir, file] = storage.splitFileName(path);
     const item = this.getStorageItem(dir);
     return new Promise((resolve, reject) => {
-      if(item === undefined) {
+      if (item === undefined) {
         reject({
           msg: "Path not found",
           path: dir,
         });
         return;
       }
-      if(item.type !== storage.FileType.Directory) {
+      if (item.type !== storage.FileType.Directory) {
         reject({
           msg: "Not a directory",
           path: dir,
         });
         return;
       }
-      if(item.children[file] === undefined) {
+      if (item.children[file] === undefined) {
         reject({
           msg: "File not found",
           path: path,
@@ -301,7 +301,7 @@ export class BrowserStorage implements storage.IStorage {
       // Delete file
       this.removeItem(key);
       // Delete from parent
-      const newChildren = {...item.children};
+      const newChildren = { ...item.children };
       delete newChildren[file];
       const newParent = {
         key: item.key,
@@ -319,42 +319,42 @@ export class BrowserStorage implements storage.IStorage {
     const oItem = this.getStorageItem(oP);
     const nItem = this.getStorageItem(nP);
     return new Promise((resolve, reject) => {
-      if(oItem === undefined) {
+      if (oItem === undefined) {
         reject({
           msg: "Path not found",
           path: oP,
         });
         return;
       }
-      if(oItem.type !== storage.FileType.Directory) {
+      if (oItem.type !== storage.FileType.Directory) {
         reject({
           msg: "Not a directory",
           path: oP,
         });
         return;
       }
-      if(oItem.children[oF] === undefined) {
+      if (oItem.children[oF] === undefined) {
         reject({
           msg: "File not found",
           path: oldPath,
         });
         return;
       }
-      if(nItem === undefined) {
+      if (nItem === undefined) {
         reject({
           msg: "Path not found",
           path: nP,
         });
         return;
       }
-      if(nItem.type !== storage.FileType.Directory) {
+      if (nItem.type !== storage.FileType.Directory) {
         reject({
           msg: "Not a directory",
           path: nP,
         });
         return;
       }
-      if(nItem.children[nF] !== undefined) {
+      if (nItem.children[nF] !== undefined) {
         reject({
           msg: "File already exists",
           path: newPath,
@@ -363,7 +363,7 @@ export class BrowserStorage implements storage.IStorage {
       }
       const key = oItem.children[oF];
       // Delete from parent
-      const newChildren = {...oItem.children};
+      const newChildren = { ...oItem.children };
       delete newChildren[oF];
       const newParent = {
         key: oItem.key,
@@ -372,7 +372,7 @@ export class BrowserStorage implements storage.IStorage {
       };
       this.setItem(oItem.key, newParent);
       // Add to new parent
-      const newChildren2 = {...nItem.children, [nF]: key};
+      const newChildren2 = { ...nItem.children, [nF]: key };
       const newParent2 = {
         key: nItem.key,
         type: storage.FileType.Directory,

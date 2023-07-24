@@ -19,5 +19,6 @@ div.editor-root-wide-item {
 
 html,
 body {
+  overflow-y: hidden;
   overscroll-behavior-y: contain;
 }

@@ -24,11 +24,20 @@ export const isValidPath = (path: string): boolean => {
   return path.match(/[#$%&*<>"?:;|*]/) === null;
 };
 
-export const pathSplit = (path: string, relativePath?: string): [boolean, string[]] => {
-  let splitted = path.trim().toLowerCase().split(/[\\/]+/);
-  if(relativePath !== undefined) {
-    const relativeSplitted = relativePath.trim().toLowerCase().split(/[\\/]+/);
-    if(relativeSplitted[0] === "") {
+export const pathSplit = (
+  path: string,
+  relativePath?: string,
+): [boolean, string[]] => {
+  let splitted = path
+    .trim()
+    .toLowerCase()
+    .split(/[\\/]+/);
+  if (relativePath !== undefined) {
+    const relativeSplitted = relativePath
+      .trim()
+      .toLowerCase()
+      .split(/[\\/]+/);
+    if (relativeSplitted[0] === "") {
       // Absolute path
       splitted = relativeSplitted;
     } else {
@@ -38,11 +47,11 @@ export const pathSplit = (path: string, relativePath?: string): [boolean, string
   }
   const result = [];
   const isAbsolute = splitted[0] === "";
-  for(let i = 0; i < splitted.length; i++) {
+  for (let i = 0; i < splitted.length; i++) {
     const s = splitted[i];
-    if(s === "" || s === ".") continue;
-    else if(s === "..") {
-      if(result.length > 0) result.pop();
+    if (s === "" || s === ".") continue;
+    else if (s === "..") {
+      if (result.length > 0) result.pop();
     } else {
       result.push(s);
     }
@@ -58,6 +67,7 @@ export const cd = (path: string, relativePath?: string): string => {
 export const splitFileName = (path: string): [string, string] => {
   const [isAbsolute, splitted] = pathSplit(path);
   const name = splitted[splitted.length - 1];
-  const dir = (isAbsolute ? "/" : "") + splitted.slice(0, splitted.length - 1).join("/");
+  const dir =
+    (isAbsolute ? "/" : "") + splitted.slice(0, splitted.length - 1).join("/");
   return [dir, name];
 };
