@@ -1,19 +1,14 @@
 // Editing Mode
 
-import {
-  faFile,
-  faPenToSquare,
-  faSquarePlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faSquarePlus } from "@fortawesome/free-solid-svg-icons";
 
 export enum EditingMode {
-  File = 0,
-  AddNode = 1,
-  Edit = 2,
+  AddNode = 0,
+  Edit = 1,
 }
 
-export const editingModeLabels = ["File", "Add Node", "Select & Edit"];
+export const editingModeLabels = ["Add Node", "Select & Edit"];
 
-export const editingModeIcons = [faFile, faSquarePlus, faPenToSquare];
+export const editingModeIcons = [faSquarePlus, faPenToSquare];
 
 // Create node

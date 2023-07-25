@@ -9,7 +9,12 @@ export type File = {
 export type Directory = {
   key: string;
   type: storage.FileType.Directory;
-  children: { [key: string]: string };
+  children: {
+    [key: string]: {
+      key: string;
+      type: storage.FileType;
+    };
+  };
 };
 
 export type StorageItem = File | Directory;
@@ -88,7 +93,7 @@ export class BrowserStorage implements storage.IStorage {
       if (s.type !== storage.FileType.Directory) return;
       const c = s.children[p[i]];
       if (c === undefined) return;
-      s = this.getItem(c);
+      s = this.getItem(c.key);
       if (s === undefined) return;
     }
     return s;
@@ -96,7 +101,7 @@ export class BrowserStorage implements storage.IStorage {
 
   // File type checker
 
-  isFile(path: string): Promise<boolean> {
+  getFileType(path: string): Promise<storage.FileType | undefined> {
     const item = this.getStorageItem(path);
     return new Promise((resolve, reject) => {
       if (item === undefined) {
@@ -106,27 +111,13 @@ export class BrowserStorage implements storage.IStorage {
         });
         return;
       }
-      resolve(item.type === storage.FileType.File);
-    });
-  }
-
-  isDirectory(path: string): Promise<boolean> {
-    const item = this.getStorageItem(path);
-    return new Promise((resolve, reject) => {
-      if (item === undefined) {
-        reject({
-          msg: "File not found",
-          path: path,
-        });
-        return;
-      }
-      resolve(item.type === storage.FileType.Directory);
+      resolve(item.type);
     });
   }
 
   // Directory helper
 
-  list(path: string): Promise<string[]> {
+  list(path: string): Promise<storage.FileMeta[]> {
     const item = this.getStorageItem(path);
     return new Promise((resolve, reject) => {
       if (item === undefined) {
@@ -143,7 +134,14 @@ export class BrowserStorage implements storage.IStorage {
         });
         return;
       }
-      resolve(Object.keys(item.children));
+      const result = [];
+      for (const [name, child] of Object.entries(item.children)) {
+        result.push({
+          type: child.type,
+          name: name,
+        });
+      }
+      resolve(result);
     });
   }
 
@@ -184,7 +182,13 @@ export class BrowserStorage implements storage.IStorage {
       const newParent = {
         key: item.key,
         type: storage.FileType.Directory,
-        children: { ...item.children, [file]: key },
+        children: {
+          ...item.children,
+          [file]: {
+            key: key,
+            type: storage.FileType.Directory,
+          },
+        },
       };
       this.setItem(item.key, newParent);
       resolve();
@@ -245,7 +249,13 @@ export class BrowserStorage implements storage.IStorage {
         const newParent = {
           key: parent.key,
           type: storage.FileType.Directory,
-          children: { ...parent.children, [file]: key },
+          children: {
+            ...parent.children,
+            [file]: {
+              key: key,
+              type: storage.FileType.File,
+            },
+          },
         };
         this.setItem(parent.key, newParent);
         // Create a file
@@ -297,9 +307,25 @@ export class BrowserStorage implements storage.IStorage {
         });
         return;
       }
-      const key = item.children[file];
+      const child = item.children[file];
+      if (child.type === storage.FileType.Directory) {
+        // Delete items recursively
+        const queue = [child.key];
+        while (queue.length > 0) {
+          const key = queue.shift();
+          if (key === undefined) continue;
+          const item = this.getItem(key);
+          if (item === undefined) continue;
+          if (item.type === storage.FileType.Directory) {
+            for (const child of item.children) {
+              queue.push(child.key);
+            }
+          }
+          this.removeItem(key);
+        }
+      }
       // Delete file
-      this.removeItem(key);
+      this.removeItem(child.key);
       // Delete from parent
       const newChildren = { ...item.children };
       delete newChildren[file];
@@ -317,7 +343,7 @@ export class BrowserStorage implements storage.IStorage {
     const [oP, oF] = storage.splitFileName(oldPath);
     const [nP, nF] = storage.splitFileName(newPath);
     const oItem = this.getStorageItem(oP);
-    const nItem = this.getStorageItem(nP);
+    let nItem = this.getStorageItem(nP);
     return new Promise((resolve, reject) => {
       if (oItem === undefined) {
         reject({
@@ -361,7 +387,7 @@ export class BrowserStorage implements storage.IStorage {
         });
         return;
       }
-      const key = oItem.children[oF];
+      const child = oItem.children[oF];
       // Delete from parent
       const newChildren = { ...oItem.children };
       delete newChildren[oF];
@@ -371,8 +397,16 @@ export class BrowserStorage implements storage.IStorage {
         children: newChildren,
       };
       this.setItem(oItem.key, newParent);
+      nItem = this.getStorageItem(nP);
+      if (nItem === undefined || nItem.type !== storage.FileType.Directory) {
+        reject({
+          msg: "Path not found",
+          path: nP,
+        });
+        return;
+      }
       // Add to new parent
-      const newChildren2 = { ...nItem.children, [nF]: key };
+      const newChildren2 = { ...nItem.children, [nF]: child };
       const newParent2 = {
         key: nItem.key,
         type: storage.FileType.Directory,

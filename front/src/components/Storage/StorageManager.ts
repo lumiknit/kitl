@@ -1,4 +1,4 @@
-import { IStorage } from "./Storage";
+import { FileType, IStorage, FileMeta } from "./Storage";
 import { BrowserStorage } from "./BrowserStorage";
 
 export class StorageManager {
@@ -31,24 +31,16 @@ export class StorageManager {
   }
 
   /* Query */
-  isFile(path: string): Promise<boolean> {
+  getFileType(path: string): Promise<FileType | undefined> {
     const [storageName, storagePath] = this.parsePath(path);
     if (this.storages[storageName] === undefined) {
       throw new Error(`Storage not found: ${storageName}`);
     }
-    return this.storages[storageName].isFile(storagePath);
-  }
-
-  isDirectory(path: string): Promise<boolean> {
-    const [storageName, storagePath] = this.parsePath(path);
-    if (this.storages[storageName] === undefined) {
-      throw new Error(`Storage not found: ${storageName}`);
-    }
-    return this.storages[storageName].isDirectory(storagePath);
+    return this.storages[storageName].getFileType(storagePath);
   }
 
   /* Operations */
-  list(path: string): Promise<string[]> {
+  list(path: string): Promise<FileMeta[]> {
     const [storageName, storagePath] = this.parsePath(path);
     if (this.storages[storageName] === undefined) {
       throw new Error(`Storage not found: ${storageName}`);

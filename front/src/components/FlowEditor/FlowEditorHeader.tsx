@@ -6,7 +6,9 @@ import {
   faCopy,
   faDeleteLeft,
   faFileLines,
+  faFolderTree,
   faPaste,
+  faRocket,
   faRotateLeft,
   faRotateRight,
   faScissors,
@@ -19,10 +21,7 @@ export type FlowEditorHeaderProps = {
   updateMode: (mode: fh.EditingMode) => void;
   addNode: (type: string, data: any) => void;
   deleteSelectedNode: () => void;
-};
-
-const fileModeControls = () => {
-  return [<input key="0" type="text" className="form-control" />];
+  openBrowser: () => void;
 };
 
 const addNodeModeControls = (props: FlowEditorHeaderProps) => {
@@ -104,8 +103,6 @@ const editModeControls = () => {
 
 const controls = (props: FlowEditorHeaderProps) => {
   switch (props.mode) {
-    case fh.EditingMode.File:
-      return fileModeControls();
     case fh.EditingMode.AddNode:
       return addNodeModeControls(props);
     case fh.EditingMode.Edit:
@@ -136,6 +133,22 @@ const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
   }
   // Insert separator
   dropDownItems.push(<hr />);
+  // Insert browser button
+  dropDownItems.push(
+    <a className="dropdown-item" href="#" onClick={() => props.openBrowser()}>
+      <FontAwesomeIcon icon={faFolderTree} />
+      &nbsp;
+      {"Browser"}
+    </a>,
+  );
+  dropDownItems.push(<hr />);
+  dropDownItems.push(
+    <a className="dropdown-item" href="#">
+      <FontAwesomeIcon icon={faRocket} />
+      &nbsp;
+      {"Launch"}
+    </a>,
+  );
   // Convert to drop down menu
   const dropDownMenu = (
     <ul className="dropdown-menu">

@@ -61,6 +61,7 @@ export type FlowEditorProps = {
   openJsonEditor: (path: string, data: any) => void;
   openCodeArea: (path: string, data: string) => void;
   openOpNode: (path: string, data: Op) => void;
+  openBrowser: () => void;
 };
 
 type FlowEditorState = {
@@ -278,6 +279,7 @@ const FlowEditor = (props: FlowEditorProps) => {
         updateMode={updateMode}
         addNode={addNode}
         deleteSelectedNode={deleteSelectedNode}
+        openBrowser={props.openBrowser}
       />
     </>
   );

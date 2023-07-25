@@ -3,16 +3,20 @@ export enum FileType {
   Directory = "directory",
 }
 
+export type FileMeta = {
+  type: FileType;
+  name: string;
+};
+
 export interface IStorage {
   /* Type */
   type: string;
 
   /* Query */
-  isFile(path: string): Promise<boolean>;
-  isDirectory(path: string): Promise<boolean>;
+  getFileType(path: string): Promise<FileType | undefined>;
 
   /* Operations */
-  list(path: string): Promise<string[]>;
+  list(path: string): Promise<FileMeta[]>;
   mkdir(path: string): Promise<void>;
   read(path: string): Promise<string>;
   write(path: string, content: string): Promise<void>;
