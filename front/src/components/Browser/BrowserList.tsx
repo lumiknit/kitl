@@ -5,7 +5,6 @@ import {
   faCheckSquare,
   faFile,
   faFolder,
-  faFolderTree,
   faSquare,
 } from "@fortawesome/free-solid-svg-icons";
 

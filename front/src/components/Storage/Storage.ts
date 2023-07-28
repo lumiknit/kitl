@@ -18,8 +18,10 @@ export interface IStorage {
   /* Operations */
   list(path: string): Promise<FileMeta[]>;
   mkdir(path: string): Promise<void>;
+
   read(path: string): Promise<string>;
   write(path: string, content: string): Promise<void>;
+
   delete(path: string): Promise<void>;
   rename(path: string, newPath: string): Promise<void>;
 }

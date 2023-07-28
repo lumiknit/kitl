@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose, faFolderTree } from "@fortawesome/free-solid-svg-icons";
 import DropdownSelect from "../Helpers/DropdownSelect";

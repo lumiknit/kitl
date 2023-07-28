@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import storageManager from "../Storage/StorageManager";
 import BrowserHeader from "./BrowserHeader";
 import { FileMeta, cd } from "../Storage/Storage";

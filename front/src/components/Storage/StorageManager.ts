@@ -94,6 +94,14 @@ export class StorageManager {
     }
     return this.storages[storageName].rename(storagePath, newStoragePath);
   }
+
+  move(path: string, newPath: string): Promise<void> {
+    // TODO: Implement move with inter-storage move
+  }
+
+  copy(path: string, newPath: string): Promise<void> {
+    // TODO: Implement copy with inter-storage copy
+  }
 }
 
 export default new StorageManager();
