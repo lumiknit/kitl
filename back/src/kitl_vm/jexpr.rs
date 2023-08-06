@@ -16,15 +16,15 @@ pub enum JExpr {
   Id(JId),
   Lit(serde_json::Value),
   App {
-    fun: Box<JExpr>,
-    arg: Box<JExpr>,
+    fun: Box<u32>,
+    arg: Box<u32>,
   },
   Fun {
-    fallback: Box<JExpr>,
+    fallback: Box<u32>,
     arg: String,
     tag: Option<JId>,
     elems: Vec<String>,
-    body: Box<JExpr>,
+    body: Box<u32>,
   },
 }
 
@@ -32,7 +32,7 @@ pub enum JExpr {
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum JDef {
   Expr {
-    expr: JExpr,
+    expr: Vec<JExpr>,
   },
   Tag {
     tags: Vec<JId>,
