@@ -1,20 +1,17 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faClipboard,
-  faCodeFork,
   faCommentDots,
   faCopy,
   faDeleteLeft,
-  faFileLines,
   faFolderTree,
   faPaste,
   faRocket,
   faRotateLeft,
   faRotateRight,
   faScissors,
-  faSquareCaretDown,
 } from "@fortawesome/free-solid-svg-icons";
 import * as fh from "./helper";
+import { BetaNodeType } from "./CustomNodes/BetaNode";
 
 export type FlowEditorHeaderProps = {
   mode: fh.EditingMode;
@@ -27,41 +24,35 @@ export type FlowEditorHeaderProps = {
 const addNodeModeControls = (props: FlowEditorHeaderProps) => {
   return [
     <button
-      key="op"
-      className="btn btn-outline-secondary flex-grow-1 px-0"
-      onClick={() =>
-        props.addNode("op", {
-          module: "",
-          name: "op",
-        })
-      }>
-      <FontAwesomeIcon icon={faSquareCaretDown} />
-    </button>,
-    <button
-      key="mem"
-      className="btn btn-outline-primary flex-grow-1 px-0"
-      onClick={() => props.addNode("mem", null)}>
-      <FontAwesomeIcon icon={faClipboard} />
-    </button>,
-    <button
-      key="select"
-      className="btn btn-outline-danger flex-grow-1 px-0"
-      onClick={() => props.addNode("select", null)}>
-      <FontAwesomeIcon icon={faCodeFork} />
-    </button>,
-    <button
-      key="const"
-      className="btn btn-outline-warning flex-grow-1 px-0"
-      onClick={() => props.addNode("const", null)}>
-      <FontAwesomeIcon icon={faFileLines} />
-    </button>,
-    <button
       key="comment"
       className="btn btn-outline-success flex-grow-1 px-0"
       onClick={() =>
         props.addNode("comment", "**Double click** to edit *MD* comment")
       }>
       <FontAwesomeIcon icon={faCommentDots} />
+    </button>,
+    <button
+      key="lambda"
+      className="btn btn-outline-primary flex-grow-1 px-0"
+      onClick={() =>
+        props.addNode("lambda", {
+          module: "",
+          name: "-",
+          argc: 0,
+        })
+      }>
+      <b>λ</b>
+    </button>,
+    <button
+      key="beta"
+      className="btn btn-outline-secondary flex-grow-1 px-0"
+      onClick={() =>
+        props.addNode("beta", {
+          type: BetaNodeType.App,
+          argc: 1,
+        })
+      }>
+      <b>β</b>
     </button>,
     <button
       key="del"

@@ -12,9 +12,11 @@ import OpNodeModal from "../Modal/OpNodeModal";
 
 import * as kc from "./context";
 import BrowserModal from "../Modal/BrowserModal";
+import NodeEditorModal from "../Modal/NodeEditorModal";
 
 export enum ModalEditorType {
   JsonEditor = "jsonEditorModal",
+  NodeEditor = "nodeEditorModal",
   CodeArea = "codeAreaModal",
   OpNode = "opNodeModal",
   Browser = "browserModal",
@@ -85,6 +87,17 @@ const KitlEditorInner = (_props: KitlEditorInnerProps) => {
           />
         );
         break;
+      case ModalEditorType.NodeEditor:
+        modal = (
+          <NodeEditorModal
+            open={true}
+            onClose={closeModalWithValue(state.modalEditorState.path)}
+            path={state.modalEditorState.path}
+            defaultValue={state.modalEditorState.defaultValue}
+            onChange={onChange(state.modalEditorState.path)}
+          />
+        );
+        break;
       case ModalEditorType.CodeArea:
         modal = (
           <CodeAreaModal
@@ -123,7 +136,7 @@ const KitlEditorInner = (_props: KitlEditorInnerProps) => {
 
   const flowEditor = (
     <FlowEditor
-      openJsonEditor={openModal(ModalEditorType.JsonEditor)}
+      openNodeEditor={openModal(ModalEditorType.NodeEditor)}
       openCodeArea={openModal(ModalEditorType.CodeArea)}
       openOpNode={openModal(ModalEditorType.OpNode)}
       openBrowser={() => openModal(ModalEditorType.Browser)("browser", null)}

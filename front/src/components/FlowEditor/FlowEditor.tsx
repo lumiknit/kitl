@@ -26,15 +26,12 @@ import "./FlowEditorNode.scss";
 import * as fh from "./helper";
 import * as fc from "./context";
 
-import StartNode from "./CustomNodes/StartNode";
-import EndNode from "./CustomNodes/EndNode";
-import OpNode, { Op } from "./CustomNodes/OpNode";
-import ConstNode from "./CustomNodes/ConstNode";
-import SelectNode from "./CustomNodes/SelectNode";
-import MemNode from "./CustomNodes/MemNode";
-import CommentNode from "./CustomNodes/CommentNode";
+import LambdaNode from "./CustomNodes/LambdaNode";
 
+import DefNode from "./CustomNodes/DefNode";
 import FlowEditorHeader from "./FlowEditorHeader";
+import BetaNode from "./CustomNodes/BetaNode";
+import CommentNode from "./CustomNodes/CommentNode";
 
 const getID = () => {
   const now = new Date();
@@ -47,18 +44,15 @@ const getID = () => {
 };
 
 const nodeTypes = {
-  start: StartNode,
-  end: EndNode,
-  op: OpNode,
-  const: ConstNode,
-  select: SelectNode,
-  mem: MemNode,
+  def: DefNode,
+  lambda: LambdaNode,
+  beta: BetaNode,
   comment: CommentNode,
 };
 
 export type FlowEditorProps = {
   context: fc.FlowContext;
-  openJsonEditor: (path: string, data: any) => void;
+  openNodeEditor: (path: string, data: any) => void;
   openCodeArea: (path: string, data: string) => void;
   openOpNode: (path: string, data: Op) => void;
   openBrowser: () => void;
@@ -131,15 +125,12 @@ const FlowEditor = (props: FlowEditorProps) => {
   const onNodeDoubleClick: NodeMouseHandler = (_event, node: Node) => {
     // TODO: Edit node
     switch (node.type) {
-      case "op":
-        props.openOpNode("nd-op:" + node.id, node.data);
+      case "def":
         break;
-      case "const":
-        props.openJsonEditor("nd-c:" + node.id, node.data);
-        break;
-      case "comment":
-        props.openCodeArea("nd-cmt:" + node.id, node.data);
-        break;
+      default:
+        props.openNodeEditor("nd:" + node.id, {
+          module: node.data.module,
+        });
     }
   };
 

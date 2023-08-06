@@ -1,42 +1,34 @@
 import { memo } from "react";
 import { Handle, Position } from "reactflow";
 
+import NameDisplay from "./NameDisplay";
+
+export type DefNodeData = {
+  module: string;
+  name: string;
+};
+
 export type DefNodeProps = {
-  data: string;
+  data: DefNodeData;
   isConnectable: boolean;
 };
 
 const DefNode = (props: DefNodeProps) => {
   return (
     <>
-      <div style={{ bottom: 0 }}> {props.data} </div>
-      <Handle
-        id="ctx"
-        type="source"
-        position={Position.Right}
-        isConnectable={props.isConnectable}
-        style={{ top: "90%" }}
-        className="flow-handle-ctx"
-      />
+      <div className="d-flex align-items-center">
+        <NameDisplay name={props.data.name} module={props.data.module} />
+        <span className="fs-5 m-0 ms-1">≔</span>
+      </div>
       <Handle
         id="arg"
-        type="source"
-        position={Position.Right}
-        isConnectable={props.isConnectable}
-        style={{ top: "0%" }}
-        className="flow-handle-arg"
-      />
-      <Handle
-        id="ret"
         type="target"
-        position={Position.Bottom}
+        position={Position.Top}
         isConnectable={props.isConnectable}
-        className="flow-handle-ret"
+        className="flow-handle-def-arg"
       />
     </>
   );
 };
 
-const memoed = memo(DefNode);
-
-export default memoed;
+export default memo(DefNode);

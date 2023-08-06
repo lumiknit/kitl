@@ -10,6 +10,8 @@ import {
   useReactFlow,
 } from "reactflow";
 
+import { BetaNodeType } from "./CustomNodes/BetaNode";
+
 export type SetNodes = Dispatch<SetStateAction<Node[]>>;
 export type SetEdges = Dispatch<SetStateAction<Edge[]>>;
 export type { OnNodesChange, OnEdgesChange };
@@ -36,23 +38,46 @@ export type FlowContext = {
 const initialNodes = (name: string) => [
   {
     id: "##start",
-    type: "start",
-    data: name,
+    type: "def",
+    data: {
+      module: "main/test",
+      name: "test_func",
+    },
     position: {
       x: 0,
       y: 0,
     },
-    draggable: false,
     selectable: false,
     deletable: false,
   },
   {
-    id: "##end",
-    type: "end",
-    data: name,
+    id: "0",
+    type: "beta",
+    data: {
+      type: BetaNodeType.Name,
+      argc: 2,
+      module: "main/test",
+      name: "test_func",
+    },
     position: {
       x: 0,
-      y: 128,
+      y: 0,
+    },
+    selectable: false,
+    deletable: false,
+  },
+  {
+    id: "1",
+    type: "lambda",
+    data: {
+      type: BetaNodeType.App,
+      argc: 1,
+      module: "main/test",
+      name: "test_func",
+    },
+    position: {
+      x: 0,
+      y: 0,
     },
     selectable: false,
     deletable: false,
