@@ -1,6 +1,14 @@
 import * as jh from "./helper";
 
-class Action {
+interface IAction {
+  inverse(): IAction;
+  updateRoot(value: jh.Json): jh.Json;
+  updateArray(parent: jh.JsonArray, key: number): jh.Json;
+  updateObject(parent: jh.JsonObject, key: string): jh.Json;
+  apply(json: jh.Json): jh.Json;
+}
+
+class Action implements IAction {
   path: jh.JsonPath;
 
   constructor(path: jh.JsonPath) {
