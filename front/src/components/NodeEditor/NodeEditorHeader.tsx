@@ -7,31 +7,42 @@ export type NodeEditorHeaderProps = {
   closeBtnRef: React.RefObject<HTMLButtonElement>;
   path: string;
   value: node.NodeData;
+  editingType: node.NodeType;
   discard: () => void;
   save: () => void;
+  updateEditingType: (ty: node.NodeType) => void;
 };
 
+const typeButtonList = [
+  {
+    type: node.NodeType.Comment,
+    colorClass: "success",
+    body: (<FontAwesomeIcon icon={faCommentDots} />)
+  },
+  {
+    type: node.NodeType.Lambda,
+    colorClass: "primary",
+    body: (<b>λ</b>)
+  },
+  {
+    type: node.NodeType.Beta,
+    colorClass: "secondary",
+    body: (<b>β</b>)
+  }
+];
+
 const TypeButtons = (props: NodeEditorHeaderProps) => {
-  const btns = [
-    <button
-      key="comment"
-      className="btn btn-outline-success flex-grow-1 px-0"
-      onClick={() => props.updateType("comment")}>
-      <FontAwesomeIcon icon={faCommentDots} />
-    </button>,
-    <button
-      key="lambda"
-      className="btn btn-outline-primary flex-grow-1 px-0"
-      onClick={() => props.updateType("lambda")}>
-      <b>λ</b>
-    </button>,
-    <button
-      key="beta"
-      className="btn btn-outline-secondary flex-grow-1 px-0"
-      onClick={() => props.updateType("beta")}>
-      <b>β</b>
-    </button>
-  ]
+  const btns = typeButtonList.map((tb) => {
+    const btnCls = props.editingType === tb.type ? `btn-${tb.colorClass}` : `btn-outline-${tb.colorClass}`;
+    return (
+      <button
+        key={tb.type}
+        className={`btn ${btnCls} flex-grow-1 px-0`}
+        onClick={() => props.updateEditingType(tb.type)}>
+        {tb.body}
+      </button>
+    );
+  });
   return btns;
 };
 
@@ -44,14 +55,8 @@ const NodeEditorHeader = (props: NodeEditorHeaderProps) => {
         >
           <FontAwesomeIcon icon={faEdit} />
         </button>
+        {/* TODO: Add dropdown and add discard menu */}
         <TypeButtons {...props} />
-        <button
-          ref={props.closeBtnRef}
-          className="btn btn-danger"
-          onClick={props.discard}
-        >
-          <FontAwesomeIcon icon={faTrash} />
-        </button>
         <button
           ref={props.closeBtnRef}
           className="btn btn-success"

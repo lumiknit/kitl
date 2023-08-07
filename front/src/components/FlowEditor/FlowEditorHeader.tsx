@@ -27,7 +27,9 @@ const addNodeModeControls = (props: FlowEditorHeaderProps) => {
       key="comment"
       className="btn btn-outline-success flex-grow-1 px-0"
       onClick={() =>
-        props.addNode("comment", "**Double click** to edit *MD* comment")
+        props.addNode("comment", {
+          content: "**Double click** to edit *MD* comment",
+        })
       }>
       <FontAwesomeIcon icon={faCommentDots} />
     </button>,

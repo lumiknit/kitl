@@ -2,14 +2,10 @@ import { memo } from "react";
 import { Handle, Position } from "reactflow";
 
 import NameDisplay from "./NameDisplay";
-
-export type DefNodeData = {
-  module: string;
-  name: string;
-};
+import * as node from "../../../common/node";
 
 export type DefNodeProps = {
-  data: DefNodeData;
+  data: node.Name & node.DefNodeData;
   isConnectable: boolean;
 };
 

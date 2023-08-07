@@ -2,6 +2,7 @@ import { memo } from "react";
 import { Handle, Position } from "reactflow";
 import NameDisplay from "./NameDisplay";
 import * as cnh from "./helper";
+import * as node from "../../../common/node";
 
 export enum BetaNodeType {
   Literal,
@@ -9,27 +10,8 @@ export enum BetaNodeType {
   Name,
 }
 
-export type BetaNodeLiteral = {
-  type: BetaNodeType.Literal;
-  value: any;
-};
-
-export type BetaNodeApp = {
-  type: BetaNodeType.App;
-  argc: number;
-};
-
-export type BetaNodeName = {
-  type: BetaNodeType.Name;
-  module: string;
-  name: string;
-  argc: number;
-};
-
-export type BetaNodeData = BetaNodeLiteral | BetaNodeApp | BetaNodeName;
-
 export type BetaNodeProps = {
-  data: BetaNodeData;
+  data: node.BetaNodeData;
   isConnectable: boolean;
 };
 
@@ -37,19 +19,31 @@ const BetaNode = (props: BetaNodeProps) => {
   let inner = null;
   let argc = 0;
   let take = false;
-  switch (props.data.type) {
-    case BetaNodeType.Literal:
-      inner = <div>{props.data.value}</div>;
-      break;
-    case BetaNodeType.App:
-      inner = <div>β</div>;
-      argc = props.data.argc;
+  switch (props.data.betaType) {
+    case node.BetaNodeType.Literal: {
+      const data: node.BetaNodeLiteral = props.data;
+      inner = (
+        <div>{JSON.stringify(data.value, null, 2)}</div>
+      );
+    } break;
+    case node.BetaNodeType.App: {
+      const data: node.BetaNodeApp = props.data;
+      inner = (
+        <div>β</div>
+      );
+      argc = data.argc;
       take = true;
-      break;
-    case BetaNodeType.Name:
-      inner = <NameDisplay name={props.data.name} module={props.data.module} />;
-      argc = props.data.argc;
-      break;
+    } break;
+    case node.BetaNodeType.Name: {
+      const data: node.BetaNodeName = props.data;
+      inner = (
+        <NameDisplay
+          name={data.name.name}
+          module={data.name.module}
+        />
+      );
+      argc = data.argc;
+    } break;
   }
 
   return (

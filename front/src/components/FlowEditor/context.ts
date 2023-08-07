@@ -11,6 +11,7 @@ import {
 } from "reactflow";
 
 import { BetaNodeType } from "./CustomNodes/BetaNode";
+import { emptyBetaNode } from "../../common/node";
 
 export type SetNodes = Dispatch<SetStateAction<Node[]>>;
 export type SetEdges = Dispatch<SetStateAction<Edge[]>>;
@@ -53,12 +54,7 @@ const initialNodes = (name: string) => [
   {
     id: "0",
     type: "beta",
-    data: {
-      type: BetaNodeType.Name,
-      argc: 2,
-      module: "main/test",
-      name: "test_func",
-    },
+    data: emptyBetaNode(),
     position: {
       x: 0,
       y: 0,

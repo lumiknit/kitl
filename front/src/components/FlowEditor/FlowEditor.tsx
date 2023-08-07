@@ -129,7 +129,8 @@ const FlowEditor = (props: FlowEditorProps) => {
         break;
       default:
         props.openNodeEditor("nd:" + node.id, {
-          module: node.data.module,
+          ...node.data,
+          type: node.type,
         });
     }
   };
@@ -204,7 +205,7 @@ const FlowEditor = (props: FlowEditorProps) => {
         fitView
         minZoom={0.5}
         maxZoom={5}
-        snapGrid={[10, 10]}
+        snapGrid={[8, 8]}
         snapToGrid
         /*onlyRenderVisibleElements*/
         translateExtent={[
@@ -212,7 +213,7 @@ const FlowEditor = (props: FlowEditorProps) => {
           [Infinity, Infinity],
         ]}
         nodeExtent={[
-          [0, 0],
+          [-Infinity, -Infinity],
           [Infinity, Infinity],
         ]}
         /* Edge Specific */
@@ -261,7 +262,7 @@ const FlowEditor = (props: FlowEditorProps) => {
         <Background
           color="#44f2"
           size={4}
-          gap={20}
+          gap={24}
           variant={BackgroundVariant.Cross}
         />
       </ReactFlow>

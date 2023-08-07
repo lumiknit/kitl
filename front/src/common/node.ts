@@ -55,7 +55,7 @@ export const handleBetaArg = (i: number) => `${HANDLE_BETA_ARG_PREFIX}${i}`;
 export const HANDLE_BETA_RET = "ret";
 export const HANDLE_BETA_FUN = "fun";
 
-export const emptyBetaNode = () => ({
+export const emptyBetaNode = (): BetaNodeData => ({
   type: NodeType.Beta,
   betaType: BetaNodeType.Literal,
   value: null,
@@ -82,7 +82,7 @@ export const handleLambdaElem = (i: number) => `${HANDLE_LAMBDA_ELEM_PREFIX}${i}
 export const HANDLE_LAMBDA_RET = "ret";
 export const HANDLE_LAMBDA_VAL = "val";
 
-export const emptyLambdaNode = () => ({
+export const emptyLambdaNode = (): LambdaNodeData => ({
   type: NodeType.Lambda,
 });
 
@@ -91,7 +91,7 @@ export type CommentNodeData = {
   content: string;
 };
 
-export const emptyCommentNode = () => ({
+export const emptyCommentNode = (): CommentNodeData => ({
   type: NodeType.Comment,
   content: "*Comment* here in markdown",
 });
@@ -100,7 +100,7 @@ export type DefNodeData = {
   type: NodeType.Def;
 };
 
-export const emptyDefNode = () => ({
+export const emptyDefNode = (): DefNodeData => ({
   type: NodeType.Def,
 });
 

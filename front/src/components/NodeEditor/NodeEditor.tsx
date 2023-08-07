@@ -3,7 +3,8 @@ import * as node from "../../common/node";
 import NodeEditorHeader from "./NodeEditorHeader";
 
 import "./NodeEditor.css";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import NodeEditorComment from "./NodeEditorComment";
 
 export type NodeEditorProps = {
   closeBtnRef: React.RefObject<HTMLButtonElement>;
@@ -15,30 +16,42 @@ export type NodeEditorProps = {
 
 export type NodeEditorState = {
   value: node.NodeData;
+  editingType: node.NodeType;
 };
 
 export const NodeEditor = (props: NodeEditorProps) => {
   const [state, setState] = useState<NodeEditorState>({
     value: props.defaultValue,
+    editingType: props.defaultValue.type,
   });
 
-  const updateType = (ty: node.NodeType) => {
-    let empty: node.NodeData;
-    switch (ty) {
-      case node.NodeType.Comment:
-        empty = node.emptyCommentNode();
-        break;
-      case node.NodeType.Lambda:
-        empty = node.emptyLambdaNode();
-        break;
-      default:
-        empty = node.emptyBetaNode();
-    }
+  const updateEditingType = useCallback((ty: node.NodeType) => {
     setState(oldState => ({
       ...oldState,
-      value: empty,
+      editingType: ty,
     }));
-  };
+  }, []);
+
+  const updateValue = useCallback((value: node.NodeData) => {
+    setState(oldState => ({
+      ...oldState,
+      value: value,
+    }));
+  }, []);
+
+  let editorBody;
+  switch(state.editingType) {
+    case node.NodeType.Comment:
+      editorBody = (
+        <NodeEditorComment
+          value={state.value as node.CommentNodeData}
+          updateValue={updateValue}
+        />
+      );
+      break;
+    default:
+      editorBody = JSON.stringify(state.value);
+  }
 
   return (
     <div className="node-editor">
@@ -46,9 +59,14 @@ export const NodeEditor = (props: NodeEditorProps) => {
         closeBtnRef={props.closeBtnRef}
         path={props.path}
         value={state.value}
+        editingType={state.editingType}
         discard={() => props.close(props.defaultValue)}
         save={() => props.close(state.value)}
+        updateEditingType={updateEditingType}
       />
+      <div className="node-editor-body">
+        {editorBody}
+      </div>
     </div>
   );
 };

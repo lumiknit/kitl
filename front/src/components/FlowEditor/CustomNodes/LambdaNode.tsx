@@ -3,15 +3,10 @@ import { Handle, Position } from "reactflow";
 
 import NameDisplay from "./NameDisplay";
 import * as cnh from "./helper";
-
-export type LambdaNodeData = {
-  module: string;
-  name: string;
-  argc: number;
-};
+import * as node from "../../../common/node";
 
 export type LambdaNodeProps = {
-  data?: LambdaNodeData;
+  data: node.LambdaNodeData;
   isConnectable: boolean;
 };
 

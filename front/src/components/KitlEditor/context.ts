@@ -80,6 +80,12 @@ export const applySubEditing = (ctx: KitlContext, path: string, value: any) => {
         ctx.flowContext.setNodes(updateNodeData(id, value));
       }
       break;
+    case "nd":
+      {
+        console.log("nd", id, value);
+      }
+      break;
+      
   }
 };
 

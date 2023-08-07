@@ -143,27 +143,19 @@ const KitlEditorInner = (_props: KitlEditorInnerProps) => {
       context={context.flowContext}
     />
   );
-  if (h.isMobile()) {
-    return (
-      <div className="editor-root">
+  return (
+    <div className="editor-root editor-root-wide">
+      <div className="editor-root-wide-item editor-root-wide-item-left">
         {flowEditor}
-        {modalOpened ? modal : null}
+        {h.isMobile() && modalOpened ? modal : null}
       </div>
-    );
-  } else {
-    return (
-      <div className="editor-root editor-root-wide">
-        <div className="editor-root-wide-item editor-root-wide-item-left">
-          {flowEditor}
+      {!h.isMobile() && modalOpened ? (
+        <div className="editor-root-wide-item editor-root-wide-item-right full-modal">
+          {modal}
         </div>
-        {!modalOpened ? null : (
-          <div className="editor-root-wide-item editor-root-wide-item-right full-modal">
-            {modal}
-          </div>
-        )}
-      </div>
-    );
-  }
+      ) : null}
+    </div>
+  );
 };
 
 export default KitlEditorInner;
