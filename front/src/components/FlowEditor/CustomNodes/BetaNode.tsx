@@ -4,12 +4,6 @@ import NameDisplay from "./NameDisplay";
 import * as cnh from "./helper";
 import * as node from "../../../common/node";
 
-export enum BetaNodeType {
-  Literal,
-  App,
-  Name,
-}
-
 export type BetaNodeProps = {
   data: node.BetaNodeData;
   isConnectable: boolean;
@@ -17,33 +11,21 @@ export type BetaNodeProps = {
 
 const BetaNode = (props: BetaNodeProps) => {
   let inner = null;
-  let argc = 0;
+  const argc = props.data.argc + 1;
   let take = false;
   switch (props.data.betaType) {
-    case node.BetaNodeType.Literal: {
-      const data: node.BetaNodeLiteral = props.data;
-      inner = (
-        <div>{JSON.stringify(data.value, null, 2)}</div>
-      );
-    } break;
-    case node.BetaNodeType.App: {
-      const data: node.BetaNodeApp = props.data;
-      inner = (
-        <div>β</div>
-      );
-      argc = data.argc;
-      take = true;
-    } break;
-    case node.BetaNodeType.Name: {
-      const data: node.BetaNodeName = props.data;
-      inner = (
-        <NameDisplay
-          name={data.name.name}
-          module={data.name.module}
-        />
-      );
-      argc = data.argc;
-    } break;
+    case node.BetaNodeType.App:
+      {
+        inner = <div>β</div>;
+        take = true;
+      }
+      break;
+    case node.BetaNodeType.Name:
+      {
+        const data: node.BetaNodeName = props.data;
+        inner = <NameDisplay name={data.name} />;
+      }
+      break;
   }
 
   return (

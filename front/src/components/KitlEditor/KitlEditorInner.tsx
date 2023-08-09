@@ -33,9 +33,7 @@ export type KitlEditorInnerState = {
   modalEditorState?: ModalEditorState;
 };
 
-export type KitlEditorInnerProps = {
-  innerHeight: number;
-};
+export type KitlEditorInnerProps = {};
 
 const KitlEditorInner = (_props: KitlEditorInnerProps) => {
   (x => x)(_props);

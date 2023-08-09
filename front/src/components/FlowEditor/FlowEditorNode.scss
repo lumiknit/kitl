@@ -1,8 +1,9 @@
 $flow-node-color-bg: #fff;
 $flow-node-color-fg: #363d47;
-$flow-node-color-def: #db5614;
+$flow-node-color-def: #5b6b88;
 $flow-node-color-beta: #363d47;
-$flow-node-color-lambda: #085ed7;
+$flow-node-color-lambda: #db5614;
+$flow-node-color-literal: #085ed7;
 $flow-node-color-comment: #46923c;
 
 $flow-node-colors: (
@@ -11,6 +12,7 @@ $flow-node-colors: (
   def: $flow-node-color-def,
   beta: $flow-node-color-beta,
   lambda: $flow-node-color-lambda,
+  literal: $flow-node-color-literal,
   comment: $flow-node-color-comment,
 );
 
@@ -38,12 +40,7 @@ $flow-edge-colors: (
 .react-flow__node-def {
   color: $flow-node-color-def;
   border: 0.1rem solid $flow-node-color-def;
-  /*background: $flow-node-color-op;*/
   border-radius: 999rem;
-  font-size: 0.8rem;
-  color: $flow-node-color-def;
-  background: transparent;
-  min-width: 5rem;
   padding: 0.5rem 1rem;
 }
 
@@ -57,6 +54,12 @@ $flow-edge-colors: (
   color: $flow-node-color-lambda;
   border: 0.1rem solid $flow-node-color-lambda;
   border-radius: 0.25rem;
+}
+
+.react-flow__node-literal {
+  color: $flow-node-color-literal;
+  border: 0.1rem solid $flow-node-color-literal;
+  border-radius: 0 1rem 0 0;
 }
 
 .react-flow__node-comment {
@@ -89,6 +92,44 @@ $flow-edge-colors: (
 .flow-name-display-module {
   font-size: 0.4rem;
   font-style: italic;
+}
+
+/* Node body */
+
+.flow-node-container {
+  display: flex;
+  flex-direction: row;
+  align-items: start;
+}
+
+.flow-node-container-icon {
+  font-size: 0.66rem;
+  opacity: 0.5;
+  font-weight: bold;
+  margin-right: 0.1rem;
+}
+
+.flow-node-container-icon-lg {
+  font-size: 1.2rem;
+}
+
+.flow-node-container-body {
+  text-align: left;
+  margin-top: auto;
+  padding-top: 0.2rem;
+  margin-bottom: auto;
+  white-space: pre-wrap;
+}
+
+.flow-node-container-raw {
+  font-family: monospace;
+  font-size: 0.66rem;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 0.2rem 0;
+  text-align: left;
+  overflow: hidden;
+  max-width: 40rem;
 }
 
 /* Handles */

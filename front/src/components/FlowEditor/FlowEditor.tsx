@@ -32,6 +32,8 @@ import DefNode from "./CustomNodes/DefNode";
 import FlowEditorHeader from "./FlowEditorHeader";
 import BetaNode from "./CustomNodes/BetaNode";
 import CommentNode from "./CustomNodes/CommentNode";
+import LiteralNode from "./CustomNodes/LiteralNode";
+import { emptyBetaNode } from "../../common/node";
 
 const getID = () => {
   const now = new Date();
@@ -45,6 +47,7 @@ const getID = () => {
 
 const nodeTypes = {
   def: DefNode,
+  literal: LiteralNode,
   lambda: LambdaNode,
   beta: BetaNode,
   comment: CommentNode,
@@ -64,7 +67,7 @@ type FlowEditorState = {
 
 const FlowEditor = (props: FlowEditorProps) => {
   const [state, setState] = useState<FlowEditorState>({
-    mode: fh.EditingMode.AddNode,
+    mode: fh.EditingMode.Add,
   });
 
   const storeApi = useStoreApi();
@@ -178,11 +181,8 @@ const FlowEditor = (props: FlowEditorProps) => {
     const y = (event.clientY - ty) * zoomMultiplier;
     const newNode: Node = {
       id: getID(),
-      type: "op",
-      data: {
-        module: "",
-        name: "op",
-      },
+      type: "beta",
+      data: emptyBetaNode(),
       position: {
         x: x,
         y: y,

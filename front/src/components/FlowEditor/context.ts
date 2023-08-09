@@ -10,8 +10,7 @@ import {
   useReactFlow,
 } from "reactflow";
 
-import { BetaNodeType } from "./CustomNodes/BetaNode";
-import { emptyBetaNode } from "../../common/node";
+import { BetaNodeType, NodeType, emptyBetaNode } from "../../common/node";
 
 export type SetNodes = Dispatch<SetStateAction<Node[]>>;
 export type SetEdges = Dispatch<SetStateAction<Edge[]>>;
@@ -59,14 +58,12 @@ const initialNodes = (name: string) => [
       x: 0,
       y: 0,
     },
-    selectable: false,
-    deletable: false,
   },
   {
     id: "1",
     type: "lambda",
     data: {
-      type: BetaNodeType.App,
+      type: NodeType.Lambda,
       argc: 1,
       module: "main/test",
       name: "test_func",
@@ -75,8 +72,92 @@ const initialNodes = (name: string) => [
       x: 0,
       y: 0,
     },
-    selectable: false,
-    deletable: false,
+  },
+  {
+    id: "2",
+    type: "literal",
+    data: {
+      type: NodeType.Literal,
+      value: 42.195,
+    },
+    position: {
+      x: 0,
+      y: 50,
+    },
+  },
+  {
+    id: "3",
+    type: "literal",
+    data: {
+      type: NodeType.Literal,
+      value: "hello, world!\ntest",
+    },
+    position: {
+      x: 0,
+      y: 100,
+    },
+  },
+  {
+    id: "4",
+    type: "literal",
+    data: {
+      type: NodeType.Literal,
+      value: true,
+    },
+    position: {
+      x: 0,
+      y: 140,
+    },
+  },
+  {
+    id: "5",
+    type: "literal",
+    data: {
+      type: NodeType.Literal,
+      value: false,
+    },
+    position: {
+      x: 0,
+      y: 170,
+    },
+  },
+  {
+    id: "6",
+    type: "literal",
+    data: {
+      type: NodeType.Literal,
+      value: null,
+    },
+    position: {
+      x: 0,
+      y: 200,
+    },
+  },
+  {
+    id: "7",
+    type: "literal",
+    data: {
+      type: NodeType.Literal,
+      value: [
+        42,
+        [1, 2, 3],
+        19,
+        {
+          hello: "world! boom sh ddddddddddddddd",
+          test: [],
+          singleton: { a: "20" },
+          pair: { a: "20", b: 30 },
+          Hello: {},
+          Abc: [[]],
+          Boom: "Good",
+        },
+        "abc",
+      ],
+    },
+    position: {
+      x: 0,
+      y: 230,
+    },
   },
 ];
 

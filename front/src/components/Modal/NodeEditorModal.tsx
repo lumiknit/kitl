@@ -1,6 +1,6 @@
 import React from "react";
 
-import * as node from "../../common/node"
+import * as node from "../../common/node";
 
 import NodeEditor from "../NodeEditor/NodeEditor";
 import Modal from "./Modal";

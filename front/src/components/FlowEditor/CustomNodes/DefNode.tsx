@@ -13,7 +13,7 @@ const DefNode = (props: DefNodeProps) => {
   return (
     <>
       <div className="d-flex align-items-center">
-        <NameDisplay name={props.data.name} module={props.data.module} />
+        <NameDisplay name={props.data} />
         <span className="fs-5 m-0 ms-1">≔</span>
       </div>
       <Handle

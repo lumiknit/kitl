@@ -1,3 +1,4 @@
+import { NodeData } from "../../common/node";
 import * as fc from "../FlowEditor/context";
 import { Node } from "reactflow";
 
@@ -82,10 +83,19 @@ export const applySubEditing = (ctx: KitlContext, path: string, value: any) => {
       break;
     case "nd":
       {
-        console.log("nd", id, value);
+        const updateNodeData =
+          (id: string, value: NodeData) => (nodes: Node[]) =>
+            nodes.map(node => {
+              if (node.id !== id) return node;
+              return {
+                ...node,
+                type: value.type,
+                data: value,
+              };
+            });
+        ctx.flowContext.setNodes(updateNodeData(id, value));
       }
       break;
-      
   }
 };
 

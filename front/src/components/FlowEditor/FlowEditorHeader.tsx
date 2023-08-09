@@ -9,9 +9,14 @@ import {
   faRotateLeft,
   faRotateRight,
   faScissors,
+  faSquarePlus,
 } from "@fortawesome/free-solid-svg-icons";
 import * as fh from "./helper";
-import { BetaNodeType } from "./CustomNodes/BetaNode";
+import {
+  emptyBetaNode,
+  emptyCommentNode,
+  emptyLambdaNode,
+} from "../../common/node";
 
 export type FlowEditorHeaderProps = {
   mode: fh.EditingMode;
@@ -23,38 +28,17 @@ export type FlowEditorHeaderProps = {
 
 const addNodeModeControls = (props: FlowEditorHeaderProps) => {
   return [
-    <button
-      key="comment"
-      className="btn btn-outline-success flex-grow-1 px-0"
-      onClick={() =>
-        props.addNode("comment", {
-          content: "**Double click** to edit *MD* comment",
-        })
-      }>
-      <FontAwesomeIcon icon={faCommentDots} />
+    <button key="undo" className="btn btn-warning py-1">
+      <FontAwesomeIcon icon={faRotateLeft} />
     </button>,
-    <button
-      key="lambda"
-      className="btn btn-outline-primary flex-grow-1 px-0"
-      onClick={() =>
-        props.addNode("lambda", {
-          module: "",
-          name: "-",
-          argc: 0,
-        })
-      }>
-      <b>λ</b>
+    <button key="redo" className="btn btn-warning py-1 ">
+      <FontAwesomeIcon icon={faRotateRight} />
     </button>,
     <button
       key="beta"
-      className="btn btn-outline-secondary flex-grow-1 px-0"
-      onClick={() =>
-        props.addNode("beta", {
-          type: BetaNodeType.App,
-          argc: 1,
-        })
-      }>
-      <b>β</b>
+      className="btn btn-secondary flex-grow-1 px-0"
+      onClick={() => props.addNode("beta", emptyBetaNode())}>
+      <FontAwesomeIcon icon={faSquarePlus} />
     </button>,
     <button
       key="del"
@@ -67,12 +51,6 @@ const addNodeModeControls = (props: FlowEditorHeaderProps) => {
 
 const editModeControls = () => {
   return [
-    <button key="undo" className="btn btn-warning py-1 px-0 flex-grow-1">
-      <FontAwesomeIcon icon={faRotateLeft} />
-    </button>,
-    <button key="redo" className="btn btn-warning py-1 px-0 flex-grow-1">
-      <FontAwesomeIcon icon={faRotateRight} />
-    </button>,
     <button
       key="cut"
       className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
@@ -96,9 +74,9 @@ const editModeControls = () => {
 
 const controls = (props: FlowEditorHeaderProps) => {
   switch (props.mode) {
-    case fh.EditingMode.AddNode:
+    case fh.EditingMode.Add:
       return addNodeModeControls(props);
-    case fh.EditingMode.Edit:
+    case fh.EditingMode.Selection:
       return editModeControls();
     default:
       return <></>;

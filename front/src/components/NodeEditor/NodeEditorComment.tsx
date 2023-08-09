@@ -9,19 +9,17 @@ export type NodeEditorCommentProps = {
 };
 
 const NodeEditorComment = (props: NodeEditorCommentProps) => {
-  const onChange = useCallback((value: string) => {
-    props.updateValue({
-      ...props.value,
-      content: value,
-    });
-  }, [props.updateValue]);
-
-  return (
-    <CodeArea
-      defaultValue={props.value.content}
-      onChange={onChange}
-    />
+  const onChange = useCallback(
+    (value: string) => {
+      props.updateValue({
+        type: node.NodeType.Comment,
+        content: value,
+      });
+    },
+    [props.updateValue],
   );
+
+  return <CodeArea defaultValue={props.value.content} onChange={onChange} />;
 };
 
 export default NodeEditorComment;
