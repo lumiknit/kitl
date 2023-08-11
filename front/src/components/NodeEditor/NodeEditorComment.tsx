@@ -19,7 +19,10 @@ const NodeEditorComment = (props: NodeEditorCommentProps) => {
     [props.updateValue],
   );
 
-  return <CodeArea defaultValue={props.value.content} onChange={onChange} />;
+  return (<>
+    <h3>Comment</h3>
+    <CodeArea defaultValue={props.value.content} onChange={onChange} />
+  </>);
 };
 
 export default NodeEditorComment;
