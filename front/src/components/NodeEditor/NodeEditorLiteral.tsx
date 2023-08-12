@@ -9,6 +9,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import RadioButtons from "../Helpers/RadioButtons";
 import { ReactElement } from "react";
+import NodeEditorLiteralJson from "./NodeEditorLiteralJson";
 
 export enum LiteralEditingType {
   Special = 0,
@@ -55,16 +56,17 @@ export type NodeEditorLiteralProps = {
 };
 
 const specialBody = (props: NodeEditorLiteralProps): ReactElement => {
-  let selected;
+  let selected = -1;
   switch (props.value.value) {
+    case null:
+      selected = 0;
+      break;
     case false:
       selected = 1;
       break;
     case true:
       selected = 2;
       break;
-    default:
-      selected = 0; // null
   }
   const updateSelected = (index: number) => {
     let value = null;
@@ -122,6 +124,14 @@ const NodeEditorLiteral = (props: NodeEditorLiteralProps) => {
   switch (props.state.editingType) {
     case LiteralEditingType.Special:
       body = specialBody(props);
+      break;
+    case LiteralEditingType.Raw:
+      body = (
+        <NodeEditorLiteralJson
+          value={props.value.value}
+          updateValue={(value) => {value;}}
+        />
+      );
       break;
   }
   return (
