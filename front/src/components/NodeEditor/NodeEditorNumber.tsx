@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from "react";
 import * as j from "../../common/json";
-import DropdownSelect from "../Helpers/DropdownSelect";
+import RadioButtons from "../Helpers/RadioButtons";
 
 export type NodeEditorNumberProps = {
   value: j.Json;
@@ -13,17 +13,26 @@ export type NodeEditorNumberState = {
   hasError: boolean;
 };
 
-const baseToName = new Map<number, string>([
+const baseToIndex = new Map<number, number>([
+  [2, 0],
+  [8, 1],
+  [10, 2],
+  [16, 3],
+]);
+
+const baseNames = ["Bin", "Oct", "Dec", "Hex"];
+
+const baseToPrefix = new Map<number, string>([
   [2, "0b"],
   [8, "0o"],
-  [10, "(10)"],
+  [10, ""],
   [16, "0x"],
 ]);
 
 const nameToBase = new Map<string, number>([
   ["0b", 2],
   ["0o", 8],
-  ["(10)", 10],
+  ["", 10],
   ["0x", 16],
 ]);
 
@@ -123,20 +132,42 @@ const NodeEditorNumber = (props: NodeEditorNumberProps) => {
     }
   };
 
+  let radioIndex = baseToIndex.get(state.base);
+  if(radioIndex === undefined) {
+    radioIndex = 2;
+  }
+
   return (
-    <div className="input-group">
-      <DropdownSelect
-        options={["0b", "0o", "(10)", "0x"]}
-        value={baseToName.get(state.base) || "Unk"}
-        onChange={onBaseChange}
-        btnClassName="btn btn-secondary"
-      />
-      <input
-        className={`form-control ${state.hasError ? "is-invalid" : ""}`}
-        type="text"
-        value={state.content}
-        onChange={onChange}
-      />
+    <div>
+      <div className="input-group">
+        <RadioButtons
+          selected={radioIndex}
+          updateSelected={(idx) => {
+            const newBase = [2, 8, 10, 16][idx];
+            onBaseChange(baseToPrefix.get(newBase) || "");
+          }}
+          className="flex-grow-1"
+        >
+          {
+            [2, 8, 10, 16].map((_base, idx) => (
+              <span key={idx}>{baseNames[idx]}</span>
+            ))
+          }
+        </RadioButtons>
+      </div>
+      <div className="input-group">
+        <div
+          className="input-group-text"
+        >
+          {baseToPrefix.get(state.base)}
+        </div>
+        <input
+          className={`form-control ${state.hasError ? "is-invalid" : ""}`}
+          type="text"
+          value={state.content}
+          onChange={onChange}
+        />
+      </div>
     </div>
   );
 };

@@ -148,9 +148,7 @@ const NodeEditorLiteral = (props: NodeEditorLiteralProps) => {
       body = (
         <NodeEditorJson
           value={props.value.value}
-          updateValue={value => {
-            value;
-          }}
+          updateValue={updateValue}
         />
       );
       break;
