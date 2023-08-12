@@ -1,6 +1,5 @@
 import { memo } from "react";
 import { Handle, Position } from "reactflow";
-import * as cnh from "./helper";
 import * as j from "../../../common/json";
 import * as node from "../../../common/node";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

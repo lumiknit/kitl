@@ -131,8 +131,7 @@ const guessIsJsonLong = (value: Json): boolean => {
   }
 };
 
-export const formatJsonMin = (value: Json): string =>
-  JSON.stringify(value);
+export const formatJsonMin = (value: Json): string => JSON.stringify(value);
 export const formatJsonPretty = (value: Json): string =>
   JSON.stringify(value, null, 2);
 

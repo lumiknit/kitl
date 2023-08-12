@@ -146,10 +146,7 @@ const NodeEditorLiteral = (props: NodeEditorLiteralProps) => {
       break;
     case LiteralEditingType.Raw:
       body = (
-        <NodeEditorJson
-          value={props.value.value}
-          updateValue={updateValue}
-        />
+        <NodeEditorJson value={props.value.value} updateValue={updateValue} />
       );
       break;
   }

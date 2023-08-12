@@ -133,7 +133,7 @@ const NodeEditorNumber = (props: NodeEditorNumberProps) => {
   };
 
   let radioIndex = baseToIndex.get(state.base);
-  if(radioIndex === undefined) {
+  if (radioIndex === undefined) {
     radioIndex = 2;
   }
 
@@ -142,25 +142,18 @@ const NodeEditorNumber = (props: NodeEditorNumberProps) => {
       <div className="input-group">
         <RadioButtons
           selected={radioIndex}
-          updateSelected={(idx) => {
+          updateSelected={idx => {
             const newBase = [2, 8, 10, 16][idx];
             onBaseChange(baseToPrefix.get(newBase) || "");
           }}
-          className="flex-grow-1"
-        >
-          {
-            [2, 8, 10, 16].map((_base, idx) => (
-              <span key={idx}>{baseNames[idx]}</span>
-            ))
-          }
+          className="flex-grow-1">
+          {[2, 8, 10, 16].map((_base, idx) => (
+            <span key={idx}>{baseNames[idx]}</span>
+          ))}
         </RadioButtons>
       </div>
       <div className="input-group">
-        <div
-          className="input-group-text"
-        >
-          {baseToPrefix.get(state.base)}
-        </div>
+        <div className="input-group-text">{baseToPrefix.get(state.base)}</div>
         <input
           className={`form-control ${state.hasError ? "is-invalid" : ""}`}
           type="text"

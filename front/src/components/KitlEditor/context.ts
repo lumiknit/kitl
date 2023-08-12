@@ -51,36 +51,9 @@ const parsePath = (path: string) => {
   }
 };
 
-const updateNodeData = (id: string, value: any) => (nodes: Node[]) =>
-  nodes.map(node => {
-    if (node.id !== id) return node;
-    return {
-      ...node,
-      data: value,
-    };
-  });
-
 export const applySubEditing = (ctx: KitlContext, path: string, value: any) => {
   const [pType, id] = parsePath(path);
   switch (pType) {
-    case "nd-cmt":
-      {
-        // Comment Node
-        ctx.flowContext.setNodes(updateNodeData(id, value));
-      }
-      break;
-    case "nd-op":
-      {
-        // Operation Node
-        ctx.flowContext.setNodes(updateNodeData(id, value));
-      }
-      break;
-    case "nd-c":
-      {
-        // Const Node
-        ctx.flowContext.setNodes(updateNodeData(id, value));
-      }
-      break;
     case "nd":
       {
         const updateNodeData =

@@ -10,7 +10,7 @@ import {
   useReactFlow,
 } from "reactflow";
 
-import { BetaNodeType, NodeType, emptyBetaNode } from "../../common/node";
+import { NodeType, emptyBetaNode } from "../../common/node";
 
 export type SetNodes = Dispatch<SetStateAction<Node[]>>;
 export type SetEdges = Dispatch<SetStateAction<Edge[]>>;
@@ -41,7 +41,7 @@ const initialNodes = (name: string) => [
     type: "def",
     data: {
       module: "main/test",
-      name: "test_func",
+      name: name,
     },
     position: {
       x: 0,

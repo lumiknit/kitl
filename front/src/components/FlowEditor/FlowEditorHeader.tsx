@@ -1,6 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCommentDots,
   faCopy,
   faDeleteLeft,
   faFolderTree,
@@ -12,11 +11,7 @@ import {
   faSquarePlus,
 } from "@fortawesome/free-solid-svg-icons";
 import * as fh from "./helper";
-import {
-  emptyBetaNode,
-  emptyCommentNode,
-  emptyLambdaNode,
-} from "../../common/node";
+import { emptyBetaNode } from "../../common/node";
 
 export type FlowEditorHeaderProps = {
   mode: fh.EditingMode;

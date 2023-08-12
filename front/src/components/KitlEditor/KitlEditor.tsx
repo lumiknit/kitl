@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { ReactFlowProvider } from "reactflow";
 import KitlEditorInner from "./KitlEditorInner";
 

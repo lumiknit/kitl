@@ -56,8 +56,6 @@ const nodeTypes = {
 export type FlowEditorProps = {
   context: fc.FlowContext;
   openNodeEditor: (path: string, data: any) => void;
-  openCodeArea: (path: string, data: string) => void;
-  openOpNode: (path: string, data: Op) => void;
   openBrowser: () => void;
 };
 

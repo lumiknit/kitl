@@ -28,7 +28,7 @@ const NodeEditorJson = (props: NodeEditorJsonProps) => {
     try {
       const j = JSON5.parse(state.temporaryValue);
       props.updateValue(j);
-      if(refTA.current !== null) {
+      if (refTA.current !== null) {
         refTA.current.value = formatter(j);
         refTA.current.dispatchEvent(new Event("change"));
       }
@@ -40,7 +40,7 @@ const NodeEditorJson = (props: NodeEditorJsonProps) => {
         hasError: false,
       }));
     } catch (e) {
-      if(e instanceof SyntaxError) {
+      if (e instanceof SyntaxError) {
         const err = e as SyntaxError;
         setState(oldState => ({
           ...oldState,
@@ -65,7 +65,7 @@ const NodeEditorJson = (props: NodeEditorJsonProps) => {
       hasError: false,
     }));
   };
-  
+
   return (
     <div>
       Write in JSON5 format.
@@ -74,26 +74,25 @@ const NodeEditorJson = (props: NodeEditorJsonProps) => {
           <div className="input-group-text">Format</div>
           <button
             className="btn btn-outline-secondary flex-grow-1"
-            onClick={formatMin}
-          >
+            onClick={formatMin}>
             Min
           </button>
           <button
             className="btn btn-outline-secondary flex-grow-1"
-            onClick={formatCompact}
-          >
+            onClick={formatCompact}>
             Compact
           </button>
           <button
             className="btn btn-outline-secondary flex-grow-1"
-            onClick={formatPretty}
-          >
+            onClick={formatPretty}>
             Pretty
           </button>
         </div>
       </div>
       <div
-        className={`node-editor-json-message ${state.hasError ? "text-danger" : ""}`}>
+        className={`node-editor-json-message ${
+          state.hasError ? "text-danger" : ""
+        }`}>
         {state.message}
       </div>
       <CodeArea
