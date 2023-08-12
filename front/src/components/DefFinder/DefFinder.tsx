@@ -41,7 +41,7 @@ const DefFinder = (props: DefFinderProps) => {
             defaultValue={n.name}
             onChange={onChange}
           />
-          <label>Name</label>
+          <label className="text-muted">Name</label>
         </div>
         <div className="form-floating">
           <input
@@ -52,7 +52,7 @@ const DefFinder = (props: DefFinderProps) => {
             defaultValue={n.module}
             onChange={onChange}
           />
-          <label>Module</label>
+          <label className="text-muted">Module</label>
         </div>
       </div>
       <div className="def-finder-list">{/*TODO*/}</div>

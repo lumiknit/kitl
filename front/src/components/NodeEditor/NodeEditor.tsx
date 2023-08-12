@@ -3,7 +3,7 @@ import * as node from "../../common/node";
 import NodeEditorHeader from "./NodeEditorHeader";
 
 import "./NodeEditor.css";
-import { ReactElement, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import NodeEditorComment from "./NodeEditorComment";
 import NodeEditorLambda from "./NodeEditorLambda";
 import NodeEditorBeta from "./NodeEditorBeta";
@@ -22,13 +22,13 @@ export type NodeEditorState = {
   value: node.NodeData;
   lastValue: node.NodeData;
   editingType: node.NodeType;
-  literalEditingType: literalEditor.LiteralEditingType;
+  literalState: literalEditor.NodeEditorLiteralState;
 };
 
 const editorBody = (
   state: NodeEditorState,
-  updateValue: (value: node.NodeData) => ReactElement,
-  updateLiteralEditingType: (ty: literalEditor.LiteralEditingType) => void,
+  updateValue: (value: node.NodeData) => void,
+  updateLiteralState: (s: literalEditor.NodeEditorLiteralState) => void,
 ) => {
   switch (state.editingType) {
     case node.NodeType.Comment:
@@ -57,25 +57,21 @@ const editorBody = (
         <NodeEditorLiteral
           value={state.value as node.LiteralNodeData}
           updateValue={updateValue}
-          editingType={state.literalEditingType}
-          updateEditingType={updateLiteralEditingType}
+          state={state.literalState}
+          updateState={updateLiteralState}
         />
       );
     default:
       return JSON.stringify(state.value);
   }
-}
+};
 
 export const NodeEditor = (props: NodeEditorProps) => {
   const [state, setState] = useState<NodeEditorState>({
     value: props.defaultValue,
     lastValue: props.defaultValue,
     editingType: props.defaultValue.type,
-    literalEditingType: (
-      props.defaultValue.type === node.NodeType.Literal ?
-        literalEditor.guessEditingType((props.defaultValue as node.LiteralNodeData).value):
-        literalEditor.LiteralEditingType.Raw
-    ),
+    literalState: literalEditor.initialState(props.defaultValue),
   });
 
   const updateEditingType = useCallback((ty: node.NodeType) => {
@@ -94,18 +90,17 @@ export const NodeEditor = (props: NodeEditorProps) => {
     }));
   }, []);
 
-  const updateLiteralEditingType = useCallback((ty: literalEditor.LiteralEditingType) => {
-    setState(oldState => ({
-      ...oldState,
-      literalEditingType: ty,
-    }));
-  }, []);
-
-  const body = editorBody(
-    state,
-    updateValue,
-    updateLiteralEditingType,
+  const updateLiteralState = useCallback(
+    (s: literalEditor.NodeEditorLiteralState) => {
+      setState(oldState => ({
+        ...oldState,
+        literalState: s,
+      }));
+    },
+    [],
   );
+
+  const body = editorBody(state, updateValue, updateLiteralState);
 
   return (
     <div className="node-editor">
