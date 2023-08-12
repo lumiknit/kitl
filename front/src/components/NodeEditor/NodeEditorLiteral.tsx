@@ -9,7 +9,9 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import RadioButtons from "../Helpers/RadioButtons";
 import { ReactElement } from "react";
-import NodeEditorLiteralJson from "./NodeEditorLiteralJson";
+import NodeEditorJson from "./NodeEditorJson";
+import NodeEditorNumber from "./NodeEditorNumber";
+import NodeEditorString from "./NodeEditorString";
 
 export enum LiteralEditingType {
   Special = 0,
@@ -100,7 +102,7 @@ const specialBody = (props: NodeEditorLiteralProps): ReactElement => {
 const NodeEditorLiteral = (props: NodeEditorLiteralProps) => {
   /* Type buttons */
   const buttons = (
-    <div className="node-editor-type-buttons">
+    <div className="node-editor-type-buttons mb-1">
       <div className="input-group">
         <RadioButtons
           color="primary"
@@ -120,16 +122,35 @@ const NodeEditorLiteral = (props: NodeEditorLiteralProps) => {
     </div>
   );
 
+  const updateValue = (value: j.Json) => {
+    props.updateValue({
+      ...props.value,
+      value: value,
+    });
+  };
+
   let body;
   switch (props.state.editingType) {
     case LiteralEditingType.Special:
       body = specialBody(props);
       break;
+    case LiteralEditingType.Number:
+      body = (
+        <NodeEditorNumber value={props.value.value} updateValue={updateValue} />
+      );
+      break;
+    case LiteralEditingType.String:
+      body = (
+        <NodeEditorString value={props.value.value} updateValue={updateValue} />
+      );
+      break;
     case LiteralEditingType.Raw:
       body = (
-        <NodeEditorLiteralJson
+        <NodeEditorJson
           value={props.value.value}
-          updateValue={(value) => {value;}}
+          updateValue={value => {
+            value;
+          }}
         />
       );
       break;

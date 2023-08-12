@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useRef } from "react";
+import { ChangeEvent, useCallback } from "react";
 
 export type NodeEditorArgcProps = {
   defaultValue: number;

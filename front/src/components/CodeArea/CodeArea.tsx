@@ -51,10 +51,11 @@ export type CodeAreaProps = {
   onChange?: (value: string) => void;
   autoFocus?: boolean;
   errorMsg?: string;
+  refTA?: React.RefObject<HTMLTextAreaElement>;
 };
 
 const CodeArea = (props: CodeAreaProps) => {
-  const refTA = createRef<HTMLTextAreaElement>();
+  const refTA = props.refTA || createRef<HTMLTextAreaElement>();
 
   const resizeTextArea = (target: HTMLTextAreaElement) => {
     target.style.height = "0";

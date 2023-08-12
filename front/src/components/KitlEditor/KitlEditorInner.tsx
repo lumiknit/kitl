@@ -45,10 +45,10 @@ const KitlEditorInner = (_props: KitlEditorInnerProps) => {
   const openModal =
     (ty: ModalEditorType) => (path: string, defaultValue: any) => {
       setState(oldState => {
-        if(oldState.modalEditorState !== undefined) {
+        if (oldState.modalEditorState !== undefined) {
           return {
             ...oldState,
-            modalEditorState: undefined
+            modalEditorState: undefined,
           };
         }
         return oldState;

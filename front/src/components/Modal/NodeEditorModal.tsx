@@ -23,8 +23,7 @@ const NodeEditorModal = (props: NodeEditorModalProps) => {
         if (btn !== null) {
           btn.click();
         }
-      }}
-      fullHeight={true}>
+      }}>
       <NodeEditor
         closeBtnRef={closeBtnRef}
         path={props.path}

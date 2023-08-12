@@ -14,8 +14,8 @@ export type NodeEditorProps = {
   closeBtnRef: React.RefObject<HTMLButtonElement>;
   path: string;
   defaultValue: node.NodeData;
-  onChange: (value: node.NodeData) => void;
-  close: (value: node.NodeData) => void;
+  onChange?: (value: node.NodeData) => void;
+  close?: (value: node.NodeData) => void;
 };
 
 export type NodeEditorState = {
@@ -109,8 +109,16 @@ export const NodeEditor = (props: NodeEditorProps) => {
         path={props.path}
         value={state.value}
         editingType={state.editingType}
-        discard={() => props.close(props.defaultValue)}
-        save={() => props.close(node.cloneNodeData(state.value))}
+        discard={() => {
+          if (props.close !== undefined) {
+            props.close(props.defaultValue);
+          }
+        }}
+        save={() => {
+          if (props.close !== undefined) {
+            props.close(node.cloneNodeData(state.value));
+          }
+        }}
         updateEditingType={updateEditingType}
       />
       <div className="node-editor-body">{body}</div>

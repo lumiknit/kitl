@@ -37,7 +37,7 @@ const Literal = (props: LiteralProps) => {
           inner = (
             <div className="flow-node-container">
               <div className="flow-node-container-icon">
-                <FontAwesomeIcon  className="fa-fw" icon={faSquareXmark} />
+                <FontAwesomeIcon className="fa-fw" icon={faSquareXmark} />
               </div>
               <div className="flow-node-container-body">false</div>
             </div>
@@ -50,7 +50,7 @@ const Literal = (props: LiteralProps) => {
         inner = (
           <div className="flow-node-container">
             <div className="flow-node-container-icon">
-              <FontAwesomeIcon  className="fa-fw" icon={faHashtag} />
+              <FontAwesomeIcon className="fa-fw" icon={faHashtag} />
             </div>
             <div className="flow-node-container-body">{val}</div>
           </div>
@@ -62,7 +62,7 @@ const Literal = (props: LiteralProps) => {
         inner = (
           <div className="flow-node-container">
             <div className="flow-node-container-icon">
-              <FontAwesomeIcon  className="fa-fw" icon={faQuoteLeft} />
+              <FontAwesomeIcon className="fa-fw" icon={faQuoteLeft} />
             </div>
             <div className="flow-node-container-body">
               {j.escapeString(val)}
@@ -77,7 +77,7 @@ const Literal = (props: LiteralProps) => {
           inner = (
             <div className="flow-node-container">
               <div className="flow-node-container-icon">
-                <FontAwesomeIcon   className="fa-fw" icon={faSquare} />
+                <FontAwesomeIcon className="fa-fw" icon={faSquare} />
               </div>
               <div className="flow-node-container-body">null</div>
             </div>
@@ -86,7 +86,7 @@ const Literal = (props: LiteralProps) => {
           inner = (
             <div className="flow-node-container">
               <div className="flow-node-container-icon">
-                <FontAwesomeIcon   className="fa-fw" icon={faRectangleList} />
+                <FontAwesomeIcon className="fa-fw" icon={faRectangleList} />
               </div>
               <div className="flow-node-container-body">
                 <pre className="flow-node-container-raw">
