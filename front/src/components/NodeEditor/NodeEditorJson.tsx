@@ -96,7 +96,7 @@ const NodeEditorJson = (props: NodeEditorJsonProps) => {
         {state.message}
       </div>
       <CodeArea
-        refTA={refTA}
+        textareaRef={refTA}
         defaultValue={state.temporaryValue}
         onChange={onChange}
         errorMsg={state.hasError ? state.message : undefined}

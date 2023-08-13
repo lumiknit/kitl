@@ -76,7 +76,15 @@ const NodeEditorBeta = (props: NodeEditorBetaProps) => {
           Use Named Value
         </label>
       </div>
-      <NodeEditorArgc defaultValue={props.value.argc} readonly />
+      <NodeEditorArgc
+        defaultValue={props.value.argc}
+        onChange={argc => {
+          props.updateValue({
+            ...props.value,
+            argc,
+          });
+        }}
+      />
       {inner}
     </>
   );

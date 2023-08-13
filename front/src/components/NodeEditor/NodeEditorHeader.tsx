@@ -8,6 +8,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import * as node from "../../common/node";
+import RadioButtons from "../Helpers/RadioButtons";
 
 export type NodeEditorHeaderProps = {
   closeBtnRef: React.RefObject<HTMLButtonElement>;
@@ -42,24 +43,6 @@ const typeButtonList = [
   },
 ];
 
-const TypeButtons = (props: NodeEditorHeaderProps) => {
-  const btns = typeButtonList.map(tb => {
-    const btnCls =
-      props.editingType === tb.type
-        ? `btn-${tb.colorClass}`
-        : `btn-outline-${tb.colorClass}`;
-    return (
-      <button
-        key={tb.type}
-        className={`btn ${btnCls} flex-grow-1 px-0`}
-        onClick={() => props.updateEditingType(tb.type)}>
-        {tb.body}
-      </button>
-    );
-  });
-  return btns;
-};
-
 const NodeEditorHeader = (props: NodeEditorHeaderProps) => {
   const dropDownMenus = [
     <a className="dropdown-item" onClick={props.discard}>
@@ -67,6 +50,12 @@ const NodeEditorHeader = (props: NodeEditorHeaderProps) => {
       &nbsp; Discard
     </a>,
   ];
+  const typeIndex = typeButtonList.findIndex(
+    tb => tb.type === props.editingType
+  );
+  const updateSelected = (idx: number) => {
+    props.updateEditingType(typeButtonList[idx].type);
+  };
   return (
     <div className="node-editor-header">
       <div className="input-group shadow">
@@ -78,8 +67,14 @@ const NodeEditorHeader = (props: NodeEditorHeaderProps) => {
             <li key={idx}>{item}</li>
           ))}
         </ul>
-        {/* TODO: Add dropdown and add discard menu */}
-        <TypeButtons {...props} />
+        <RadioButtons
+          selected={typeIndex}
+          updateSelected={updateSelected}
+          color={typeButtonList.map(tb => tb.colorClass)}
+          className="flex-grow-1 px-0"
+        >
+          {typeButtonList.map(tb => tb.body)}
+        </RadioButtons>
         <button
           ref={props.closeBtnRef}
           className="btn btn-success"

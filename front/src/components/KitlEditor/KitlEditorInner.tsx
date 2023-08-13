@@ -26,10 +26,7 @@ export type KitlEditorInnerState = {
   modalEditorState?: ModalEditorState;
 };
 
-export type KitlEditorInnerProps = {};
-
-const KitlEditorInner = (_props: KitlEditorInnerProps) => {
-  (x => x)(_props);
+const KitlEditorInner = () => {
   const context = kc.newKitlContext("editor-main");
   const [state, setState] = useState<KitlEditorInnerState>({
     editingState: kc.emptyKitlEditingState(),

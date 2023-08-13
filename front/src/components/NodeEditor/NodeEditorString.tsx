@@ -79,7 +79,7 @@ const NodeEditorString = (props: NodeEditorStringProps) => {
         </label>
       </div>
       <CodeArea
-        refTA={refTA}
+        textareaRef={refTA}
         defaultValue={state.defaultValue}
         onChange={onChange}
       />

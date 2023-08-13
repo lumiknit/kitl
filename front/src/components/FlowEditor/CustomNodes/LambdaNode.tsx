@@ -18,7 +18,7 @@ const LambdaNode = (props: LambdaNodeProps) => {
         <>
           <div
             className="flow-node-container"
-            style={{ minHeight: `${count}rem` }}>
+            style={{ minHeight: `${cnh.minLengthKeepingDistance(1, count)}rem` }}>
             <div className="flow-node-container-icon flow-node-container-icon-lg">
               λ
             </div>

@@ -30,7 +30,9 @@ const BetaNode = (props: BetaNodeProps) => {
 
   return (
     <>
-      {inner}
+      <div style={{ minWidth: `${cnh.minLengthKeepingDistance(1, argc)}rem` }}>
+        {inner}
+      </div>
       {[...Array(argc)].map((_, i) => (
         <Handle
           key={i}
