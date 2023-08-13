@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import * as j from "../../common/json";
-import CodeArea from "../CodeArea/CodeArea";
+import CodeArea from "../Helpers/CodeArea";
 
 export type NodeEditorStringProps = {
   value: j.Json;

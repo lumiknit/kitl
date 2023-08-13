@@ -1,4 +1,4 @@
-import CodeArea from "../CodeArea/CodeArea";
+import CodeArea from "../Helpers/CodeArea";
 
 import * as node from "../../common/node";
 import { useCallback } from "react";

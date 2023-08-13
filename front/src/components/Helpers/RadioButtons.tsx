@@ -1,5 +1,7 @@
 import { ReactElement, memo, useCallback } from "react";
 
+import * as array from "../../common/array";
+
 export type RadioButtonsProps = {
   children: ReactElement | ReactElement[];
   color?: string | string[];
@@ -9,21 +11,8 @@ export type RadioButtonsProps = {
 };
 
 const RadioButtons = (props: RadioButtonsProps) => {
-  let children;
-  if (Array.isArray(props.children)) {
-    children = props.children;
-  } else {
-    children = [props.children];
-  }
-
-  let colors: string[];
-  if (Array.isArray(props.color)) {
-    colors = props.color;
-  } else if (props.color) {
-    colors = new Array(children.length).fill(props.color);
-  } else {
-    colors = new Array(children.length).fill("secondary");
-  }
+  const children = array.makeArray(props.children, <></>);
+  const colors = array.makeArray(props.color, "secondary", children.length);
 
   const updateSelected = useCallback(
     (index: number) => {
@@ -39,8 +28,14 @@ const RadioButtons = (props: RadioButtonsProps) => {
       props.selected === index
         ? `btn btn-${colors[index]} ${props.className || ""}`
         : `btn btn-outline-${colors[index]} ${props.className || ""}`;
+    const handleClick = () => {
+      updateSelected(index);
+    };
     return (
-      <button key={index} className={cls} onClick={() => updateSelected(index)}>
+      <button
+        key={`radio-button--${index}`}
+        className={cls}
+        onClick={handleClick}>
         {child}
       </button>
     );

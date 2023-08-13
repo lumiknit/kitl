@@ -11,11 +11,10 @@ import NodeEditorLiteral from "./NodeEditorLiteral";
 import * as literalEditor from "./NodeEditorLiteral";
 
 export type NodeEditorProps = {
-  closeBtnRef: React.RefObject<HTMLButtonElement>;
   path: string;
   defaultValue: node.NodeData;
   onChange?: (value: node.NodeData) => void;
-  close?: (value: node.NodeData) => void;
+  close?: () => void;
 };
 
 export type NodeEditorState = {
@@ -75,11 +74,13 @@ export const NodeEditor = (props: NodeEditorProps) => {
   });
 
   const updateEditingType = useCallback((ty: node.NodeType) => {
+    const newValue = node.convertNodeDataType(ty, state.value);
     setState(oldState => ({
       ...oldState,
       editingType: ty,
-      value: node.convertNodeDataType(ty, oldState.lastValue),
+      value: newValue,
     }));
+    props.onChange?.(newValue);
   }, []);
 
   const updateValue = useCallback((value: node.NodeData) => {
@@ -88,6 +89,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
       value: value,
       lastValue: value,
     }));
+    props.onChange?.(value);
   }, []);
 
   const updateLiteralState = useCallback(
@@ -102,23 +104,27 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   const body = editorBody(state, updateValue, updateLiteralState);
 
+  const discard = useCallback(() => {
+    setState(oldState => ({
+      ...oldState,
+      value: props.defaultValue,
+    }));
+    props.onChange?.(props.defaultValue);
+    setTimeout(() => props.close?.(), 0);
+  }, [props, setState]);
+
+  const save = useCallback(() => {
+    props.close?.();
+  }, [props.close]);
+
   return (
     <div className="node-editor">
       <NodeEditorHeader
-        closeBtnRef={props.closeBtnRef}
         path={props.path}
         value={state.value}
         editingType={state.editingType}
-        discard={() => {
-          if (props.close !== undefined) {
-            props.close(props.defaultValue);
-          }
-        }}
-        save={() => {
-          if (props.close !== undefined) {
-            props.close(node.cloneNodeData(state.value));
-          }
-        }}
+        discard={discard}
+        save={save}
         updateEditingType={updateEditingType}
       />
       <div className="node-editor-body">{body}</div>

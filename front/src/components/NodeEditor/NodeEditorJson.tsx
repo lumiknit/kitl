@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import * as j from "../../common/json";
-import CodeArea from "../CodeArea/CodeArea";
+import CodeArea from "../Helpers/CodeArea";
 import JSON5 from "json5";
 
 export type NodeEditorJsonProps = {
@@ -99,7 +99,7 @@ const NodeEditorJson = (props: NodeEditorJsonProps) => {
         textareaRef={refTA}
         defaultValue={state.temporaryValue}
         onChange={onChange}
-        errorMsg={state.hasError ? state.message : undefined}
+        errorMessage={state.hasError ? state.message : undefined}
       />
     </div>
   );

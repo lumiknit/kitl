@@ -1,7 +1,8 @@
 import { ReactFlowProvider } from "reactflow";
 import KitlEditorInner from "./KitlEditorInner";
 
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export type KitlEditorState = {
   innerHeight: number;

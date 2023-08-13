@@ -10,7 +10,6 @@ const NameDisplay = (props: NameDisplayProps) => {
   const wn = name.whitenName(props.name);
   const replaced = opNameSymbol[wn.name];
   const wnn = replaced !== undefined ? replaced : wn.name;
-  console.log(props.name, wn, wnn);
   return (
     <div className="flow-name-display">
       <div className="flow-name-display-name">{wnn}</div>

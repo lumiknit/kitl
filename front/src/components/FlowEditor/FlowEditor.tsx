@@ -93,25 +93,26 @@ const FlowEditor = (props: FlowEditorProps) => {
       // Add the new edge
       return addEdge(params, newEdges);
     });
-    props.context.setNodes(ns => ns.map(n => {
-      if(n.id !== targetNode) return n;
-      if(n.type !== "beta") return n;
-      const data = n.data as BetaNodeData;
-      if(typeof targetHandle !== "string") return n;
-      const argPrefix = "arg";
-      if(!targetHandle.startsWith(argPrefix)) return n;
-      const arg = parseInt(targetHandle.substring(argPrefix.length));
-      if(isNaN(arg)) return n;
-      const newNode = {
-        ...n,
-        data: {
-          ...data,
-          argc: Math.max(data.argc, arg + 1),
-        },
-      }
-      console.log(arg, data.argc);
-      return newNode;
-    }));
+    props.context.setNodes(ns =>
+      ns.map(n => {
+        if (n.id !== targetNode) return n;
+        if (n.type !== "beta") return n;
+        const data = n.data as BetaNodeData;
+        if (typeof targetHandle !== "string") return n;
+        const argPrefix = "arg";
+        if (!targetHandle.startsWith(argPrefix)) return n;
+        const arg = parseInt(targetHandle.substring(argPrefix.length));
+        if (isNaN(arg)) return n;
+        const newNode = {
+          ...n,
+          data: {
+            ...data,
+            argc: Math.max(data.argc, arg + 1),
+          },
+        };
+        return newNode;
+      }),
+    );
   }, []);
 
   const onNodesChangeWrapper = (changes: NodeChange[]) => {
@@ -137,8 +138,6 @@ const FlowEditor = (props: FlowEditorProps) => {
     if (updatingGraphError) return;
     updatingGraphError = true;
     fc.updateGraphError(props.context);
-    console.log(props.context.hasCycle);
-    console.log(props.context.hasMultipleSource);
     updatingGraphError = false;
   };
 

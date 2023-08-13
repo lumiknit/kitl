@@ -1,4 +1,4 @@
-import React from "react";
+import { useCallback, useState } from "react";
 
 import * as node from "../../common/node";
 
@@ -13,23 +13,37 @@ export type NodeEditorModalProps = {
   path: string;
 };
 
+type NodeEditorModalState = {
+  value: node.NodeData;
+};
+
 const NodeEditorModal = (props: NodeEditorModalProps) => {
-  const closeBtnRef = React.useRef<HTMLButtonElement>(null);
+  const [, setState] = useState<NodeEditorModalState>({
+    value: props.defaultValue,
+  });
+  const handleChange = useCallback(
+    (value: node.NodeData) => {
+      setState(oldState => ({
+        ...oldState,
+        value: value,
+      }));
+    },
+    [setState],
+  );
+  const close = useCallback(() => {
+    setState(state => {
+      props.onChange?.(state.value);
+      props.onClose?.(state.value);
+      return state;
+    });
+  }, [props, setState]);
   return (
-    <Modal
-      open={props.open}
-      onClose={() => {
-        const btn = closeBtnRef.current;
-        if (btn !== null) {
-          btn.click();
-        }
-      }}>
+    <Modal open={props.open} onClose={close}>
       <NodeEditor
-        closeBtnRef={closeBtnRef}
         path={props.path}
         defaultValue={props.defaultValue}
-        onChange={props.onChange}
-        close={props.onClose}
+        onChange={handleChange}
+        close={close}
       />
     </Modal>
   );

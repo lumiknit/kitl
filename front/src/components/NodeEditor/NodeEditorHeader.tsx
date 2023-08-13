@@ -11,7 +11,6 @@ import * as node from "../../common/node";
 import RadioButtons from "../Helpers/RadioButtons";
 
 export type NodeEditorHeaderProps = {
-  closeBtnRef: React.RefObject<HTMLButtonElement>;
   path: string;
   value: node.NodeData;
   editingType: node.NodeType;
@@ -51,7 +50,7 @@ const NodeEditorHeader = (props: NodeEditorHeaderProps) => {
     </a>,
   ];
   const typeIndex = typeButtonList.findIndex(
-    tb => tb.type === props.editingType
+    tb => tb.type === props.editingType,
   );
   const updateSelected = (idx: number) => {
     props.updateEditingType(typeButtonList[idx].type);
@@ -71,14 +70,12 @@ const NodeEditorHeader = (props: NodeEditorHeaderProps) => {
           selected={typeIndex}
           updateSelected={updateSelected}
           color={typeButtonList.map(tb => tb.colorClass)}
-          className="flex-grow-1 px-0"
-        >
-          {typeButtonList.map(tb => tb.body)}
+          className="flex-grow-1 px-0">
+          {typeButtonList.map((tb, idx) => (
+            <span key={idx}>{tb.body}</span>
+          ))}
         </RadioButtons>
-        <button
-          ref={props.closeBtnRef}
-          className="btn btn-success"
-          onClick={props.save}>
+        <button className="btn btn-success" onClick={props.save}>
           <FontAwesomeIcon icon={faCheck} />
         </button>
       </div>

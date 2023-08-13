@@ -7,6 +7,21 @@ export type DropdownSelectProps = {
 
 const DropdownSelect = (props: DropdownSelectProps) => {
   const btnCls = `btn dropdown-toggle ${props.btnClassName}`;
+  console.log(props.options);
+
+  const menus = props.options.map(option => {
+    const handleClick = () => {
+      props.onChange(option);
+    };
+    return (
+      <li key={option}>
+        <a href="#" className="dropdown-item" onClick={handleClick}>
+          {option}
+        </a>
+      </li>
+    );
+  });
+
   return (
     <>
       <button
@@ -16,18 +31,7 @@ const DropdownSelect = (props: DropdownSelectProps) => {
         aria-expanded="false">
         {props.value}
       </button>
-      <ul className="dropdown-menu">
-        {props.options.map((option, index) => (
-          <li key={index}>
-            <a
-              className="dropdown-item"
-              href="#"
-              onClick={() => props.onChange(option)}>
-              {option}
-            </a>
-          </li>
-        ))}
-      </ul>
+      <ul className="dropdown-menu">{menus}</ul>
     </>
   );
 };

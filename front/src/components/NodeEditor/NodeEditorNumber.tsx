@@ -91,14 +91,12 @@ const NodeEditorNumber = (props: NodeEditorNumberProps) => {
     let hasError = false;
     const base = nameToBase.get(newBase) || 10;
     const newNum = parseFloat(state.content, state.base);
-    console.log(base, state.content, newNum);
     if (!isNaN(newNum)) {
       newContent = newNum.toString(base);
       hasError = false;
     } else {
       hasError = true;
     }
-    console.log(newContent, hasError);
     setState(oldState => {
       return {
         ...oldState,

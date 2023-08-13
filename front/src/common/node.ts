@@ -244,8 +244,6 @@ export const convertNodeDataType = (
 ): NodeData => {
   if (node.type === type) return node;
   const str = nodeDataToInfoString(node);
-  console.log(str);
-  console.log(extractName(str));
   switch (type) {
     case NodeType.Literal:
       return {

@@ -12,11 +12,14 @@ export const positionPercentage = (index: number, count: number) => {
   }
 };
 
-export const minLengthKeepingDistance = (dist: number, count: number): number => {
-  if(count <= 1) {
+export const minLengthKeepingDistance = (
+  dist: number,
+  count: number,
+): number => {
+  if (count <= 1) {
     return dist;
   } else {
-    return (dist * (count - 1)) * 10 / 6;
+    return (dist * (count - 1) * 10) / 6;
   }
 };
 

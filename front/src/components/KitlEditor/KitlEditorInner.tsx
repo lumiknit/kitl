@@ -15,13 +15,13 @@ export enum ModalEditorType {
   Browser = "browserModal",
 }
 
-export type ModalEditorState = {
+type ModalEditorState = {
   type: ModalEditorType;
   path: string;
   defaultValue: any;
 };
 
-export type KitlEditorInnerState = {
+type KitlEditorInnerState = {
   editingState: kc.KitlEditingState;
   modalEditorState?: ModalEditorState;
 };
