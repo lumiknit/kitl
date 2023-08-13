@@ -53,6 +53,7 @@ const NodeEditorArgc = (props: NodeEditorArgcProps) => {
           defaultValue={props.defaultValue}
           onChange={onArgcChange}
           placeholder="Argument Count"
+          pattern="[0-9]*"
         />
       )}
       <label>Argument Count</label>

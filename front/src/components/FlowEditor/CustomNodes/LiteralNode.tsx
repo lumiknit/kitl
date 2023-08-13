@@ -102,7 +102,7 @@ const Literal = (props: LiteralProps) => {
     <>
       {inner}
       <Handle
-        id={`ret`}
+        id={node.HANDLE_LITERAL_RET}
         type="source"
         position={Position.Bottom}
         isConnectable={props.isConnectable}

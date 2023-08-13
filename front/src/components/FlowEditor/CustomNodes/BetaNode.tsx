@@ -36,7 +36,7 @@ const BetaNode = (props: BetaNodeProps) => {
       {[...Array(argc)].map((_, i) => (
         <Handle
           key={i}
-          id={`arg${i}`}
+          id={`${node.HANDLE_BETA_ARG_PREFIX}${i}`}
           type="target"
           position={Position.Top}
           isConnectable={props.isConnectable}
@@ -46,7 +46,7 @@ const BetaNode = (props: BetaNodeProps) => {
       ))}
       {take ? (
         <Handle
-          id={`val`}
+          id={node.HANDLE_BETA_FUN}
           type="target"
           position={Position.Left}
           isConnectable={props.isConnectable}
@@ -54,7 +54,7 @@ const BetaNode = (props: BetaNodeProps) => {
         />
       ) : null}
       <Handle
-        id={`ret`}
+        id={node.HANDLE_BETA_RET}
         type="source"
         position={Position.Bottom}
         isConnectable={props.isConnectable}

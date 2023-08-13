@@ -17,7 +17,7 @@ const DefNode = (props: DefNodeProps) => {
         <span className="fs-5 m-0 ms-1">≔</span>
       </div>
       <Handle
-        id="arg"
+        id={node.HANDLE_DEF_ARG}
         type="target"
         position={Position.Top}
         isConnectable={props.isConnectable}

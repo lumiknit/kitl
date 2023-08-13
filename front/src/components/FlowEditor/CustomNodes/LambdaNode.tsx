@@ -29,21 +29,21 @@ const LambdaNode = (props: LambdaNodeProps) => {
             </div>
           </div>
           <Handle
-            id="fallback"
+            id={node.HANDLE_LAMBDA_FALLBACK}
             type="target"
             position={Position.Top}
             isConnectable={props.isConnectable}
             className="flow-handle-lambda-arg"
           />
           <Handle
-            id="val"
+            id={node.HANDLE_LAMBDA_VAL}
             type="source"
             position={Position.Bottom}
             isConnectable={props.isConnectable}
             className="flow-handle-lambda-ret"
           />
           <Handle
-            id="arg"
+            id={node.HANDLE_LAMBDA_ARG}
             type="source"
             position={Position.Left}
             isConnectable={props.isConnectable}
@@ -53,7 +53,7 @@ const LambdaNode = (props: LambdaNodeProps) => {
           {[...Array(props.data.argc)].map((_, i) => (
             <Handle
               key={i}
-              id={`elem-${i}`}
+              id={`${node.HANDLE_LAMBDA_ELEM_PREFIX}${i}`}
               type="source"
               position={Position.Left}
               isConnectable={props.isConnectable}
@@ -62,7 +62,7 @@ const LambdaNode = (props: LambdaNodeProps) => {
             />
           ))}
           <Handle
-            id="ret"
+            id={node.HANDLE_LAMBDA_RET}
             type="target"
             position={Position.Left}
             isConnectable={props.isConnectable}

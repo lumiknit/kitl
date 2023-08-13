@@ -31,6 +31,8 @@ export type LiteralNodeData = {
   value: j.Json;
 };
 
+export const HANDLE_LITERAL_RET = "ret";
+
 // Beta
 
 export enum BetaNodeType {

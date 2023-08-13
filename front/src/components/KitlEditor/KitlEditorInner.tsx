@@ -28,9 +28,9 @@ type KitlEditorInnerState = {
 
 const KitlEditorInner = () => {
   const context = kc.newKitlContext("editor-main");
-  const [state, setState] = useState<KitlEditorInnerState>(() => ({
+  const [state, setState] = useState<KitlEditorInnerState>({
     editingState: kc.emptyKitlEditingState(),
-  }));
+  });
 
   const closeModal = useCallback(() => {
     setState(oldState => ({
@@ -39,8 +39,7 @@ const KitlEditorInner = () => {
     }));
   }, [setState]);
 
-  const closeModalWithValue = useCallback(
-    (value: any) => {
+  const closeModalWithValue = (value: any) => {
       if (state.modalEditorState === undefined) {
         return;
       }
@@ -49,9 +48,7 @@ const KitlEditorInner = () => {
         ...oldState,
         modalEditorState: undefined,
       }));
-    },
-    [context, state.modalEditorState, setState],
-  );
+    };
 
   const openModal = useCallback(
     (ty: ModalEditorType) => (path: string, defaultValue: any) => {

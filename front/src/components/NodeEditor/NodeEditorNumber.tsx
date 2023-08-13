@@ -135,6 +135,9 @@ const NodeEditorNumber = (props: NodeEditorNumberProps) => {
     radioIndex = 2;
   }
 
+  const inputType = state.base <= 10 ? "number" : "text";
+  const pattern = state.base <= 10 ? "[-+0-9.]*" : "[-+0-9a-fA-F.]*";
+
   return (
     <div>
       <div className="input-group">
@@ -154,9 +157,10 @@ const NodeEditorNumber = (props: NodeEditorNumberProps) => {
         <div className="input-group-text">{baseToPrefix.get(state.base)}</div>
         <input
           className={`form-control ${state.hasError ? "is-invalid" : ""}`}
-          type="text"
+          type={inputType}
           value={state.content}
           onChange={onChange}
+          pattern={pattern}
         />
       </div>
     </div>
