@@ -40,15 +40,15 @@ const KitlEditorInner = () => {
   }, [setState]);
 
   const closeModalWithValue = (value: any) => {
-      if (state.modalEditorState === undefined) {
-        return;
-      }
-      kc.applySubEditing(context, state.modalEditorState.path, value);
-      setState(oldState => ({
-        ...oldState,
-        modalEditorState: undefined,
-      }));
-    };
+    if (state.modalEditorState === undefined) {
+      return;
+    }
+    kc.applySubEditing(context, state.modalEditorState.path, value);
+    setState(oldState => ({
+      ...oldState,
+      modalEditorState: undefined,
+    }));
+  };
 
   const openModal = useCallback(
     (ty: ModalEditorType) => (path: string, defaultValue: any) => {
