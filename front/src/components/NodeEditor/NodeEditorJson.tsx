@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { ReactElement, useRef, useState } from "react";
 import * as j from "../../common/json";
 import CodeArea from "../Helpers/CodeArea";
 import JSON5 from "json5";
@@ -11,8 +11,22 @@ export type NodeEditorJsonProps = {
 export type NodeEditorJsonState = {
   temporaryValue: string;
   /* Error Message */
-  message: string;
+  message?: ReactElement;
   hasError: boolean;
+};
+
+const Message = (props: {
+  color: string;
+  badge: string;
+  children?: string | ReactElement | ReactElement[];
+}) => {
+  return (
+    <span>
+      <span className={`badge bg-${props.color}`}>{props.badge}</span>
+      &nbsp;
+      {props.children}
+    </span>
+  );
 };
 
 const NodeEditorJson = (props: NodeEditorJsonProps) => {
@@ -20,7 +34,6 @@ const NodeEditorJson = (props: NodeEditorJsonProps) => {
 
   const [state, setState] = useState<NodeEditorJsonState>({
     temporaryValue: JSON.stringify(props.value),
-    message: "",
     hasError: false,
   });
 
@@ -36,7 +49,7 @@ const NodeEditorJson = (props: NodeEditorJsonProps) => {
       setState(oldState => ({
         ...oldState,
         temporaryValue: formatter(j),
-        message: "",
+        message: undefined,
         hasError: false,
       }));
     } catch (e) {
@@ -44,7 +57,11 @@ const NodeEditorJson = (props: NodeEditorJsonProps) => {
         const err = e as SyntaxError;
         setState(oldState => ({
           ...oldState,
-          message: err.message,
+          message: (
+            <Message color="danger" badge="ERROR">
+              {err.message}
+            </Message>
+          ),
           hasError: true,
         }));
       } else {
@@ -61,7 +78,11 @@ const NodeEditorJson = (props: NodeEditorJsonProps) => {
     setState(oldState => ({
       ...oldState,
       temporaryValue: value,
-      message: "** Modified ** (format to validate and save)",
+      message: (
+        <Message color="warning" badge="WARNING">
+          Format to apply.
+        </Message>
+      ),
       hasError: false,
     }));
   };
@@ -89,17 +110,12 @@ const NodeEditorJson = (props: NodeEditorJsonProps) => {
           </button>
         </div>
       </div>
-      <div
-        className={`node-editor-json-message ${
-          state.hasError ? "text-danger" : ""
-        }`}>
-        {state.message}
-      </div>
+      <div className="node-editor-json-message my-1">{state.message}</div>
       <CodeArea
         textareaRef={refTA}
         defaultValue={state.temporaryValue}
         onChange={onChange}
-        errorMessage={state.hasError ? state.message : undefined}
+        errorMessage={state.hasError ? "JSON Syntax Error" : undefined}
       />
     </div>
   );

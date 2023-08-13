@@ -5,6 +5,7 @@ import * as node from "../../common/node";
 import * as d from "../../common/def";
 import { Def } from "../../common/def";
 import { ChangeEvent } from "react";
+import { newName } from "../../common/name";
 
 export type NodeEditorBetaProps = {
   value: node.BetaNodeData;
@@ -12,43 +13,18 @@ export type NodeEditorBetaProps = {
 };
 
 const NodeEditorBeta = (props: NodeEditorBetaProps) => {
-  let inner = null;
+  let name: node.Name;
   if (props.value.betaType === node.BetaNodeType.Name) {
-    const val = props.value as node.BetaNodeName;
-    const onDefChange = (value: Def) => {
-      props.updateValue({
-        ...val,
-        name: {
-          name: value.name,
-          module: value.module,
-        },
-      });
-    };
-    inner = (
-      <>
-        <DefFinder
-          defaultValue={d.newDef(
-            d.DefType.Value,
-            val.name.name,
-            val.name.module,
-          )}
-          onChange={onDefChange}
-        />
-      </>
-    );
+    name = (props.value as node.BetaNodeName).name;
+  } else {
+    name = newName("", "");
   }
   const onUseNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
       const val = props.value as {
         name?: node.Name;
       };
-      const name =
-        val.name === undefined
-          ? {
-              name: ".",
-              module: "",
-            }
-          : val.name;
+      const name = val.name === undefined ? newName(".", "") : val.name;
       props.updateValue({
         ...props.value,
         betaType: node.BetaNodeType.Name,
@@ -61,6 +37,20 @@ const NodeEditorBeta = (props: NodeEditorBetaProps) => {
       });
     }
   };
+  const onDefChange = (value: Def) => {
+    if (value.name === "") {
+      props.updateValue({
+        ...props.value,
+        betaType: node.BetaNodeType.App,
+      });
+    } else {
+      props.updateValue({
+        ...props.value,
+        betaType: node.BetaNodeType.Name,
+        name: value,
+      });
+    }
+  };
   return (
     <>
       <h3> β (Fn Call / Application) </h3>
@@ -69,7 +59,7 @@ const NodeEditorBeta = (props: NodeEditorBetaProps) => {
           className="form-check-input"
           type="checkbox"
           id="useNameCheck"
-          defaultChecked={props.value.betaType === node.BetaNodeType.Name}
+          checked={props.value.betaType === node.BetaNodeType.Name}
           onChange={onUseNameChange}
         />
         <label className="form-check-label" htmlFor="useNameCheck">
@@ -85,7 +75,10 @@ const NodeEditorBeta = (props: NodeEditorBetaProps) => {
           });
         }}
       />
-      {inner}
+      <DefFinder
+        value={d.newDef(d.DefType.Value, name.name, name.module)}
+        onChange={onDefChange}
+      />
     </>
   );
 };

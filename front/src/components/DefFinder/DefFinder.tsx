@@ -1,56 +1,51 @@
-import { memo, useCallback, useRef, useState } from "react";
-import * as name from "../../common/name";
+import { memo, useCallback } from "react";
 import * as d from "../../common/def";
 
 export type DefFinderProps = {
-  defaultValue: d.Def;
+  value: d.Def;
   onChange?: (value: d.Def) => void;
   className?: string;
 };
 
 const DefFinder = (props: DefFinderProps) => {
-  const [n] = useState(() => {
-    return name.whitenName(name.cloneName(props.defaultValue));
-  });
-  const nameRef = useRef<HTMLInputElement>(null);
-  const moduleRef = useRef<HTMLInputElement>(null);
+  const n = props.value;
 
-  const onChange = useCallback(() => {
-    if (props.onChange === undefined) {
-      return;
-    }
-    const name = nameRef.current?.value;
-    const module = moduleRef.current?.value;
+  const handleNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const val = e.target.value;
+      props.onChange?.(d.newDef(d.DefType.Value, val, n.module));
+    },
+    [props.onChange],
+  );
 
-    if (name === undefined || module === undefined) {
-      return;
-    }
-
-    props.onChange(d.newDef(d.DefType.Value, name, module));
-  }, [props.onChange]);
+  const handleModuleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const val = e.target.value;
+      props.onChange?.(d.newDef(d.DefType.Value, n.name, val));
+    },
+    [props.onChange],
+  );
 
   return (
     <div className={`def-finder ${props.className}`}>
       <div className="def-finder-inputs">
         <div className="form-floating mb-1">
           <input
-            ref={nameRef}
             type="text"
             className="form-control"
             placeholder="Name"
-            defaultValue={n.name}
-            onChange={onChange}
+            value={n.name}
+            onChange={handleNameChange}
           />
           <label className="text-muted">Name</label>
         </div>
         <div className="form-floating">
           <input
-            ref={moduleRef}
             type="text"
             className="form-control"
             placeholder="Module"
-            defaultValue={n.module}
-            onChange={onChange}
+            value={n.module}
+            onChange={handleModuleChange}
           />
           <label className="text-muted">Module</label>
         </div>
