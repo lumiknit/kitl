@@ -6,17 +6,12 @@ import FlowEditor from "../FlowEditor/FlowEditor";
 
 import "./KitlEditor.css";
 
-import JsonEditorModal from "../Modal/JsonEditorModal";
-import CodeAreaModal from "../Modal/CodeAreaModal";
-import OpNodeModal from "../Modal/OpNodeModal";
-
 import * as kc from "./context";
 import BrowserModal from "../Modal/BrowserModal";
+import NodeEditorModal from "../Modal/NodeEditorModal";
 
 export enum ModalEditorType {
-  JsonEditor = "jsonEditorModal",
-  CodeArea = "codeAreaModal",
-  OpNode = "opNodeModal",
+  NodeEditor = "nodeEditorModal",
   Browser = "browserModal",
 }
 
@@ -31,12 +26,7 @@ export type KitlEditorInnerState = {
   modalEditorState?: ModalEditorState;
 };
 
-export type KitlEditorInnerProps = {
-  innerHeight: number;
-};
-
-const KitlEditorInner = (_props: KitlEditorInnerProps) => {
-  (x => x)(_props);
+const KitlEditorInner = () => {
   const context = kc.newKitlContext("editor-main");
   const [state, setState] = useState<KitlEditorInnerState>({
     editingState: kc.emptyKitlEditingState(),
@@ -44,6 +34,15 @@ const KitlEditorInner = (_props: KitlEditorInnerProps) => {
 
   const openModal =
     (ty: ModalEditorType) => (path: string, defaultValue: any) => {
+      setState(oldState => {
+        if (oldState.modalEditorState !== undefined) {
+          return {
+            ...oldState,
+            modalEditorState: undefined,
+          };
+        }
+        return oldState;
+      });
       return setState(oldState => ({
         ...oldState,
         modalEditorState: {
@@ -74,35 +73,14 @@ const KitlEditorInner = (_props: KitlEditorInnerProps) => {
   let modal = null;
   if (state.modalEditorState !== undefined) {
     switch (state.modalEditorState?.type) {
-      case ModalEditorType.JsonEditor:
+      case ModalEditorType.NodeEditor:
         modal = (
-          <JsonEditorModal
+          <NodeEditorModal
             open={true}
             onClose={closeModalWithValue(state.modalEditorState.path)}
             path={state.modalEditorState.path}
             defaultValue={state.modalEditorState.defaultValue}
             onChange={onChange(state.modalEditorState.path)}
-          />
-        );
-        break;
-      case ModalEditorType.CodeArea:
-        modal = (
-          <CodeAreaModal
-            open={true}
-            onClose={closeModalWithValue(state.modalEditorState.path)}
-            path={state.modalEditorState.path}
-            defaultValue={state.modalEditorState.defaultValue}
-            onChange={onChange(state.modalEditorState.path)}
-          />
-        );
-        break;
-      case ModalEditorType.OpNode:
-        modal = (
-          <OpNodeModal
-            open={true}
-            onClose={closeModalWithValue(state.modalEditorState.path)}
-            path={state.modalEditorState.path}
-            defaultValue={state.modalEditorState.defaultValue}
           />
         );
         break;
@@ -123,34 +101,24 @@ const KitlEditorInner = (_props: KitlEditorInnerProps) => {
 
   const flowEditor = (
     <FlowEditor
-      openJsonEditor={openModal(ModalEditorType.JsonEditor)}
-      openCodeArea={openModal(ModalEditorType.CodeArea)}
-      openOpNode={openModal(ModalEditorType.OpNode)}
+      openNodeEditor={openModal(ModalEditorType.NodeEditor)}
       openBrowser={() => openModal(ModalEditorType.Browser)("browser", null)}
       context={context.flowContext}
     />
   );
-  if (h.isMobile()) {
-    return (
-      <div className="editor-root">
+  return (
+    <div className="editor-root editor-root-wide">
+      <div className="editor-root-wide-item editor-root-wide-item-left">
         {flowEditor}
-        {modalOpened ? modal : null}
+        {h.isMobile() && modalOpened ? modal : null}
       </div>
-    );
-  } else {
-    return (
-      <div className="editor-root editor-root-wide">
-        <div className="editor-root-wide-item editor-root-wide-item-left">
-          {flowEditor}
+      {!h.isMobile() && modalOpened ? (
+        <div className="editor-root-wide-item editor-root-wide-item-right full-modal">
+          {modal}
         </div>
-        {!modalOpened ? null : (
-          <div className="editor-root-wide-item editor-root-wide-item-right full-modal">
-            {modal}
-          </div>
-        )}
-      </div>
-    );
-  }
+      ) : null}
+    </div>
+  );
 };
 
 export default KitlEditorInner;

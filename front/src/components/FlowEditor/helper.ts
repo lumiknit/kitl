@@ -3,8 +3,8 @@
 import { faPenToSquare, faSquarePlus } from "@fortawesome/free-solid-svg-icons";
 
 export enum EditingMode {
-  AddNode = 0,
-  Edit = 1,
+  Add = 0,
+  Selection = 1,
 }
 
 export const editingModeLabels = ["Add Node", "Select & Edit"];

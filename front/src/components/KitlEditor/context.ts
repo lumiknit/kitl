@@ -1,3 +1,4 @@
+import { NodeData } from "../../common/node";
 import * as fc from "../FlowEditor/context";
 import { Node } from "reactflow";
 
@@ -50,33 +51,21 @@ const parsePath = (path: string) => {
   }
 };
 
-const updateNodeData = (id: string, value: any) => (nodes: Node[]) =>
-  nodes.map(node => {
-    if (node.id !== id) return node;
-    return {
-      ...node,
-      data: value,
-    };
-  });
-
 export const applySubEditing = (ctx: KitlContext, path: string, value: any) => {
   const [pType, id] = parsePath(path);
   switch (pType) {
-    case "nd-cmt":
+    case "nd":
       {
-        // Comment Node
-        ctx.flowContext.setNodes(updateNodeData(id, value));
-      }
-      break;
-    case "nd-op":
-      {
-        // Operation Node
-        ctx.flowContext.setNodes(updateNodeData(id, value));
-      }
-      break;
-    case "nd-c":
-      {
-        // Const Node
+        const updateNodeData =
+          (id: string, value: NodeData) => (nodes: Node[]) =>
+            nodes.map(node => {
+              if (node.id !== id) return node;
+              return {
+                ...node,
+                type: value.type,
+                data: value,
+              };
+            });
         ctx.flowContext.setNodes(updateNodeData(id, value));
       }
       break;
