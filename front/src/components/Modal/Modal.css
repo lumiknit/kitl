@@ -27,6 +27,11 @@ div.m-modal-content {
   box-shadow: 0 0 1rem #00000080;
 }
 
+div.m-modal-content-stick-to-center {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 .m-modal-header {
   position: sticky;
   z-index: 10;

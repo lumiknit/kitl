@@ -1,6 +1,4 @@
-export type ExecutionStatus {
-
-}
+export type ExecutionStatus = {};
 
 export interface IExecutor {
   execute(path: string, fn: string): Promise<string>;

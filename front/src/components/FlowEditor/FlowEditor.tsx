@@ -26,15 +26,14 @@ import "./FlowEditorNode.scss";
 import * as fh from "./helper";
 import * as fc from "./context";
 
-import StartNode from "./CustomNodes/StartNode";
-import EndNode from "./CustomNodes/EndNode";
-import OpNode, { Op } from "./CustomNodes/OpNode";
-import ConstNode from "./CustomNodes/ConstNode";
-import SelectNode from "./CustomNodes/SelectNode";
-import MemNode from "./CustomNodes/MemNode";
-import CommentNode from "./CustomNodes/CommentNode";
+import LambdaNode from "./CustomNodes/LambdaNode";
 
+import DefNode from "./CustomNodes/DefNode";
 import FlowEditorHeader from "./FlowEditorHeader";
+import BetaNode from "./CustomNodes/BetaNode";
+import CommentNode from "./CustomNodes/CommentNode";
+import LiteralNode from "./CustomNodes/LiteralNode";
+import { BetaNodeData, emptyBetaNode } from "../../common/node";
 
 const getID = () => {
   const now = new Date();
@@ -47,20 +46,16 @@ const getID = () => {
 };
 
 const nodeTypes = {
-  start: StartNode,
-  end: EndNode,
-  op: OpNode,
-  const: ConstNode,
-  select: SelectNode,
-  mem: MemNode,
+  def: DefNode,
+  literal: LiteralNode,
+  lambda: LambdaNode,
+  beta: BetaNode,
   comment: CommentNode,
 };
 
 export type FlowEditorProps = {
   context: fc.FlowContext;
-  openJsonEditor: (path: string, data: any) => void;
-  openCodeArea: (path: string, data: string) => void;
-  openOpNode: (path: string, data: Op) => void;
+  openNodeEditor: (path: string, data: any) => void;
   openBrowser: () => void;
 };
 
@@ -70,7 +65,7 @@ type FlowEditorState = {
 
 const FlowEditor = (props: FlowEditorProps) => {
   const [state, setState] = useState<FlowEditorState>({
-    mode: fh.EditingMode.AddNode,
+    mode: fh.EditingMode.Add,
   });
 
   const storeApi = useStoreApi();
@@ -98,6 +93,25 @@ const FlowEditor = (props: FlowEditorProps) => {
       // Add the new edge
       return addEdge(params, newEdges);
     });
+    props.context.setNodes(ns => ns.map(n => {
+      if(n.id !== targetNode) return n;
+      if(n.type !== "beta") return n;
+      const data = n.data as BetaNodeData;
+      if(typeof targetHandle !== "string") return n;
+      const argPrefix = "arg";
+      if(!targetHandle.startsWith(argPrefix)) return n;
+      const arg = parseInt(targetHandle.substring(argPrefix.length));
+      if(isNaN(arg)) return n;
+      const newNode = {
+        ...n,
+        data: {
+          ...data,
+          argc: Math.max(data.argc, arg + 1),
+        },
+      }
+      console.log(arg, data.argc);
+      return newNode;
+    }));
   }, []);
 
   const onNodesChangeWrapper = (changes: NodeChange[]) => {
@@ -131,15 +145,13 @@ const FlowEditor = (props: FlowEditorProps) => {
   const onNodeDoubleClick: NodeMouseHandler = (_event, node: Node) => {
     // TODO: Edit node
     switch (node.type) {
-      case "op":
-        props.openOpNode("nd-op:" + node.id, node.data);
+      case "def":
         break;
-      case "const":
-        props.openJsonEditor("nd-c:" + node.id, node.data);
-        break;
-      case "comment":
-        props.openCodeArea("nd-cmt:" + node.id, node.data);
-        break;
+      default:
+        props.openNodeEditor("nd:" + node.id, {
+          ...node.data,
+          type: node.type,
+        });
     }
   };
 
@@ -186,11 +198,8 @@ const FlowEditor = (props: FlowEditorProps) => {
     const y = (event.clientY - ty) * zoomMultiplier;
     const newNode: Node = {
       id: getID(),
-      type: "op",
-      data: {
-        module: "",
-        name: "op",
-      },
+      type: "beta",
+      data: emptyBetaNode(),
       position: {
         x: x,
         y: y,
@@ -213,7 +222,7 @@ const FlowEditor = (props: FlowEditorProps) => {
         fitView
         minZoom={0.5}
         maxZoom={5}
-        snapGrid={[10, 10]}
+        snapGrid={[8, 8]}
         snapToGrid
         /*onlyRenderVisibleElements*/
         translateExtent={[
@@ -221,7 +230,7 @@ const FlowEditor = (props: FlowEditorProps) => {
           [Infinity, Infinity],
         ]}
         nodeExtent={[
-          [0, 0],
+          [-Infinity, -Infinity],
           [Infinity, Infinity],
         ]}
         /* Edge Specific */
@@ -270,7 +279,7 @@ const FlowEditor = (props: FlowEditorProps) => {
         <Background
           color="#44f2"
           size={4}
-          gap={20}
+          gap={24}
           variant={BackgroundVariant.Cross}
         />
       </ReactFlow>

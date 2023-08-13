@@ -1,7 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose, faFolderTree } from "@fortawesome/free-solid-svg-icons";
-import DropdownSelect from "../Helpers/DropdownSelect";
-import storageManager from "../Storage/StorageManager";
 
 export type BrowserHeaderProps = {
   storage: string;
@@ -75,13 +73,14 @@ const BrowserHeader = (props: BrowserHeaderProps) => {
             </a>
           </li>
         </ul>
-
+        {/*
         <DropdownSelect
           options={Object.keys(storageManager.storages)}
           value={props.storage}
           btnClassName="btn-primary"
           onChange={props.changeStorage}
         />
+  */}
         <input
           type="text"
           className={

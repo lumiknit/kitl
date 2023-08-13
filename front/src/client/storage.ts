@@ -11,12 +11,16 @@ export type StorageItem = {
   size: number;
 };
 
+export type FileMeta = {
+  name: string;
+};
+
 export interface IStorageClient {
   /* Query */
-  getFileType(path: string): Promise<t.StorageItemType>;
+  getFileType(path: string): Promise<StorageItemType>;
 
   /* Operations */
-  list(path: string): Promise<t.FileMeta[]>;
+  list(path: string): Promise<FileMeta[]>;
   mkdir(path: string): Promise<void>;
 
   read(path: string): Promise<string>;

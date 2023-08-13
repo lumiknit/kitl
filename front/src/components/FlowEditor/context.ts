@@ -10,6 +10,8 @@ import {
   useReactFlow,
 } from "reactflow";
 
+import { NodeType, emptyBetaNode } from "../../common/node";
+
 export type SetNodes = Dispatch<SetStateAction<Node[]>>;
 export type SetEdges = Dispatch<SetStateAction<Edge[]>>;
 export type { OnNodesChange, OnEdgesChange };
@@ -36,26 +38,126 @@ export type FlowContext = {
 const initialNodes = (name: string) => [
   {
     id: "##start",
-    type: "start",
-    data: name,
+    type: "def",
+    data: {
+      module: "main/test",
+      name: name,
+    },
     position: {
       x: 0,
       y: 0,
     },
-    draggable: false,
     selectable: false,
     deletable: false,
   },
   {
-    id: "##end",
-    type: "end",
-    data: name,
+    id: "0",
+    type: "beta",
+    data: emptyBetaNode(),
     position: {
       x: 0,
-      y: 128,
+      y: 0,
     },
-    selectable: false,
-    deletable: false,
+  },
+  {
+    id: "1",
+    type: "lambda",
+    data: {
+      type: NodeType.Lambda,
+      argc: 1,
+      module: "main/test",
+      name: "test_func",
+    },
+    position: {
+      x: 0,
+      y: 0,
+    },
+  },
+  {
+    id: "2",
+    type: "literal",
+    data: {
+      type: NodeType.Literal,
+      value: 42.195,
+    },
+    position: {
+      x: 0,
+      y: 50,
+    },
+  },
+  {
+    id: "3",
+    type: "literal",
+    data: {
+      type: NodeType.Literal,
+      value: "hello, world!\ntest",
+    },
+    position: {
+      x: 0,
+      y: 100,
+    },
+  },
+  {
+    id: "4",
+    type: "literal",
+    data: {
+      type: NodeType.Literal,
+      value: true,
+    },
+    position: {
+      x: 0,
+      y: 140,
+    },
+  },
+  {
+    id: "5",
+    type: "literal",
+    data: {
+      type: NodeType.Literal,
+      value: false,
+    },
+    position: {
+      x: 0,
+      y: 170,
+    },
+  },
+  {
+    id: "6",
+    type: "literal",
+    data: {
+      type: NodeType.Literal,
+      value: null,
+    },
+    position: {
+      x: 0,
+      y: 200,
+    },
+  },
+  {
+    id: "7",
+    type: "literal",
+    data: {
+      type: NodeType.Literal,
+      value: [
+        42,
+        [1, 2, 3],
+        19,
+        {
+          hello: "world! boom sh ddddddddddddddd",
+          test: [],
+          singleton: { a: "20" },
+          pair: { a: "20", b: 30 },
+          Hello: {},
+          Abc: [[]],
+          Boom: "Good",
+        },
+        "abc",
+      ],
+    },
+    position: {
+      x: 0,
+      y: 230,
+    },
   },
 ];
 

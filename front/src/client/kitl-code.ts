@@ -3,8 +3,6 @@ export type KitlCodeMetadata = {
   name: string;
 };
 
-export type 
-
 export type KitlCode = {
   metadata: KitlCodeMetadata;
 };

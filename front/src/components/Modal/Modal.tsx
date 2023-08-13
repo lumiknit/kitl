@@ -3,7 +3,7 @@ import React, { MouseEventHandler } from "react";
 import "./Modal.css";
 
 export type ModalProps = {
-  fullHeight: boolean;
+  fullHeight?: boolean;
   open: boolean;
   onClose?: () => void;
   children?: React.ReactNode | React.ReactNode[];
@@ -19,7 +19,7 @@ const Modal = (props: ModalProps) => {
   };
 
   if (props.open) {
-    let contentClass = "m-modal-content";
+    let contentClass = "m-modal-content m-modal-content-stick-to-center";
     if (props.fullHeight) {
       contentClass += " h-100";
     }

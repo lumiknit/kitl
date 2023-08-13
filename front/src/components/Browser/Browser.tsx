@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
-import storageManager from "../Storage/StorageManager";
+/*import { useEffect, useState } from "react";
 import BrowserHeader from "./BrowserHeader";
-import { FileMeta, cd } from "../Storage/Storage";
-import BrowserList from "./BrowserList";
+import BrowserList from "./BrowserList";*/
 
 export type File = {
   name: string;
@@ -10,12 +8,8 @@ export type File = {
   checked: boolean;
 };
 
-export const fileMetaToList = (meta: FileMeta[]): File[] => {
-  return meta.map(file => ({
-    name: file.name,
-    type: file.type,
-    checked: false,
-  }));
+export const fileMetaToList = (): File[] => {
+  throw new Error("Not implemented");
 };
 
 export type BrowserProps = {
@@ -30,6 +24,8 @@ export type BrowserState = {
 };
 
 const Browser = (props: BrowserProps) => {
+  props;
+  /*
   const [state, setState] = useState<BrowserState>({
     storage: Object.keys(storageManager.storages)[0],
     path: "",
@@ -198,6 +194,8 @@ const Browser = (props: BrowserProps) => {
       />
     </>
   );
+  */
+  return <span></span>;
 };
 
 export default Browser;

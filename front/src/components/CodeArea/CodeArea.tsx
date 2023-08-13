@@ -51,10 +51,11 @@ export type CodeAreaProps = {
   onChange?: (value: string) => void;
   autoFocus?: boolean;
   errorMsg?: string;
+  textareaRef?: React.RefObject<HTMLTextAreaElement>;
 };
 
 const CodeArea = (props: CodeAreaProps) => {
-  const refTA = createRef<HTMLTextAreaElement>();
+  const textareaRef = props.textareaRef || createRef<HTMLTextAreaElement>();
 
   const resizeTextArea = (target: HTMLTextAreaElement) => {
     target.style.height = "0";
@@ -125,8 +126,8 @@ const CodeArea = (props: CodeAreaProps) => {
   };
 
   useEffect(() => {
-    if (refTA.current !== null) {
-      resizeTextArea(refTA.current);
+    if (textareaRef.current !== null) {
+      resizeTextArea(textareaRef.current);
     }
   });
 
@@ -136,7 +137,7 @@ const CodeArea = (props: CodeAreaProps) => {
   return (
     <div className="code-area">
       <textarea
-        ref={refTA}
+        ref={textareaRef}
         className={className}
         defaultValue={props.defaultValue || ""}
         onChange={onChange}
