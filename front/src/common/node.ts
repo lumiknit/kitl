@@ -38,20 +38,20 @@ export enum BetaNodeType {
   Name,
 }
 
-export type BetaNodeApp = {
+export type BetaAppNodeData = {
   type: NodeType.Beta;
   betaType: BetaNodeType.App;
   argc: number;
 };
 
-export type BetaNodeName = {
+export type BetaNameNodeData = {
   type: NodeType.Beta;
   betaType: BetaNodeType.Name;
   name: Name;
   argc: number;
 };
 
-export type BetaNodeData = BetaNodeApp | BetaNodeName;
+export type BetaNodeData = BetaAppNodeData | BetaNameNodeData;
 
 export const HANDLE_BETA_ARG_PREFIX = "arg-";
 export const handleBetaArg = (i: number) => `${HANDLE_BETA_ARG_PREFIX}${i}`;

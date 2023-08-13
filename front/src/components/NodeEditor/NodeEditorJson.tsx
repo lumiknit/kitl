@@ -32,10 +32,10 @@ const Message = (props: {
 const NodeEditorJson = (props: NodeEditorJsonProps) => {
   const refTA = useRef<HTMLTextAreaElement>(null);
 
-  const [state, setState] = useState<NodeEditorJsonState>({
+  const [state, setState] = useState<NodeEditorJsonState>(() => ({
     temporaryValue: JSON.stringify(props.value),
     hasError: false,
-  });
+  }));
 
   const format = (formatter: (j: j.Json) => string) => {
     try {

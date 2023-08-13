@@ -43,13 +43,13 @@ const NodeEditorString = (props: NodeEditorStringProps) => {
         ? escape(props.value)
         : JSON.stringify(props.value),
   }));
-  const refTA = useRef<HTMLTextAreaElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const onShowEscapeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const showEscape = e.target.checked;
-    if (refTA.current !== null) {
-      const s = refTA.current!.value;
-      refTA.current!.value = showEscape ? escape(s) : unescape(s);
+    if (textareaRef.current !== null) {
+      const s = textareaRef.current!.value;
+      textareaRef.current!.value = showEscape ? escape(s) : unescape(s);
     }
     setState(oldState => ({
       ...oldState,
@@ -79,7 +79,7 @@ const NodeEditorString = (props: NodeEditorStringProps) => {
         </label>
       </div>
       <CodeArea
-        textareaRef={refTA}
+        textareaRef={textareaRef}
         defaultValue={state.defaultValue}
         onChange={onChange}
       />

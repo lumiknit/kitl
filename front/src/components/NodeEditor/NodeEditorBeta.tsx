@@ -15,7 +15,7 @@ export type NodeEditorBetaProps = {
 const NodeEditorBeta = (props: NodeEditorBetaProps) => {
   let name: node.Name;
   if (props.value.betaType === node.BetaNodeType.Name) {
-    name = (props.value as node.BetaNodeName).name;
+    name = (props.value as node.BetaNameNodeData).name;
   } else {
     name = newName("", "");
   }

@@ -22,7 +22,7 @@ const BetaNode = (props: BetaNodeProps) => {
       break;
     case node.BetaNodeType.Name:
       {
-        const data: node.BetaNodeName = props.data;
+        const data: node.BetaNameNodeData = props.data;
         inner = <NameDisplay name={data.name} />;
       }
       break;

@@ -66,12 +66,12 @@ const editorBody = (
 };
 
 export const NodeEditor = (props: NodeEditorProps) => {
-  const [state, setState] = useState<NodeEditorState>({
+  const [state, setState] = useState<NodeEditorState>(() => ({
     value: props.defaultValue,
     lastValue: props.defaultValue,
     editingType: props.defaultValue.type,
     literalState: literalEditor.initialState(props.defaultValue),
-  });
+  }));
 
   const updateEditingType = useCallback((ty: node.NodeType) => {
     const newValue = node.convertNodeDataType(ty, state.value);
