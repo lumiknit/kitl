@@ -13,7 +13,6 @@ import NodeEditorJson from "./NodeEditorJson";
 import NodeEditorNumber from "./NodeEditorNumber";
 import NodeEditorString from "./NodeEditorString";
 import i18n from "../../locales/i18n";
-import { parse } from "yaml";
 
 export enum LiteralEditingType {
   Special = 0,
@@ -41,7 +40,7 @@ export type NodeEditorLiteralState = {
 };
 
 export const initialState = (value: node.NodeData): NodeEditorLiteralState => {
-  if (value.type !== "literal") {
+  if (value.type !== node.NodeType.Literal) {
     return {
       editingType: LiteralEditingType.Raw,
     };
@@ -54,7 +53,7 @@ export const initialState = (value: node.NodeData): NodeEditorLiteralState => {
 
 export type NodeEditorLiteralProps = {
   value: node.LiteralNodeData;
-  updateValue: (value: node.LiteralNodeData) => void;
+  onChange: (value: node.LiteralNodeData) => void;
   state: NodeEditorLiteralState;
   updateState: (
     state: NodeEditorLiteralState,
@@ -85,7 +84,7 @@ const specialBody = (props: NodeEditorLiteralProps): ReactElement => {
         value = true;
         break;
     }
-    return props.updateValue({
+    return props.onChange({
       ...props.value,
       value: value,
     });
@@ -122,6 +121,7 @@ const NodeEditorLiteral = (props: NodeEditorLiteralProps) => {
         break;
       case LiteralEditingType.String:
         v = JSON.stringify(v);
+        
         break;
     }
     props.updateState(
@@ -153,7 +153,7 @@ const NodeEditorLiteral = (props: NodeEditorLiteralProps) => {
   );
 
   const updateValue = (value: j.Json) => {
-    props.updateValue({
+    props.onChange({
       ...props.value,
       value: value,
     });

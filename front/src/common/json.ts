@@ -110,8 +110,8 @@ export const nextJsonKey = (parent: Json): JsonKey => {
 export const escapeString = (value: string): string => {
   const v = JSON.stringify(value);
   const sliced = v.slice(1, v.length - 1);
-  return sliced.replace("\\n", "\n").replace("\\t", "\t").replace('\\"', '"');
-};
+  return sliced.replace(/\\n/g, "\n").replace(/\\t/g, "\t").replace(/\\"/g, '"');
+  };
 
 export const unescapeString = (s: string): string => {
   // Count last backslash

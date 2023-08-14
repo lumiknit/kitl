@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [react(), ViteYaml()],
   base: "",
   build: {
+    minify: "terser",
     sourcemap: false,
     rollupOptions: {
       output: {

@@ -51,29 +51,6 @@ const initialNodes = (name: string) => [
     deletable: false,
   },
   {
-    id: "0",
-    type: "beta",
-    data: emptyBetaNode(),
-    position: {
-      x: 0,
-      y: 0,
-    },
-  },
-  {
-    id: "1",
-    type: "lambda",
-    data: {
-      type: NodeType.Lambda,
-      argc: 1,
-      module: "main/test",
-      name: "test_func",
-    },
-    position: {
-      x: 0,
-      y: 0,
-    },
-  },
-  {
     id: "2",
     type: "literal",
     data: {
@@ -107,30 +84,6 @@ const initialNodes = (name: string) => [
     position: {
       x: 0,
       y: 140,
-    },
-  },
-  {
-    id: "5",
-    type: "literal",
-    data: {
-      type: NodeType.Literal,
-      value: false,
-    },
-    position: {
-      x: 0,
-      y: 170,
-    },
-  },
-  {
-    id: "6",
-    type: "literal",
-    data: {
-      type: NodeType.Literal,
-      value: null,
-    },
-    position: {
-      x: 0,
-      y: 200,
     },
   },
   {

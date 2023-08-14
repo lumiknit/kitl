@@ -60,7 +60,7 @@ const editorBody = (
       return (
         <NodeEditorLiteral
           value={state.value as node.LiteralNodeData}
-          updateValue={handleChange}
+          onChange={handleChange}
           state={state.literalState}
           updateState={handleLiteralStateChange}
         />

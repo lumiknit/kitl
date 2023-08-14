@@ -2,8 +2,8 @@ import { useCallback, useState } from "react";
 
 import * as node from "../../common/node";
 
-import NodeEditor from "../NodeEditor/NodeEditor";
-import Modal from "./Modal";
+import NodeEditor from "./NodeEditor";
+import Modal from "../Modal/Modal";
 
 export type NodeEditorModalProps = {
   open: boolean;
@@ -21,15 +21,13 @@ const NodeEditorModal = (props: NodeEditorModalProps) => {
   const [, setState] = useState<NodeEditorModalState>({
     value: props.defaultValue,
   });
-  const handleChange = useCallback(
+  const handleChange =
     (value: node.NodeData) => {
       setState(oldState => ({
         ...oldState,
         value: value,
       }));
-    },
-    [setState],
-  );
+    };
   const close = useCallback(() => {
     setState(state => {
       props.onChange?.(state.value);

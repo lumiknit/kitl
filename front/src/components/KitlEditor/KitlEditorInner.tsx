@@ -8,7 +8,7 @@ import "./KitlEditor.css";
 
 import * as kc from "./context";
 import BrowserModal from "../Modal/BrowserModal";
-import NodeEditorModal from "../Modal/NodeEditorModal";
+import NodeEditorModal from "../NodeEditor/NodeEditorModal";
 
 export enum ModalEditorType {
   NodeEditor = "nodeEditorModal",
