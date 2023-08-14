@@ -20,6 +20,7 @@ export type NodeEditorProps = {
   defaultValue: node.NodeData;
   onChange?: (value: node.NodeData) => void;
   close?: () => void;
+  discard?: () => void;
 };
 
 export type NodeEditorState = {
@@ -118,18 +119,11 @@ export const NodeEditor = (props: NodeEditorProps) => {
   const body = editorBody(state, handleChange, handleLiteralStateChange);
 
   const discard = useCallback(() => {
-    setState(oldState => ({
-      ...oldState,
-      value: props.defaultValue,
-    }));
-    props.onChange?.(props.defaultValue);
-    setTimeout(() => props.close?.(), 0);
-    toast(i18n.t("nodeEditor.toast.discarded"));
+    props.discard?.();
   }, [props, setState]);
 
   const save = useCallback(() => {
     props.close?.();
-    toast.success(i18n.t("nodeEditor.toast.saved"));
   }, [props.close]);
 
   return (

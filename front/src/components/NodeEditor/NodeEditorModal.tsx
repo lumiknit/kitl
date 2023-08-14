@@ -4,6 +4,8 @@ import * as node from "../../common/node";
 
 import NodeEditor from "./NodeEditor";
 import Modal from "../Modal/Modal";
+import toast from "react-hot-toast";
+import i18n from "../../locales/i18n";
 
 export type NodeEditorModalProps = {
   open: boolean;
@@ -31,6 +33,14 @@ const NodeEditorModal = (props: NodeEditorModalProps) => {
     setState(state => {
       props.onChange?.(state.value);
       props.onClose?.(state.value);
+      toast.success(i18n.t("nodeEditor.toast.saved"));
+      return state;
+    });
+  }, [props, setState]);
+  const discard = useCallback(() => {
+    setState(state => {
+      props.onClose?.(props.defaultValue);
+      toast(i18n.t("nodeEditor.toast.discarded"));
       return state;
     });
   }, [props, setState]);
@@ -41,6 +51,7 @@ const NodeEditorModal = (props: NodeEditorModalProps) => {
         defaultValue={props.defaultValue}
         onChange={handleChange}
         close={close}
+        discard={discard}
       />
     </Modal>
   );
