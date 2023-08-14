@@ -52,24 +52,16 @@ const addNodeModeControls = (props: FlowEditorHeaderProps) => {
 
 const editModeControls = () => {
   return [
-    <button
-      key="deselect"
-      className="btn btn-warning py-1 px-0 flex-grow-1">
+    <button key="deselect" className="btn btn-warning py-1 px-0 flex-grow-1">
       <TbDeselect />
     </button>,
-    <button
-      key="cut"
-      className="btn btn-secondary py-1 px-0 flex-grow-1">
+    <button key="cut" className="btn btn-secondary py-1 px-0 flex-grow-1">
       <TbScissors />
     </button>,
-    <button
-      key="copy"
-      className="btn btn-secondary py-1 px-0 flex-grow-1">
+    <button key="copy" className="btn btn-secondary py-1 px-0 flex-grow-1">
       <TbCopy />
     </button>,
-    <button
-      key="paste"
-      className="btn btn-secondary py-1 px-0 flex-grow-1">
+    <button key="paste" className="btn btn-secondary py-1 px-0 flex-grow-1">
       <TbClipboard />
     </button>,
     <button key="delete" className="btn btn-danger py-1 px-0 flex-grow-1">

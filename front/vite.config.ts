@@ -24,9 +24,7 @@ export default defineConfig({
             "i18next-browser-languagedetector",
             "react-i18next",
           ],
-          icons: [
-            "react-icons",
-          ]
+          icons: ["react-icons"],
         },
       },
     },

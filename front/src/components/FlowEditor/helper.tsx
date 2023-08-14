@@ -15,7 +15,6 @@ export const editingModeLabels = [
   i18n.t("flowEditor.menu.selectTools"),
 ];
 
-export const editingModeIcons: ReactElement[] = [
-<TbEdit />, <TbSelectAll />];
+export const editingModeIcons: ReactElement[] = [<TbEdit />, <TbSelectAll />];
 
 // Create node

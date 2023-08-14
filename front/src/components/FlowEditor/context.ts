@@ -17,7 +17,6 @@ export type SetNodes = Dispatch<SetStateAction<Node[]>>;
 export type SetEdges = Dispatch<SetStateAction<Edge[]>>;
 export type { OnNodesChange, OnEdgesChange };
 
-
 /* --- WIP */
 
 export class Graph {
@@ -58,9 +57,9 @@ export class _FlowContext {
   }
 
   saveToHistory() {
-    if(this.historyPointer < this.history.length) {
+    if (this.historyPointer < this.history.length) {
       this.history = this.history.slice(0, this.historyPointer);
-    } else if(this.history.length > this.historySize) {
+    } else if (this.history.length > this.historySize) {
       this.history.shift();
     }
     this.history.push(this.getGraph());
@@ -84,7 +83,7 @@ export class _FlowContext {
   }
 
   undo() {
-    if(!this.undoable()) {
+    if (!this.undoable()) {
       throw new Error("Cannot undo");
     }
     this.historyPointer -= 1;
@@ -92,23 +91,20 @@ export class _FlowContext {
   }
 
   redo() {
-    if(!this.redoable()) {
+    if (!this.redoable()) {
       throw new Error("Cannot redo");
     }
     this.historyPointer += 1;
     this.setGraph(this.history[this.historyPointer]);
   }
 
-  checkGraphError() {
-  }
+  checkGraphError() {}
 
   convertToDAG(): DAG {
     throw new Error("TODO");
   }
 
-  layout() {
-
-  }
+  layout() {}
 }
 
 /* --- */

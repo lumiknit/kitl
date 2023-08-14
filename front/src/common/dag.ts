@@ -1,5 +1,3 @@
 /* DAG.ts */
 
-export class DAG {
-  
-}
+export class DAG {}

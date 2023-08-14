@@ -292,10 +292,7 @@ const FlowEditor = (props: FlowEditorProps) => {
         deleteSelectedNode={deleteSelectedNode}
         openBrowser={props.openBrowser}
       />
-      <Fab
-        onClick={() => addNode("beta", emptyBetaNode())}
-        icon={<TbPlus />}
-      />
+      <Fab onClick={() => addNode("beta", emptyBetaNode())} icon={<TbPlus />} />
     </>
   );
 };

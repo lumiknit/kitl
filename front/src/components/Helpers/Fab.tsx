@@ -10,10 +10,7 @@ export type FabProps = {
 
 const Fab = (props: FabProps) => {
   return (
-    <div
-      className={`f-fab ${props.className ?? ""}`}
-      onClick={props.onClick}
-    >
+    <div className={`f-fab ${props.className ?? ""}`} onClick={props.onClick}>
       {props.icon}
     </div>
   );
