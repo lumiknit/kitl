@@ -10,7 +10,7 @@ import {
   useReactFlow,
 } from "reactflow";
 
-import { NodeType, emptyBetaNode } from "../../common/node";
+import { NodeType } from "../../common/node";
 
 export type SetNodes = Dispatch<SetStateAction<Node[]>>;
 export type SetEdges = Dispatch<SetStateAction<Edge[]>>;
