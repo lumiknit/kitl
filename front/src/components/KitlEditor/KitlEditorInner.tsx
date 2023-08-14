@@ -69,24 +69,6 @@ const KitlEditorInner = () => {
     [closeModal, setState],
   );
 
-  const onChange = useCallback(
-    (value: any) => {
-      setState(oldState =>
-        oldState.modalEditorState === undefined
-          ? oldState
-          : {
-              ...oldState,
-              editingState: kc.addValueChange(
-                state.editingState,
-                oldState.modalEditorState.path,
-                value,
-              ),
-            },
-      );
-    },
-    [state.editingState, setState],
-  );
-
   const modalOpened = state.modalEditorState !== undefined;
 
   let modal = null;
@@ -99,7 +81,6 @@ const KitlEditorInner = () => {
             onClose={closeModalWithValue}
             path={state.modalEditorState.path}
             defaultValue={state.modalEditorState.defaultValue}
-            onChange={onChange}
           />
         );
         break;
