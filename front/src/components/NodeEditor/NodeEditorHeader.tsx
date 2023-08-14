@@ -13,10 +13,10 @@ import RadioButtons from "../Helpers/RadioButtons";
 export type NodeEditorHeaderProps = {
   path: string;
   value: node.NodeData;
-  editingType: node.NodeType;
   discard: () => void;
   save: () => void;
-  updateEditingType: (ty: node.NodeType) => void;
+  editingType: node.NodeType;
+  onEditingTypeChange: (ty: node.NodeType) => void;
 };
 
 const typeButtonList = [
@@ -53,7 +53,7 @@ const NodeEditorHeader = (props: NodeEditorHeaderProps) => {
     tb => tb.type === props.editingType,
   );
   const updateSelected = (idx: number) => {
-    props.updateEditingType(typeButtonList[idx].type);
+    props.onEditingTypeChange(typeButtonList[idx].type);
   };
   return (
     <div className="node-editor-header">
@@ -68,7 +68,7 @@ const NodeEditorHeader = (props: NodeEditorHeaderProps) => {
         </ul>
         <RadioButtons
           selected={typeIndex}
-          updateSelected={updateSelected}
+          onClick={updateSelected}
           color={typeButtonList.map(tb => tb.colorClass)}
           className="flex-grow-1 px-0">
           {typeButtonList.map((tb, idx) => (

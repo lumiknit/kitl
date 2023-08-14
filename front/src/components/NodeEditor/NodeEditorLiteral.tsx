@@ -70,7 +70,7 @@ const specialBody = (props: NodeEditorLiteralProps): ReactElement => {
       selected = 2;
       break;
   }
-  const updateSelected = (index: number) => {
+  const handleChange = (index: number) => {
     let value = null;
     switch (index) {
       case 1:
@@ -90,7 +90,7 @@ const specialBody = (props: NodeEditorLiteralProps): ReactElement => {
       <RadioButtons
         className="flex-grow-1"
         selected={selected}
-        updateSelected={updateSelected}>
+        onClick={handleChange}>
         <span>null</span>
         <span>false</span>
         <span>true</span>
@@ -108,7 +108,7 @@ const NodeEditorLiteral = (props: NodeEditorLiteralProps) => {
           color="primary"
           className="flex-grow-1"
           selected={props.state.editingType}
-          updateSelected={index => {
+          onClick={index => {
             props.updateState({
               ...props.state,
               editingType: index as LiteralEditingType,
@@ -136,17 +136,17 @@ const NodeEditorLiteral = (props: NodeEditorLiteralProps) => {
       break;
     case LiteralEditingType.Number:
       body = (
-        <NodeEditorNumber value={props.value.value} updateValue={updateValue} />
+        <NodeEditorNumber value={props.value.value} onChange={updateValue} />
       );
       break;
     case LiteralEditingType.String:
       body = (
-        <NodeEditorString value={props.value.value} updateValue={updateValue} />
+        <NodeEditorString value={props.value.value} onChange={updateValue} />
       );
       break;
     case LiteralEditingType.Raw:
       body = (
-        <NodeEditorJson value={props.value.value} updateValue={updateValue} />
+        <NodeEditorJson value={props.value.value} onChange={updateValue} />
       );
       break;
   }

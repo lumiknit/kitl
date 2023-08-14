@@ -6,13 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "size-report": "npx vite-bundle-visualizer",
     "format": "npx prettier --write .",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
-    "@fortawesome/free-regular-svg-icons": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@popperjs/core": "^2.11.8",
@@ -38,6 +38,7 @@
     "eslint-plugin-react-refresh": "^0.4.3",
     "prettier": "3.0.0",
     "sass": "^1.63.6",
+    "terser": "^5.19.2",
     "typescript": "^5.1.6",
     "vite": "^4.4.4"
   }

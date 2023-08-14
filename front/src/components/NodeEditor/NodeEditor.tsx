@@ -34,21 +34,21 @@ const editorBody = (
       return (
         <NodeEditorComment
           value={state.value as node.CommentNodeData}
-          updateValue={updateValue}
+          onChange={updateValue}
         />
       );
     case node.NodeType.Lambda:
       return (
         <NodeEditorLambda
           value={state.value as node.LambdaNodeData}
-          updateValue={updateValue}
+          onChange={updateValue}
         />
       );
     case node.NodeType.Beta:
       return (
         <NodeEditorBeta
           value={state.value as node.BetaNodeData}
-          updateValue={updateValue}
+          onChange={updateValue}
         />
       );
     case node.NodeType.Literal:
@@ -125,7 +125,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
         editingType={state.editingType}
         discard={discard}
         save={save}
-        updateEditingType={updateEditingType}
+        onEditingTypeChange={updateEditingType}
       />
       <div className="node-editor-body">{body}</div>
     </div>

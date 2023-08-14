@@ -7,20 +7,18 @@ export type RadioButtonsProps = {
   color?: string | string[];
   className?: string;
   selected: number;
-  updateSelected: (index: number) => void;
+  onClick: (index: number) => void;
 };
 
 const RadioButtons = (props: RadioButtonsProps) => {
   const children = array.makeArray(props.children, <></>);
   const colors = array.makeArray(props.color, "secondary", children.length);
 
-  const updateSelected = useCallback(
-    (index: number) => {
-      if (props.selected !== index) {
-        return props.updateSelected(index);
-      }
-    },
-    [props.updateSelected],
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      const index = parseInt(event.currentTarget.value);
+      return props.onClick(index);
+    }, [props.onClick],
   );
 
   return children.map((child, index) => {
@@ -28,14 +26,13 @@ const RadioButtons = (props: RadioButtonsProps) => {
       props.selected === index
         ? `btn btn-${colors[index]} ${props.className || ""}`
         : `btn btn-outline-${colors[index]} ${props.className || ""}`;
-    const handleClick = () => {
-      updateSelected(index);
-    };
     return (
       <button
         key={`radio-button--${index}`}
         className={cls}
-        onClick={handleClick}>
+        onClick={handleClick}
+        value={index}
+      >
         {child}
       </button>
     );

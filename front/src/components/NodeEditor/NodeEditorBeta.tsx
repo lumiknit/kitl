@@ -9,7 +9,7 @@ import { newName } from "../../common/name";
 
 export type NodeEditorBetaProps = {
   value: node.BetaNodeData;
-  updateValue: (value: node.NodeData) => void;
+  onChange: (value: node.NodeData) => void;
 };
 
 const NodeEditorBeta = (props: NodeEditorBetaProps) => {
@@ -25,13 +25,13 @@ const NodeEditorBeta = (props: NodeEditorBetaProps) => {
         name?: node.Name;
       };
       const name = val.name === undefined ? newName(".", "") : val.name;
-      props.updateValue({
+      props.onChange({
         ...props.value,
         betaType: node.BetaNodeType.Name,
         name: name,
       });
     } else {
-      props.updateValue({
+      props.onChange({
         ...props.value,
         betaType: node.BetaNodeType.App,
       });
@@ -39,12 +39,12 @@ const NodeEditorBeta = (props: NodeEditorBetaProps) => {
   };
   const onDefChange = (value: Def) => {
     if (value.name === "") {
-      props.updateValue({
+      props.onChange({
         ...props.value,
         betaType: node.BetaNodeType.App,
       });
     } else {
-      props.updateValue({
+      props.onChange({
         ...props.value,
         betaType: node.BetaNodeType.Name,
         name: value,
@@ -69,7 +69,7 @@ const NodeEditorBeta = (props: NodeEditorBetaProps) => {
       <NodeEditorArgc
         defaultValue={props.value.argc}
         onChange={argc => {
-          props.updateValue({
+          props.onChange({
             ...props.value,
             argc,
           });

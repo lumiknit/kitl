@@ -14,98 +14,51 @@ import {
 
 export type LiteralProps = {
   data: node.LiteralNodeData;
-  isConnectable: boolean;
 };
 
 const Literal = (props: LiteralProps) => {
-  let inner = null;
   const val = props.data.value;
+  let icon = null;
+  let body: any = null;
   switch (typeof val) {
     case "boolean":
-      {
-        if (val) {
-          inner = (
-            <div className="flow-node-container">
-              <div className="flow-node-container-icon">
-                <FontAwesomeIcon className="fa-fw" icon={faSquareCheck} />
-              </div>
-              <div className="flow-node-container-body">true</div>
-            </div>
-          );
-        } else {
-          inner = (
-            <div className="flow-node-container">
-              <div className="flow-node-container-icon">
-                <FontAwesomeIcon className="fa-fw" icon={faSquareXmark} />
-              </div>
-              <div className="flow-node-container-body">false</div>
-            </div>
-          );
-        }
-      }
+      icon = val ? faSquareCheck : faSquareXmark;
+      body = val ? "true" : "false";
       break;
     case "number":
-      {
-        inner = (
-          <div className="flow-node-container">
-            <div className="flow-node-container-icon">
-              <FontAwesomeIcon className="fa-fw" icon={faHashtag} />
-            </div>
-            <div className="flow-node-container-body">{val}</div>
-          </div>
-        );
-      }
+      icon = faHashtag;
+      body = val.toString();
       break;
     case "string":
-      {
-        inner = (
-          <div className="flow-node-container">
-            <div className="flow-node-container-icon">
-              <FontAwesomeIcon className="fa-fw" icon={faQuoteLeft} />
-            </div>
-            <div className="flow-node-container-body">
-              {j.escapeString(val)}
-            </div>
-          </div>
-        );
-      }
+      icon = faQuoteLeft;
+      body = j.escapeString(val);
       break;
     case "object":
-      {
-        if (val === null) {
-          inner = (
-            <div className="flow-node-container">
-              <div className="flow-node-container-icon">
-                <FontAwesomeIcon className="fa-fw" icon={faSquare} />
-              </div>
-              <div className="flow-node-container-body">null</div>
-            </div>
-          );
-        } else {
-          inner = (
-            <div className="flow-node-container">
-              <div className="flow-node-container-icon">
-                <FontAwesomeIcon className="fa-fw" icon={faRectangleList} />
-              </div>
-              <div className="flow-node-container-body">
-                <pre className="flow-node-container-raw">
-                  {j.formatJsonCompact(val)}
-                </pre>
-              </div>
-            </div>
-          );
-        }
+      if (val === null) {
+        icon = faSquare;
+        body = "null";
+      } else {
+        icon = faRectangleList;
+        body = (
+          <pre className="flow-node-container-raw">
+            {j.formatJsonCompact(val)}
+          </pre>
+        );
       }
       break;
   }
   return (
     <>
-      {inner}
+      <div className="flow-node-container">
+        <div className="flow-node-container-icon">
+          <FontAwesomeIcon className="fa-fw" icon={icon} />
+        </div>
+        <div className="flow-node-container-body">{body}</div>
+      </div>
       <Handle
         id={node.HANDLE_LITERAL_RET}
         type="source"
         position={Position.Bottom}
-        isConnectable={props.isConnectable}
         className="flow-handle-literal-ret"
       />
     </>

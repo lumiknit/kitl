@@ -5,18 +5,18 @@ import { useCallback } from "react";
 
 export type NodeEditorCommentProps = {
   value: node.CommentNodeData;
-  updateValue: (value: node.NodeData) => void;
+  onChange: (value: node.NodeData) => void;
 };
 
 const NodeEditorComment = (props: NodeEditorCommentProps) => {
   const onChange = useCallback(
     (value: string) => {
-      props.updateValue({
+      props.onChange({
         type: node.NodeType.Comment,
         content: value,
       });
     },
-    [props.updateValue],
+    [props.onChange],
   );
 
   return (

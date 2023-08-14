@@ -5,7 +5,7 @@ import JSON5 from "json5";
 
 export type NodeEditorJsonProps = {
   value: j.Json;
-  updateValue: (value: j.Json) => void;
+  onChange: (value: j.Json) => void;
 };
 
 export type NodeEditorJsonState = {
@@ -40,12 +40,12 @@ const NodeEditorJson = (props: NodeEditorJsonProps) => {
   const format = (formatter: (j: j.Json) => string) => {
     try {
       const j = JSON5.parse(state.temporaryValue);
-      props.updateValue(j);
+      props.onChange(j);
       if (refTA.current !== null) {
         refTA.current.value = formatter(j);
         refTA.current.dispatchEvent(new Event("change"));
       }
-      props.updateValue(j);
+      props.onChange(j);
       setState(oldState => ({
         ...oldState,
         temporaryValue: formatter(j),
@@ -74,7 +74,7 @@ const NodeEditorJson = (props: NodeEditorJsonProps) => {
   const formatCompact = () => format(j.formatJsonCompact);
   const formatPretty = () => format(j.formatJsonPretty);
 
-  const onChange = (value: string) => {
+  const handleCodeAreaChange = (value: string) => {
     setState(oldState => ({
       ...oldState,
       temporaryValue: value,
@@ -114,7 +114,7 @@ const NodeEditorJson = (props: NodeEditorJsonProps) => {
       <CodeArea
         textareaRef={refTA}
         defaultValue={state.temporaryValue}
-        onChange={onChange}
+        onChange={handleCodeAreaChange}
         errorMessage={state.hasError ? "JSON Syntax Error" : undefined}
       />
     </div>

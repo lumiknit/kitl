@@ -9,7 +9,7 @@ import { newName } from "../../common/name";
 
 export type NodeEditorLambdaProps = {
   value: node.LambdaNodeData;
-  updateValue: (value: node.NodeData) => void;
+  onChange: (value: node.NodeData) => void;
 };
 
 const NodeEditorLambda = (props: NodeEditorLambdaProps) => {
@@ -24,7 +24,7 @@ const NodeEditorLambda = (props: NodeEditorLambdaProps) => {
     argc = 0;
   }
 
-  const onPatternChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handlePatternChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
       const val = props.value as {
         argc?: number;
@@ -33,35 +33,35 @@ const NodeEditorLambda = (props: NodeEditorLambdaProps) => {
       const argc = val.argc === undefined ? 0 : val.argc;
       const pattern =
         val.pattern === undefined ? newName(".", "") : val.pattern;
-      props.updateValue({
+      props.onChange({
         ...props.value,
         lambdaType: node.LambdaNodeType.Pattern,
         argc: argc,
         pattern: pattern,
       });
     } else {
-      props.updateValue({
+      props.onChange({
         ...props.value,
         lambdaType: node.LambdaNodeType.Any,
       });
     }
   };
-  const onArgcChange = (value: number) => {
-    props.updateValue({
+  const handleArgcChange = (value: number) => {
+    props.onChange({
       ...props.value,
       lambdaType: node.LambdaNodeType.Pattern,
       argc: value,
       pattern: pattern,
     });
   };
-  const onDefChange = (value: Def) => {
+  const handleDefChange = (value: Def) => {
     if (value.name === "") {
-      props.updateValue({
+      props.onChange({
         ...props.value,
         lambdaType: node.LambdaNodeType.Any,
       });
     } else {
-      props.updateValue({
+      props.onChange({
         ...props.value,
         lambdaType: node.LambdaNodeType.Pattern,
         argc: argc,
@@ -78,7 +78,7 @@ const NodeEditorLambda = (props: NodeEditorLambdaProps) => {
           type="checkbox"
           id="flexCheckDefault"
           checked={props.value.lambdaType === node.LambdaNodeType.Pattern}
-          onChange={onPatternChange}
+          onChange={handlePatternChange}
         />
         <label className="form-check-label" htmlFor="flexCheckDefault">
           Lambda with Pattern
@@ -86,12 +86,12 @@ const NodeEditorLambda = (props: NodeEditorLambdaProps) => {
       </div>
       <NodeEditorArgc
         defaultValue={argc}
-        onChange={onArgcChange}
+        onChange={handleArgcChange}
         readonly={props.value.lambdaType === node.LambdaNodeType.Any}
       />
       <DefFinder
         value={d.newDef(d.DefType.Value, pattern.name, pattern.module)}
-        onChange={onDefChange}
+        onChange={handleDefChange}
       />
     </>
   );

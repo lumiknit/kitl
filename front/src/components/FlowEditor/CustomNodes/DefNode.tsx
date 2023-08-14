@@ -6,7 +6,6 @@ import * as node from "../../../common/node";
 
 export type DefNodeProps = {
   data: node.Name & node.DefNodeData;
-  isConnectable: boolean;
 };
 
 const DefNode = (props: DefNodeProps) => {
@@ -20,7 +19,6 @@ const DefNode = (props: DefNodeProps) => {
         id={node.HANDLE_DEF_ARG}
         type="target"
         position={Position.Top}
-        isConnectable={props.isConnectable}
         className="flow-handle-def-arg"
       />
     </>

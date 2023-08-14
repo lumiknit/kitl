@@ -4,7 +4,7 @@ import RadioButtons from "../Helpers/RadioButtons";
 
 export type NodeEditorNumberProps = {
   value: j.Json;
-  updateValue: (value: j.Json) => void;
+  onChange: (value: j.Json) => void;
 };
 
 export type NodeEditorNumberState = {
@@ -86,7 +86,7 @@ const NodeEditorNumber = (props: NodeEditorNumberProps) => {
     hasError: false,
   }));
 
-  const onBaseChange = (newBase: string) => {
+  const handleBaseChange = (newBase: string) => {
     let newContent = state.content;
     let hasError = false;
     const base = nameToBase.get(newBase) || 10;
@@ -107,11 +107,11 @@ const NodeEditorNumber = (props: NodeEditorNumberProps) => {
     });
   };
 
-  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newVal = e.target.value;
     const newNum = parseFloat(newVal, state.base);
     if (!isNaN(newNum)) {
-      props.updateValue(newNum);
+      props.onChange(newNum);
       setState(oldState => {
         return {
           ...oldState,
@@ -143,9 +143,9 @@ const NodeEditorNumber = (props: NodeEditorNumberProps) => {
       <div className="input-group">
         <RadioButtons
           selected={radioIndex}
-          updateSelected={idx => {
+          onClick={idx => {
             const newBase = [2, 8, 10, 16][idx];
-            onBaseChange(baseToPrefix.get(newBase) || "");
+            handleBaseChange(baseToPrefix.get(newBase) || "");
           }}
           className="flex-grow-1">
           {[2, 8, 10, 16].map((_base, idx) => (
@@ -159,7 +159,7 @@ const NodeEditorNumber = (props: NodeEditorNumberProps) => {
           className={`form-control ${state.hasError ? "is-invalid" : ""}`}
           type={inputType}
           value={state.content}
-          onChange={onChange}
+          onChange={handleInputChange}
           pattern={pattern}
         />
       </div>
