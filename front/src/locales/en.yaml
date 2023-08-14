@@ -42,11 +42,13 @@ nodeEditor:
   json:
     format: Format
     formatDescription: "Format: JSON5"
-    formatToApply: Format to save
+    formatToSave: Format to save
+    valid: Valid
     syntaxError: JSON Syntax Error!
     btnMin: min
     btnCompact: compact
     btnPretty: pretty
+    
   lambda:
     withPattern: With pattern
   beta:

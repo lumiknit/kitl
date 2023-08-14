@@ -1,6 +1,6 @@
 // Editing Mode
 
-import { TbEdit, TbSquarePlus } from "react-icons/tb";
+import { TbEdit, TbSelectAll } from "react-icons/tb";
 
 import i18n from "../../locales/i18n";
 import { ReactElement } from "react-markdown/lib/react-markdown";
@@ -15,6 +15,7 @@ export const editingModeLabels = [
   i18n.t("flowEditor.menu.selectTools"),
 ];
 
-export const editingModeIcons: ReactElement[] = [<TbSquarePlus />, <TbEdit />];
+export const editingModeIcons: ReactElement[] = [
+<TbEdit />, <TbSelectAll />];
 
 // Create node

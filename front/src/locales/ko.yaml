@@ -42,7 +42,8 @@ nodeEditor:
   json:
     format: 포맷
     formatDescription: "포맷: JSON5"
-    formatToApply: 포맷하면 저장됩니다
+    formatToSave: 포맷하면 저장됩니다
+    valid: 구문 오류 없음
     syntaxError: JSON 구문 오류!
   lambda:
     withPattern: 패턴 사용
