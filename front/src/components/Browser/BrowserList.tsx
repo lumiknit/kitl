@@ -1,12 +1,12 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { File } from "./Browser";
+/*import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   IconDefinition,
   faCheckSquare,
   faFile,
   faFolder,
   faSquare,
-} from "@fortawesome/free-solid-svg-icons";
+} from "@fortawesome/free-solid-svg-icons";*/
 
 export type BrowserListProps = {
   type: string;
@@ -17,10 +17,10 @@ export type BrowserListProps = {
   clickItem: (name: string) => void;
 };
 
-const icons: { [key: string]: IconDefinition } = {
+/*const icons: { [key: string]: IconDefinition } = {
   directory: faFolder,
   file: faFile,
-};
+};*/
 
 const Item = (props: {
   type: string;
@@ -29,17 +29,17 @@ const Item = (props: {
   check: () => void;
   click: () => void;
 }) => {
-  const checkIcon = props.checked ? faCheckSquare : faSquare;
-  const typeIcon = icons[props.type];
   const typeCls = props.type === "directory" ? "btn-primary" : "btn-secondary";
   return (
     <div className="input-group mt-1">
-      <button type="button" className={`btn ${typeCls}`} onClick={props.check}>
-        <FontAwesomeIcon className="fa-fw" icon={checkIcon} />
-      </button>
-      <button type="button" className={`btn ${typeCls}`} onClick={props.check}>
-        <FontAwesomeIcon className="fa-fw" icon={typeIcon} />
-      </button>
+      <button
+        type="button"
+        className={`btn ${typeCls}`}
+        onClick={props.check}></button>
+      <button
+        type="button"
+        className={`btn ${typeCls}`}
+        onClick={props.check}></button>
       <div className="form-control" onClick={props.click}>
         {props.name}
       </div>

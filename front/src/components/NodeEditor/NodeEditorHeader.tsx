@@ -1,11 +1,12 @@
 import {
-  faCheck,
-  faCommentDots,
-  faEdit,
-  faQuoteLeft,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+  TbEdit,
+  TbCheck,
+  TbTrash,
+  TbMessage,
+  TbJson,
+  TbBeta,
+  TbLambda,
+} from "react-icons/tb";
 
 import * as node from "../../common/node";
 import RadioButtons from "../Helpers/RadioButtons";
@@ -24,29 +25,29 @@ const typeButtonList = [
   {
     type: node.NodeType.Comment,
     colorClass: "success",
-    body: <FontAwesomeIcon icon={faCommentDots} />,
+    body: <TbMessage />,
   },
   {
     type: node.NodeType.Literal,
     colorClass: "primary",
-    body: <FontAwesomeIcon icon={faQuoteLeft} />,
+    body: <TbJson />,
   },
   {
     type: node.NodeType.Lambda,
     colorClass: "danger",
-    body: <b>λ</b>,
+    body: <TbLambda />,
   },
   {
     type: node.NodeType.Beta,
     colorClass: "secondary",
-    body: <b>β</b>,
+    body: <TbBeta />,
   },
 ];
 
 const NodeEditorHeader = (props: NodeEditorHeaderProps) => {
   const dropDownMenus = [
     <a className="dropdown-item" onClick={props.discard}>
-      <FontAwesomeIcon className="fa-fw" icon={faTrash} />
+      <TbTrash />
       &nbsp;
       {i18n.t("nodeEditor.menu.discard")}
     </a>,
@@ -61,7 +62,7 @@ const NodeEditorHeader = (props: NodeEditorHeaderProps) => {
     <div className="node-editor-header">
       <div className="input-group shadow">
         <button id="" className="btn btn-primary" data-bs-toggle="dropdown">
-          <FontAwesomeIcon icon={faEdit} />
+          <TbEdit />
         </button>
         <ul className="dropdown-menu">
           {dropDownMenus.map((item, idx) => (
@@ -78,7 +79,7 @@ const NodeEditorHeader = (props: NodeEditorHeaderProps) => {
           ))}
         </RadioButtons>
         <button className="btn btn-success" onClick={props.save}>
-          <FontAwesomeIcon icon={faCheck} />
+          <TbCheck />
         </button>
       </div>
     </div>

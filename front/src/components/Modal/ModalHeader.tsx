@@ -1,8 +1,8 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconDefinition, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { ReactElement } from "react";
+import { TbCheck } from "react-icons/tb";
 
 export type ModalHeaderProps = {
-  icon: IconDefinition;
+  icon: ReactElement | ReactElement[];
   title: string;
   onClose: () => void;
 };
@@ -12,14 +12,14 @@ const ModalHeader = (props: ModalHeaderProps) => {
     <div className="m-modal-header shadow">
       <div className="input-group">
         <button type="button" className="btn btn-primary">
-          <FontAwesomeIcon icon={props.icon} />
+          {props.icon}
         </button>
         <div className="form-control">{props.title}</div>
         <button
           className="btn btn-success"
           type="button"
           onClick={props.onClose}>
-          <FontAwesomeIcon icon={faCheck} />
+          <TbCheck />
         </button>
       </div>
     </div>

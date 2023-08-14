@@ -21,13 +21,12 @@ const NodeEditorModal = (props: NodeEditorModalProps) => {
   const [, setState] = useState<NodeEditorModalState>({
     value: props.defaultValue,
   });
-  const handleChange =
-    (value: node.NodeData) => {
-      setState(oldState => ({
-        ...oldState,
-        value: value,
-      }));
-    };
+  const handleChange = (value: node.NodeData) => {
+    setState(oldState => ({
+      ...oldState,
+      value: value,
+    }));
+  };
   const close = useCallback(() => {
     setState(state => {
       props.onChange?.(state.value);

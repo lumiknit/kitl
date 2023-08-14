@@ -1,15 +1,15 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCopy,
-  faDeleteLeft,
-  faFolderTree,
-  faPaste,
-  faRocket,
-  faRotateLeft,
-  faRotateRight,
-  faScissors,
-  faSquarePlus,
-} from "@fortawesome/free-solid-svg-icons";
+  TbArrowBackUp,
+  TbArrowForwardUp,
+  TbBackspace,
+  TbScissors,
+  TbSquarePlus,
+  TbCopy,
+  TbClipboard,
+  TbFolderSearch,
+  TbRocket,
+} from "react-icons/tb";
+
 import * as fh from "./helper";
 import { emptyBetaNode } from "../../common/node";
 import toast from "react-hot-toast";
@@ -29,22 +29,22 @@ const addNodeModeControls = (props: FlowEditorHeaderProps) => {
       key="undo"
       className="btn btn-warning py-1"
       onClick={() => toast("BOOM")}>
-      <FontAwesomeIcon icon={faRotateLeft} />
+      <TbArrowBackUp />
     </button>,
     <button key="redo" className="btn btn-warning py-1 ">
-      <FontAwesomeIcon icon={faRotateRight} />
+      <TbArrowForwardUp />
     </button>,
     <button
       key="beta"
       className="btn btn-secondary flex-grow-1 px-0"
       onClick={() => props.addNode("beta", emptyBetaNode())}>
-      <FontAwesomeIcon icon={faSquarePlus} />
+      <TbSquarePlus />
     </button>,
     <button
       key="del"
       className="btn btn-danger"
       onClick={props.deleteSelectedNode}>
-      <FontAwesomeIcon icon={faDeleteLeft} />
+      <TbBackspace />
     </button>,
   ];
 };
@@ -54,20 +54,20 @@ const editModeControls = () => {
     <button
       key="cut"
       className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
-      <FontAwesomeIcon icon={faScissors} />
+      <TbScissors />
     </button>,
     <button
       key="copy"
       className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
-      <FontAwesomeIcon icon={faCopy} />
+      <TbCopy />
     </button>,
     <button
       key="paste"
       className="btn btn-outline-secondary py-1 px-0 flex-grow-1">
-      <FontAwesomeIcon icon={faPaste} />
+      <TbClipboard />
     </button>,
     <button key="delete" className="btn btn-danger py-1 px-0 flex-grow-1">
-      <FontAwesomeIcon icon={faDeleteLeft} />
+      <TbBackspace />
     </button>,
   ];
 };
@@ -87,7 +87,7 @@ const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
   // Menu button
   const menuButton = (
     <button className="btn btn-primary" data-bs-toggle="dropdown">
-      <FontAwesomeIcon icon={fh.editingModeIcons[props.mode]} />
+      {fh.editingModeIcons[props.mode]}
     </button>
   );
   // Drop down menu
@@ -96,7 +96,7 @@ const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
   for (let i = 0; i < fh.editingModeLabels.length; i++) {
     dropDownItems.push(
       <a className="dropdown-item" href="#" onClick={() => props.updateMode(i)}>
-        <FontAwesomeIcon icon={fh.editingModeIcons[i]} />
+        {fh.editingModeIcons[i]}
         &nbsp;
         {fh.editingModeLabels[i]}
       </a>,
@@ -107,7 +107,7 @@ const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
   // Insert browser button
   dropDownItems.push(
     <a className="dropdown-item" href="#" onClick={() => props.openBrowser()}>
-      <FontAwesomeIcon icon={faFolderTree} />
+      <TbFolderSearch />
       &nbsp;
       {i18n.t("flowEditor.menu.browser")}
     </a>,
@@ -115,7 +115,7 @@ const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
   dropDownItems.push(<hr />);
   dropDownItems.push(
     <a className="dropdown-item" href="#">
-      <FontAwesomeIcon icon={faRocket} />
+      <TbRocket />
       &nbsp;
       {i18n.t("flowEditor.menu.launch")}
     </a>,

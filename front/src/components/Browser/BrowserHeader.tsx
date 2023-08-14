@@ -1,5 +1,5 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClose, faFolderTree } from "@fortawesome/free-solid-svg-icons";
+/*import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClose, faFolderTree } from "@fortawesome/free-solid-svg-icons";*/
 
 export type BrowserHeaderProps = {
   storage: string;
@@ -27,9 +27,7 @@ const BrowserHeader = (props: BrowserHeaderProps) => {
           className="btn btn-primary dropdown-toggle"
           type="button"
           data-bs-toggle="dropdown"
-          aria-expanded="false">
-          <FontAwesomeIcon icon={faFolderTree} />
-        </button>
+          aria-expanded="false"></button>
         <ul className="dropdown-menu">
           <li>
             <a href="#" className="dropdown-item" onClick={props.newFile}>
@@ -94,9 +92,7 @@ const BrowserHeader = (props: BrowserHeaderProps) => {
         <button
           className="btn btn-danger"
           type="button"
-          onClick={props.onClose}>
-          <FontAwesomeIcon icon={faClose} />
-        </button>
+          onClick={props.onClose}></button>
       </div>
     </div>
   );

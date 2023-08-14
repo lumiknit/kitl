@@ -1,7 +1,9 @@
 // Editing Mode
 
-import { faPenToSquare, faSquarePlus } from "@fortawesome/free-solid-svg-icons";
+import { TbEdit, TbSquarePlus } from "react-icons/tb";
+
 import i18n from "../../locales/i18n";
+import { ReactElement } from "react-markdown/lib/react-markdown";
 
 export enum EditingMode {
   Add = 0,
@@ -13,6 +15,6 @@ export const editingModeLabels = [
   i18n.t("flowEditor.menu.selectTools"),
 ];
 
-export const editingModeIcons = [faSquarePlus, faPenToSquare];
+export const editingModeIcons: ReactElement[] = [<TbSquarePlus />, <TbEdit />];
 
 // Create node
