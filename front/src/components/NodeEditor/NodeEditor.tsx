@@ -1,7 +1,4 @@
 import { useCallback, useState } from "react";
-import toast from "react-hot-toast";
-
-import i18n from "../../locales/i18n";
 
 import * as node from "../../common/node";
 
