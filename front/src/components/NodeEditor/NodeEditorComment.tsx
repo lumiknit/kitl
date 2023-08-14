@@ -2,6 +2,7 @@ import CodeArea from "../Helpers/CodeArea";
 
 import * as node from "../../common/node";
 import { useCallback } from "react";
+import i18n from "../../locales/i18n";
 
 export type NodeEditorCommentProps = {
   value: node.CommentNodeData;
@@ -21,7 +22,7 @@ const NodeEditorComment = (props: NodeEditorCommentProps) => {
 
   return (
     <>
-      <h3>Comment</h3>
+      <h3>{i18n.t('nodeEditor.common.comment')}</h3>
       <CodeArea defaultValue={props.value.content} onChange={onChange} />
     </>
   );

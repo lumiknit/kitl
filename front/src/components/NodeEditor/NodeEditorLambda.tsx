@@ -6,6 +6,7 @@ import * as d from "../../common/def";
 import { Def } from "../../common/def";
 import { ChangeEvent } from "react";
 import { newName } from "../../common/name";
+import i18n from "../../locales/i18n";
 
 export type NodeEditorLambdaProps = {
   value: node.LambdaNodeData;
@@ -71,7 +72,7 @@ const NodeEditorLambda = (props: NodeEditorLambdaProps) => {
   };
   return (
     <>
-      <h3> λ (Fn Def / Abstraction) </h3>
+      <h3> {i18n.t('nodeEditor.common.lambda')} </h3>
       <div className="form-check">
         <input
           className="form-check-input"
@@ -81,7 +82,7 @@ const NodeEditorLambda = (props: NodeEditorLambdaProps) => {
           onChange={handlePatternChange}
         />
         <label className="form-check-label" htmlFor="flexCheckDefault">
-          Lambda with Pattern
+          {i18n.t('nodeEditor.lambda.withPattern')}
         </label>
       </div>
       <NodeEditorArgc

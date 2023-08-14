@@ -12,6 +12,7 @@ import { ReactElement } from "react";
 import NodeEditorJson from "./NodeEditorJson";
 import NodeEditorNumber from "./NodeEditorNumber";
 import NodeEditorString from "./NodeEditorString";
+import i18n from "../../locales/i18n";
 
 export enum LiteralEditingType {
   Special = 0,
@@ -91,9 +92,9 @@ const specialBody = (props: NodeEditorLiteralProps): ReactElement => {
         className="flex-grow-1"
         selected={selected}
         onClick={handleChange}>
-        <span>null</span>
-        <span>false</span>
-        <span>true</span>
+        <span>{i18n.t('value.null')}</span>
+        <span>{i18n.t('value.false')}</span>
+        <span>{i18n.t('value.true')}</span>
       </RadioButtons>
     </div>
   );
@@ -152,7 +153,7 @@ const NodeEditorLiteral = (props: NodeEditorLiteralProps) => {
   }
   return (
     <>
-      <h3> Literal </h3>
+      <h3> {i18n.t('nodeEditor.common.literal')} </h3>
       {buttons}
       {body}
     </>

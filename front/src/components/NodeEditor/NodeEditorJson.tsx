@@ -1,7 +1,12 @@
 import { ReactElement, useRef, useState } from "react";
+import JSON5 from "json5";
+import toast from "react-hot-toast";
+
+import i18n from "../../locales/i18n";
+
 import * as j from "../../common/json";
 import CodeArea from "../Helpers/CodeArea";
-import JSON5 from "json5";
+
 
 export type NodeEditorJsonProps = {
   value: j.Json;
@@ -58,12 +63,13 @@ const NodeEditorJson = (props: NodeEditorJsonProps) => {
         setState(oldState => ({
           ...oldState,
           message: (
-            <Message color="danger" badge="ERROR">
+            <Message color="danger" badge={i18n.t('ERROR')}>
               {err.message}
             </Message>
           ),
           hasError: true,
         }));
+        toast.error(i18n.t("nodeEditor.json.syntaxError"));
       } else {
         throw e;
       }
@@ -79,8 +85,8 @@ const NodeEditorJson = (props: NodeEditorJsonProps) => {
       ...oldState,
       temporaryValue: value,
       message: (
-        <Message color="warning" badge="WARNING">
-          Format to apply.
+        <Message color="warning" badge={i18n.t("modified")}>
+          {i18n.t("nodeEditor.json.formatToApply")}
         </Message>
       ),
       hasError: false,
@@ -89,24 +95,24 @@ const NodeEditorJson = (props: NodeEditorJsonProps) => {
 
   return (
     <div>
-      Write in JSON5 format.
+      {i18n.t("nodeEditor.json.formatDescription")}
       <div className="node-editor-json-format-buttons">
         <div className="input-group">
-          <div className="input-group-text">Format</div>
+          <div className="input-group-text">{i18n.t("nodeEditor.json.format")}</div>
           <button
             className="btn btn-outline-secondary flex-grow-1"
             onClick={formatMin}>
-            Min
+            {i18n.t("nodeEditor.json.btnMin")}
           </button>
           <button
             className="btn btn-outline-secondary flex-grow-1"
             onClick={formatCompact}>
-            Compact
+            {i18n.t("nodeEditor.json.btnCompact")}
           </button>
           <button
             className="btn btn-outline-secondary flex-grow-1"
             onClick={formatPretty}>
-            Pretty
+            {i18n.t("nodeEditor.json.btnPretty")}
           </button>
         </div>
       </div>
@@ -115,7 +121,7 @@ const NodeEditorJson = (props: NodeEditorJsonProps) => {
         textareaRef={refTA}
         defaultValue={state.temporaryValue}
         onChange={handleCodeAreaChange}
-        errorMessage={state.hasError ? "JSON Syntax Error" : undefined}
+        errorMessage={state.hasError ? i18n.t("nodeEditor.json.syntaxError") : undefined}
       />
     </div>
   );

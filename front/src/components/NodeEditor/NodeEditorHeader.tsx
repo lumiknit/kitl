@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import * as node from "../../common/node";
 import RadioButtons from "../Helpers/RadioButtons";
+import i18n from "../../locales/i18n";
 
 export type NodeEditorHeaderProps = {
   path: string;
@@ -46,7 +47,8 @@ const NodeEditorHeader = (props: NodeEditorHeaderProps) => {
   const dropDownMenus = [
     <a className="dropdown-item" onClick={props.discard}>
       <FontAwesomeIcon className="fa-fw" icon={faTrash} />
-      &nbsp; Discard
+      &nbsp;
+      {i18n.t("nodeEditor.menu.discard")}
     </a>,
   ];
   const typeIndex = typeButtonList.findIndex(

@@ -1,5 +1,6 @@
 import { memo, useCallback } from "react";
 import * as d from "../../common/def";
+import i18n from "../../locales/i18n";
 
 export type DefFinderProps = {
   value: d.Def;
@@ -37,7 +38,7 @@ const DefFinder = (props: DefFinderProps) => {
             value={n.name}
             onChange={handleNameChange}
           />
-          <label className="text-muted">Name</label>
+          <label className="text-muted">{i18n.t('defFinder.name')}</label>
         </div>
         <div className="form-floating">
           <input
@@ -47,7 +48,8 @@ const DefFinder = (props: DefFinderProps) => {
             value={n.module}
             onChange={handleModuleChange}
           />
-          <label className="text-muted">Module</label>
+          <label className="text-muted">{
+          i18n.t('defFinder.module')}</label>
         </div>
       </div>
       <div className="def-finder-list">{/*TODO*/}</div>

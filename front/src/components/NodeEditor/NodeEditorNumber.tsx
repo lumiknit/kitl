@@ -1,6 +1,7 @@
 import { ChangeEvent, useState } from "react";
 import * as j from "../../common/json";
 import RadioButtons from "../Helpers/RadioButtons";
+import i18n from "../../locales/i18n";
 
 export type NodeEditorNumberProps = {
   value: j.Json;
@@ -20,8 +21,13 @@ const baseToIndex = new Map<number, number>([
   [16, 3],
 ]);
 
-const baseNames = ["Bin", "Oct", "Dec", "Hex"];
-
+const baseNames = [
+  i18n.t("value.bin"),
+  i18n.t("value.oct"),
+  i18n.t("value.dec"),
+  i18n.t("value.hex"),
+];
+  
 const baseToPrefix = new Map<number, string>([
   [2, "0b"],
   [8, "0o"],

@@ -217,6 +217,7 @@ const FlowEditor = (props: FlowEditorProps) => {
         onEdgesChange={onEdgesChangeWrapper}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
+        nodeOrigin={[0.5, 0.5]}
         /* Flow View */
         fitView
         minZoom={0.5}

@@ -12,6 +12,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import * as fh from "./helper";
 import { emptyBetaNode } from "../../common/node";
+import toast from "react-hot-toast";
+import i18n from "../../locales/i18n";
 
 export type FlowEditorHeaderProps = {
   mode: fh.EditingMode;
@@ -23,7 +25,7 @@ export type FlowEditorHeaderProps = {
 
 const addNodeModeControls = (props: FlowEditorHeaderProps) => {
   return [
-    <button key="undo" className="btn btn-warning py-1">
+    <button key="undo" className="btn btn-warning py-1" onClick={() => toast("BOOM")}>
       <FontAwesomeIcon icon={faRotateLeft} />
     </button>,
     <button key="redo" className="btn btn-warning py-1 ">
@@ -104,7 +106,7 @@ const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
     <a className="dropdown-item" href="#" onClick={() => props.openBrowser()}>
       <FontAwesomeIcon icon={faFolderTree} />
       &nbsp;
-      {"Browser"}
+      {i18n.t("flowEditor.menu.browser")}
     </a>,
   );
   dropDownItems.push(<hr />);
@@ -112,7 +114,7 @@ const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
     <a className="dropdown-item" href="#">
       <FontAwesomeIcon icon={faRocket} />
       &nbsp;
-      {"Launch"}
+      {i18n.t("flowEditor.menu.launch")}
     </a>,
   );
   // Convert to drop down menu

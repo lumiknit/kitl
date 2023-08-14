@@ -1,9 +1,14 @@
+import { useCallback, useState } from "react";
+import toast from "react-hot-toast";
+
+import i18n from "../../locales/i18n";
+
 import * as node from "../../common/node";
 
 import NodeEditorHeader from "./NodeEditorHeader";
 
 import "./NodeEditor.css";
-import { useCallback, useState } from "react";
+
 import NodeEditorComment from "./NodeEditorComment";
 import NodeEditorLambda from "./NodeEditorLambda";
 import NodeEditorBeta from "./NodeEditorBeta";
@@ -111,10 +116,12 @@ export const NodeEditor = (props: NodeEditorProps) => {
     }));
     props.onChange?.(props.defaultValue);
     setTimeout(() => props.close?.(), 0);
+    toast(i18n.t("nodeEditor.toast.discarded"));
   }, [props, setState]);
 
   const save = useCallback(() => {
     props.close?.();
+    toast.success(i18n.t("nodeEditor.toast.saved"));
   }, [props.close]);
 
   return (

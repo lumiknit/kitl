@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import * as j from "../../common/json";
 import CodeArea from "../Helpers/CodeArea";
+import i18n from "../../locales/i18n";
 
 export type NodeEditorStringProps = {
   value: j.Json;
@@ -54,7 +55,7 @@ const NodeEditorString = (props: NodeEditorStringProps) => {
           onChange={handleShowEscapeChange}
         />
         <label className="form-check-label" htmlFor="useNameCheck">
-          Show escape chars
+          {i18n.t("nodeEditor.string.showEscape")}
         </label>
       </div>
       <CodeArea

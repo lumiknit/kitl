@@ -6,6 +6,7 @@ import * as d from "../../common/def";
 import { Def } from "../../common/def";
 import { ChangeEvent } from "react";
 import { newName } from "../../common/name";
+import i18n from "../../locales/i18n";
 
 export type NodeEditorBetaProps = {
   value: node.BetaNodeData;
@@ -53,7 +54,7 @@ const NodeEditorBeta = (props: NodeEditorBetaProps) => {
   };
   return (
     <>
-      <h3> β (Fn Call / Application) </h3>
+      <h3> {i18n.t('nodeEditor.common.beta')} </h3>
       <div className="form-check">
         <input
           className="form-check-input"
@@ -63,7 +64,7 @@ const NodeEditorBeta = (props: NodeEditorBetaProps) => {
           onChange={onUseNameChange}
         />
         <label className="form-check-label" htmlFor="useNameCheck">
-          Use Named Value
+          {i18n.t('nodeEditor.beta.withName')}
         </label>
       </div>
       <NodeEditorArgc

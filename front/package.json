@@ -17,9 +17,13 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.0",
+    "i18next": "^23.4.4",
+    "i18next-browser-languagedetector": "^7.1.0",
     "json5": "^2.2.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.4.1",
+    "react-i18next": "^13.1.2",
     "react-markdown": "^8.0.7",
     "react-router": "^6.14.1",
     "react-router-dom": "^6.14.1",
@@ -28,6 +32,7 @@
     "zustand": "4.3.9"
   },
   "devDependencies": {
+    "@modyfi/vite-plugin-yaml": "^1.0.4",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
