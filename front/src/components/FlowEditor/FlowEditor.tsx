@@ -34,6 +34,8 @@ import BetaNode from "./CustomNodes/BetaNode";
 import CommentNode from "./CustomNodes/CommentNode";
 import LiteralNode from "./CustomNodes/LiteralNode";
 import { BetaNodeData, emptyBetaNode } from "../../common/node";
+import Fab from "../Helpers/Fab";
+import { TbPlus } from "react-icons/tb";
 
 const getID = () => {
   const now = new Date();
@@ -289,6 +291,10 @@ const FlowEditor = (props: FlowEditorProps) => {
         addNode={addNode}
         deleteSelectedNode={deleteSelectedNode}
         openBrowser={props.openBrowser}
+      />
+      <Fab
+        onClick={() => addNode("beta", emptyBetaNode())}
+        icon={<TbPlus />}
       />
     </>
   );

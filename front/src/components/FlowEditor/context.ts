@@ -107,7 +107,7 @@ export class _FlowContext {
   }
 
   layout() {
-    
+
   }
 }
 
@@ -146,42 +146,6 @@ const initialNodes = (name: string) => [
     },
     selectable: false,
     deletable: false,
-  },
-  {
-    id: "2",
-    type: "literal",
-    data: {
-      type: NodeType.Literal,
-      value: 42.195,
-    },
-    position: {
-      x: 0,
-      y: 50,
-    },
-  },
-  {
-    id: "3",
-    type: "literal",
-    data: {
-      type: NodeType.Literal,
-      value: "hello, world!\ntest",
-    },
-    position: {
-      x: 0,
-      y: 100,
-    },
-  },
-  {
-    id: "4",
-    type: "literal",
-    data: {
-      type: NodeType.Literal,
-      value: true,
-    },
-    position: {
-      x: 0,
-      y: 140,
-    },
   },
   {
     id: "7",
