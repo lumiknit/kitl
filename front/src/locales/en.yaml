@@ -46,11 +46,9 @@ nodeEditor:
     valid: Valid
     syntaxError: JSON Syntax Error!
     btnMin: min
-    btnCompact: compact
     btnPretty: pretty
-    
   lambda:
-    withPattern: With pattern
+    withPattern: With pattern matching
   beta:
     withName: With name
 flowEditor:

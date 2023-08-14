@@ -11,10 +11,107 @@ import {
 } from "reactflow";
 
 import { NodeType } from "../../common/node";
+import { DAG } from "../../common/dag";
 
 export type SetNodes = Dispatch<SetStateAction<Node[]>>;
 export type SetEdges = Dispatch<SetStateAction<Edge[]>>;
 export type { OnNodesChange, OnEdgesChange };
+
+
+/* --- WIP */
+
+export class Graph {
+  nodes: Node[];
+  edges: Edge[];
+
+  constructor(nodes: Node[], edges: Edge[]) {
+    this.nodes = nodes;
+    this.edges = edges;
+  }
+}
+
+export class _FlowContext {
+  name: string;
+  path: string;
+
+  instance: ReactFlowInstance;
+
+  history: Graph[] = [];
+  historyPointer: number = 0;
+
+  // Configurations
+  historySize: number;
+
+  constructor(historySize: number) {
+    this.historySize = historySize;
+    throw new Error("TODO");
+  }
+
+  setNodes(callback: (nodes: Node[]) => Node[]) {
+    this.instance.setNodes(callback);
+    this.saveToHistory();
+  }
+
+  setEdges(callback: (nodes: Edge[]) => Edge[]) {
+    this.instance.setEdges(callback);
+    this.saveToHistory();
+  }
+
+  saveToHistory() {
+    if(this.historyPointer < this.history.length) {
+      this.history = this.history.slice(0, this.historyPointer);
+    } else if(this.history.length > this.historySize) {
+      this.history.shift();
+    }
+    this.history.push(this.getGraph());
+  }
+
+  getGraph(): Graph {
+    return new Graph(this.instance.getNodes(), this.instance.getEdges());
+  }
+
+  setGraph(graph: Graph) {
+    this.instance.setNodes(graph.nodes);
+    this.instance.setEdges(graph.edges);
+  }
+
+  undoable() {
+    return this.historyPointer > 0;
+  }
+
+  redoable() {
+    return this.historyPointer < this.history.length;
+  }
+
+  undo() {
+    if(!this.undoable()) {
+      throw new Error("Cannot undo");
+    }
+    this.historyPointer -= 1;
+    this.setGraph(this.history[this.historyPointer]);
+  }
+
+  redo() {
+    if(!this.redoable()) {
+      throw new Error("Cannot redo");
+    }
+    this.historyPointer += 1;
+    this.setGraph(this.history[this.historyPointer]);
+  }
+
+  checkGraphError() {
+  }
+
+  convertToDAG(): DAG {
+    throw new Error("TODO");
+  }
+
+  layout() {
+    
+  }
+}
+
+/* --- */
 
 export type FlowContext = {
   name: string;

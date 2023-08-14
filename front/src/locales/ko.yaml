@@ -38,15 +38,17 @@ nodeEditor:
     saved: 노드가 저장되었습니다!
     discarded: 노드 수정 내용이 버려집니다
   string:
-    showEscape: 이스케이프 문자 표시
+    showEscape: 탈출 문자 표시
   json:
-    format: 포맷
+    format: 서식
     formatDescription: "포맷: JSON5"
-    formatToSave: 포맷하면 저장됩니다
+    formatToSave: 서식에 맞춰 정리하면 저장됩니다
     valid: 구문 오류 없음
-    syntaxError: JSON 구문 오류!
+    syntaxError: 구문 오류!
+    btnMin: 최소화
+    btnPretty: 예쁘게
   lambda:
-    withPattern: 패턴 사용
+    withPattern: 양식 대조 사용
   beta:
     withName: 이름 사용
 flowEditor:
