@@ -27,6 +27,11 @@ div.m-modal-content {
   box-shadow: 0 0 1rem #00000080;
 }
 
+.full-modal div.m-modal-content {
+  height: 100%;
+  border-radius: 0;
+}
+
 div.m-modal-content-stick-to-center {
   top: 50%;
   transform: translateY(-50%);

@@ -14,6 +14,7 @@ export default defineConfig({
         manualChunks: {
           react: ["react", "react-dom", "react-router", "react-router-dom"],
           reactflow: ["reactflow", "reactflow/dist/style.css"],
+          yaml: ["yaml"],
           vendor: [
             "bootstrap",
             "bootstrap/dist/css/bootstrap.min.css",
@@ -21,7 +22,6 @@ export default defineConfig({
             "@fortawesome/fontawesome-svg-core",
             "@fortawesome/free-solid-svg-icons",
             "@fortawesome/react-fontawesome",
-            "yaml",
             "react-hot-toast",
             "i18next",
             "i18next-browser-languagedetector",

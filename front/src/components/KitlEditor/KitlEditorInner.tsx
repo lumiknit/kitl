@@ -27,6 +27,7 @@ type KitlEditorInnerState = {
 };
 
 const KitlEditorInner = () => {
+  const isMobile = h.isMobile();
   const context = kc.newKitlContext("editor-main");
   const [state, setState] = useState<KitlEditorInnerState>({
     editingState: kc.emptyKitlEditingState(),
@@ -110,9 +111,9 @@ const KitlEditorInner = () => {
     <div className="editor-root editor-root-wide">
       <div className="editor-root-wide-item editor-root-wide-item-left">
         {flowEditor}
-        {h.isMobile() && modalOpened ? modal : null}
+        {isMobile && modalOpened ? modal : null}
       </div>
-      {!h.isMobile() && modalOpened ? (
+      {!isMobile && modalOpened ? (
         <div className="editor-root-wide-item editor-root-wide-item-right full-modal">
           {modal}
         </div>

@@ -80,7 +80,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   const handleEditingTypeChange = useCallback(
     (ty: node.NodeType) => {
-      const newValue = node.convertNodeDataType(ty, state.value);
+      const newValue = node.convertNodeDataType(ty, state.lastValue);
       setState(oldState => ({
         ...oldState,
         editingType: ty,
@@ -88,7 +88,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
       }));
       props.onChange?.(newValue);
     },
-    [setState],
+    [state, setState],
   );
 
   const handleChange = useCallback(
@@ -112,7 +112,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
         value: v,
       }));
     },
-    [setState],
+    [state, setState],
   );
 
   const body = editorBody(state, handleChange, handleLiteralStateChange);
