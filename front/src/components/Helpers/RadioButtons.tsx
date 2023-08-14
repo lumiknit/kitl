@@ -1,37 +1,25 @@
 import { ReactElement, memo, useCallback } from "react";
 
+import * as array from "../../common/array";
+
 export type RadioButtonsProps = {
   children: ReactElement | ReactElement[];
   color?: string | string[];
   className?: string;
   selected: number;
-  updateSelected: (index: number) => void;
+  onClick: (index: number) => void;
 };
 
 const RadioButtons = (props: RadioButtonsProps) => {
-  let children;
-  if (Array.isArray(props.children)) {
-    children = props.children;
-  } else {
-    children = [props.children];
-  }
+  const children = array.makeArray(props.children, <></>);
+  const colors = array.makeArray(props.color, "secondary", children.length);
 
-  let colors: string[];
-  if (Array.isArray(props.color)) {
-    colors = props.color;
-  } else if (props.color) {
-    colors = new Array(children.length).fill(props.color);
-  } else {
-    colors = new Array(children.length).fill("secondary");
-  }
-
-  const updateSelected = useCallback(
-    (index: number) => {
-      if (props.selected !== index) {
-        return props.updateSelected(index);
-      }
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      const index = parseInt(event.currentTarget.value);
+      return props.onClick(index);
     },
-    [props.updateSelected],
+    [props.onClick],
   );
 
   return children.map((child, index) => {
@@ -40,7 +28,11 @@ const RadioButtons = (props: RadioButtonsProps) => {
         ? `btn btn-${colors[index]} ${props.className || ""}`
         : `btn btn-outline-${colors[index]} ${props.className || ""}`;
     return (
-      <button key={index} className={cls} onClick={() => updateSelected(index)}>
+      <button
+        key={`radio-button--${index}`}
+        className={cls}
+        onClick={handleClick}
+        value={index}>
         {child}
       </button>
     );

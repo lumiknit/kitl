@@ -34,7 +34,8 @@ $flow-edge-colors: (
   text-align: center;
   min-width: 1rem;
   min-height: 1rem;
-  background-color: #fff8;
+  background-color: rgba(#fff, 0.8);
+  /*backdrop-filter: blur(0.1rem);*/
 }
 
 .react-flow__node-def {

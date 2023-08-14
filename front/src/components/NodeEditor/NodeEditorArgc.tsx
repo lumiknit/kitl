@@ -1,4 +1,5 @@
 import { ChangeEvent, useCallback } from "react";
+import i18n from "../../locales/i18n";
 
 export type NodeEditorArgcProps = {
   defaultValue: number;
@@ -53,9 +54,10 @@ const NodeEditorArgc = (props: NodeEditorArgcProps) => {
           defaultValue={props.defaultValue}
           onChange={onArgcChange}
           placeholder="Argument Count"
+          pattern="[0-9]*"
         />
       )}
-      <label>Argument Count</label>
+      <label>{i18n.t("nodeEditor.common.argc")}</label>
     </div>
   );
 };

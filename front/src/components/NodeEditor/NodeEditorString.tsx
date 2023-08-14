@@ -1,10 +1,11 @@
 import { useRef, useState } from "react";
 import * as j from "../../common/json";
-import CodeArea from "../CodeArea/CodeArea";
+import CodeArea from "../Helpers/CodeArea";
+import i18n from "../../locales/i18n";
 
 export type NodeEditorStringProps = {
   value: j.Json;
-  updateValue: (value: j.Json) => void;
+  onChange: (value: j.Json) => void;
 };
 
 export type NodeEditorStringState = {
@@ -12,44 +13,23 @@ export type NodeEditorStringState = {
   defaultValue: string;
 };
 
-const escape = (s: string): string => {
-  let j = JSON.stringify(s);
-  j = j.substring(1, j.length - 1);
-  j = j.replace(/\\"/g, '"');
-  return j;
-};
-
-const unescape = (s: string): string => {
-  // Count last backslash
-  let i = s.length - 1;
-  let backslashCount = 0;
-  while (i >= 0 && s[i] === "\\") {
-    backslashCount++;
-    i--;
-  }
-  if (backslashCount % 2 === 1) {
-    s = s + "\\";
-  }
-  s = s.replace(/"/g, '\\"');
-  s = s.replace(/\n/g, "\\n");
-  return JSON.parse(`"${s}"`);
-};
-
 const NodeEditorString = (props: NodeEditorStringProps) => {
   const [state, setState] = useState<NodeEditorStringState>(() => ({
     showEscape: true,
     defaultValue:
       typeof props.value === "string"
-        ? escape(props.value)
+        ? j.escapeString(props.value)
         : JSON.stringify(props.value),
   }));
-  const refTA = useRef<HTMLTextAreaElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const onShowEscapeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleShowEscapeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const showEscape = e.target.checked;
-    if (refTA.current !== null) {
-      const s = refTA.current!.value;
-      refTA.current!.value = showEscape ? escape(s) : unescape(s);
+    if (textareaRef.current !== null) {
+      const s = textareaRef.current!.value;
+      textareaRef.current!.value = showEscape
+        ? j.escapeString(s)
+        : j.unescapeString(s);
     }
     setState(oldState => ({
       ...oldState,
@@ -57,11 +37,11 @@ const NodeEditorString = (props: NodeEditorStringProps) => {
     }));
   };
 
-  const onChange = (value: string) => {
+  const handleChange = (value: string) => {
     if (state.showEscape) {
-      value = unescape(value);
+      value = j.escapeString(value);
     }
-    props.updateValue(value);
+    props.onChange(value);
   };
 
   return (
@@ -72,16 +52,16 @@ const NodeEditorString = (props: NodeEditorStringProps) => {
           type="checkbox"
           id="useNameCheck"
           checked={state.showEscape}
-          onChange={onShowEscapeChange}
+          onChange={handleShowEscapeChange}
         />
         <label className="form-check-label" htmlFor="useNameCheck">
-          Show escape chars
+          {i18n.t("nodeEditor.string.showEscape")}
         </label>
       </div>
       <CodeArea
-        textareaRef={refTA}
+        textareaRef={textareaRef}
         defaultValue={state.defaultValue}
-        onChange={onChange}
+        onChange={handleChange}
       />
     </div>
   );

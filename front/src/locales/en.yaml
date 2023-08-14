@@ -1,0 +1,59 @@
+ERROR: ERROR
+WARN: WARN
+INFO: INFO
+modified: modified
+value:
+  "null": "null"
+  "true": "true"
+  "false": "false"
+  number: number
+  string: string
+  array: array
+  object: objeect
+  bin: bin
+  oct: oct
+  dec: dec
+  hex: hex
+node:
+  literal: literal
+  def: def
+  lambda: lambda
+  beta: beta
+  comment: comment
+defFinder:
+  name: Name
+  module: Module
+nodeEditor:
+  common:
+    argc: Argument Count
+    name: Name
+    module: Module
+    comment: Comment
+    literal: Literal
+    lambda: Lambda
+    beta: Beta
+  menu:
+    discard: Discard
+  toast:
+    saved: Node data saved!
+    discarded: Node changes discarded
+  string:
+    showEscape: Show escape characters
+  json:
+    format: Format
+    formatDescription: "Format: JSON5"
+    formatToApply: Format to save
+    syntaxError: JSON Syntax Error!
+    btnMin: min
+    btnCompact: compact
+    btnPretty: pretty
+  lambda:
+    withPattern: With pattern
+  beta:
+    withName: With name
+flowEditor:
+  menu:
+    addTools: Add Node Tools
+    selectTools: Select & Edit Tools
+    browser: Browser
+    launch: Launch

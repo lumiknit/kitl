@@ -6,7 +6,6 @@ import * as node from "../../../common/node";
 
 export type BetaNodeProps = {
   data: node.BetaNodeData;
-  isConnectable: boolean;
 };
 
 const BetaNode = (props: BetaNodeProps) => {
@@ -22,7 +21,7 @@ const BetaNode = (props: BetaNodeProps) => {
       break;
     case node.BetaNodeType.Name:
       {
-        const data: node.BetaNodeName = props.data;
+        const data: node.BetaNameNodeData = props.data;
         inner = <NameDisplay name={data.name} />;
       }
       break;
@@ -36,28 +35,25 @@ const BetaNode = (props: BetaNodeProps) => {
       {[...Array(argc)].map((_, i) => (
         <Handle
           key={i}
-          id={`arg${i}`}
+          id={`${node.HANDLE_BETA_ARG_PREFIX}${i}`}
           type="target"
           position={Position.Top}
-          isConnectable={props.isConnectable}
           style={{ left: cnh.positionPercentage(i, argc) }}
           className="flow-handle-beta-arg"
         />
       ))}
       {take ? (
         <Handle
-          id={`val`}
+          id={node.HANDLE_BETA_FUN}
           type="target"
           position={Position.Left}
-          isConnectable={props.isConnectable}
           className="flow-handle-beta-arg"
         />
       ) : null}
       <Handle
-        id={`ret`}
+        id={node.HANDLE_BETA_RET}
         type="source"
         position={Position.Bottom}
-        isConnectable={props.isConnectable}
         className="flow-handle-beta-ret"
       />
     </>

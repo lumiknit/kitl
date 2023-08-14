@@ -12,6 +12,7 @@ import { ReactElement } from "react";
 import NodeEditorJson from "./NodeEditorJson";
 import NodeEditorNumber from "./NodeEditorNumber";
 import NodeEditorString from "./NodeEditorString";
+import i18n from "../../locales/i18n";
 
 export enum LiteralEditingType {
   Special = 0,
@@ -39,7 +40,7 @@ export type NodeEditorLiteralState = {
 };
 
 export const initialState = (value: node.NodeData): NodeEditorLiteralState => {
-  if (value.type !== "literal") {
+  if (value.type !== node.NodeType.Literal) {
     return {
       editingType: LiteralEditingType.Raw,
     };
@@ -52,9 +53,12 @@ export const initialState = (value: node.NodeData): NodeEditorLiteralState => {
 
 export type NodeEditorLiteralProps = {
   value: node.LiteralNodeData;
-  updateValue: (value: node.LiteralNodeData) => void;
+  onChange: (value: node.LiteralNodeData) => void;
   state: NodeEditorLiteralState;
-  updateState: (state: NodeEditorLiteralState) => void;
+  updateState: (
+    state: NodeEditorLiteralState,
+    value?: node.LiteralNodeData,
+  ) => void;
 };
 
 const specialBody = (props: NodeEditorLiteralProps): ReactElement => {
@@ -70,7 +74,7 @@ const specialBody = (props: NodeEditorLiteralProps): ReactElement => {
       selected = 2;
       break;
   }
-  const updateSelected = (index: number) => {
+  const handleChange = (index: number) => {
     let value = null;
     switch (index) {
       case 1:
@@ -80,7 +84,7 @@ const specialBody = (props: NodeEditorLiteralProps): ReactElement => {
         value = true;
         break;
     }
-    return props.updateValue({
+    return props.onChange({
       ...props.value,
       value: value,
     });
@@ -90,16 +94,47 @@ const specialBody = (props: NodeEditorLiteralProps): ReactElement => {
       <RadioButtons
         className="flex-grow-1"
         selected={selected}
-        updateSelected={updateSelected}>
-        <span>null</span>
-        <span>false</span>
-        <span>true</span>
+        onClick={handleChange}>
+        <span>{i18n.t("value.null")}</span>
+        <span>{i18n.t("value.false")}</span>
+        <span>{i18n.t("value.true")}</span>
       </RadioButtons>
     </div>
   );
 };
 
 const NodeEditorLiteral = (props: NodeEditorLiteralProps) => {
+  const handleLiteralTypeChange = (index: number) => {
+    if (index === props.state.editingType) {
+      return;
+    }
+    let v = props.value.value;
+    switch (index) {
+      case LiteralEditingType.Special:
+        v = null;
+        break;
+      case LiteralEditingType.Number:
+        v = parseFloat(v as string);
+        if (isNaN(v)) {
+          v = 0;
+        }
+        break;
+      case LiteralEditingType.String:
+        v = JSON.stringify(v);
+        
+        break;
+    }
+    props.updateState(
+      {
+        ...props.state,
+        editingType: index as LiteralEditingType,
+      },
+      {
+        ...props.value,
+        value: v,
+      },
+    );
+  };
   /* Type buttons */
   const buttons = (
     <div className="node-editor-type-buttons mb-1">
@@ -108,12 +143,7 @@ const NodeEditorLiteral = (props: NodeEditorLiteralProps) => {
           color="primary"
           className="flex-grow-1"
           selected={props.state.editingType}
-          updateSelected={index => {
-            props.updateState({
-              ...props.state,
-              editingType: index as LiteralEditingType,
-            });
-          }}>
+          onClick={handleLiteralTypeChange}>
           {literalEditingTypeIcons.map((icon, i) => (
             <FontAwesomeIcon key={i} icon={icon} />
           ))}
@@ -123,7 +153,7 @@ const NodeEditorLiteral = (props: NodeEditorLiteralProps) => {
   );
 
   const updateValue = (value: j.Json) => {
-    props.updateValue({
+    props.onChange({
       ...props.value,
       value: value,
     });
@@ -136,23 +166,23 @@ const NodeEditorLiteral = (props: NodeEditorLiteralProps) => {
       break;
     case LiteralEditingType.Number:
       body = (
-        <NodeEditorNumber value={props.value.value} updateValue={updateValue} />
+        <NodeEditorNumber value={props.value.value} onChange={updateValue} />
       );
       break;
     case LiteralEditingType.String:
       body = (
-        <NodeEditorString value={props.value.value} updateValue={updateValue} />
+        <NodeEditorString value={props.value.value} onChange={updateValue} />
       );
       break;
     case LiteralEditingType.Raw:
       body = (
-        <NodeEditorJson value={props.value.value} updateValue={updateValue} />
+        <NodeEditorJson value={props.value.value} onChange={updateValue} />
       );
       break;
   }
   return (
     <>
-      <h3> Literal </h3>
+      <h3> {i18n.t("nodeEditor.common.literal")} </h3>
       {buttons}
       {body}
     </>

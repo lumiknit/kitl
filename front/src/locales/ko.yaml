@@ -1,0 +1,56 @@
+ERROR: 오류
+WARN: 주의
+INFO: 참고
+modified: 수정됨
+value:
+  "null": 널
+  "true": 참
+  "false": 거짓
+  number: 숫자
+  string: 문자열
+  array: 배열
+  object: 객체
+  bin: 2진법
+  oct: 8진법
+  dec: 10진법
+  hex: 16진법
+node:
+  literal: 상수
+  def: 정의
+  lambda: 람다
+  beta: 베타
+  comment: 주석
+defFinder:
+  name: 이름
+  module: 모듈
+nodeEditor:
+  common:
+    argc: 인수 개수
+    name: 이름
+    module: 모듈
+    comment: 주석
+    literal: 상수
+    lambda: 람다
+    beta: 베타
+  menu:
+    discard: 저장하지 않고 닫기
+  toast:
+    saved: 노드가 저장되었습니다!
+    discarded: 노드 수정 내용이 버려집니다
+  string:
+    showEscape: 이스케이프 문자 표시
+  json:
+    format: 포맷
+    formatDescription: "포맷: JSON5"
+    formatToApply: 포맷하면 저장됩니다
+    syntaxError: JSON 구문 오류!
+  lambda:
+    withPattern: 패턴 사용
+  beta:
+    withName: 이름 사용
+flowEditor:
+  menu:
+    addTools: 노드 추가 도구
+    selectTools: 선택 및 편집 도구
+    browser: 탐색기
+    launch: 실행

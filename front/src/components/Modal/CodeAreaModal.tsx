@@ -1,5 +1,5 @@
 import { useState } from "react";
-import CodeArea from "../CodeArea/CodeArea";
+import CodeArea from "../Helpers/CodeArea";
 import Modal from "./Modal";
 import ModalHeader from "./ModalHeader";
 import { faCode } from "@fortawesome/free-solid-svg-icons";

@@ -31,6 +31,8 @@ export type LiteralNodeData = {
   value: j.Json;
 };
 
+export const HANDLE_LITERAL_RET = "ret";
+
 // Beta
 
 export enum BetaNodeType {
@@ -38,20 +40,20 @@ export enum BetaNodeType {
   Name,
 }
 
-export type BetaNodeApp = {
+export type BetaAppNodeData = {
   type: NodeType.Beta;
   betaType: BetaNodeType.App;
   argc: number;
 };
 
-export type BetaNodeName = {
+export type BetaNameNodeData = {
   type: NodeType.Beta;
   betaType: BetaNodeType.Name;
   name: Name;
   argc: number;
 };
 
-export type BetaNodeData = BetaNodeApp | BetaNodeName;
+export type BetaNodeData = BetaAppNodeData | BetaNameNodeData;
 
 export const HANDLE_BETA_ARG_PREFIX = "arg-";
 export const handleBetaArg = (i: number) => `${HANDLE_BETA_ARG_PREFIX}${i}`;
@@ -93,11 +95,6 @@ export const handleLambdaElem = (i: number) =>
 export const HANDLE_LAMBDA_RET = "ret";
 export const HANDLE_LAMBDA_VAL = "val";
 
-export const emptyLambdaNode = (): LambdaNodeData => ({
-  type: NodeType.Lambda,
-  lambdaType: LambdaNodeType.Any,
-});
-
 // Comment
 
 export type CommentNodeData = {
@@ -105,20 +102,11 @@ export type CommentNodeData = {
   content: string;
 };
 
-export const emptyCommentNode = (): CommentNodeData => ({
-  type: NodeType.Comment,
-  content: "*Comment* here in markdown",
-});
-
 // Def
 
 export type DefNodeData = {
   type: NodeType.Def;
 };
-
-export const emptyDefNode = (): DefNodeData => ({
-  type: NodeType.Def,
-});
 
 export const HANDLE_DEF_ARG = "arg";
 
@@ -139,57 +127,29 @@ export type Node = {
 
 // Helpers
 
-export const cloneNodeData = (node: NodeData): NodeData => {
+export const cloneNodeData = (nodeData: NodeData): NodeData => {
   // Clone the node and remove all unused properties
-  switch (node.type) {
-    case NodeType.Literal:
-      return {
-        type: NodeType.Literal,
-        value: node.value,
-      };
+  switch (nodeData.type) {
     case NodeType.Beta:
-      switch (node.betaType) {
-        case BetaNodeType.App:
-          return {
-            type: NodeType.Beta,
-            betaType: BetaNodeType.App,
-            argc: node.argc,
-          };
-        case BetaNodeType.Name:
-          return {
-            type: NodeType.Beta,
-            betaType: BetaNodeType.Name,
-            argc: node.argc,
-            name: name.cloneName(node.name),
-          };
+      if (nodeData.betaType === BetaNodeType.Name) {
+        return {
+          ...nodeData,
+          name: name.cloneName(nodeData.name),
+        };
       }
       break;
     case NodeType.Lambda:
-      switch (node.lambdaType) {
-        case LambdaNodeType.Any:
-          return {
-            type: NodeType.Lambda,
-            lambdaType: LambdaNodeType.Any,
-          };
-        case LambdaNodeType.Pattern:
-          return {
-            type: NodeType.Lambda,
-            lambdaType: LambdaNodeType.Pattern,
-            pattern: name.cloneName(node.pattern),
-            argc: node.argc,
-          };
+      if (nodeData.lambdaType === LambdaNodeType.Pattern) {
+        return {
+          ...nodeData,
+          pattern: name.cloneName(nodeData.pattern),
+        };
       }
       break;
-    case NodeType.Comment:
-      return {
-        type: NodeType.Comment,
-        content: node.content,
-      };
-    case NodeType.Def:
-      return {
-        type: NodeType.Def,
-      };
   }
+  return {
+    ...nodeData,
+  };
 };
 
 export const nodeDataToInfoString = (data: NodeData): string => {
@@ -244,8 +204,6 @@ export const convertNodeDataType = (
 ): NodeData => {
   if (node.type === type) return node;
   const str = nodeDataToInfoString(node);
-  console.log(str);
-  console.log(extractName(str));
   switch (type) {
     case NodeType.Literal:
       return {

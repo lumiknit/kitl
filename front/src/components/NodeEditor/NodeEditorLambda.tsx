@@ -5,49 +5,27 @@ import * as node from "../../common/node";
 import * as d from "../../common/def";
 import { Def } from "../../common/def";
 import { ChangeEvent } from "react";
+import { newName } from "../../common/name";
+import i18n from "../../locales/i18n";
 
 export type NodeEditorLambdaProps = {
   value: node.LambdaNodeData;
-  updateValue: (value: node.NodeData) => void;
+  onChange: (value: node.NodeData) => void;
 };
 
 const NodeEditorLambda = (props: NodeEditorLambdaProps) => {
-  let inner = null;
+  let pattern: node.Name;
+  let argc: number;
   if (props.value.lambdaType === node.LambdaNodeType.Pattern) {
     const val = props.value as node.LambdaPatternNodeData;
-    const onArgcChange = (value: number) => {
-      props.updateValue({
-        ...val,
-        argc: value,
-      });
-    };
-    const onDefChange = (value: Def) => {
-      props.updateValue({
-        ...val,
-        pattern: {
-          name: value.name,
-          module: value.module,
-        },
-      });
-    };
-    inner = (
-      <>
-        <NodeEditorArgc
-          defaultValue={props.value.argc}
-          onChange={onArgcChange}
-        />
-        <DefFinder
-          defaultValue={d.newDef(
-            d.DefType.Value,
-            val.pattern.name,
-            val.pattern.module,
-          )}
-          onChange={onDefChange}
-        />
-      </>
-    );
+    pattern = val.pattern;
+    argc = val.argc;
+  } else {
+    pattern = newName("", "");
+    argc = 0;
   }
-  const onPatternChange = (e: ChangeEvent<HTMLInputElement>) => {
+
+  const handlePatternChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
       const val = props.value as {
         argc?: number;
@@ -55,43 +33,67 @@ const NodeEditorLambda = (props: NodeEditorLambdaProps) => {
       };
       const argc = val.argc === undefined ? 0 : val.argc;
       const pattern =
-        val.pattern === undefined
-          ? {
-              name: ".",
-              module: "",
-            }
-          : val.pattern;
-      props.updateValue({
+        val.pattern === undefined ? newName(".", "") : val.pattern;
+      props.onChange({
         ...props.value,
         lambdaType: node.LambdaNodeType.Pattern,
         argc: argc,
         pattern: pattern,
       });
     } else {
-      props.updateValue({
+      props.onChange({
         ...props.value,
         lambdaType: node.LambdaNodeType.Any,
       });
     }
   };
+  const handleArgcChange = (value: number) => {
+    props.onChange({
+      ...props.value,
+      lambdaType: node.LambdaNodeType.Pattern,
+      argc: value,
+      pattern: pattern,
+    });
+  };
+  const handleDefChange = (value: Def) => {
+    if (value.name === "") {
+      props.onChange({
+        ...props.value,
+        lambdaType: node.LambdaNodeType.Any,
+      });
+    } else {
+      props.onChange({
+        ...props.value,
+        lambdaType: node.LambdaNodeType.Pattern,
+        argc: argc,
+        pattern: value,
+      });
+    }
+  };
   return (
     <>
-      <h3> λ (Fn Def / Abstraction) </h3>
+      <h3> {i18n.t("nodeEditor.common.lambda")} </h3>
       <div className="form-check">
         <input
           className="form-check-input"
           type="checkbox"
           id="flexCheckDefault"
-          defaultChecked={
-            props.value.lambdaType === node.LambdaNodeType.Pattern
-          }
-          onChange={onPatternChange}
+          checked={props.value.lambdaType === node.LambdaNodeType.Pattern}
+          onChange={handlePatternChange}
         />
         <label className="form-check-label" htmlFor="flexCheckDefault">
-          Lambda with Pattern
+          {i18n.t("nodeEditor.lambda.withPattern")}
         </label>
       </div>
-      {inner}
+      <NodeEditorArgc
+        defaultValue={argc}
+        onChange={handleArgcChange}
+        readonly={props.value.lambdaType === node.LambdaNodeType.Any}
+      />
+      <DefFinder
+        value={d.newDef(d.DefType.Value, pattern.name, pattern.module)}
+        onChange={handleDefChange}
+      />
     </>
   );
 };

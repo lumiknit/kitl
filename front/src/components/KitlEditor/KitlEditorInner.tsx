@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import * as h from "../helper";
 
@@ -8,20 +8,20 @@ import "./KitlEditor.css";
 
 import * as kc from "./context";
 import BrowserModal from "../Modal/BrowserModal";
-import NodeEditorModal from "../Modal/NodeEditorModal";
+import NodeEditorModal from "../NodeEditor/NodeEditorModal";
 
 export enum ModalEditorType {
   NodeEditor = "nodeEditorModal",
   Browser = "browserModal",
 }
 
-export type ModalEditorState = {
+type ModalEditorState = {
   type: ModalEditorType;
   path: string;
   defaultValue: any;
 };
 
-export type KitlEditorInnerState = {
+type KitlEditorInnerState = {
   editingState: kc.KitlEditingState;
   modalEditorState?: ModalEditorState;
 };
@@ -32,41 +32,42 @@ const KitlEditorInner = () => {
     editingState: kc.emptyKitlEditingState(),
   });
 
-  const openModal =
-    (ty: ModalEditorType) => (path: string, defaultValue: any) => {
-      setState(oldState => {
-        if (oldState.modalEditorState !== undefined) {
-          return {
-            ...oldState,
-            modalEditorState: undefined,
-          };
-        }
-        return oldState;
-      });
-      return setState(oldState => ({
-        ...oldState,
-        modalEditorState: {
-          type: ty,
-          path: path,
-          defaultValue: defaultValue,
-        },
-      }));
-    };
+  const closeModal = useCallback(() => {
+    setState(oldState => ({
+      ...oldState,
+      modalEditorState: undefined,
+    }));
+  }, [setState]);
 
-  const closeModalWithValue = (path: string) => (value: any) => {
-    kc.applySubEditing(context, path, value);
+  const closeModalWithValue = (value: any) => {
+    if (state.modalEditorState === undefined) {
+      return;
+    }
+    kc.applySubEditing(context, state.modalEditorState.path, value);
     setState(oldState => ({
       ...oldState,
       modalEditorState: undefined,
     }));
   };
 
-  const onChange = (path: string) => (value: any) => {
-    setState({
-      ...state,
-      editingState: kc.addValueChange(state.editingState, path, value),
-    });
-  };
+  const openModal = useCallback(
+    (ty: ModalEditorType) => (path: string, defaultValue: any) => {
+      closeModal();
+      setTimeout(
+        () =>
+          setState(oldState => ({
+            ...oldState,
+            modalEditorState: {
+              type: ty,
+              path: path,
+              defaultValue: defaultValue,
+            },
+          })),
+        0,
+      );
+    },
+    [closeModal, setState],
+  );
 
   const modalOpened = state.modalEditorState !== undefined;
 
@@ -77,10 +78,9 @@ const KitlEditorInner = () => {
         modal = (
           <NodeEditorModal
             open={true}
-            onClose={closeModalWithValue(state.modalEditorState.path)}
+            onClose={closeModalWithValue}
             path={state.modalEditorState.path}
             defaultValue={state.modalEditorState.defaultValue}
-            onChange={onChange(state.modalEditorState.path)}
           />
         );
         break;
@@ -88,7 +88,7 @@ const KitlEditorInner = () => {
         modal = (
           <BrowserModal
             open={true}
-            onClose={closeModalWithValue(state.modalEditorState.path)}
+            onClose={closeModalWithValue}
             path={state.modalEditorState.path}
             defaultValue={state.modalEditorState.defaultValue}
           />
