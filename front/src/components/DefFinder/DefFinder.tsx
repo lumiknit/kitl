@@ -38,7 +38,7 @@ const DefFinder = (props: DefFinderProps) => {
             value={n.name}
             onChange={handleNameChange}
           />
-          <label className="text-muted">{i18n.t('defFinder.name')}</label>
+          <label className="text-muted">{i18n.t("defFinder.name")}</label>
         </div>
         <div className="form-floating">
           <input
@@ -48,8 +48,7 @@ const DefFinder = (props: DefFinderProps) => {
             value={n.module}
             onChange={handleModuleChange}
           />
-          <label className="text-muted">{
-          i18n.t('defFinder.module')}</label>
+          <label className="text-muted">{i18n.t("defFinder.module")}</label>
         </div>
       </div>
       <div className="def-finder-list">{/*TODO*/}</div>

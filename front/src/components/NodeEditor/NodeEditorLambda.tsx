@@ -72,7 +72,7 @@ const NodeEditorLambda = (props: NodeEditorLambdaProps) => {
   };
   return (
     <>
-      <h3> {i18n.t('nodeEditor.common.lambda')} </h3>
+      <h3> {i18n.t("nodeEditor.common.lambda")} </h3>
       <div className="form-check">
         <input
           className="form-check-input"
@@ -82,7 +82,7 @@ const NodeEditorLambda = (props: NodeEditorLambdaProps) => {
           onChange={handlePatternChange}
         />
         <label className="form-check-label" htmlFor="flexCheckDefault">
-          {i18n.t('nodeEditor.lambda.withPattern')}
+          {i18n.t("nodeEditor.lambda.withPattern")}
         </label>
       </div>
       <NodeEditorArgc

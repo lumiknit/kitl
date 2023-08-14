@@ -18,7 +18,8 @@ const RadioButtons = (props: RadioButtonsProps) => {
     (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       const index = parseInt(event.currentTarget.value);
       return props.onClick(index);
-    }, [props.onClick],
+    },
+    [props.onClick],
   );
 
   return children.map((child, index) => {
@@ -31,8 +32,7 @@ const RadioButtons = (props: RadioButtonsProps) => {
         key={`radio-button--${index}`}
         className={cls}
         onClick={handleClick}
-        value={index}
-      >
+        value={index}>
         {child}
       </button>
     );

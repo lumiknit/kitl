@@ -63,10 +63,13 @@ export type CodeAreaProps = {
 
 const CodeArea = (props: CodeAreaProps) => {
   const textareaRef = props.textareaRef || createRef<HTMLTextAreaElement>();
+  const hiddenTextareaRef = createRef<HTMLTextAreaElement>();
 
   const resizeTextarea = (target: HTMLTextAreaElement) => {
-    target.style.height = "0";
-    target.style.height = target.scrollHeight + 2 + "px";
+    // Resize hidden text area to match
+    if (hiddenTextareaRef.current === null) return;
+    hiddenTextareaRef.current.value = target.value;
+    target.style.height = hiddenTextareaRef.current.scrollHeight + 2 + "px";
   };
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -164,6 +167,10 @@ const CodeArea = (props: CodeAreaProps) => {
       {props.errorMessage !== undefined ? (
         <div className="code-area-error-msg">{props.errorMessage}</div>
       ) : null}
+      <textarea
+        ref={hiddenTextareaRef}
+        className="code-area code-area-hidden"
+      />
     </div>
   );
 };

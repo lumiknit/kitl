@@ -41,7 +41,7 @@ nodeEditor:
     showEscape: 이스케이프 문자 표시
   json:
     format: 포맷
-    formatDescription: '포맷: JSON5'
+    formatDescription: "포맷: JSON5"
     formatToApply: 포맷하면 저장됩니다
     syntaxError: JSON 구문 오류!
   lambda:

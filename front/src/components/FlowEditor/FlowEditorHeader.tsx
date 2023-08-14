@@ -25,7 +25,10 @@ export type FlowEditorHeaderProps = {
 
 const addNodeModeControls = (props: FlowEditorHeaderProps) => {
   return [
-    <button key="undo" className="btn btn-warning py-1" onClick={() => toast("BOOM")}>
+    <button
+      key="undo"
+      className="btn btn-warning py-1"
+      onClick={() => toast("BOOM")}>
       <FontAwesomeIcon icon={faRotateLeft} />
     </button>,
     <button key="redo" className="btn btn-warning py-1 ">

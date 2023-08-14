@@ -3,6 +3,13 @@ div.code-area {
   padding: 3px;
 }
 
+textarea.code-area-hidden {
+  visibility: hidden;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+}
+
 textarea.code-area {
   width: 100%;
   border: 1px solid #0070ff;
@@ -14,6 +21,7 @@ textarea.code-area {
   -moz-tab-size: 2;
   -o-tab-size: 2;
   tab-size: 2;
+  overflow: hidden;
 }
 
 textarea.code-area:focus {

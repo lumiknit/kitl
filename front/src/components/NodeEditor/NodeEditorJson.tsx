@@ -1,12 +1,39 @@
-import { ReactElement, useRef, useState } from "react";
-import JSON5 from "json5";
+import { ReactElement, useEffect, useRef, useState } from "react";
+import YAML from "yaml";
 import toast from "react-hot-toast";
 
 import i18n from "../../locales/i18n";
 
 import * as j from "../../common/json";
 import CodeArea from "../Helpers/CodeArea";
+import RadioButtons from "../Helpers/RadioButtons";
 
+export enum FormatStyle {
+  Min = 0,
+  Pretty = 1,
+  Yaml = 2,
+}
+
+const parseFormatted = (format: FormatStyle, value: string): j.Json => {
+  switch (format) {
+    case FormatStyle.Min:
+    case FormatStyle.Pretty:
+      return JSON.parse(value);
+    case FormatStyle.Yaml:
+      return YAML.parse(value);
+  }
+};
+
+const formatObject = (format: FormatStyle, value: j.Json) => {
+  switch (format) {
+    case FormatStyle.Min:
+      return JSON.stringify(value);
+    case FormatStyle.Pretty:
+      return JSON.stringify(value, null, 2);
+    case FormatStyle.Yaml:
+      return YAML.stringify(value);
+  }
+};
 
 export type NodeEditorJsonProps = {
   value: j.Json;
@@ -14,10 +41,13 @@ export type NodeEditorJsonProps = {
 };
 
 export type NodeEditorJsonState = {
-  temporaryValue: string;
+  taContent: string;
+  formatStyle: FormatStyle;
   /* Error Message */
   message?: ReactElement;
   hasError: boolean;
+  formatTimeout?: number;
+  shouldReformat: boolean;
 };
 
 const Message = (props: {
@@ -38,90 +68,132 @@ const NodeEditorJson = (props: NodeEditorJsonProps) => {
   const refTA = useRef<HTMLTextAreaElement>(null);
 
   const [state, setState] = useState<NodeEditorJsonState>(() => ({
-    temporaryValue: JSON.stringify(props.value),
+    taContent: formatObject(FormatStyle.Pretty, props.value),
+    formatStyle: FormatStyle.Pretty,
     hasError: false,
+    shouldReformat: false,
   }));
 
-  const format = (formatter: (j: j.Json) => string) => {
+  const parse = () => {
+    const content = state.taContent;
+    // Try to parse
     try {
-      const j = JSON5.parse(state.temporaryValue);
-      props.onChange(j);
-      if (refTA.current !== null) {
-        refTA.current.value = formatter(j);
-        refTA.current.dispatchEvent(new Event("change"));
-      }
-      props.onChange(j);
+      return parseFormatted(state.formatStyle, content);
+    } catch (e) {
+      toast.error(i18n.t("nodeEditor.json.syntaxError"));
       setState(oldState => ({
         ...oldState,
-        temporaryValue: formatter(j),
-        message: undefined,
-        hasError: false,
+        message: (
+          <Message color="danger" badge={i18n.t("ERROR")}>
+            {String(e)}
+          </Message>
+        ),
+        hasError: true,
       }));
-    } catch (e) {
-      if (e instanceof SyntaxError) {
-        const err = e as SyntaxError;
-        setState(oldState => ({
-          ...oldState,
-          message: (
-            <Message color="danger" badge={i18n.t('ERROR')}>
-              {err.message}
-            </Message>
-          ),
-          hasError: true,
-        }));
-        toast.error(i18n.t("nodeEditor.json.syntaxError"));
-      } else {
-        throw e;
-      }
     }
   };
 
-  const formatMin = () => format(j.formatJsonMin);
-  const formatCompact = () => format(j.formatJsonCompact);
-  const formatPretty = () => format(j.formatJsonPretty);
-
-  const handleCodeAreaChange = (value: string) => {
+  const handleFormatClick = (index: number) => {
+    const fs = index as FormatStyle;
+    // Read content
+    const parsed = parse();
+    if (parsed === undefined) {
+      return;
+    }
+    // Reformat
+    const formatted = formatObject(fs, parsed);
+    if (refTA.current !== null) {
+      refTA.current.value = formatted;
+    }
     setState(oldState => ({
       ...oldState,
-      temporaryValue: value,
-      message: (
-        <Message color="warning" badge={i18n.t("modified")}>
-          {i18n.t("nodeEditor.json.formatToApply")}
-        </Message>
-      ),
-      hasError: false,
+      formatStyle: fs,
+      taContent: formatted,
     }));
   };
 
+  const handleCodeAreaChange = (value: string) => {
+    // Clear timeout
+    let timeout = state.formatTimeout;
+    if (timeout === undefined) {
+      timeout = setTimeout(() => {
+        setState(oldState => ({
+          ...oldState,
+          formatTimeout: undefined,
+          shouldReformat: true,
+        }));
+      }, 1000);
+    }
+    // New timeout to format
+    setState(oldState => ({
+      ...oldState,
+      taContent: value,
+      message: (
+        <Message color="warning" badge={i18n.t("modified")}>
+          {i18n.t("nodeEditor.json.formatToSave")}
+        </Message>
+      ),
+      hasError: false,
+      formatTimeout: timeout,
+    }));
+  };
+
+  useEffect(() => {
+    if (state.shouldReformat) {
+      try {
+        const j = parseFormatted(state.formatStyle, state.taContent);
+        props.onChange(j);
+        setState(oldState => ({
+          ...oldState,
+          message: (
+            <Message color="success" badge={i18n.t("SUCCESS")}>
+              {i18n.t("nodeEditor.json.valid")}
+            </Message>
+          ),
+          hasError: false,
+          shouldReformat: false,
+        }));
+      } catch (e) {
+        toast.error(i18n.t("nodeEditor.json.syntaxError"));
+        setState(oldState => ({
+          ...oldState,
+          message: (
+            <Message color="danger" badge={i18n.t("ERROR")}>
+              {String(e)}
+            </Message>
+          ),
+          hasError: true,
+          shouldReformat: false,
+        }));
+      }
+    }
+  });
+
   return (
     <div>
-      {i18n.t("nodeEditor.json.formatDescription")}
       <div className="node-editor-json-format-buttons">
         <div className="input-group">
-          <div className="input-group-text">{i18n.t("nodeEditor.json.format")}</div>
-          <button
-            className="btn btn-outline-secondary flex-grow-1"
-            onClick={formatMin}>
-            {i18n.t("nodeEditor.json.btnMin")}
-          </button>
-          <button
-            className="btn btn-outline-secondary flex-grow-1"
-            onClick={formatCompact}>
-            {i18n.t("nodeEditor.json.btnCompact")}
-          </button>
-          <button
-            className="btn btn-outline-secondary flex-grow-1"
-            onClick={formatPretty}>
-            {i18n.t("nodeEditor.json.btnPretty")}
-          </button>
+          <div className="input-group-text">
+            {i18n.t("nodeEditor.json.format")}
+          </div>
+          <RadioButtons
+            className="flex-grow-1"
+            selected={state.formatStyle}
+            onClick={handleFormatClick}>
+            <span> Min </span>
+            <span> Pretty </span>
+            <span> YAML </span>
+          </RadioButtons>
         </div>
       </div>
       <div className="node-editor-json-message my-1">{state.message}</div>
       <CodeArea
         textareaRef={refTA}
-        defaultValue={state.temporaryValue}
+        defaultValue={state.taContent}
         onChange={handleCodeAreaChange}
-        errorMessage={state.hasError ? i18n.t("nodeEditor.json.syntaxError") : undefined}
+        errorMessage={
+          state.hasError ? i18n.t("nodeEditor.json.syntaxError") : undefined
+        }
       />
     </div>
   );

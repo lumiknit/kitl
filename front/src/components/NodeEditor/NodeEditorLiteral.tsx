@@ -13,6 +13,7 @@ import NodeEditorJson from "./NodeEditorJson";
 import NodeEditorNumber from "./NodeEditorNumber";
 import NodeEditorString from "./NodeEditorString";
 import i18n from "../../locales/i18n";
+import { parse } from "yaml";
 
 export enum LiteralEditingType {
   Special = 0,
@@ -55,7 +56,10 @@ export type NodeEditorLiteralProps = {
   value: node.LiteralNodeData;
   updateValue: (value: node.LiteralNodeData) => void;
   state: NodeEditorLiteralState;
-  updateState: (state: NodeEditorLiteralState) => void;
+  updateState: (
+    state: NodeEditorLiteralState,
+    value?: node.LiteralNodeData,
+  ) => void;
 };
 
 const specialBody = (props: NodeEditorLiteralProps): ReactElement => {
@@ -92,15 +96,45 @@ const specialBody = (props: NodeEditorLiteralProps): ReactElement => {
         className="flex-grow-1"
         selected={selected}
         onClick={handleChange}>
-        <span>{i18n.t('value.null')}</span>
-        <span>{i18n.t('value.false')}</span>
-        <span>{i18n.t('value.true')}</span>
+        <span>{i18n.t("value.null")}</span>
+        <span>{i18n.t("value.false")}</span>
+        <span>{i18n.t("value.true")}</span>
       </RadioButtons>
     </div>
   );
 };
 
 const NodeEditorLiteral = (props: NodeEditorLiteralProps) => {
+  const handleLiteralTypeChange = (index: number) => {
+    if (index === props.state.editingType) {
+      return;
+    }
+    let v = props.value.value;
+    switch (index) {
+      case LiteralEditingType.Special:
+        v = null;
+        break;
+      case LiteralEditingType.Number:
+        v = parseFloat(v as string);
+        if (isNaN(v)) {
+          v = 0;
+        }
+        break;
+      case LiteralEditingType.String:
+        v = JSON.stringify(v);
+        break;
+    }
+    props.updateState(
+      {
+        ...props.state,
+        editingType: index as LiteralEditingType,
+      },
+      {
+        ...props.value,
+        value: v,
+      },
+    );
+  };
   /* Type buttons */
   const buttons = (
     <div className="node-editor-type-buttons mb-1">
@@ -109,12 +143,7 @@ const NodeEditorLiteral = (props: NodeEditorLiteralProps) => {
           color="primary"
           className="flex-grow-1"
           selected={props.state.editingType}
-          onClick={index => {
-            props.updateState({
-              ...props.state,
-              editingType: index as LiteralEditingType,
-            });
-          }}>
+          onClick={handleLiteralTypeChange}>
           {literalEditingTypeIcons.map((icon, i) => (
             <FontAwesomeIcon key={i} icon={icon} />
           ))}
@@ -153,7 +182,7 @@ const NodeEditorLiteral = (props: NodeEditorLiteralProps) => {
   }
   return (
     <>
-      <h3> {i18n.t('nodeEditor.common.literal')} </h3>
+      <h3> {i18n.t("nodeEditor.common.literal")} </h3>
       {buttons}
       {body}
     </>

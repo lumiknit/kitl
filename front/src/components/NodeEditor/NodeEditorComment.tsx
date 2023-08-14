@@ -22,7 +22,7 @@ const NodeEditorComment = (props: NodeEditorCommentProps) => {
 
   return (
     <>
-      <h3>{i18n.t('nodeEditor.common.comment')}</h3>
+      <h3>{i18n.t("nodeEditor.common.comment")}</h3>
       <CodeArea defaultValue={props.value.content} onChange={onChange} />
     </>
   );

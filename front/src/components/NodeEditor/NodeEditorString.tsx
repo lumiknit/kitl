@@ -18,7 +18,7 @@ const NodeEditorString = (props: NodeEditorStringProps) => {
     showEscape: true,
     defaultValue:
       typeof props.value === "string"
-        ? escape(props.value)
+        ? j.escapeString(props.value)
         : JSON.stringify(props.value),
   }));
   const textareaRef = useRef<HTMLTextAreaElement>(null);

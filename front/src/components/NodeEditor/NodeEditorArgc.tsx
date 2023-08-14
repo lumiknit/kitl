@@ -57,7 +57,7 @@ const NodeEditorArgc = (props: NodeEditorArgcProps) => {
           pattern="[0-9]*"
         />
       )}
-      <label>{i18n.t('nodeEditor.common.argc')}</label>
+      <label>{i18n.t("nodeEditor.common.argc")}</label>
     </div>
   );
 };

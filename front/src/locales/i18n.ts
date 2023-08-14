@@ -1,16 +1,16 @@
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
-import en from './en.yaml';
-import ko from './ko.yaml';
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
+import LanguageDetector from "i18next-browser-languagedetector";
+import en from "./en.yaml";
+import ko from "./ko.yaml";
 
 const resources = {
   en: {
-    translation: en
+    translation: en,
   },
   ko: {
-    translation: ko
-  }
+    translation: ko,
+  },
 };
 
 i18n
@@ -18,10 +18,10 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: 'en',
+    fallbackLng: "en",
     interpolation: {
-      escapeValue: false
-    }
+      escapeValue: false,
+    },
   });
 
 export default i18n;

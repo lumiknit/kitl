@@ -13,7 +13,7 @@ const App = () => (
       toastOptions={{
         style: {
           zIndex: 9999,
-        }
+        },
       }}
     />
     <Router>

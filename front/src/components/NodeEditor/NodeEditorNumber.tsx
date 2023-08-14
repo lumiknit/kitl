@@ -27,7 +27,7 @@ const baseNames = [
   i18n.t("value.dec"),
   i18n.t("value.hex"),
 ];
-  
+
 const baseToPrefix = new Map<number, string>([
   [2, "0b"],
   [8, "0o"],

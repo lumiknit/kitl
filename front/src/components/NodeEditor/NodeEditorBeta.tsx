@@ -54,7 +54,7 @@ const NodeEditorBeta = (props: NodeEditorBetaProps) => {
   };
   return (
     <>
-      <h3> {i18n.t('nodeEditor.common.beta')} </h3>
+      <h3> {i18n.t("nodeEditor.common.beta")} </h3>
       <div className="form-check">
         <input
           className="form-check-input"
@@ -64,7 +64,7 @@ const NodeEditorBeta = (props: NodeEditorBetaProps) => {
           onChange={onUseNameChange}
         />
         <label className="form-check-label" htmlFor="useNameCheck">
-          {i18n.t('nodeEditor.beta.withName')}
+          {i18n.t("nodeEditor.beta.withName")}
         </label>
       </div>
       <NodeEditorArgc

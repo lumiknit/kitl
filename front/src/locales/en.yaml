@@ -3,9 +3,9 @@ WARN: WARN
 INFO: INFO
 modified: modified
 value:
-  "null": 'null'
-  "true": 'true'
-  "false": 'false'
+  "null": "null"
+  "true": "true"
+  "false": "false"
   number: number
   string: string
   array: array
@@ -41,7 +41,7 @@ nodeEditor:
     showEscape: Show escape characters
   json:
     format: Format
-    formatDescription: 'Format: JSON5'
+    formatDescription: "Format: JSON5"
     formatToApply: Format to save
     syntaxError: JSON Syntax Error!
     btnMin: min
