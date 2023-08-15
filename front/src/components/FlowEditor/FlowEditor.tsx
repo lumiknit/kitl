@@ -22,8 +22,9 @@ import "reactflow/dist/style.css";
 import "./FlowEditor.css";
 import "./FlowEditorNode.scss";
 
-import * as fh from "./helper";
-import * as fc from "./context";
+import * as key from "../../common/key";
+import * as helper from "./helper";
+import * as context from "./context";
 
 import nodeTypes from "./GraphComponents/node-types";
 import edgeTypes from "./GraphComponents/edge-types";
@@ -32,29 +33,19 @@ import { BetaNodeData, emptyBetaNode } from "../../common/node";
 import Fab from "../Helpers/Fab";
 import { TbPlus } from "react-icons/tb";
 
-const getID = () => {
-  const now = new Date();
-  const offset = now.getTimezoneOffset() * 60 * 1000;
-  const utcMS = now.getTime() + offset;
-  const utcSec = Math.round(utcMS / 1000);
-  const timeString = utcSec.toString(36);
-  const randomString = Math.random().toString(36).substring(7);
-  return `${timeString}-${randomString}`;
-};
-
 export type FlowEditorProps = {
-  context: fc.FlowContext;
+  context: context.FlowContext;
   openNodeEditor: (path: string, data: any) => void;
   openBrowser: () => void;
 };
 
 type FlowEditorState = {
-  mode: fh.EditingMode;
+  mode: helper.EditingMode;
 };
 
 const FlowEditor = (props: FlowEditorProps) => {
   const [state, setState] = useState<FlowEditorState>({
-    mode: fh.EditingMode.Add,
+    mode: helper.EditingMode.Add,
   });
 
   const storeApi = useStoreApi();
@@ -69,6 +60,14 @@ const FlowEditor = (props: FlowEditorProps) => {
     const x = (width / 2 - tx) * zoomMultiplier;
     const y = (height / 2 - ty) * zoomMultiplier;
     return [x, y];
+  };
+
+  const getCenterZitter = () => {
+    const [x, y] = getCenter();
+    const zitter = 16;
+    const zitterX = Math.random() * zitter - zitter / 2;
+    const zitterY = Math.random() * zitter - zitter / 2;
+    return [x + zitterX, y + zitterY];
   };
 
   const onConnect = useCallback((params: Connection | Edge) => {
@@ -134,7 +133,7 @@ const FlowEditor = (props: FlowEditorProps) => {
     props.context.onEdgesChange(edges);
     if (updatingGraphError) return;
     updatingGraphError = true;
-    fc.updateGraphError(props.context);
+    context.updateGraphError(props.context);
     updatingGraphError = false;
   };
 
@@ -156,7 +155,7 @@ const FlowEditor = (props: FlowEditorProps) => {
     props.context.setEdges(es => es.filter(e => e.id !== edge.id));
   };
 
-  const updateMode = (mode: fh.EditingMode) => {
+  const updateMode = (mode: helper.EditingMode) => {
     const newState = { ...state };
     newState.mode = mode;
     setState(newState);
@@ -164,9 +163,9 @@ const FlowEditor = (props: FlowEditorProps) => {
 
   const addNode = (type: string, data: any) => {
     // Find viewport center
-    const [x, y] = getCenter();
+    const [x, y] = getCenterZitter();
     const newNode: Node = {
-      id: getID(),
+      id: key.genID(),
       type: type,
       data: data,
       position: {
@@ -193,7 +192,7 @@ const FlowEditor = (props: FlowEditorProps) => {
     const x = (event.clientX - tx) * zoomMultiplier;
     const y = (event.clientY - ty) * zoomMultiplier;
     const newNode: Node = {
-      id: getID(),
+      id: key.genID(),
       type: "beta",
       data: emptyBetaNode(),
       position: {

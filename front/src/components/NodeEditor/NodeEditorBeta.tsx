@@ -2,7 +2,7 @@ import DefFinder from "../DefFinder/DefFinder";
 import NodeEditorArgc from "./NodeEditorArgc";
 
 import * as node from "../../common/node";
-import * as d from "../../common/def";
+import * as def from "../../common/def";
 import { Def } from "../../common/def";
 import { ChangeEvent } from "react";
 import { newName } from "../../common/name";
@@ -77,7 +77,7 @@ const NodeEditorBeta = (props: NodeEditorBetaProps) => {
         }}
       />
       <DefFinder
-        value={d.newDef(d.DefType.Value, name.name, name.module)}
+        value={def.newDef(def.DefType.Value, name.name, name.module)}
         onChange={onDefChange}
       />
     </>

@@ -1,4 +1,4 @@
-// Base types
+// Base JSON Types
 
 export type JsonArray = Json[];
 export type JsonObject = { [key: string]: Json };
@@ -6,25 +6,20 @@ export type Json = null | boolean | number | string | JsonArray | JsonObject;
 export type JsonKey = number | string;
 export type JsonPath = JsonKey[];
 
-export const pathToString = (path: JsonPath) => {
-  const reversed = path.slice().reverse();
-  return reversed.join(" < ");
-};
+// Json Type Enums
 
-export const NUMBER_OF_TYPES = 7;
 export enum JsonType {
   NULL = 0,
-  FALSE = 1,
-  TRUE = 2,
-  NUMBER = 3,
-  STRING = 4,
-  ARRAY = 5,
-  OBJECT = 6,
+  FALSE,
+  TRUE,
+  NUMBER,
+  STRING,
+  ARRAY,
+  OBJECT,
 }
+export const NUMBER_OF_TYPES = JsonType.OBJECT + 1;
 
-export const jsonTypesShort = [0, 3, 4, 5, 6];
-
-export const jsonTypes = [
+export const JSON_TYPE_STRING = [
   "null",
   "false",
   "true",
@@ -34,7 +29,7 @@ export const jsonTypes = [
   "object",
 ];
 
-export const jsonTypeOf = (value: Json): JsonType => {
+export const typeOfJsonValue = (value: Json): JsonType => {
   if (value === null) {
     return JsonType.NULL;
   }
@@ -55,59 +50,10 @@ export const jsonTypeOf = (value: Json): JsonType => {
   }
 };
 
-export const isObject = (value: Json): boolean =>
+export const isJsonObject = (value: Json): boolean =>
   value !== null && typeof value === "object" && !Array.isArray(value);
 
-export const emptyJsonValueOfType = (type: JsonType) => {
-  switch (type) {
-    case JsonType.FALSE:
-      return false;
-    case JsonType.TRUE:
-      return true;
-    case JsonType.NUMBER:
-      return 0;
-    case JsonType.STRING:
-      return "";
-    case JsonType.ARRAY:
-      return [];
-    case JsonType.OBJECT:
-      return {};
-    default:
-      return null;
-  }
-};
-
-export const updateJsonValue = (parent: Json, key: JsonKey, value: Json) => {
-  if (Array.isArray(parent)) {
-    if (typeof key === "number") {
-      parent[key] = value;
-    }
-    return;
-  } else if (typeof parent === "object" && parent !== null) {
-    parent[key] = value;
-  }
-};
-
-export const longRandom = () => {
-  const a = Math.random().toString(36).slice(2);
-  const b = Math.random().toString(36).slice(2);
-  return `${a}${b}`;
-};
-
-export const nextJsonKey = (parent: Json): JsonKey => {
-  if (Array.isArray(parent)) {
-    return parent.length;
-  } else if (typeof parent === "object" && parent !== null) {
-    // Generate a key preventing collision
-    let key;
-    do {
-      key = longRandom();
-    } while (Object.prototype.hasOwnProperty.call(parent, key));
-    return key;
-  } else {
-    return 0;
-  }
-};
+// String escapes
 
 export const escapeString = (value: string): string => {
   const v = JSON.stringify(value);
@@ -134,6 +80,12 @@ export const unescapeString = (s: string): string => {
   return JSON.parse(`"${s}"`);
 };
 
+// Formatters
+
+export const formatJsonMin = (value: Json): string => JSON.stringify(value);
+export const formatJsonPretty = (value: Json): string =>
+  JSON.stringify(value, null, 2);
+
 const guessIsJsonLong = (value: Json): boolean => {
   switch (typeof value) {
     case "boolean":
@@ -151,10 +103,6 @@ const guessIsJsonLong = (value: Json): boolean => {
       }
   }
 };
-
-export const formatJsonMin = (value: Json): string => JSON.stringify(value);
-export const formatJsonPretty = (value: Json): string =>
-  JSON.stringify(value, null, 2);
 
 export const formatJsonCompact = (
   value: Json,
@@ -175,16 +123,9 @@ export const formatJsonCompact = (
         } else if (arr.length === 1) {
           return `[${formatJsonCompact(arr[0], indentLevel + 1)}]`;
         }
-        let s = "[ ";
         const sep = ",\n" + " ".repeat(2 * (indentLevel + 1));
-        for (let i = 0; i < arr.length; i++) {
-          if (i > 0) {
-            s += sep;
-          }
-          s += formatJsonCompact(arr[i], indentLevel + 1);
-        }
-        s += " ]";
-        return s;
+        const items = arr.map(item => formatJsonCompact(item, indentLevel + 1));
+        return "[ " + items.join(sep) + " ]";
       } else {
         const obj = value;
         const keys = Object.keys(obj);
@@ -196,28 +137,22 @@ export const formatJsonCompact = (
             indentLevel + 1,
           )}}`;
         }
-        let s = "{ ";
         const sep = ",\n" + " ".repeat(2 * (indentLevel + 1));
         const sepC = "\n" + " ".repeat(2 * (indentLevel + 2));
-        for (let i = 0; i < keys.length; i++) {
-          if (i > 0) {
-            s += sep;
-          }
-
-          if (guessIsJsonLong(obj[keys[i]])) {
-            s += `${JSON.stringify(keys[i])}:${sepC}${formatJsonCompact(
-              obj[keys[i]],
+        const items = keys.map(key => {
+          if (guessIsJsonLong(obj[key])) {
+            return `${JSON.stringify(key)}:${sepC}${formatJsonCompact(
+              obj[key],
               indentLevel + 2,
             )}`;
           } else {
-            s += `${JSON.stringify(keys[i])}: ${formatJsonCompact(
-              obj[keys[i]],
+            return `${JSON.stringify(key)}: ${formatJsonCompact(
+              obj[key],
               indentLevel + 1,
             )}`;
           }
-        }
-        s += " }";
-        return s;
+        });
+        return "{ " + items.join(sep) + " }";
       }
   }
 };
