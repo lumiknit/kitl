@@ -1,3 +1,5 @@
+// Base types
+
 export type JsonArray = Json[];
 export type JsonObject = { [key: string]: Json };
 export type Json = null | boolean | number | string | JsonArray | JsonObject;

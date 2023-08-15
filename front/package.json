@@ -3,6 +3,23 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "author": {
+    "name": "lumiknit",
+    "email": "aasr4r4@gmail.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/lumiknit/kitl#readme.md",
+  "description": "kitl web editor",
+  "keywords": [
+    "kitl",
+    "editor",
+    "compiler",
+    "web"
+  ],
+  "bugs": {
+    "url": "https://github.com/lumiknit/kitl/issues",
+    "email": "aasr4r4@gmail.com"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
