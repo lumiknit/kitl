@@ -18,6 +18,9 @@ $flow-node-colors: (
 
 $flow-edge-colors: (
   default: #5b626a,
+  beta: $flow-node-color-beta,
+  lambda: $flow-node-color-lambda,
+  literal: $flow-node-color-literal,
   selected: #1697dc,
 );
 
@@ -210,4 +213,20 @@ marker.react-flow__arrowhead polyline {
   stroke: map.get($flow-edge-colors, default);
   stroke-width: 2;
   filter: drop-shadow(0 0 2px rgba($flow-node-color-fg, 0.3));
+}
+
+
+@each $key, $color in $flow-edge-colors {
+  .react-flow__edge-#{$key} path.react-flow__edge-path {
+    stroke: $color;
+  }
+
+  .react-flow__edge-#{$key}.selected path.react-flow__edge-path {
+    stroke: $color;
+  }
+}
+
+.flow-node-dimmed {
+  font-size: 0.75rem;
+  opacity: 0.5;
 }

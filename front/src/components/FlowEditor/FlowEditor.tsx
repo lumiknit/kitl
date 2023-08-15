@@ -16,7 +16,6 @@ import ReactFlow, {
   SelectionMode,
   ConnectionMode,
   ConnectionLineType,
-  MarkerType,
 } from "reactflow";
 
 import "reactflow/dist/style.css";
@@ -26,13 +25,9 @@ import "./FlowEditorNode.scss";
 import * as fh from "./helper";
 import * as fc from "./context";
 
-import LambdaNode from "./CustomNodes/LambdaNode";
-
-import DefNode from "./CustomNodes/DefNode";
+import nodeTypes from "./GraphComponents/node-types";
+import edgeTypes from "./GraphComponents/edge-types";
 import FlowEditorHeader from "./FlowEditorHeader";
-import BetaNode from "./CustomNodes/BetaNode";
-import CommentNode from "./CustomNodes/CommentNode";
-import LiteralNode from "./CustomNodes/LiteralNode";
 import { BetaNodeData, emptyBetaNode } from "../../common/node";
 import Fab from "../Helpers/Fab";
 import { TbPlus } from "react-icons/tb";
@@ -45,14 +40,6 @@ const getID = () => {
   const timeString = utcSec.toString(36);
   const randomString = Math.random().toString(36).substring(7);
   return `${timeString}-${randomString}`;
-};
-
-const nodeTypes = {
-  def: DefNode,
-  literal: LiteralNode,
-  lambda: LambdaNode,
-  beta: BetaNode,
-  comment: CommentNode,
 };
 
 export type FlowEditorProps = {
@@ -85,14 +72,22 @@ const FlowEditor = (props: FlowEditorProps) => {
   };
 
   const onConnect = useCallback((params: Connection | Edge) => {
+    const nodes = props.context.instance.getNodes();
     const targetNode = params.target;
     const targetHandle = params.targetHandle;
+    let sourceNodeType: string | undefined;
+    nodes.forEach(n => {
+      if (n.id === params.source) {
+        sourceNodeType = n.type;
+      }
+    });
     props.context.setEdges(es => {
       // Remove any existing edges from the target handle
       const newEdges = es.filter(e => {
         return !(e.target === targetNode && e.targetHandle === targetHandle);
       });
       // Add the new edge
+      (params as {[key: string]: any}).type = sourceNodeType ?? "default";
       return addEdge(params, newEdges);
     });
     props.context.setNodes(ns =>
@@ -219,6 +214,7 @@ const FlowEditor = (props: FlowEditorProps) => {
         onEdgesChange={onEdgesChangeWrapper}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         nodeOrigin={[0.5, 0.5]}
         /* Flow View */
         fitView
@@ -240,9 +236,9 @@ const FlowEditor = (props: FlowEditorProps) => {
         edgesUpdatable={true}
         defaultEdgeOptions={{
           animated: false,
-          markerEnd: {
+          /*markerEnd: {
             type: MarkerType.ArrowClosed,
-          },
+          },*/
         }}
         /* General Event Handler */
         onDoubleClick={onDoubleClick}

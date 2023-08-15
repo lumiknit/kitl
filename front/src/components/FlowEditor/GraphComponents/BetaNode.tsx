@@ -15,7 +15,7 @@ const BetaNode = (props: BetaNodeProps) => {
   switch (props.data.betaType) {
     case node.BetaNodeType.App:
       {
-        inner = <div>β</div>;
+        inner = <div className="flow-node-dimmed">β</div>;
         take = true;
       }
       break;

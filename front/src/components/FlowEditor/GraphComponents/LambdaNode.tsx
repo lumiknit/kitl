@@ -27,7 +27,7 @@ const LambdaNode = (props: LambdaNodeProps) => {
       </>
     );
   } else {
-    inner = <div className="flow-node-container-body">λ</div>;
+    inner = <div className="flow-node-container-body flow-node-dimmed">λ</div>;
   }
   const count = 2 + argc;
   return (
@@ -59,6 +59,14 @@ const LambdaNode = (props: LambdaNodeProps) => {
         style={{ top: cnh.positionPercentage(0, count) }}
         className="flow-handle-lambda-ret"
       />
+      {props.data.lambdaType !== node.LambdaNodeType.Pattern ? null : (
+        <Handle
+          id={node.HANDLE_LAMBDA_FALLBACK}
+          type="target"
+          position={Position.Top}
+          className="flow-handle-lambda-arg"
+        />
+      )}
       {[...Array(argc)].map((_, i) => (
         <Handle
           key={i}
