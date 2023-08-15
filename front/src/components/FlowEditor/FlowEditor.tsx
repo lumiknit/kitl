@@ -5,17 +5,19 @@ import ReactFlow, {
   BackgroundVariant,
   Connection,
   Controls,
-  addEdge,
   Node,
   Edge,
   NodeMouseHandler,
   EdgeMouseHandler,
   useStoreApi,
-  NodeChange,
-  EdgeChange,
   SelectionMode,
   ConnectionMode,
   ConnectionLineType,
+  useEdgesState,
+  useNodesState,
+  useReactFlow,
+  ReactFlowInstance,
+  addEdge,
 } from "reactflow";
 
 import "reactflow/dist/style.css";
@@ -23,20 +25,24 @@ import "./FlowEditor.css";
 import "./FlowEditorNode.scss";
 
 import * as key from "../../common/key";
+import * as node from "../../common/node";
 import * as helper from "./helper";
 import * as context from "./context";
 
 import nodeTypes from "./GraphComponents/node-types";
 import edgeTypes from "./GraphComponents/edge-types";
 import FlowEditorHeader from "./FlowEditorHeader";
-import { BetaNodeData, emptyBetaNode } from "../../common/node";
+import { emptyBetaNode } from "../../common/node";
 import Fab from "../Helpers/Fab";
 import { TbPlus } from "react-icons/tb";
+import toast from "react-hot-toast";
 
 export type FlowEditorProps = {
   context: context.FlowContext;
   openNodeEditor: (path: string, data: any) => void;
   openBrowser: () => void;
+
+  onInit?: (instance: ReactFlowInstance) => void;
 };
 
 type FlowEditorState = {
@@ -44,115 +50,39 @@ type FlowEditorState = {
 };
 
 const FlowEditor = (props: FlowEditorProps) => {
+  const storeApi = useStoreApi();
+  const instance = useReactFlow();
+
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
   const [state, setState] = useState<FlowEditorState>({
     mode: helper.EditingMode.Add,
   });
 
-  const storeApi = useStoreApi();
+  const onInit = useCallback((instance: ReactFlowInstance) => {
+    if (props.onInit) props.onInit(instance);
+  }, [props.onInit]);
 
-  const getCenter = () => {
-    const {
-      height,
-      width,
-      transform: [tx, ty, zoom],
-    } = storeApi.getState();
-    const zoomMultiplier = 1 / zoom;
-    const x = (width / 2 - tx) * zoomMultiplier;
-    const y = (height / 2 - ty) * zoomMultiplier;
-    return [x, y];
-  };
-
-  const getCenterZitter = () => {
-    const [x, y] = getCenter();
-    const zitter = 16;
-    const zitterX = Math.random() * zitter - zitter / 2;
-    const zitterY = Math.random() * zitter - zitter / 2;
-    return [x + zitterX, y + zitterY];
-  };
-
-  const onConnect = useCallback((params: Connection | Edge) => {
-    const nodes = props.context.instance.getNodes();
-    const targetNode = params.target;
-    const targetHandle = params.targetHandle;
-    let sourceNodeType: string | undefined;
-    nodes.forEach(n => {
-      if (n.id === params.source) {
-        sourceNodeType = n.type;
-      }
-    });
-    props.context.setEdges(es => {
-      // Remove any existing edges from the target handle
-      const newEdges = es.filter(e => {
-        return !(e.target === targetNode && e.targetHandle === targetHandle);
-      });
-      // Add the new edge
-      (params as { [key: string]: any }).type = sourceNodeType ?? "default";
-      return addEdge(params, newEdges);
-    });
-    props.context.setNodes(ns =>
-      ns.map(n => {
-        if (n.id !== targetNode) return n;
-        if (n.type !== "beta") return n;
-        const data = n.data as BetaNodeData;
-        if (typeof targetHandle !== "string") return n;
-        const argPrefix = "arg";
-        if (!targetHandle.startsWith(argPrefix)) return n;
-        const arg = parseInt(targetHandle.substring(argPrefix.length));
-        if (isNaN(arg)) return n;
-        const newNode = {
-          ...n,
-          data: {
-            ...data,
-            argc: Math.max(data.argc, arg + 1),
-          },
-        };
-        return newNode;
-      }),
-    );
+  const onError = useCallback((code: string, message: string) => {
+    console.error(code, message);
+    toast.error(`[${code}] ${message}`);
   }, []);
 
-  const onNodesChangeWrapper = (changes: NodeChange[]) => {
-    for (const change of changes) {
-      if (change.type === "position") {
-        if (change.id === "##end") {
-          if (change.position !== undefined) {
-            change.position.x = 0;
-          }
-          if (change.positionAbsolute !== undefined) {
-            change.positionAbsolute.x = 0;
-          }
-        }
-      }
-    }
 
-    return props.context.onNodesChange(changes);
-  };
+  const onConnect = useCallback((params: Connection | Edge) => {
+    const edge = params as Edge;
+    setEdges(es => addEdge(edge, es));
+  }, []);
 
-  let updatingGraphError = false;
-  const onEdgesChangeWrapper = (edges: EdgeChange[]) => {
-    props.context.onEdgesChange(edges);
-    if (updatingGraphError) return;
-    updatingGraphError = true;
-    context.updateGraphError(props.context);
-    updatingGraphError = false;
-  };
-
-  const onNodeDoubleClick: NodeMouseHandler = (_event, node: Node) => {
-    // TODO: Edit node
-    switch (node.type) {
-      case "def":
-        break;
-      default:
-        props.openNodeEditor("nd:" + node.id, {
-          ...node.data,
-          type: node.type,
-        });
-    }
+  const onNodeDoubleClick: NodeMouseHandler = (_event, n: Node) => {
+    if(n.type === node.NodeType.Def) return;
+    props.openNodeEditor("nd:" + n.id, n.data);
   };
 
   const onEdgeDoubleClick: EdgeMouseHandler = (_event, edge: Edge) => {
     // Remove the edge
-    props.context.setEdges(es => es.filter(e => e.id !== edge.id));
+    setEdges(es => es.filter(e => e.id !== edge.id));
   };
 
   const updateMode = (mode: helper.EditingMode) => {
@@ -161,9 +91,12 @@ const FlowEditor = (props: FlowEditorProps) => {
     setState(newState);
   };
 
+  useNodesState
+
   const addNode = (type: string, data: any) => {
     // Find viewport center
-    const [x, y] = getCenterZitter();
+    const state = storeApi.getState();
+    const [x, y] = props.context.getCenter(state);
     const newNode: Node = {
       id: key.genID(),
       type: type,
@@ -173,12 +106,13 @@ const FlowEditor = (props: FlowEditorProps) => {
         y: y,
       },
     };
-    props.context.setNodes(nodes => [...nodes, newNode]);
+    instance.addNodes([newNode]);
   };
 
   const deleteSelectedNode = () => {
-    props.context.setNodes(nodes => nodes.filter(node => !node.selected));
   };
+
+  useNodesState
 
   const onDoubleClick = (event: React.MouseEvent) => {
     const target = event.target as HTMLElement;
@@ -200,17 +134,17 @@ const FlowEditor = (props: FlowEditorProps) => {
         y: y,
       },
     };
-    props.context.setNodes(nodes => [...nodes, newNode]);
+    setNodes(nodes => [...nodes, newNode]);
   };
 
   return (
     <>
       <ReactFlow
         /* Basic props */
-        nodes={props.context.initNodes}
-        edges={props.context.initEdges}
-        onNodesChange={onNodesChangeWrapper}
-        onEdgesChange={onEdgesChangeWrapper}
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
@@ -238,6 +172,8 @@ const FlowEditor = (props: FlowEditorProps) => {
           },*/
         }}
         /* General Event Handler */
+        onInit={onInit}
+        onError={onError}
         onDoubleClick={onDoubleClick}
         /* Node Event Handler */
         onNodeDoubleClick={onNodeDoubleClick}

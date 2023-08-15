@@ -6,9 +6,11 @@ import FlowEditor from "../FlowEditor/FlowEditor";
 
 import "./KitlEditor.css";
 
-import { KitlContext } from "./context";
+import { FlowContext } from "../FlowEditor/context";
 import BrowserModal from "../Modal/BrowserModal";
 import NodeEditorModal from "../NodeEditor/NodeEditorModal";
+import { ReactFlowInstance, useReactFlow } from "reactflow";
+import { parsePath } from "../../client/path";
 
 export enum ModalEditorType {
   NodeEditor = "nodeEditorModal",
@@ -22,16 +24,28 @@ type ModalEditorState = {
 };
 
 type KitlEditorInnerState = {
-  context: KitlContext;
+  flowContext: FlowContext;
   modalEditorState?: ModalEditorState;
 };
 
 const KitlEditorInner = () => {
-  const isMobile = h.isMobile();
-  const context = new KitlContext("editor-main", "editor-main");
+  const instance = useReactFlow();
   const [state, setState] = useState<KitlEditorInnerState>(() => ({
-    context: context,
+    flowContext: new FlowContext(
+      "scratch",
+      "/temp",
+      128
+    ),
   }));
+
+  const handleFlowEditorInit = (instance: ReactFlowInstance) => {
+    state.flowContext.setGraph(
+      instance,
+      state.flowContext.emptyGraph(),
+    );
+  };
+
+  const isMobile = h.isMobile();
 
   const closeModal = useCallback(() => {
     setState(oldState => ({
@@ -44,7 +58,18 @@ const KitlEditorInner = () => {
     if (state.modalEditorState === undefined) {
       return;
     }
-    context.applySubEditing(state.modalEditorState.path, value);
+    const path = parsePath(state.modalEditorState.path);
+    switch(path.kind) {
+      case "nd": {
+        state.flowContext.setNodes(
+          instance,
+          state.flowContext.updateNodeDataCallback(
+            path.path,
+            value
+          )
+        )
+      } break;
+    }
     setState(oldState => ({
       ...oldState,
       modalEditorState: undefined,
@@ -104,9 +129,11 @@ const KitlEditorInner = () => {
     <FlowEditor
       openNodeEditor={openModal(ModalEditorType.NodeEditor)}
       openBrowser={() => openModal(ModalEditorType.Browser)("browser", null)}
-      context={context.flowContext}
+      context={state.flowContext}
+      onInit={handleFlowEditorInit}
     />
   );
+
   return (
     <div className="editor-root editor-root-wide">
       <div className="editor-root-wide-item editor-root-wide-item-left">
