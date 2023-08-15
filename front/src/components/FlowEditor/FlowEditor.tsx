@@ -219,8 +219,6 @@ const FlowEditor = (props: FlowEditorProps) => {
         fitView
         minZoom={0.5}
         maxZoom={5}
-        snapGrid={[8, 8]}
-        snapToGrid
         /*onlyRenderVisibleElements*/
         translateExtent={[
           [-1024, -1024],
@@ -267,16 +265,14 @@ const FlowEditor = (props: FlowEditorProps) => {
         connectionMode={ConnectionMode.Strict}
         disableKeyboardA11y={false}
         /* Connection Line */
-        connectionRadius={24}
+        connectionRadius={28}
         connectionLineType={ConnectionLineType.Bezier}
-        proOptions={{
-          hideAttribution: true,
-        }}>
+        >
         <Controls />
         <Background
           color="#44f2"
           size={4}
-          gap={24}
+          gap={32}
           variant={BackgroundVariant.Cross}
         />
       </ReactFlow>

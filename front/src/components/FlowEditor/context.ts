@@ -27,51 +27,90 @@ export class Graph {
     this.nodes = nodes;
     this.edges = edges;
   }
+
+  static fromInstance(instance: ReactFlowInstance) {
+    return new Graph(instance.getNodes(), instance.getEdges());
+  }
 }
 
 export class _FlowContext {
   name: string;
   path: string;
 
-  instance: ReactFlowInstance;
-
-  history: Graph[] = [];
-  historyPointer: number = 0;
+  history: Graph[];
+  historyPointer: number;
 
   // Configurations
   historySize: number;
 
-  constructor(historySize: number) {
+  constructor(
+    inst: ReactFlowInstance,
+    name: string,
+    path: string,
+    historySize: number,
+    graph?: Graph,
+  ) {
+    this.name = name;
+    this.path = path;
+    
+    this.history = [];
+    this.historyPointer = 0;
+
     this.historySize = historySize;
-    throw new Error("TODO");
+
+    if(graph !== undefined) {
+      this.setGraph(inst, graph);
+    } else {
+      this.setGraph(inst, new Graph(
+        [this.defNode()],
+        []
+      ));
+    }
   }
 
-  setNodes(callback: (nodes: Node[]) => Node[]) {
-    this.instance.setNodes(callback);
-    this.saveToHistory();
+  defNode() {
+    return {
+      id: "##start",
+      type: "def",
+      data: {
+        module: this.path,
+        name: this.name,
+      },
+      position: {
+        x: 0,
+        y: 0,
+      },
+      selectable: false,
+      deletable: false,
+    };
   }
 
-  setEdges(callback: (nodes: Edge[]) => Edge[]) {
-    this.instance.setEdges(callback);
-    this.saveToHistory();
+  setNodes(inst: ReactFlowInstance, callback: (nodes: Node[]) => Node[]) {
+    inst.setNodes(callback);
+    this.saveToHistory(inst);
   }
 
-  saveToHistory() {
+  setEdges(inst: ReactFlowInstance, callback: (nodes: Edge[]) => Edge[]) {
+    inst.setEdges(callback);
+    this.saveToHistory(inst);
+  }
+
+  saveToHistory(inst: ReactFlowInstance) {
     if (this.historyPointer < this.history.length) {
       this.history = this.history.slice(0, this.historyPointer);
     } else if (this.history.length > this.historySize) {
       this.history.shift();
     }
-    this.history.push(this.getGraph());
+    this.history.push(this.getGraph(inst));
   }
 
-  getGraph(): Graph {
-    return new Graph(this.instance.getNodes(), this.instance.getEdges());
+  getGraph(inst: ReactFlowInstance): Graph {
+    return Graph.fromInstance(inst);
   }
 
-  setGraph(graph: Graph) {
-    this.instance.setNodes(graph.nodes);
-    this.instance.setEdges(graph.edges);
+  setGraph(inst: ReactFlowInstance, graph: Graph) {
+    inst.setNodes(graph.nodes);
+    inst.setEdges(graph.edges);
   }
 
   undoable() {
@@ -82,20 +121,20 @@ export class _FlowContext {
     return this.historyPointer < this.history.length;
   }
 
-  undo() {
+  undo(inst: ReactFlowInstance) {
     if (!this.undoable()) {
       throw new Error("Cannot undo");
     }
     this.historyPointer -= 1;
-    this.setGraph(this.history[this.historyPointer]);
+    this.setGraph(inst, this.history[this.historyPointer]);
   }
 
-  redo() {
+  redo(inst: ReactFlowInstance) {
     if (!this.redoable()) {
       throw new Error("Cannot redo");
     }
     this.historyPointer += 1;
-    this.setGraph(this.history[this.historyPointer]);
+    this.setGraph(inst, this.history[this.historyPointer]);
   }
 
   checkGraphError() {}
@@ -130,7 +169,7 @@ export type FlowContext = {
 
 const initialNodes = (name: string) => [
   {
-    id: "##start",
+    id: "##def",
     type: "def",
     data: {
       module: "main/test",
