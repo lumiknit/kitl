@@ -157,22 +157,21 @@ export const nodeDataToInfoString = (data: NodeData): string => {
     case NodeType.Literal:
       return JSON.stringify(data.value);
     case NodeType.Beta:
-      if (data.betaType === BetaNodeType.App) {
-        return `. (${data.argc})`;
-      } else {
+      if (data.betaType === BetaNodeType.Name) {
         return `${data.name.name}@${data.name.module} (${data.argc})`;
       }
+      break;
     case NodeType.Lambda:
       if (data.lambdaType === LambdaNodeType.Pattern) {
         return `${data.pattern.name}@${data.pattern.module} (${data.argc})`;
-      } else {
-        return `lambda`;
       }
+      break;
     case NodeType.Comment:
       return data.content;
     case NodeType.Def:
       return `def`;
   }
+  return "";
 };
 
 export const extractName = (str: string): Name => {

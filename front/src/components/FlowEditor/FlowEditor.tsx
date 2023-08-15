@@ -87,7 +87,7 @@ const FlowEditor = (props: FlowEditorProps) => {
         return !(e.target === targetNode && e.targetHandle === targetHandle);
       });
       // Add the new edge
-      (params as {[key: string]: any}).type = sourceNodeType ?? "default";
+      (params as { [key: string]: any }).type = sourceNodeType ?? "default";
       return addEdge(params, newEdges);
     });
     props.context.setNodes(ns =>

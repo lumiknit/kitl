@@ -215,7 +215,6 @@ marker.react-flow__arrowhead polyline {
   filter: drop-shadow(0 0 2px rgba($flow-node-color-fg, 0.3));
 }
 
-
 @each $key, $color in $flow-edge-colors {
   .react-flow__edge-#{$key} path.react-flow__edge-path {
     stroke: $color;

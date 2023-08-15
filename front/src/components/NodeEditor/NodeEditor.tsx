@@ -109,6 +109,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
         literalState: s,
         value: v,
       }));
+      props.onChange?.(v);
     },
     [state, setState],
   );

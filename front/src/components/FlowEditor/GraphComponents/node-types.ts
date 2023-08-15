@@ -4,7 +4,6 @@ import LambdaNode from "./LambdaNode";
 import LiteralNode from "./LiteralNode";
 import CommentNode from "./CommentNode";
 
-
 export default {
   def: DefNode,
   literal: LiteralNode,

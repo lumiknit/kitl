@@ -6,7 +6,7 @@ import FlowEditor from "../FlowEditor/FlowEditor";
 
 import "./KitlEditor.css";
 
-import * as kc from "./context";
+import { KitlContext } from "./context";
 import BrowserModal from "../Modal/BrowserModal";
 import NodeEditorModal from "../NodeEditor/NodeEditorModal";
 
@@ -22,16 +22,16 @@ type ModalEditorState = {
 };
 
 type KitlEditorInnerState = {
-  editingState: kc.KitlEditingState;
+  context: KitlContext;
   modalEditorState?: ModalEditorState;
 };
 
 const KitlEditorInner = () => {
   const isMobile = h.isMobile();
-  const context = kc.newKitlContext("editor-main");
-  const [state, setState] = useState<KitlEditorInnerState>({
-    editingState: kc.emptyKitlEditingState(),
-  });
+  const context = new KitlContext("editor-main", "editor-main");
+  const [state, setState] = useState<KitlEditorInnerState>(() => ({
+    context: context,
+  }));
 
   const closeModal = useCallback(() => {
     setState(oldState => ({
@@ -44,7 +44,7 @@ const KitlEditorInner = () => {
     if (state.modalEditorState === undefined) {
       return;
     }
-    kc.applySubEditing(context, state.modalEditorState.path, value);
+    context.applySubEditing(state.modalEditorState.path, value);
     setState(oldState => ({
       ...oldState,
       modalEditorState: undefined,
