@@ -10,12 +10,11 @@ import {
 
 import * as node from "../../common/node";
 import { DAG } from "../../common/dag";
+import { genID } from "../../common/key";
 
 export type SetNodes = Dispatch<SetStateAction<Node[]>>;
 export type SetEdges = Dispatch<SetStateAction<Edge[]>>;
 export type { OnNodesChange, OnEdgesChange };
-
-/* --- WIP */
 
 export class Graph {
   nodes: Node[];
@@ -145,7 +144,7 @@ export class FlowContext {
   setGraph(inst: ReactFlowInstance, graph: Graph, keepHistory?: boolean) {
     inst.setNodes(graph.nodes);
     inst.setEdges(graph.edges);
-    if(!keepHistory) {
+    if (!keepHistory) {
       this.history = [graph];
       this.historyPointer = 0;
     }
@@ -157,7 +156,6 @@ export class FlowContext {
   }
 
   undoable() {
-    console.log(this.historyPointer, this.history.length);
     return this.historyPointer > 0;
   }
 
@@ -209,3 +207,26 @@ export class FlowContext {
     return [x, y];
   }
 }
+
+/* Callbacks */
+
+export const addNodeCallback = (node: Node) => (nodes: Node[]) => [
+  ...nodes,
+  node,
+];
+
+export const addEmptyNodeCallback = (nodes: Node[]) => [
+  ...nodes,
+  {
+    id: genID(),
+    type: node.NodeType.Beta,
+    data: node.emptyBetaNode(),
+    position: {
+      x: 0,
+      y: 0,
+    },
+  },
+];
+
+export const deleteSelectedNodesCallback = (nodes: Node[]) =>
+  nodes.filter(n => !n.selected);

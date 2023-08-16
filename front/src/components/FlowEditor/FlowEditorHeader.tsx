@@ -12,10 +12,13 @@ import {
 } from "react-icons/tb";
 
 import * as fh from "./helper";
-import { emptyBetaNode } from "../../common/node";
 import toast from "react-hot-toast";
 import i18n from "../../locales/i18n";
-import { FlowContext } from "./context";
+import {
+  FlowContext,
+  addEmptyNodeCallback,
+  deleteSelectedNodesCallback,
+} from "./context";
 import { memo } from "react";
 import { ReactFlowInstance, useReactFlow } from "reactflow";
 
@@ -23,43 +26,50 @@ export type FlowEditorHeaderProps = {
   flowContext: FlowContext;
   mode: fh.EditingMode;
   updateMode: (mode: fh.EditingMode) => void;
-  addNode: (type: string, data: any) => void;
-  deleteSelectedNode: () => void;
   openBrowser: () => void;
 };
 
-const addNodeModeControls = (props: FlowEditorHeaderProps, instance: ReactFlowInstance) => {
+const addNodeModeControls = (
+  props: FlowEditorHeaderProps,
+  instance: ReactFlowInstance,
+) => {
   return [
     <button
       key="undo"
-      className={`btn btn-warning py-1 ${props.flowContext.undoable() ? "" : "disabled"}}`}
+      className={`btn btn-warning py-1 ${
+        props.flowContext.undoable() ? "" : "disabled"
+      }}`}
       onClick={() => {
         props.flowContext.undo(instance);
         toast("Undo");
-      }}
-    >
+      }}>
       <TbArrowBackUp />
     </button>,
     <button
       key="redo"
-      className={`btn btn-warning py-1 ${props.flowContext.redoable() ? "" : "disabled"}}`}
+      className={`btn btn-warning py-1 ${
+        props.flowContext.redoable() ? "" : "disabled"
+      }}`}
       onClick={() => {
         props.flowContext.redo(instance);
         toast("Undo");
-      }}
-    >
+      }}>
       <TbArrowForwardUp />
     </button>,
     <button
       key="beta"
       className="btn btn-secondary flex-grow-1 px-0"
-      onClick={() => props.addNode("beta", emptyBetaNode())}>
+      onClick={() =>
+        props.flowContext.setNodes(instance, addEmptyNodeCallback)
+      }>
       <TbSquarePlus />
     </button>,
     <button
       key="del"
       className="btn btn-danger"
-      onClick={props.deleteSelectedNode}>
+      onClick={() =>
+        props.flowContext.setNodes(instance, deleteSelectedNodesCallback)
+      }>
       <TbBackspace />
     </button>,
   ];
@@ -85,7 +95,10 @@ const editModeControls = () => {
   ];
 };
 
-const controls = (props: FlowEditorHeaderProps, instance: ReactFlowInstance) => {
+const controls = (
+  props: FlowEditorHeaderProps,
+  instance: ReactFlowInstance,
+) => {
   switch (props.mode) {
     case fh.EditingMode.Add:
       return addNodeModeControls(props, instance);

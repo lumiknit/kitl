@@ -87,13 +87,15 @@ const FlowEditor = (props: FlowEditorProps) => {
     setEdges(es => es.filter(e => e.id !== edge.id));
   };
 
-  const updateMode = (mode: helper.EditingMode) => {
-    const newState = { ...state };
-    newState.mode = mode;
-    setState(newState);
-  };
-
-  useNodesState;
+  const updateMode = useCallback(
+    (mode: helper.EditingMode) => {
+      setState(oldState => ({
+        ...oldState,
+        mode: mode,
+      }));
+    },
+    [setState],
+  );
 
   const addNode = (type: string, data: any) => {
     // Find viewport center
@@ -110,10 +112,6 @@ const FlowEditor = (props: FlowEditorProps) => {
     };
     props.context.setNodes(instance, ns => [...ns, newNode]);
   };
-
-  const deleteSelectedNode = () => {};
-
-  useNodesState;
 
   const onDoubleClick = (event: React.MouseEvent) => {
     const target = event.target as HTMLElement;
@@ -218,10 +216,9 @@ const FlowEditor = (props: FlowEditorProps) => {
         flowContext={props.context}
         mode={state.mode}
         updateMode={updateMode}
-        addNode={addNode}
-        deleteSelectedNode={deleteSelectedNode}
         openBrowser={props.openBrowser}
       />
+
       <Fab onClick={() => addNode("beta", emptyBetaNode())} icon={<TbPlus />} />
     </>
   );
