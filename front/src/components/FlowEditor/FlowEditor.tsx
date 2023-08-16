@@ -108,7 +108,7 @@ const FlowEditor = (props: FlowEditorProps) => {
         y: y,
       },
     };
-    instance.addNodes([newNode]);
+    props.context.setNodes(instance, ns => [...ns, newNode]);
   };
 
   const deleteSelectedNode = () => {};
@@ -215,6 +215,7 @@ const FlowEditor = (props: FlowEditorProps) => {
         />
       </ReactFlow>
       <FlowEditorHeader
+        flowContext={props.context}
         mode={state.mode}
         updateMode={updateMode}
         addNode={addNode}

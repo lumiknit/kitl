@@ -55,7 +55,7 @@ export class FlowContext {
 
   defNode() {
     return {
-      id: "##start",
+      id: "##def",
       type: node.NodeType.Def,
       data: {
         type: node.NodeType.Def,
@@ -78,14 +78,30 @@ export class FlowContext {
 
   // Setters
 
-  setNodes(inst: ReactFlowInstance, callback: (nodes: Node[]) => Node[]) {
-    inst.setNodes(callback);
-    this.saveToHistory(inst);
+  updateGraph(
+    inst: ReactFlowInstance,
+    nodesCallback?: (nodes: Node[]) => Node[],
+    edgesCallback?: (edges: Edge[]) => Edge[],
+  ) {
+    let nodes = inst.getNodes();
+    let edges = inst.getEdges();
+    if (nodesCallback) {
+      nodes = nodesCallback(nodes);
+      inst.setNodes(nodes);
+    }
+    if (edgesCallback) {
+      edges = edgesCallback(edges);
+      inst.setEdges(edges);
+    }
+    this.saveToHistory(new Graph(nodes, edges));
   }
 
-  setEdges(inst: ReactFlowInstance, callback: (nodes: Edge[]) => Edge[]) {
-    inst.setEdges(callback);
-    this.saveToHistory(inst);
+  setNodes(inst: ReactFlowInstance, callback: (nodes: Node[]) => Node[]) {
+    return this.updateGraph(inst, callback);
+  }
+
+  setEdges(inst: ReactFlowInstance, callback: (edges: Edge[]) => Edge[]) {
+    return this.updateGraph(inst, undefined, callback);
   }
 
   // Setter helpers
@@ -110,30 +126,43 @@ export class FlowContext {
 
   // History Managers
 
-  saveToHistory(inst: ReactFlowInstance) {
-    if (this.historyPointer < this.history.length) {
-      this.history = this.history.slice(0, this.historyPointer);
-    } else if (this.history.length > this.historySize) {
+  saveToHistory(graph: Graph) {
+    if (this.historyPointer + 1 < this.history.length) {
+      this.history = this.history.slice(0, this.historyPointer + 1);
+      console.log("A");
+    } else if (this.history.length >= this.historySize) {
       this.history.shift();
+      console.log("B");
     }
-    this.history.push(this.getGraph(inst));
+    this.history.push(graph);
+    this.historyPointer = this.history.length - 1;
   }
 
   getGraph(inst: ReactFlowInstance): Graph {
     return Graph.fromInstance(inst);
   }
 
-  setGraph(inst: ReactFlowInstance, graph: Graph) {
+  setGraph(inst: ReactFlowInstance, graph: Graph, keepHistory?: boolean) {
     inst.setNodes(graph.nodes);
     inst.setEdges(graph.edges);
+    if(!keepHistory) {
+      this.history = [graph];
+      this.historyPointer = 0;
+    }
+  }
+
+  resetHistory() {
+    this.history = [this.history[this.historyPointer]];
+    this.historyPointer = 0;
   }
 
   undoable() {
+    console.log(this.historyPointer, this.history.length);
     return this.historyPointer > 0;
   }
 
   redoable() {
-    return this.historyPointer < this.history.length;
+    return this.historyPointer < this.history.length - 1;
   }
 
   undo(inst: ReactFlowInstance) {
@@ -141,7 +170,7 @@ export class FlowContext {
       throw new Error("Cannot undo");
     }
     this.historyPointer -= 1;
-    this.setGraph(inst, this.history[this.historyPointer]);
+    this.setGraph(inst, this.history[this.historyPointer], true);
   }
 
   redo(inst: ReactFlowInstance) {
@@ -149,7 +178,7 @@ export class FlowContext {
       throw new Error("Cannot redo");
     }
     this.historyPointer += 1;
-    this.setGraph(inst, this.history[this.historyPointer]);
+    this.setGraph(inst, this.history[this.historyPointer], true);
   }
 
   // Graph validator

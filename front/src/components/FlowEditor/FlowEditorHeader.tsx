@@ -15,8 +15,12 @@ import * as fh from "./helper";
 import { emptyBetaNode } from "../../common/node";
 import toast from "react-hot-toast";
 import i18n from "../../locales/i18n";
+import { FlowContext } from "./context";
+import { memo } from "react";
+import { ReactFlowInstance, useReactFlow } from "reactflow";
 
 export type FlowEditorHeaderProps = {
+  flowContext: FlowContext;
   mode: fh.EditingMode;
   updateMode: (mode: fh.EditingMode) => void;
   addNode: (type: string, data: any) => void;
@@ -24,15 +28,26 @@ export type FlowEditorHeaderProps = {
   openBrowser: () => void;
 };
 
-const addNodeModeControls = (props: FlowEditorHeaderProps) => {
+const addNodeModeControls = (props: FlowEditorHeaderProps, instance: ReactFlowInstance) => {
   return [
     <button
       key="undo"
-      className="btn btn-warning py-1"
-      onClick={() => toast("BOOM")}>
+      className={`btn btn-warning py-1 ${props.flowContext.undoable() ? "" : "disabled"}}`}
+      onClick={() => {
+        props.flowContext.undo(instance);
+        toast("Undo");
+      }}
+    >
       <TbArrowBackUp />
     </button>,
-    <button key="redo" className="btn btn-warning py-1 ">
+    <button
+      key="redo"
+      className={`btn btn-warning py-1 ${props.flowContext.redoable() ? "" : "disabled"}}`}
+      onClick={() => {
+        props.flowContext.redo(instance);
+        toast("Undo");
+      }}
+    >
       <TbArrowForwardUp />
     </button>,
     <button
@@ -70,10 +85,10 @@ const editModeControls = () => {
   ];
 };
 
-const controls = (props: FlowEditorHeaderProps) => {
+const controls = (props: FlowEditorHeaderProps, instance: ReactFlowInstance) => {
   switch (props.mode) {
     case fh.EditingMode.Add:
-      return addNodeModeControls(props);
+      return addNodeModeControls(props, instance);
     case fh.EditingMode.Selection:
       return editModeControls();
     default:
@@ -82,6 +97,7 @@ const controls = (props: FlowEditorHeaderProps) => {
 };
 
 const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
+  const instance = useReactFlow();
   // Menu button
   const menuButton = (
     <button className="btn btn-primary" data-bs-toggle="dropdown">
@@ -131,10 +147,10 @@ const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
       <div className="input-group shadow-sm">
         {menuButton}
         {dropDownMenu}
-        {controls(props)}
+        {controls(props, instance)}
       </div>
     </div>
   );
 };
 
-export default FlowEditorHeader;
+export default memo(FlowEditorHeader);
