@@ -19,6 +19,8 @@ import ReactFlow, {
   NodeChange,
   NodeSelectionChange,
   Connection,
+  EdgeSelectionChange,
+  EdgeChange,
 } from "reactflow";
 
 import "reactflow/dist/style.css";
@@ -78,11 +80,11 @@ const FlowEditor = (props: FlowEditorProps) => {
   );
 
   const onEdgesChangeSelection = useCallback(
-    (ec: Edge[]) =>
+    (ec: EdgeChange[]) =>
       onEdgesChange(
         ec.filter(
           e =>
-            e.type !== "select" || (e as NodeSelectionChange).selected === true,
+            e.type !== "select" || (e as EdgeSelectionChange).selected === true,
         ),
       ),
     [onEdgesChange],
