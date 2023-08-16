@@ -8,15 +8,12 @@ import FlowEditor from "../FlowEditor/FlowEditor";
 
 import "./KitlEditor.css";
 
-import { FlowContext } from "../FlowEditor/context";
+import { FlowContext, FlowContextI } from "../FlowEditor/context";
 import { Edge, ReactFlowInstance, useReactFlow } from "reactflow";
 import { parsePath } from "../../client/path";
 import KitlModals, * as km from "./KitlModals";
-
-export enum ModalEditorType {
-  NodeEditor = "nodeEditorModal",
-  Browser = "browserModal",
-}
+import i18n from "../../locales/i18n";
+import toast from "react-hot-toast";
 
 type Props = {
   flowContext: FlowContext;
@@ -28,18 +25,44 @@ const KitlEditorInner = (props: Props) => {
     km.emptyModalProps,
   );
   const instance = useReactFlow();
+  const ctxI = new FlowContextI(props.flowContext, instance);
 
   const handleFlowEditorInit = (instance: ReactFlowInstance) => {
     props.flowContext.setGraph(instance, props.flowContext.emptyGraph());
   };
 
-  const handleCloseModalWithValue = (value: node.NodeData) => {
+  const handleCloseModalWithValue = (value: any) => {
     const path = parsePath(modalState.path);
     switch (path.kind) {
+      case "graphTools":
+        {
+          const name = value as string;
+          if (name.length === 0) {
+            break;
+          }
+          try {
+            ctxI.executeGraphTools(name);
+            toast.success(
+              i18n.t("graphTools.success") +
+                " : " +
+                i18n.t("graphTools.tool." + name),
+            );
+          } catch (e) {
+            toast.error(
+              i18n.t("graphTools.errorOccurred") +
+                " : " +
+                i18n.t("graphTools.tool." + name) +
+                " : " +
+                String(e),
+            );
+          }
+        }
+        break;
       case "nd":
         {
+          const val = value as node.NodeData;
           const nodes = instance.getNodes();
-          const availableHandles = node.nodeHandleSet(value);
+          const availableHandles = node.nodeHandleSet(val);
           const empty: Edge[] = [];
           const removeUnusableEdges = (edges: Edge[]) =>
             edges.reduce((acc: Edge[], e: Edge): Edge[] => {
@@ -79,7 +102,7 @@ const KitlEditorInner = (props: Props) => {
   };
 
   const openModal = useCallback(
-    (ty: ModalEditorType) => (path: string, defaultValue: any) => {
+    (ty: km.ModalEditorType) => (path: string, defaultValue: any) => {
       // Allocate new ID
       setModalState(() => ({
         id: key.genID(),
@@ -93,8 +116,11 @@ const KitlEditorInner = (props: Props) => {
 
   const flowEditor = (
     <FlowEditor
-      openNodeEditor={openModal(ModalEditorType.NodeEditor)}
-      openBrowser={() => openModal(ModalEditorType.Browser)("browser", null)}
+      openNodeEditor={openModal(km.ModalEditorType.NodeEditor)}
+      openBrowser={() => openModal(km.ModalEditorType.Browser)("browser", null)}
+      openGraphTools={() =>
+        openModal(km.ModalEditorType.GraphTools)("graphTools:.", null)
+      }
       context={props.flowContext}
       onInit={handleFlowEditorInit}
     />

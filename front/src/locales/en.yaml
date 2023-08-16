@@ -52,12 +52,24 @@ nodeEditor:
     withPattern: With pattern matching
   beta:
     withName: With name
+graphTools:
+  errorOccurred: Error occurred during graph tools
+  success: Success!
+  layout: Layout
+  optimization: Optimization
+  validate: Validate
+  tool:
+    layoutLinear: Linear Layout
+    layoutDefault: Default Layout
+    removeUnreachables: Remove Unreachables
+    validateGraph: Validate Graph
 flowEditor:
   menu:
     addTools: Add Node Tools
     selectTools: Select & Edit Tools
     browser: Browser
     launch: Launch
+    graphTools: Graph Tools
   toast:
     undo: Undo
     redo: Redo

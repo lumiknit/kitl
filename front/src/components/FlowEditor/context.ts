@@ -1,10 +1,7 @@
-import { Dispatch, SetStateAction } from "react";
 import {
   Connection,
   Edge,
   Node,
-  OnEdgesChange,
-  OnNodesChange,
   ReactFlowInstance,
   ReactFlowState,
   addEdge,
@@ -16,9 +13,57 @@ import * as node from "../../common/node";
 import { DAG } from "../../common/dag";
 import { genID } from "../../common/key";
 
-export type SetNodes = Dispatch<SetStateAction<Node[]>>;
-export type SetEdges = Dispatch<SetStateAction<Edge[]>>;
-export type { OnNodesChange, OnEdgesChange };
+// Minimal node for analyzing graph
+
+export class MNodeSource {
+  // Node ID
+  id: string;
+  // Index of the handle. 0 is the leftmost arg handle, 1 is the next one, and so on.
+  // -1 is the left lambda ret handle.
+  index: number;
+
+  constructor(id: string, index: number) {
+    this.id = id;
+    this.index = index;
+  }
+}
+
+export class MNode {
+  // Minimal node data to apply graph algorithms
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  sources: MNodeSource[];
+
+  constructor(
+    id: string,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    sources: MNodeSource[],
+  ) {
+    this.id = id;
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.sources = sources;
+  }
+
+  static fromReactFlowNode(n: Node) {
+    return new MNode(
+      n.id,
+      n.position.x,
+      n.position.y,
+      n.width ?? 0,
+      n.height ?? 0,
+      [],
+    );
+  }
+}
 
 export class Graph {
   nodes: Node[];
@@ -94,7 +139,6 @@ export class FlowContext {
   }
 
   emptyGraph() {
-    console.log(this.defNode());
     return new Graph([this.defNode()], []);
   }
 
@@ -164,10 +208,8 @@ export class FlowContext {
   saveToHistory(graph: Graph) {
     if (this.historyPointer + 1 < this.history.length) {
       this.history = this.history.slice(0, this.historyPointer + 1);
-      console.log("A");
     } else if (this.history.length >= this.historySize) {
       this.history.shift();
-      console.log("B");
     }
     this.history.push(graph);
     this.historyPointer = this.history.length - 1;
@@ -456,5 +498,88 @@ export class FlowContextI {
       es => [...es, ...edges],
     );
     return true;
+  }
+
+  // -- Heavy graph algorithms
+
+  // Graph algorithm helper
+  getMNodes(): Map<string, MNode> {
+    const nodes = this.inst.getNodes();
+    const edges = this.inst.getEdges();
+    const nodeMap = new Map<string, MNode>();
+    for (const n of nodes) {
+      nodeMap.set(n.id, MNode.fromReactFlowNode(n));
+    }
+    for (const e of edges) {
+      const target = nodeMap.get(e.target);
+      if (!target) continue;
+      let index = 0;
+      const handle = e.targetHandle ?? "";
+      if (handle === node.HANDLE_LAMBDA_RET) {
+        index = -1;
+      } else if (handle.startsWith(node.HANDLE_BETA_ARG_PREFIX)) {
+        index = parseInt(handle.slice(node.HANDLE_BETA_ARG_PREFIX.length));
+      }
+      target.sources.push(new MNodeSource(e.source, index));
+    }
+    return nodeMap;
+  }
+
+  removeUnreachables() {
+    const mnodes = this.getMNodes();
+    console.log(mnodes);
+    throw new Error("Unimplemented");
+  }
+
+  // Layout
+  layoutDefault() {
+    throw new Error("Unimplemented");
+  }
+
+  layoutLinear() {
+    const mnodes = this.getMNodes();
+    let x = 0;
+    let y = 0;
+    for (const n of mnodes.values()) {
+      n.x = x;
+      n.y = y;
+      x += 16;
+      y += n.height + 16;
+    }
+    this.context.setNodes(this.inst, ns =>
+      ns.map(n => {
+        const mnode = mnodes.get(n.id);
+        if (!mnode) return n;
+        return {
+          ...n,
+          position: {
+            x: mnode.x,
+            y: mnode.y,
+          },
+        };
+      }),
+    );
+    throw new Error("Unimplemented");
+  }
+
+  validateGraph() {
+    throw new Error("Unimplemented");
+  }
+
+  executeGraphTools(name: string) {
+    switch (name) {
+      case "removeUnreachables":
+        return this.removeUnreachables();
+      case "layoutDefault":
+        return this.layoutDefault();
+      case "layoutLinear":
+        return this.layoutLinear();
+      case "validateGraph":
+        return this.validateGraph();
+      case "":
+        return;
+      default:
+        throw new Error(`Unknown graph tool: ${name}`);
+    }
   }
 }

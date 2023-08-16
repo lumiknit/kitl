@@ -42,6 +42,7 @@ export type FlowEditorProps = {
   context: context.FlowContext;
   openNodeEditor: (path: string, data: any) => void;
   openBrowser: () => void;
+  openGraphTools: () => void;
 
   onInit?: (instance: ReactFlowInstance) => void;
 };
@@ -220,6 +221,7 @@ const FlowEditor = (props: FlowEditorProps) => {
         mode={state.mode}
         updateMode={updateMode}
         openBrowser={props.openBrowser}
+        openGraphTools={props.openGraphTools}
       />
       <Fab onClick={addNode} icon={<TbPlus />} />
     </>

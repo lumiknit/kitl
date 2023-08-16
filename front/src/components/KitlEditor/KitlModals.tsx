@@ -2,11 +2,13 @@ import { ReactElement, useState } from "react";
 import { FlowContext } from "../FlowEditor/context";
 import BrowserModal from "../Modal/BrowserModal";
 import NodeEditorModal from "../NodeEditor/NodeEditorModal";
+import GraphToolsModal from "../Modal/GraphToolsModal";
 
 export enum ModalEditorType {
   Nothing = "nothing",
   NodeEditor = "nodeEditorModal",
   Browser = "browserModal",
+  GraphTools = "graphToolsModal",
 }
 
 export type ModalProps = {
@@ -66,6 +68,9 @@ const KitlModals = (props: Props) => {
           defaultValue={state.defaultValue}
         />
       );
+      break;
+    case ModalEditorType.GraphTools:
+      modal = <GraphToolsModal open={true} onClose={props.onClose} />;
       break;
   }
   return modal;

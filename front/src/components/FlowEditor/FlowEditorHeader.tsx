@@ -9,6 +9,7 @@ import {
   TbRocket,
   TbDeselect,
   TbArrowForwardUp,
+  TbBinaryTree,
 } from "react-icons/tb";
 
 import * as fh from "./helper";
@@ -23,6 +24,7 @@ export type FlowEditorHeaderProps = {
   mode: fh.EditingMode;
   updateMode: (mode: fh.EditingMode) => void;
   openBrowser: () => void;
+  openGraphTools: () => void;
 };
 
 const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
@@ -158,10 +160,6 @@ const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
     [ctxI],
   );
 
-  const editModeControls = () => {
-    return [deselectAllBtn, cutBtn, copyBtn, pasteBtn, deleteBtn];
-  };
-
   const updateModeMenus = useMemo(() => {
     const dropDownItems = [];
     for (let i = 0; i < fh.editingModeLabels.length; i++) {
@@ -187,7 +185,7 @@ const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
         controls = [undoBtn, redoBtn, addBtn, deleteBtn];
         break;
       case fh.EditingMode.Selection:
-        controls = editModeControls();
+        controls = [deselectAllBtn, cutBtn, copyBtn, pasteBtn, deleteBtn];
         break;
     }
 
@@ -204,11 +202,18 @@ const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
           &nbsp;
           {i18n.t("flowEditor.menu.browser")}
         </a>
-        <hr />
         <a className="dropdown-item" href="#">
           <TbRocket />
           &nbsp;
           {i18n.t("flowEditor.menu.launch")}
+        </a>
+        <a
+          className="dropdown-item"
+          href="#"
+          onClick={() => props.openGraphTools()}>
+          <TbBinaryTree />
+          &nbsp;
+          {i18n.t("flowEditor.menu.graphTools")}
         </a>
       </ul>
     );

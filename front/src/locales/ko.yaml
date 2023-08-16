@@ -44,7 +44,7 @@ nodeEditor:
     format: 서식
     formatDescription: "포맷: JSON5"
     formatToSave: 서식에 맞춰 정리하면 저장되어요
-    valid: 구문 오류 없음
+    valid: 구문 오류 없어요
     syntaxError: 구문 오류!
     btnMin: 최소화
     btnPretty: 예쁘게
@@ -52,12 +52,24 @@ nodeEditor:
     withPattern: 양식 대조 사용
   beta:
     withName: 이름 사용
+graphTools:
+  errorOccurred: 그래프 도구 실행 중 오류가 발생했어요
+  success: 성공했어요!
+  layout: 배치 재정렬
+  optimization: 최적화
+  validate: 검사
+  tool:
+    layoutLinear: 선형 배치
+    layoutDefault: 기본 배치
+    removeUnreachables: 사용되지 않는 노드 제거
+    validateGraph: 그래프 검사
 flowEditor:
   menu:
     addTools: 노드 추가 도구
     selectTools: 선택 및 편집 도구
     browser: 탐색기
     launch: 실행
+    graphTools: 그래프 도구
   toast:
     undo: 실행 취소
     redo: 재실행
