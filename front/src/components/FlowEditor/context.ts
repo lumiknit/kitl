@@ -46,7 +46,7 @@ export class FlowContext {
   constructor(
     name: string,
     path: string,
-    historySize: number,
+    historySize?: number,
   ) {
     this.name = name;
     this.path = path;
@@ -54,7 +54,7 @@ export class FlowContext {
     this.history = [];
     this.historyPointer = 0;
 
-    this.historySize = historySize;
+    this.historySize = historySize ?? 128;
   }
 
   defNode() {

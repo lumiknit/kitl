@@ -203,7 +203,9 @@ const FlowEditor = (props: FlowEditorProps) => {
         /* Connection Line */
         connectionRadius={28}
         connectionLineType={ConnectionLineType.Bezier}
-        >
+        /* Badge */
+        attributionPosition="top-center"
+      >
         <Controls />
         <Background
           color="#44f2"
