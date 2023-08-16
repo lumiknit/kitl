@@ -19,8 +19,8 @@ import {
   addEmptyNodeCallback,
   deleteSelectedNodesCallback,
 } from "./context";
-import { memo } from "react";
-import { ReactFlowInstance, useReactFlow } from "reactflow";
+import { ReactElement, useMemo } from "react";
+import { useReactFlow, useStoreApi } from "reactflow";
 
 export type FlowEditorHeaderProps = {
   flowContext: FlowContext;
@@ -29,11 +29,11 @@ export type FlowEditorHeaderProps = {
   openBrowser: () => void;
 };
 
-const addNodeModeControls = (
-  props: FlowEditorHeaderProps,
-  instance: ReactFlowInstance,
-) => {
-  return [
+const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
+  const storeApi = useStoreApi();
+  const instance = useReactFlow();
+
+  const undoBtn = useMemo(() => (
     <button
       key="undo"
       className={`btn btn-warning py-1 ${
@@ -44,7 +44,10 @@ const addNodeModeControls = (
         toast("Undo");
       }}>
       <TbArrowBackUp />
-    </button>,
+    </button>
+  ), [props.flowContext, props.flowContext.undoable(), instance]);
+
+  const redoBtn = useMemo(() => (
     <button
       key="redo"
       className={`btn btn-warning py-1 ${
@@ -52,18 +55,26 @@ const addNodeModeControls = (
       }}`}
       onClick={() => {
         props.flowContext.redo(instance);
-        toast("Undo");
+        toast("Redo");
       }}>
       <TbArrowForwardUp />
-    </button>,
-    <button
-      key="beta"
+    </button>
+  ), [props.flowContext, props.flowContext.redoable(), instance]);
+
+  const addBtn = useMemo(() => {
+    return (<button
+      key="add"
       className="btn btn-secondary flex-grow-1 px-0"
-      onClick={() =>
-        props.flowContext.setNodes(instance, addEmptyNodeCallback)
-      }>
+      onClick={() => {
+        const center = props.flowContext.getCenter(storeApi.getState());
+        props.flowContext.setNodes(instance,
+          addEmptyNodeCallback(center[0], center[1]))
+      }}>
       <TbSquarePlus />
-    </button>,
+    </button>);
+  }, [props.flowContext, storeApi, instance]);
+
+  const deleteBtn = useMemo(() => (
     <button
       key="del"
       className="btn btn-danger"
@@ -71,99 +82,94 @@ const addNodeModeControls = (
         props.flowContext.setNodes(instance, deleteSelectedNodesCallback)
       }>
       <TbBackspace />
-    </button>,
-  ];
-};
-
-const editModeControls = () => {
-  return [
-    <button key="deselect" className="btn btn-warning py-1 px-0 flex-grow-1">
-      <TbDeselect />
-    </button>,
-    <button key="cut" className="btn btn-secondary py-1 px-0 flex-grow-1">
-      <TbScissors />
-    </button>,
-    <button key="copy" className="btn btn-secondary py-1 px-0 flex-grow-1">
-      <TbCopy />
-    </button>,
-    <button key="paste" className="btn btn-secondary py-1 px-0 flex-grow-1">
-      <TbClipboard />
-    </button>,
-    <button key="delete" className="btn btn-danger py-1 px-0 flex-grow-1">
-      <TbBackspace />
-    </button>,
-  ];
-};
-
-const controls = (
-  props: FlowEditorHeaderProps,
-  instance: ReactFlowInstance,
-) => {
-  switch (props.mode) {
-    case fh.EditingMode.Add:
-      return addNodeModeControls(props, instance);
-    case fh.EditingMode.Selection:
-      return editModeControls();
-    default:
-      return <></>;
-  }
-};
-
-const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
-  const instance = useReactFlow();
-  // Menu button
-  const menuButton = (
-    <button className="btn btn-primary" data-bs-toggle="dropdown">
-      {fh.editingModeIcons[props.mode]}
     </button>
-  );
-  // Drop down menu
-  const dropDownItems = [];
-  // Insert modes to dropdown menu
-  for (let i = 0; i < fh.editingModeLabels.length; i++) {
-    dropDownItems.push(
-      <a className="dropdown-item" href="#" onClick={() => props.updateMode(i)}>
-        {fh.editingModeIcons[i]}
-        &nbsp;
-        {fh.editingModeLabels[i]}
-      </a>,
+  ), [props.flowContext, instance]);
+
+  const editModeControls = () => {
+    return [
+      <button key="deselect" className="btn btn-warning py-1 px-0 flex-grow-1">
+        <TbDeselect />
+      </button>,
+      <button key="cut" className="btn btn-secondary py-1 px-0 flex-grow-1">
+        <TbScissors />
+      </button>,
+      <button key="copy" className="btn btn-secondary py-1 px-0 flex-grow-1">
+        <TbCopy />
+      </button>,
+      <button key="paste" className="btn btn-secondary py-1 px-0 flex-grow-1">
+        <TbClipboard />
+      </button>,
+      <button key="delete" className="btn btn-danger py-1 px-0 flex-grow-1">
+        <TbBackspace />
+      </button>,
+    ];
+  };
+
+  const updateModeMenus = useMemo(() => {
+    const dropDownItems = [];
+    for (let i = 0; i < fh.editingModeLabels.length; i++) {
+      dropDownItems.push(
+        <a
+          key={`mode-${i}`}
+          className="dropdown-item"
+          href="#"
+          onClick={() => props.updateMode(i)}
+        >
+          {fh.editingModeIcons[i]}
+          &nbsp;
+          {fh.editingModeLabels[i]}
+        </a>,
+      );
+    }
+    return dropDownItems;
+  }, [props.updateMode]);
+
+  return useMemo(() => {
+    let controls: ReactElement[] = [];
+    switch(props.mode) {
+      case fh.EditingMode.Add:
+        controls = [
+          undoBtn,
+          redoBtn,
+          addBtn,
+          deleteBtn,
+        ];
+        break;
+      case fh.EditingMode.Selection:
+        controls = editModeControls();
+        break;
+    }
+
+    // Convert to drop down menu
+    const dropDownMenu = (
+      <ul className="dropdown-menu">
+        {updateModeMenus}
+        <hr />
+        <a className="dropdown-item" href="#" onClick={() => props.openBrowser()}>
+          <TbFolderSearch />
+          &nbsp;
+          {i18n.t("flowEditor.menu.browser")}
+        </a>
+        <hr />
+        <a className="dropdown-item" href="#">
+          <TbRocket />
+          &nbsp;
+          {i18n.t("flowEditor.menu.launch")}
+        </a>
+      </ul>
     );
-  }
-  // Insert separator
-  dropDownItems.push(<hr />);
-  // Insert browser button
-  dropDownItems.push(
-    <a className="dropdown-item" href="#" onClick={() => props.openBrowser()}>
-      <TbFolderSearch />
-      &nbsp;
-      {i18n.t("flowEditor.menu.browser")}
-    </a>,
-  );
-  dropDownItems.push(<hr />);
-  dropDownItems.push(
-    <a className="dropdown-item" href="#">
-      <TbRocket />
-      &nbsp;
-      {i18n.t("flowEditor.menu.launch")}
-    </a>,
-  );
-  // Convert to drop down menu
-  const dropDownMenu = (
-    <ul className="dropdown-menu">
-      {dropDownItems.map((item, idx) => {
-        return <li key={idx}>{item}</li>;
-      })}
-    </ul>
-  );
-  return (
-    <div className="flow-editor-header">
-      <div className="input-group shadow-sm">
-        {menuButton}
-        {dropDownMenu}
-        {controls(props, instance)}
+    return (
+      <div className="flow-editor-header">
+        <div className="input-group shadow-sm">
+          <button className="btn btn-primary" data-bs-toggle="dropdown">
+            {fh.editingModeIcons[props.mode]}
+          </button>
+          {dropDownMenu}
+          {controls}
+        </div>
       </div>
-    </div>
-  );
+    );
+  }, [props.mode, props.updateMode, props.openBrowser, undoBtn, redoBtn, addBtn, deleteBtn, updateModeMenus]);
 };
 
-export default memo(FlowEditorHeader);
+export default FlowEditorHeader;

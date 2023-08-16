@@ -11,12 +11,11 @@ import {
 import * as node from "../../common/node";
 import RadioButtons from "../Helpers/RadioButtons";
 import i18n from "../../locales/i18n";
+import { Callbacks } from "./types";
+import { memo } from "react";
 
 export type NodeEditorHeaderProps = {
-  path: string;
-  value: node.NodeData;
-  discard: () => void;
-  save: () => void;
+  callbacks: Callbacks;
   editingType: node.NodeType;
   onEditingTypeChange: (ty: node.NodeType) => void;
 };
@@ -46,7 +45,7 @@ const typeButtonList = [
 
 const NodeEditorHeader = (props: NodeEditorHeaderProps) => {
   const dropDownMenus = [
-    <a className="dropdown-item" onClick={props.discard}>
+    <a className="dropdown-item" onClick={props.callbacks.discard}>
       <TbTrash />
       &nbsp;
       {i18n.t("nodeEditor.menu.discard")}
@@ -78,7 +77,7 @@ const NodeEditorHeader = (props: NodeEditorHeaderProps) => {
             <span key={idx}>{tb.body}</span>
           ))}
         </RadioButtons>
-        <button className="btn btn-success" onClick={props.save}>
+        <button className="btn btn-success" onClick={props.callbacks.close}>
           <TbCheck />
         </button>
       </div>
@@ -86,4 +85,4 @@ const NodeEditorHeader = (props: NodeEditorHeaderProps) => {
   );
 };
 
-export default NodeEditorHeader;
+export default memo(NodeEditorHeader);

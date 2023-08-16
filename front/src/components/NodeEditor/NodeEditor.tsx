@@ -11,13 +11,12 @@ import NodeEditorLambda from "./NodeEditorLambda";
 import NodeEditorBeta from "./NodeEditorBeta";
 import NodeEditorLiteral from "./NodeEditorLiteral";
 import * as literalEditor from "./NodeEditorLiteral";
+import { Callbacks } from "./types";
 
 export type NodeEditorProps = {
   path: string;
   defaultValue: node.NodeData;
-  onChange?: (value: node.NodeData) => void;
-  close?: () => void;
-  discard?: () => void;
+  callbacks: Callbacks;
 };
 
 export type NodeEditorState = {
@@ -78,15 +77,15 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   const handleEditingTypeChange = useCallback(
     (ty: node.NodeType) => {
-      const newValue = node.convertNodeDataType(ty, state.lastValue);
+      const value = node.convertNodeDataType(ty, state.lastValue);
+      props.callbacks.onChange?.(value);
       setState(oldState => ({
         ...oldState,
         editingType: ty,
-        value: newValue,
+        value: value,
       }));
-      props.onChange?.(newValue);
     },
-    [state, setState],
+    [props.callbacks, state, setState],
   );
 
   const handleChange = useCallback(
@@ -96,7 +95,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
         value: value,
         lastValue: value,
       }));
-      props.onChange?.(value);
+      props.callbacks.onChange?.(value);
     },
     [setState],
   );
@@ -109,29 +108,18 @@ export const NodeEditor = (props: NodeEditorProps) => {
         literalState: s,
         value: v,
       }));
-      props.onChange?.(v);
+      props.callbacks.onChange?.(v);
     },
     [state, setState],
   );
 
   const body = editorBody(state, handleChange, handleLiteralStateChange);
 
-  const discard = useCallback(() => {
-    props.discard?.();
-  }, [props, setState]);
-
-  const save = useCallback(() => {
-    props.close?.();
-  }, [props.close]);
-
   return (
     <div className="node-editor">
       <NodeEditorHeader
-        path={props.path}
-        value={state.value}
         editingType={state.editingType}
-        discard={discard}
-        save={save}
+        callbacks={props.callbacks}
         onEditingTypeChange={handleEditingTypeChange}
       />
       <div className="node-editor-body">{body}</div>

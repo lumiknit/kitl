@@ -215,18 +215,20 @@ export const addNodeCallback = (node: Node) => (nodes: Node[]) => [
   node,
 ];
 
-export const addEmptyNodeCallback = (nodes: Node[]) => [
-  ...nodes,
-  {
-    id: genID(),
-    type: node.NodeType.Beta,
-    data: node.emptyBetaNode(),
-    position: {
-      x: 0,
-      y: 0,
+export const addEmptyNodeCallback = (x: number, y: number) => (nodes: Node[]) => {
+  return [
+    ...nodes,
+    {
+      id: genID(),
+      type: node.NodeType.Beta,
+      data: node.emptyBetaNode(),
+      position: {
+        x: x,
+        y: y,
+      },
     },
-  },
-];
+  ];
+};
 
 export const deleteSelectedNodesCallback = (nodes: Node[]) =>
   nodes.filter(n => !n.selected);

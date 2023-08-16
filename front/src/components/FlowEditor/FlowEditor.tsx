@@ -53,7 +53,7 @@ const FlowEditor = (props: FlowEditorProps) => {
   const storeApi = useStoreApi();
   const instance = useReactFlow();
 
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [nodes, , onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   const [state, setState] = useState<FlowEditorState>({
@@ -113,29 +113,6 @@ const FlowEditor = (props: FlowEditorProps) => {
     props.context.setNodes(instance, ns => [...ns, newNode]);
   };
 
-  const onDoubleClick = (event: React.MouseEvent) => {
-    const target = event.target as HTMLElement;
-    if (!target.classList.contains("react-flow__pane")) return;
-    event.preventDefault();
-    const {
-      transform: [tx, ty, zoom],
-    } = storeApi.getState();
-    // Calculate clicked position
-    const zoomMultiplier = 1 / zoom;
-    const x = (event.clientX - tx) * zoomMultiplier;
-    const y = (event.clientY - ty) * zoomMultiplier;
-    const newNode: Node = {
-      id: key.genID(),
-      type: "beta",
-      data: emptyBetaNode(),
-      position: {
-        x: x,
-        y: y,
-      },
-    };
-    setNodes(nodes => [...nodes, newNode]);
-  };
-
   return (
     <>
       <ReactFlow
@@ -173,7 +150,6 @@ const FlowEditor = (props: FlowEditorProps) => {
         /* General Event Handler */
         onInit={onInit}
         onError={onError}
-        onDoubleClick={onDoubleClick}
         /* Node Event Handler */
         onNodeDoubleClick={onNodeDoubleClick}
         /* Edge Event Handler */
@@ -218,7 +194,6 @@ const FlowEditor = (props: FlowEditorProps) => {
         updateMode={updateMode}
         openBrowser={props.openBrowser}
       />
-
       <Fab onClick={() => addNode("beta", emptyBetaNode())} icon={<TbPlus />} />
     </>
   );
