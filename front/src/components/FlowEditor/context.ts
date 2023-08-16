@@ -10,6 +10,8 @@ import {
   addEdge,
 } from "reactflow";
 
+import * as clipboard from "../../common/clipboard";
+
 import * as node from "../../common/node";
 import { DAG } from "../../common/dag";
 import { genID } from "../../common/key";
@@ -29,6 +31,25 @@ export class Graph {
 
   static fromInstance(instance: ReactFlowInstance) {
     return new Graph(instance.getNodes(), instance.getEdges());
+  }
+
+  toJSON() {
+    return JSON.stringify({
+      nodes: this.nodes,
+      edges: this.edges,
+    });
+  }
+
+  static fromJSON(j: string): Graph | null {
+    try {
+      const obj = JSON.parse(j);
+      if (!Array.isArray(obj.nodes) || !Array.isArray(obj.edges)) {
+        return null;
+      }
+      return new Graph(obj.nodes, obj.edges);
+    } catch (e) {
+      return null;
+    }
   }
 }
 
@@ -281,7 +302,34 @@ export class FlowContextI {
         break;
       }
     }
-    this.context.setEdges(this.inst, es => addEdge(edge, es));
+    this.context.updateGraph(
+      this.inst,
+      ns =>
+        ns.map(n => {
+          if (n.id === edge.target && n.type === node.NodeType.Beta) {
+            const data = n.data as node.BetaNodeData;
+            const handle = edge.targetHandle;
+            if (handle === `${node.HANDLE_BETA_ARG_PREFIX}${data.argc}`) {
+              return {
+                ...n,
+                data: {
+                  ...data,
+                  argc: data.argc + 1,
+                },
+              };
+            }
+          }
+          return n;
+        }),
+      es =>
+        addEdge(
+          edge,
+          es.filter(
+            e =>
+              e.target !== edge.target || e.targetHandle !== edge.targetHandle,
+          ),
+        ),
+    );
   }
 
   // Delete
@@ -323,6 +371,90 @@ export class FlowContextI {
   redo(): boolean {
     if (!this.context.redoable()) return false;
     this.context.redo(this.inst);
+    return true;
+  }
+
+  // Copy selected
+  copySelected(): boolean {
+    const allNodes: Node[] = this.inst.getNodes();
+    const allEdges: Edge[] = this.inst.getEdges();
+    // Gather selected nodes and edges
+    const nodes: Node[] = allNodes
+      .filter(n => n.selected && n.type !== node.NodeType.Def)
+      .map(n => ({ ...n, selected: false }));
+    const edges: Edge[] = allEdges
+      .filter(e => e.selected)
+      .map(e => ({ ...e, selected: false }));
+    if (nodes.length + edges.length === 0) return false;
+    const nodesIDSet = new Set(nodes.map(n => n.id));
+    // Find all edges incident to only selected nodes
+    for (const e of allEdges) {
+      if (e.selected) continue;
+      if (nodesIDSet.has(e.source) && nodesIDSet.has(e.target)) {
+        edges.push(e);
+      }
+    }
+    // Find all nodes which is the end of edge
+    const edgeEndSet = new Set(
+      edges.reduce(
+        (acc: string[], e: Edge) => [...acc, e.source, e.target],
+        [],
+      ),
+    );
+    for (const n of allNodes) {
+      if (n.selected) continue;
+      if (n.type === node.NodeType.Def) continue;
+      if (edgeEndSet.has(n.id)) {
+        nodes.push(n);
+      }
+    }
+    // Create a graph and copy
+    const graph = new Graph(nodes, edges);
+    clipboard.saveString(graph.toJSON());
+    return true;
+  }
+
+  cutSelected(): boolean {
+    if (this.copySelected()) {
+      this.deleteSelected();
+      return true;
+    }
+    return false;
+  }
+
+  async paste(): Promise<boolean> {
+    const graph = Graph.fromJSON(await clipboard.loadString());
+    if (!graph) return false;
+    const allowedTypes: Set<string> = new Set([
+      node.NodeType.Beta,
+      node.NodeType.Lambda,
+      node.NodeType.Comment,
+      node.NodeType.Literal,
+    ]);
+    const nodeIDMap = new Map<string, string>();
+    const nodes = graph.nodes.reduce((acc: Node[], n: Node) => {
+      if (n.type === undefined || !allowedTypes.has(n.type)) return acc;
+      const newID = genID();
+      nodeIDMap.set(n.id, newID);
+      acc.push({ ...n, id: newID, selected: true });
+      return acc;
+    }, []);
+    const edges = graph.edges.reduce((acc: Edge[], e: Edge) => {
+      if (!nodeIDMap.has(e.source) || !nodeIDMap.has(e.target)) return acc;
+      acc.push({
+        ...e,
+        id: genID(),
+        source: nodeIDMap.get(e.source)!,
+        target: nodeIDMap.get(e.target)!,
+        selected: true,
+      });
+      return acc;
+    }, []);
+    this.context.updateGraph(
+      this.inst,
+      ns => [...ns, ...nodes],
+      es => [...es, ...edges],
+    );
     return true;
   }
 }

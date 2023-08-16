@@ -1,6 +1,7 @@
 ERROR: ERROR
 WARN: WARN
 INFO: INFO
+SUCCESS: SUCCESS
 modified: modified
 value:
   "null": "null"
@@ -62,3 +63,9 @@ flowEditor:
     redo: Redo
     nothingToUndo: Nothing to undo!
     nothingToRedo: Nothing to redo!
+    copy: Copied!
+    cut: Cutted!
+    paste: Pasted!
+    nothingToCopy: Nothing to copy
+    nothingToCut: Nothing to cut
+    nothingToPaste: Nothing to paste

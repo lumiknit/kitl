@@ -104,20 +104,62 @@ const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
     [ctxI],
   );
 
-  const editModeControls = () => {
-    return [
-      deselectAllBtn,
-      <button key="cut" className="btn btn-secondary py-1 px-0 flex-grow-1">
+  const cutBtn = useMemo(
+    () => (
+      <button
+        key="cut"
+        className="btn btn-secondary py-1 px-0 flex-grow-1"
+        onClick={() => {
+          if (ctxI.cutSelected()) {
+            toast(i18n.t("flowEditor.toast.cut"));
+          } else {
+            toast.error(i18n.t("flowEditor.toast.nothingToCut"));
+          }
+        }}>
         <TbScissors />
-      </button>,
-      <button key="copy" className="btn btn-secondary py-1 px-0 flex-grow-1">
+      </button>
+    ),
+    [ctxI],
+  );
+
+  const copyBtn = useMemo(
+    () => (
+      <button
+        key="copy"
+        className="btn btn-secondary py-1 px-0 flex-grow-1"
+        onClick={() => {
+          if (ctxI.copySelected()) {
+            toast(i18n.t("flowEditor.toast.copy"));
+          } else {
+            toast.error(i18n.t("flowEditor.toast.nothingToCopy"));
+          }
+        }}>
         <TbCopy />
-      </button>,
-      <button key="paste" className="btn btn-secondary py-1 px-0 flex-grow-1">
+      </button>
+    ),
+    [ctxI],
+  );
+
+  const pasteBtn = useMemo(
+    () => (
+      <button
+        key="paste"
+        className="btn btn-secondary py-1 px-0 flex-grow-1"
+        onClick={async () => {
+          if (await ctxI.paste()) {
+            toast(i18n.t("flowEditor.toast.paste"));
+          } else {
+            toast.error(i18n.t("flowEditor.toast.nothingToPaste"));
+          }
+        }}>
         <TbClipboard />
-      </button>,
-      deleteBtn,
-    ];
+      </button>
+    ),
+    [ctxI],
+  );
+
+  const editModeControls = () => {
+    return [deselectAllBtn, cutBtn, copyBtn, pasteBtn, deleteBtn];
   };
 
   const updateModeMenus = useMemo(() => {

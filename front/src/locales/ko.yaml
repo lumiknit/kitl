@@ -1,6 +1,7 @@
 ERROR: 오류
 WARN: 주의
 INFO: 참고
+SUCCESS: 성공
 modified: 수정됨
 value:
   "null": 널
@@ -35,14 +36,14 @@ nodeEditor:
   menu:
     discard: 저장하지 않고 닫기
   toast:
-    saved: 노드가 저장되었습니다!
-    discarded: 노드 수정 내용이 버려집니다
+    saved: 노드가 저장되었어요!
+    discarded: 노드 수정 내용이 버려져요
   string:
     showEscape: 탈출 문자 표시
   json:
     format: 서식
     formatDescription: "포맷: JSON5"
-    formatToSave: 서식에 맞춰 정리하면 저장됩니다
+    formatToSave: 서식에 맞춰 정리하면 저장되어요
     valid: 구문 오류 없음
     syntaxError: 구문 오류!
     btnMin: 최소화
@@ -62,3 +63,9 @@ flowEditor:
     redo: 재실행
     nothingToUndo: 실행 취소할 내용이 없습니다!
     nothingToRedo: 재실행할 내용이 없습니다!
+    copy: 복사되었어요!
+    cut: 잘라냈어요!
+    paste: 붙여넣었어요!
+    nothingToCopy: 선택된 내용이 없어요
+    nothingToCut: 선택된 내용이 없어요
+    nothingToPaste: 붙여넣을 내용이 없어요

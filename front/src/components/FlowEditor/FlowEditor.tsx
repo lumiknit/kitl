@@ -77,9 +77,22 @@ const FlowEditor = (props: FlowEditorProps) => {
     [onNodesChange],
   );
 
+  const onEdgesChangeSelection = useCallback(
+    (ec: Edge[]) =>
+      onEdgesChange(
+        ec.filter(
+          e =>
+            e.type !== "select" || (e as NodeSelectionChange).selected === true,
+        ),
+      ),
+    [onEdgesChange],
+  );
+
   let handleNodesChange = onNodesChange;
+  let handleEdgesChange = onEdgesChange;
   if (state.mode === helper.EditingMode.Selection) {
     handleNodesChange = onNodesChangeSelection;
+    handleEdgesChange = onEdgesChangeSelection;
   }
   // Helpers
   const addNode = useCallback(() => ctxI.addEmptyNode(), [ctxI]);
@@ -132,7 +145,7 @@ const FlowEditor = (props: FlowEditorProps) => {
         nodes={nodes}
         edges={edges}
         onNodesChange={handleNodesChange}
-        onEdgesChange={onEdgesChange}
+        onEdgesChange={handleEdgesChange}
         onConnect={handleConnect}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
