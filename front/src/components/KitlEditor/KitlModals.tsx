@@ -1,9 +1,7 @@
-
 import { ReactElement, useState } from "react";
 import { FlowContext } from "../FlowEditor/context";
 import BrowserModal from "../Modal/BrowserModal";
 import NodeEditorModal from "../NodeEditor/NodeEditorModal";
-
 
 export enum ModalEditorType {
   Nothing = "nothing",
@@ -40,7 +38,7 @@ type State = ModalProps;
 
 const KitlModals = (props: Props) => {
   const [state, setState] = useState<State>(emptyModalProps);
-  if(props.id !== state.id) {
+  if (props.id !== state.id) {
     setState({
       id: props.id,
       type: props.type,
@@ -72,7 +70,9 @@ const KitlModals = (props: Props) => {
       );
       break;
   }
-  return !props.fullModal ? modal : (
+  return !props.fullModal ? (
+    modal
+  ) : (
     <div className="editor-root-wide-item editor-root-wide-item-right full-modal">
       {modal}
     </div>

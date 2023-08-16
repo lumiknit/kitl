@@ -20,31 +20,29 @@ export enum ModalEditorType {
 type Props = {
   flowContext: FlowContext;
   setFlowContext: (ctx: FlowContext) => void;
-}
+};
 
 const KitlEditorInner = (props: Props) => {
-  const [modalState, setModalState] = useState<km.ModalProps>(km.emptyModalProps);
+  const [modalState, setModalState] = useState<km.ModalProps>(
+    km.emptyModalProps,
+  );
   const instance = useReactFlow();
 
   const handleFlowEditorInit = (instance: ReactFlowInstance) => {
-    props.flowContext.setGraph(
-      instance,
-      props.flowContext.emptyGraph(),
-    );
+    props.flowContext.setGraph(instance, props.flowContext.emptyGraph());
   };
 
   const handleCloseModalWithValue = (value: any) => {
     const path = parsePath(modalState.path);
-    switch(path.kind) {
-      case "nd": {
-        props.flowContext.setNodes(
-          instance,
-          props.flowContext.updateNodeDataCallback(
-            path.path,
-            value
-          )
-        )
-      } break;
+    switch (path.kind) {
+      case "nd":
+        {
+          props.flowContext.setNodes(
+            instance,
+            props.flowContext.updateNodeDataCallback(path.path, value),
+          );
+        }
+        break;
     }
     setModalState(km.emptyModalProps);
   };
@@ -52,12 +50,12 @@ const KitlEditorInner = (props: Props) => {
   const openModal = useCallback(
     (ty: ModalEditorType) => (path: string, defaultValue: any) => {
       // Allocate new ID
-      setModalState({
+      setModalState(() => ({
         id: key.genID(),
         type: ty,
         path: path,
         defaultValue: defaultValue,
-      });
+      }));
     },
     [setModalState],
   );
@@ -83,7 +81,7 @@ const KitlEditorInner = (props: Props) => {
       onClose={handleCloseModalWithValue}
       {...modalState}
     />
-  )
+  );
 
   return (
     <div className="editor-root editor-root-wide">

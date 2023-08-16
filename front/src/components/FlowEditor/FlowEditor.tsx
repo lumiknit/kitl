@@ -60,15 +60,17 @@ const FlowEditor = (props: FlowEditorProps) => {
     mode: helper.EditingMode.Add,
   });
 
-  const onInit = useCallback((instance: ReactFlowInstance) => {
-    if (props.onInit) props.onInit(instance);
-  }, [props.onInit]);
+  const onInit = useCallback(
+    (instance: ReactFlowInstance) => {
+      if (props.onInit) props.onInit(instance);
+    },
+    [props.onInit],
+  );
 
   const onError = useCallback((code: string, message: string) => {
     console.error(code, message);
     toast.error(`[${code}] ${message}`);
   }, []);
-
 
   const onConnect = useCallback((params: Connection | Edge) => {
     const edge = params as Edge;
@@ -76,7 +78,7 @@ const FlowEditor = (props: FlowEditorProps) => {
   }, []);
 
   const onNodeDoubleClick: NodeMouseHandler = (_event, n: Node) => {
-    if(n.type === node.NodeType.Def) return;
+    if (n.type === node.NodeType.Def) return;
     props.openNodeEditor("nd:" + n.id, n.data);
   };
 
@@ -91,7 +93,7 @@ const FlowEditor = (props: FlowEditorProps) => {
     setState(newState);
   };
 
-  useNodesState
+  useNodesState;
 
   const addNode = (type: string, data: any) => {
     // Find viewport center
@@ -109,10 +111,9 @@ const FlowEditor = (props: FlowEditorProps) => {
     instance.addNodes([newNode]);
   };
 
-  const deleteSelectedNode = () => {
-  };
+  const deleteSelectedNode = () => {};
 
-  useNodesState
+  useNodesState;
 
   const onDoubleClick = (event: React.MouseEvent) => {
     const target = event.target as HTMLElement;
@@ -204,8 +205,7 @@ const FlowEditor = (props: FlowEditorProps) => {
         connectionRadius={28}
         connectionLineType={ConnectionLineType.Bezier}
         /* Badge */
-        attributionPosition="top-center"
-      >
+        attributionPosition="top-center">
         <Controls />
         <Background
           color="#44f2"

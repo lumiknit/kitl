@@ -7,13 +7,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import KitlEditorInner from "./KitlEditorInner";
 import { FlowContext } from "../FlowEditor/context";
 
-
 const KitlEditor = () => {
   const [flowContext, setFlowContext] = useState<FlowContext>(
-    new FlowContext(
-      "scratch",
-      "kitl",
-    ),
+    new FlowContext("scratch", "kitl"),
   );
   return (
     <ReactFlowProvider>

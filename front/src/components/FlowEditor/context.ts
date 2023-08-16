@@ -43,14 +43,10 @@ export class FlowContext {
 
   // Initialization
 
-  constructor(
-    name: string,
-    path: string,
-    historySize?: number,
-  ) {
+  constructor(name: string, path: string, historySize?: number) {
     this.name = name;
     this.path = path;
-    
+
     this.history = [];
     this.historyPointer = 0;
 
@@ -99,16 +95,17 @@ export class FlowContext {
   }
 
   updateNodeDataCallback(id: string, data: any) {
-    return (nodes: Node[]) => nodes.map(n => {
-      if(n.id === id) {
-        return {
-          ...n,
-          type: data.type,
-          data: data
-        };
-      }
-      return n;
-    });
+    return (nodes: Node[]) =>
+      nodes.map(n => {
+        if (n.id === id) {
+          return {
+            ...n,
+            type: data.type,
+            data: data,
+          };
+        }
+        return n;
+      });
   }
 
   // History Managers
