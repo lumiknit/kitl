@@ -57,3 +57,8 @@ flowEditor:
     selectTools: 선택 및 편집 도구
     browser: 탐색기
     launch: 실행
+  toast:
+    undo: 실행 취소
+    redo: 재실행
+    nothingToUndo: 실행 취소할 내용이 없습니다!
+    nothingToRedo: 재실행할 내용이 없습니다!

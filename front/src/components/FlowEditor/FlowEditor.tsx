@@ -1,9 +1,8 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import ReactFlow, {
   Background,
   BackgroundVariant,
-  Connection,
   Controls,
   Node,
   Edge,
@@ -17,14 +16,15 @@ import ReactFlow, {
   useNodesState,
   useReactFlow,
   ReactFlowInstance,
-  addEdge,
+  NodeChange,
+  NodeSelectionChange,
+  Connection,
 } from "reactflow";
 
 import "reactflow/dist/style.css";
 import "./FlowEditor.css";
 import "./FlowEditorNode.scss";
 
-import * as key from "../../common/key";
 import * as node from "../../common/node";
 import * as helper from "./helper";
 import * as context from "./context";
@@ -32,7 +32,6 @@ import * as context from "./context";
 import nodeTypes from "./GraphComponents/node-types";
 import edgeTypes from "./GraphComponents/edge-types";
 import FlowEditorHeader from "./FlowEditorHeader";
-import { emptyBetaNode } from "../../common/node";
 import Fab from "../Helpers/Fab";
 import { TbPlus } from "react-icons/tb";
 import toast from "react-hot-toast";
@@ -53,39 +52,68 @@ const FlowEditor = (props: FlowEditorProps) => {
   const storeApi = useStoreApi();
   const instance = useReactFlow();
 
+  const ctxI = useMemo<context.FlowContextI>(
+    () => new context.FlowContextI(props.context, instance, storeApi),
+    [props.context, instance, storeApi],
+  );
+
   const [nodes, , onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [edges, , onEdgesChange] = useEdgesState([]);
 
   const [state, setState] = useState<FlowEditorState>({
     mode: helper.EditingMode.Add,
   });
 
-  const onInit = useCallback(
+  // Node Change wrapper
+
+  const onNodesChangeSelection = useCallback(
+    (nc: NodeChange[]) =>
+      onNodesChange(
+        nc.filter(
+          n =>
+            n.type !== "select" || (n as NodeSelectionChange).selected === true,
+        ),
+      ),
+    [onNodesChange],
+  );
+
+  let handleNodesChange = onNodesChange;
+  if (state.mode === helper.EditingMode.Selection) {
+    handleNodesChange = onNodesChangeSelection;
+  }
+  // Helpers
+  const addNode = useCallback(() => ctxI.addEmptyNode(), [ctxI]);
+
+  // Handlers
+
+  const handleInit = useCallback(
     (instance: ReactFlowInstance) => {
       if (props.onInit) props.onInit(instance);
     },
     [props.onInit],
   );
 
-  const onError = useCallback((code: string, message: string) => {
+  const handleError = useCallback((code: string, message: string) => {
     console.error(code, message);
     toast.error(`[${code}] ${message}`);
   }, []);
 
-  const onConnect = useCallback((params: Connection | Edge) => {
-    const edge = params as Edge;
-    setEdges(es => addEdge(edge, es));
-  }, []);
+  const handleConnect = useCallback(
+    (params: Connection | Edge) => ctxI.handleConnect(params),
+    [ctxI],
+  );
 
-  const onNodeDoubleClick: NodeMouseHandler = (_event, n: Node) => {
+  const handleNodeDoubleClick: NodeMouseHandler = (_event, n: Node) => {
     if (n.type === node.NodeType.Def) return;
     props.openNodeEditor("nd:" + n.id, n.data);
   };
 
-  const onEdgeDoubleClick: EdgeMouseHandler = (_event, edge: Edge) => {
-    // Remove the edge
-    setEdges(es => es.filter(e => e.id !== edge.id));
-  };
+  const handleEdgeDoubleClick: EdgeMouseHandler = useCallback(
+    (_event, edge: Edge) => {
+      ctxI.deleteEdge(edge.id);
+    },
+    [ctxI],
+  );
 
   const updateMode = useCallback(
     (mode: helper.EditingMode) => {
@@ -97,31 +125,15 @@ const FlowEditor = (props: FlowEditorProps) => {
     [setState],
   );
 
-  const addNode = (type: string, data: any) => {
-    // Find viewport center
-    const state = storeApi.getState();
-    const [x, y] = props.context.getCenter(state);
-    const newNode: Node = {
-      id: key.genID(),
-      type: type,
-      data: data,
-      position: {
-        x: x,
-        y: y,
-      },
-    };
-    props.context.setNodes(instance, ns => [...ns, newNode]);
-  };
-
   return (
     <>
       <ReactFlow
         /* Basic props */
         nodes={nodes}
         edges={edges}
-        onNodesChange={onNodesChange}
+        onNodesChange={handleNodesChange}
         onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
+        onConnect={handleConnect}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         nodeOrigin={[0.5, 0.5]}
@@ -148,12 +160,12 @@ const FlowEditor = (props: FlowEditorProps) => {
           },*/
         }}
         /* General Event Handler */
-        onInit={onInit}
-        onError={onError}
+        onInit={handleInit}
+        onError={handleError}
         /* Node Event Handler */
-        onNodeDoubleClick={onNodeDoubleClick}
+        onNodeDoubleClick={handleNodeDoubleClick}
         /* Edge Event Handler */
-        onEdgeDoubleClick={onEdgeDoubleClick}
+        onEdgeDoubleClick={handleEdgeDoubleClick}
         /* Selection Event Handler */
         /* Interaction */
         nodesDraggable={true}
@@ -194,7 +206,7 @@ const FlowEditor = (props: FlowEditorProps) => {
         updateMode={updateMode}
         openBrowser={props.openBrowser}
       />
-      <Fab onClick={() => addNode("beta", emptyBetaNode())} icon={<TbPlus />} />
+      <Fab onClick={addNode} icon={<TbPlus />} />
     </>
   );
 };

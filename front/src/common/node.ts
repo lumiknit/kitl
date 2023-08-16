@@ -252,3 +252,37 @@ export const convertNodeDataType = (
       };
   }
 };
+
+export const nodeHandleSet = (node: NodeData): Set<string> => {
+  switch (node.type) {
+    case NodeType.Literal:
+      return new Set([HANDLE_LITERAL_RET]);
+    case NodeType.Beta: {
+      const set = new Set([HANDLE_BETA_RET]);
+      for (let i = 0; i < node.argc + 1; i++) {
+        set.add(`${HANDLE_BETA_ARG_PREFIX}${i}`);
+      }
+      if (node.betaType === BetaNodeType.App) {
+        set.add(HANDLE_BETA_FUN);
+      }
+      return set;
+    }
+    case NodeType.Lambda: {
+      const set = new Set([
+        HANDLE_LAMBDA_VAL,
+        HANDLE_LAMBDA_RET,
+        HANDLE_LAMBDA_ARG,
+      ]);
+      if (node.lambdaType === LambdaNodeType.Pattern) {
+        set.add(HANDLE_LAMBDA_FALLBACK);
+        for (let i = 0; i < node.argc + 1; i++) {
+          set.add(`${HANDLE_LAMBDA_ELEM_PREFIX}${i}`);
+        }
+      }
+      return set;
+    }
+    case NodeType.Def:
+      return new Set([HANDLE_DEF_ARG]);
+  }
+  return new Set();
+};

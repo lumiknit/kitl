@@ -57,3 +57,8 @@ flowEditor:
     selectTools: Select & Edit Tools
     browser: Browser
     launch: Launch
+  toast:
+    undo: Undo
+    redo: Redo
+    nothingToUndo: Nothing to undo!
+    nothingToRedo: Nothing to redo!

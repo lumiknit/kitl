@@ -2,13 +2,14 @@ import { useCallback, useState } from "react";
 
 import * as h from "../helper";
 import * as key from "../../common/key";
+import * as node from "../../common/node";
 
 import FlowEditor from "../FlowEditor/FlowEditor";
 
 import "./KitlEditor.css";
 
 import { FlowContext } from "../FlowEditor/context";
-import { ReactFlowInstance, useReactFlow } from "reactflow";
+import { Edge, ReactFlowInstance, useReactFlow } from "reactflow";
 import { parsePath } from "../../client/path";
 import KitlModals, * as km from "./KitlModals";
 
@@ -32,14 +33,44 @@ const KitlEditorInner = (props: Props) => {
     props.flowContext.setGraph(instance, props.flowContext.emptyGraph());
   };
 
-  const handleCloseModalWithValue = (value: any) => {
+  const handleCloseModalWithValue = (value: node.NodeData) => {
     const path = parsePath(modalState.path);
     switch (path.kind) {
       case "nd":
         {
-          props.flowContext.setNodes(
+          const nodes = instance.getNodes();
+          const availableHandles = node.nodeHandleSet(value);
+          const empty: Edge[] = [];
+          const removeUnusableEdges = (edges: Edge[]) =>
+            edges.reduce((acc: Edge[], e: Edge): Edge[] => {
+              if (
+                e.target === path.path &&
+                typeof e.targetHandle === "string" &&
+                !availableHandles.has(e.targetHandle)
+              ) {
+                return acc;
+              }
+              if (e.source === path.path) {
+                if (
+                  typeof e.sourceHandle === "string" &&
+                  !availableHandles.has(e.sourceHandle)
+                ) {
+                  return acc;
+                }
+                for (const n of nodes) {
+                  if (n.id === e.source) {
+                    e = { ...e, type: n.type };
+                    break;
+                  }
+                }
+              }
+              acc.push(e);
+              return acc;
+            }, empty);
+          props.flowContext.updateGraph(
             instance,
             props.flowContext.updateNodeDataCallback(path.path, value),
+            removeUnusableEdges,
           );
         }
         break;

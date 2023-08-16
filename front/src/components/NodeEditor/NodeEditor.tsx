@@ -97,7 +97,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
       }));
       props.callbacks.onChange?.(value);
     },
-    [setState],
+    [props.callbacks, setState],
   );
 
   const handleLiteralStateChange = useCallback(

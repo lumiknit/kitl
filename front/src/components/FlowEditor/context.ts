@@ -1,11 +1,13 @@
 import { Dispatch, SetStateAction } from "react";
 import {
+  Connection,
   Edge,
   Node,
   OnEdgesChange,
   OnNodesChange,
   ReactFlowInstance,
   ReactFlowState,
+  addEdge,
 } from "reactflow";
 
 import * as node from "../../common/node";
@@ -77,11 +79,11 @@ export class FlowContext {
 
   // Setters
 
-  updateGraph(
+  updateGraphSilently(
     inst: ReactFlowInstance,
     nodesCallback?: (nodes: Node[]) => Node[],
     edgesCallback?: (edges: Edge[]) => Edge[],
-  ) {
+  ): [Node[], Edge[]] {
     let nodes = inst.getNodes();
     let edges = inst.getEdges();
     if (nodesCallback) {
@@ -92,6 +94,19 @@ export class FlowContext {
       edges = edgesCallback(edges);
       inst.setEdges(edges);
     }
+    return [nodes, edges];
+  }
+
+  updateGraph(
+    inst: ReactFlowInstance,
+    nodesCallback?: (nodes: Node[]) => Node[],
+    edgesCallback?: (edges: Edge[]) => Edge[],
+  ) {
+    const [nodes, edges] = this.updateGraphSilently(
+      inst,
+      nodesCallback,
+      edgesCallback,
+    );
     this.saveToHistory(new Graph(nodes, edges));
   }
 
@@ -206,29 +221,108 @@ export class FlowContext {
     const y = (height / 2 - ty) * zoomMultiplier;
     return [x, y];
   }
+
+  getCenterZitter(state: ReactFlowState) {
+    const [x, y] = this.getCenter(state);
+    // Random
+    const dx = Math.random() * 16 - 8;
+    const dy = Math.random() * 16 - 8;
+    return [x + dx, y + dy];
+  }
 }
 
-/* Callbacks */
+/* Functionality Helpers */
 
-export const addNodeCallback = (node: Node) => (nodes: Node[]) => [
-  ...nodes,
-  node,
-];
+export class FlowContextI {
+  context: FlowContext;
+  inst: ReactFlowInstance;
+  storeApi: any;
 
-export const addEmptyNodeCallback = (x: number, y: number) => (nodes: Node[]) => {
-  return [
-    ...nodes,
-    {
-      id: genID(),
-      type: node.NodeType.Beta,
-      data: node.emptyBetaNode(),
-      position: {
-        x: x,
-        y: y,
-      },
-    },
-  ];
-};
+  constructor(context: FlowContext, inst: ReactFlowInstance, storeApi?: any) {
+    this.context = context;
+    this.inst = inst;
+    this.storeApi = storeApi;
+  }
 
-export const deleteSelectedNodesCallback = (nodes: Node[]) =>
-  nodes.filter(n => !n.selected);
+  // Add
+  addEmptyNodeAt(x: number, y: number) {
+    this.context.setNodes(this.inst, ns => {
+      return [
+        ...ns,
+        {
+          id: genID(),
+          type: node.NodeType.Beta,
+          data: node.emptyBetaNode(),
+          position: {
+            x: x,
+            y: y,
+          },
+        },
+      ];
+    });
+  }
+
+  addEmptyNode() {
+    let center;
+    if (this.storeApi) {
+      center = this.context.getCenterZitter(this.storeApi.getState());
+    } else {
+      center = [0, 0];
+    }
+    this.addEmptyNodeAt(center[0], center[1]);
+  }
+
+  // Add edge
+  handleConnect(param: Connection | Edge) {
+    const edge = { ...param } as Edge;
+    for (const n of this.inst.getNodes()) {
+      if (n.id === param.source) {
+        edge.type = n.type;
+        break;
+      }
+    }
+    this.context.setEdges(this.inst, es => addEdge(edge, es));
+  }
+
+  // Delete
+  deleteNode(id: string) {
+    this.context.setNodes(this.inst, ns => ns.filter(n => n.id !== id));
+    this.context.setEdges(this.inst, es =>
+      es.filter(e => e.source !== id && e.target !== id),
+    );
+  }
+
+  deleteEdge(id: string) {
+    this.context.setEdges(this.inst, es => es.filter(e => e.id !== id));
+  }
+
+  deleteSelected() {
+    this.context.updateGraph(
+      this.inst,
+      ns => ns.filter(n => !n.selected),
+      es => es.filter(e => !e.selected),
+    );
+  }
+
+  // Select
+  deselectAll() {
+    this.context.updateGraph(
+      this.inst,
+      ns => ns.map(n => (n.selected ? { ...n, selected: false } : n)),
+      es => es.map(e => (e.selected ? { ...e, selected: false } : e)),
+    );
+  }
+
+  // History
+  undo(): boolean {
+    if (!this.context.undoable()) return false;
+    this.context.undo(this.inst);
+    return true;
+  }
+
+  redo(): boolean {
+    if (!this.context.redoable()) return false;
+    this.context.redo(this.inst);
+    return true;
+  }
+}

@@ -27,19 +27,19 @@ const NodeEditorModal = (props: NodeEditorModalProps) => {
     callbacks.value = value;
   };
   callbacks.close = () => {
-    if(callbacks.value === undefined) {
+    if (callbacks.value === undefined) {
       callbacks.value = props.defaultValue;
     }
     props.onChange?.(callbacks.value);
     props.onClose?.(callbacks.value);
     toast.success(i18n.t("nodeEditor.toast.saved"));
   };
-  callbacks.discard =() => {
+  callbacks.discard = () => {
     props.onClose?.(props.defaultValue);
     toast(i18n.t("nodeEditor.toast.discarded"));
   };
   return (
-    <Modal open={props.open} onClose={close}>
+    <Modal open={props.open} onClose={callbacks.close}>
       <NodeEditor
         path={props.path}
         defaultValue={props.defaultValue}
