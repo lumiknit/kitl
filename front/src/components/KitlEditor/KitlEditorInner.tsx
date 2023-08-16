@@ -69,19 +69,17 @@ const KitlEditorInner = (props: Props) => {
     />
   );
 
-  const modalOpened = modalState.type !== km.ModalEditorType.Nothing;
-
-  const isMobile = h.isMobile();
-
   const modals = (
     <KitlModals
-      fullModal={isMobile}
       flowContext={props.flowContext}
       setFlowContext={props.setFlowContext}
       onClose={handleCloseModalWithValue}
       {...modalState}
     />
   );
+
+  const modalOpened = modalState.type !== km.ModalEditorType.Nothing;
+  const isMobile = h.isMobile();
 
   return (
     <div className="editor-root editor-root-wide">

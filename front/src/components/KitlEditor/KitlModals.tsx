@@ -24,8 +24,6 @@ export const emptyModalProps = () => ({
 });
 
 type Props = {
-  fullModal?: boolean;
-
   flowContext: FlowContext;
   setFlowContext: (flowContext: FlowContext) => void;
 
@@ -70,13 +68,7 @@ const KitlModals = (props: Props) => {
       );
       break;
   }
-  return !props.fullModal ? (
-    modal
-  ) : (
-    <div className="editor-root-wide-item editor-root-wide-item-right full-modal">
-      {modal}
-    </div>
-  );
+  return modal;
 };
 
 export default KitlModals;
