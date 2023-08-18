@@ -136,6 +136,17 @@ $flow-edge-colors: (
   max-width: 40rem;
 }
 
+.flow-node-container-comment {
+  font-family: serif;
+  font-size: 0.66rem;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 0.2rem 0;
+  text-align: left;
+  overflow: hidden;
+  max-width: 40rem;
+}
+
 /* Handles */
 
 .react-flow__handle {

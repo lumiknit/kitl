@@ -485,7 +485,7 @@ export class FlowContextI {
       y += n.position.y;
       return acc;
     }, []);
-    if(nodes.length === 0) return false;
+    if (nodes.length === 0) return false;
     // Calculate center of mass
     x /= nodes.length;
     y /= nodes.length;

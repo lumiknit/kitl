@@ -11,9 +11,13 @@ export type DefNodeProps = {
 const DefNode = (props: DefNodeProps) => {
   return (
     <>
-      <div className="d-flex align-items-center">
-        <NameDisplay name={props.data} />
-        <span className="fs-5 m-0 ms-1">≔</span>
+      <div className="flow-node-container">
+        <div className="flow-node-container-icon flow-node-container-icon-lg">
+          ≕
+        </div>
+        <div className="flow-node-container-body">
+          <NameDisplay name={props.data} />
+        </div>
       </div>
       <Handle
         id={node.HANDLE_DEF_ARG}

@@ -7,7 +7,9 @@ export type CommentNodeProps = {
 };
 
 const CommentNode = (props: CommentNodeProps) => {
-  return <pre>{props.data.content}</pre>;
+  return (
+    <div className="flow-node-container-comment">{props.data.content}</div>
+  );
 };
 
 const memoed = memo(CommentNode);
