@@ -119,19 +119,22 @@ const FlowEditor = (props: FlowEditorProps) => {
     [ctxI],
   );
 
-  const handleDoubleClick: MouseEventHandler = useCallback((event) => {
-    const target = event.target as HTMLElement;
-    if (!target.classList.contains("react-flow__pane")) return;
-    event.preventDefault();
-    const {
-      transform: [tx, ty, zoom],
-    } = storeApi.getState();
-    // Calculate clicked position
-    const zoomMultiplier = 1 / zoom;
-    const x = (event.clientX - tx) * zoomMultiplier;
-    const y = (event.clientY - ty) * zoomMultiplier;
-    ctxI.addEmptyNodeAt(x, y);
-  }, [ctxI]);
+  const handleDoubleClick: MouseEventHandler = useCallback(
+    event => {
+      const target = event.target as HTMLElement;
+      if (!target.classList.contains("react-flow__pane")) return;
+      event.preventDefault();
+      const {
+        transform: [tx, ty, zoom],
+      } = storeApi.getState();
+      // Calculate clicked position
+      const zoomMultiplier = 1 / zoom;
+      const x = (event.clientX - tx) * zoomMultiplier;
+      const y = (event.clientY - ty) * zoomMultiplier;
+      ctxI.addEmptyNodeAt(x, y);
+    },
+    [ctxI],
+  );
 
   const handleNodeDoubleClick: NodeMouseHandler = (_event, n: Node) => {
     if (n.type === node.NodeType.Def) return;
