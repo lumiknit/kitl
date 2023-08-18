@@ -10,7 +10,7 @@ export type BetaNodeProps = {
 
 const BetaNode = (props: BetaNodeProps) => {
   let inner = null;
-  const argc = props.data.argc + 1;
+  const argc = props.data.argc;
   let take = false;
   switch (props.data.betaType) {
     case node.BetaNodeType.App:
@@ -50,6 +50,13 @@ const BetaNode = (props: BetaNodeProps) => {
           className="flow-handle-beta-arg"
         />
       ) : null}
+      <Handle
+        id={`${node.HANDLE_BETA_ARG_PREFIX}${argc}`}
+        type="target"
+        position={Position.Top}
+        style={{ left: "100%" }}
+        className="flow-handle-hidden"
+      />
       <Handle
         id={node.HANDLE_BETA_RET}
         type="source"

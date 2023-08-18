@@ -15,7 +15,16 @@ export const positionPercentage = (index: number, count: number) => {
 export const minLengthKeepingDistance = (
   dist: number,
   count: number,
-): number => (count <= 1 ? dist : (dist * (count - 1) * 10) / 6);
+): number => {
+  switch(count) {
+    case 0:
+      return 0.5;
+    case 1:
+      return 1;
+    default:
+      return (dist * (count - 1) * 10) / 6;
+  }
+}
 
 export const flowNodeToNodeData = (node: Node): node.NodeData => {
   return {

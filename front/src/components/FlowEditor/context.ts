@@ -117,7 +117,7 @@ export class FlowContext {
     this.history = [];
     this.historyPointer = 0;
 
-    this.historySize = historySize ?? 128;
+    this.historySize = historySize ?? 512;
   }
 
   defNode() {
@@ -474,13 +474,31 @@ export class FlowContextI {
       node.NodeType.Literal,
     ]);
     const nodeIDMap = new Map<string, string>();
+    let x = 0;
+    let y = 0;
     const nodes = graph.nodes.reduce((acc: Node[], n: Node) => {
       if (n.type === undefined || !allowedTypes.has(n.type)) return acc;
       const newID = genID();
       nodeIDMap.set(n.id, newID);
       acc.push({ ...n, id: newID, selected: true });
+      x += n.position.x;
+      y += n.position.y;
       return acc;
     }, []);
+    if(nodes.length === 0) return false;
+    // Calculate center of mass
+    x /= nodes.length;
+    y /= nodes.length;
+    const center = this.context.getCenter(this.storeApi.getState());
+    // Calculate offset
+    const dx = center[0] - x;
+    const dy = center[1] - y;
+    // Move nodes
+    for (const n of nodes) {
+      n.position.x += dx;
+      n.position.y += dy;
+    }
+
     const edges = graph.edges.reduce((acc: Edge[], e: Edge) => {
       if (!nodeIDMap.has(e.source) || !nodeIDMap.has(e.target)) return acc;
       acc.push({

@@ -1,10 +1,11 @@
 $flow-node-color-bg: #fff;
 $flow-node-color-fg: #363d47;
-$flow-node-color-def: #5b6b88;
+$flow-node-color-def: #b00279;
 $flow-node-color-beta: #363d47;
 $flow-node-color-lambda: #db5614;
 $flow-node-color-literal: #085ed7;
 $flow-node-color-comment: #46923c;
+$flow-node-color-handle-selected: #1697dc;
 
 $flow-node-colors: (
   bg: $flow-node-color-bg,
@@ -43,27 +44,27 @@ $flow-edge-colors: (
 
 .react-flow__node-def {
   color: $flow-node-color-def;
-  border: 0.1rem solid $flow-node-color-def;
-  border-radius: 999rem;
-  padding: 0.5rem 1rem;
+  border: 0;
+  border-top: 0.1rem solid $flow-node-color-def;
+  padding: 0.25rem 0.5rem;
 }
 
 .react-flow__node-beta {
   color: $flow-node-color-beta;
   border: 0.1rem solid $flow-node-color-beta;
-  border-radius: 0.5rem;
+  border-radius: 9999rem;
 }
 
 .react-flow__node-lambda {
   color: $flow-node-color-lambda;
   border: 0.1rem solid $flow-node-color-lambda;
-  border-radius: 0.25rem;
+  border-radius: 0.125rem;
 }
 
 .react-flow__node-literal {
   color: $flow-node-color-literal;
   border: 0.1rem solid $flow-node-color-literal;
-  border-radius: 0 1rem 0 0;
+  border-radius: 0.125rem 1rem 0.125rem 0.125rem;
 }
 
 .react-flow__node-comment {
@@ -80,7 +81,7 @@ $flow-edge-colors: (
 }
 
 .react-flow__node.selected {
-  box-shadow: 0 0.1rem 0.4rem rgba($flow-node-color-fg, 0.5);
+  box-shadow: 0 0.1rem 0.5rem rgba($flow-node-color-fg, 0.75);
 }
 
 /* Name Display */
@@ -151,7 +152,8 @@ $handle_off: 0.35rem;
 }
 
 .react-flow__handle.connecting {
-  box-shadow: 0 0 5px $flow-node-color-lambda;
+  border-width: 0.2rem;
+  box-shadow: 0 0 0.5rem $flow-node-color-handle-selected;
 }
 
 /* Handle mixins */
@@ -197,6 +199,10 @@ $handle_off: 0.35rem;
   }
 }
 
+.flow-handle-hidden {
+  opacity: 0;
+}
+
 /* Edge */
 
 .react-flow__edge path.react-flow__edge-path {
@@ -212,7 +218,7 @@ marker.react-flow__arrowhead polyline {
 .react-flow__edge.selected path.react-flow__edge-path {
   stroke: map.get($flow-edge-colors, default);
   stroke-width: 2;
-  filter: drop-shadow(0 0 2px rgba($flow-node-color-fg, 0.3));
+  filter: drop-shadow(0 0 0.25rem rgba($flow-node-color-fg, 0.75));
 }
 
 @each $key, $color in $flow-edge-colors {

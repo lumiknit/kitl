@@ -42,7 +42,9 @@ const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
         className="btn btn-warning py-1"
         onClick={() => {
           if (ctxI.undo()) {
-            toast(i18n.t("flowEditor.toast.undo"));
+            toast(i18n.t("flowEditor.toast.undo"), {
+              duration: 500,
+            });
           } else {
             toast.error(i18n.t("flowEditor.toast.nothingToUndo"));
           }
@@ -60,7 +62,9 @@ const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
         className="btn btn-warning py-1"
         onClick={() => {
           if (ctxI.redo()) {
-            toast(i18n.t("flowEditor.toast.redo"));
+            toast(i18n.t("flowEditor.toast.redo"), {
+              duration: 500,
+            });
           } else {
             toast.error(i18n.t("flowEditor.toast.nothingToRedo"));
           }
