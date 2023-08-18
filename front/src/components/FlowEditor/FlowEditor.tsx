@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { MouseEventHandler, useCallback, useMemo, useState } from "react";
 
 import ReactFlow, {
   Background,
@@ -119,6 +119,20 @@ const FlowEditor = (props: FlowEditorProps) => {
     [ctxI],
   );
 
+  const handleDoubleClick: MouseEventHandler = useCallback((event) => {
+    const target = event.target as HTMLElement;
+    if (!target.classList.contains("react-flow__pane")) return;
+    event.preventDefault();
+    const {
+      transform: [tx, ty, zoom],
+    } = storeApi.getState();
+    // Calculate clicked position
+    const zoomMultiplier = 1 / zoom;
+    const x = (event.clientX - tx) * zoomMultiplier;
+    const y = (event.clientY - ty) * zoomMultiplier;
+    ctxI.addEmptyNodeAt(x, y);
+  }, [ctxI]);
+
   const handleNodeDoubleClick: NodeMouseHandler = (_event, n: Node) => {
     if (n.type === node.NodeType.Def) return;
     props.openNodeEditor("nd:" + n.id, n.data);
@@ -178,6 +192,7 @@ const FlowEditor = (props: FlowEditorProps) => {
         /* General Event Handler */
         onInit={handleInit}
         onError={handleError}
+        onDoubleClick={handleDoubleClick}
         /* Node Event Handler */
         onNodeDoubleClick={handleNodeDoubleClick}
         /* Edge Event Handler */
