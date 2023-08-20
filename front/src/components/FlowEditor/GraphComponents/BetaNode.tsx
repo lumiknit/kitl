@@ -29,7 +29,12 @@ const BetaNode = (props: BetaNodeProps) => {
 
   return (
     <>
-      <div style={{ minWidth: `${cnh.minLengthKeepingDistance(1, argc)}rem` }}>
+      <div
+        style={{
+          minWidth: `${cnh.minLengthKeepingDistance(1, argc)}rem`,
+          paddingLeft: `${argc * 0.01}px`,
+        }}
+      >
         {inner}
       </div>
       {[...Array(argc)].map((_, i) => (
