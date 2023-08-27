@@ -61,7 +61,7 @@ graphTools:
   tool:
     layoutLinear: Linear Layout
     layoutDefault: Default Layout
-    removeUnreachables: Remove Unreachables
+    selectUnreachables: Select Unreachables
     validateGraph: Validate Graph
 flowEditor:
   menu:

@@ -533,7 +533,7 @@ export class FlowContextI {
       if (!target) continue;
       let index = 0;
       const handle = e.targetHandle ?? "";
-      if (handle === node.HANDLE_LAMBDA_RET) {
+      if (handle === node.HANDLE_LAMBDA_BODY_RET) {
         index = -1;
       } else if (handle.startsWith(node.HANDLE_BETA_ARG_PREFIX)) {
         index = parseInt(handle.slice(node.HANDLE_BETA_ARG_PREFIX.length));
@@ -543,10 +543,40 @@ export class FlowContextI {
     return nodeMap;
   }
 
-  removeUnreachables() {
+  selectUnreachables() {
     const mnodes = this.getMNodes();
-    console.log(mnodes);
-    throw new Error("Unimplemented");
+    // Find def node, which is the root of the graph
+    let defNode: MNode | null = null;
+    for (const n of mnodes.values()) {
+      if (n.id === "##def") {
+        defNode = n;
+        break;
+      }
+    }
+    if (!defNode) return;
+    // Find all reachable nodes
+    const reachable = new Set<string>();
+    const queue = [defNode];
+    while (queue.length > 0) {
+      const n = queue.pop()!;
+      if (reachable.has(n.id)) continue;
+      reachable.add(n.id);
+      for (const s of n.sources) {
+        const source = mnodes.get(s.id);
+        if (!source) continue;
+        queue.push(source);
+      }
+    }
+    // Select all unreachable nodes
+    this.context.setNodes(this.inst, ns =>
+      ns.map(n => {
+        if (reachable.has(n.id)) return n;
+        return {
+          ...n,
+          selected: true,
+        };
+      }),
+    );
   }
 
   // Layout
@@ -586,8 +616,8 @@ export class FlowContextI {
 
   executeGraphTools(name: string) {
     switch (name) {
-      case "removeUnreachables":
-        return this.removeUnreachables();
+      case "selectUnreachables":
+        return this.selectUnreachables();
       case "layoutDefault":
         return this.layoutDefault();
       case "layoutLinear":

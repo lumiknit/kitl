@@ -61,7 +61,7 @@ graphTools:
   tool:
     layoutLinear: 선형 배치
     layoutDefault: 기본 배치
-    removeUnreachables: 사용되지 않는 노드 제거
+    selectUnreachables: 사용되지 않는 노드 선택
     validateGraph: 그래프 검사
 flowEditor:
   menu:

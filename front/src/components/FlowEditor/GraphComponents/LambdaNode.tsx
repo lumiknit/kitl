@@ -40,7 +40,7 @@ const LambdaNode = (props: LambdaNodeProps) => {
         {inner}
       </div>
       <Handle
-        id={node.HANDLE_LAMBDA_VAL}
+        id={node.HANDLE_LAMBDA_RET}
         type="source"
         position={Position.Bottom}
         className="flow-handle-lambda-ret"
@@ -53,7 +53,7 @@ const LambdaNode = (props: LambdaNodeProps) => {
         className="flow-handle-lambda-arg"
       />
       <Handle
-        id={node.HANDLE_LAMBDA_ARG}
+        id={node.HANDLE_LAMBDA_BODY_ARG}
         type="source"
         position={Position.Left}
         style={{ top: cnh.positionPercentage(0, count) }}
@@ -61,7 +61,7 @@ const LambdaNode = (props: LambdaNodeProps) => {
       />
       {props.data.lambdaType !== node.LambdaNodeType.Pattern ? null : (
         <Handle
-          id={node.HANDLE_LAMBDA_FALLBACK}
+          id={node.HANDLE_LAMBDA_ARG}
           type="target"
           position={Position.Top}
           className="flow-handle-lambda-arg"

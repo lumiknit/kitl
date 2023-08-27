@@ -87,13 +87,13 @@ export type LambdaAnyNodeData = {
 
 export type LambdaNodeData = LambdaPatternNodeData | LambdaAnyNodeData;
 
-export const HANDLE_LAMBDA_FALLBACK = "fb";
 export const HANDLE_LAMBDA_ARG = "arg";
+export const HANDLE_LAMBDA_BODY_ARG = "body-arg";
 export const HANDLE_LAMBDA_ELEM_PREFIX = "elem-";
 export const handleLambdaElem = (i: number) =>
   `${HANDLE_LAMBDA_ELEM_PREFIX}${i}`;
+export const HANDLE_LAMBDA_BODY_RET = "body-ret";
 export const HANDLE_LAMBDA_RET = "ret";
-export const HANDLE_LAMBDA_VAL = "val";
 
 // Comment
 
@@ -269,12 +269,12 @@ export const nodeHandleSet = (node: NodeData): Set<string> => {
     }
     case NodeType.Lambda: {
       const set = new Set([
-        HANDLE_LAMBDA_VAL,
         HANDLE_LAMBDA_RET,
-        HANDLE_LAMBDA_ARG,
+        HANDLE_LAMBDA_BODY_RET,
+        HANDLE_LAMBDA_BODY_ARG,
       ]);
       if (node.lambdaType === LambdaNodeType.Pattern) {
-        set.add(HANDLE_LAMBDA_FALLBACK);
+        set.add(HANDLE_LAMBDA_ARG);
         for (let i = 0; i < node.argc + 1; i++) {
           set.add(`${HANDLE_LAMBDA_ELEM_PREFIX}${i}`);
         }

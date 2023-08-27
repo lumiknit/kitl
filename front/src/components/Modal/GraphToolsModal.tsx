@@ -38,8 +38,8 @@ const GraphToolsModal = (props: GraphToolsModalProps) => {
       <h3>{i18n.t("graphTools.optimization")}</h3>
 
       <Btn
-        color="danger"
-        toolName="removeUnreachables"
+        color="warning"
+        toolName="selectUnreachables"
         onClose={props.onClose}
       />
 
