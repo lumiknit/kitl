@@ -1,7 +1,7 @@
 $flow-node-color-bg: #fff;
 $flow-node-color-fg: #363d47;
 $flow-node-color-def: #b00279;
-$flow-node-color-beta: #363d47;
+$flow-node-color-beta: #5d5652;
 $flow-node-color-lambda: #db5614;
 $flow-node-color-literal: #085ed7;
 $flow-node-color-comment: #46923c;
@@ -25,6 +25,10 @@ $flow-edge-colors: (
   selected: #1697dc,
 );
 
+$flow-line-width: 0.08rem;
+$flow-handle-bottom-right-size: 0.5rem;
+$flow-handle-bottom-right-width: 0.2rem;
+
 @use "sass:list";
 @use "sass:map";
 
@@ -34,37 +38,39 @@ $flow-edge-colors: (
   font-size: 1rem;
   line-height: 1;
   font-family: sans-serif;
-  padding: 0.3rem 0.5rem;
+  padding: 0.3rem 0.4rem;
   text-align: center;
   min-width: 1rem;
   min-height: 1rem;
   background-color: rgba(#fff, 0.8);
   /*backdrop-filter: blur(0.1rem);*/
+  transition: box-shadow 0.1s ease-in-out;
 }
 
 .react-flow__node-def {
   color: $flow-node-color-def;
   border: 0;
-  border-top: 0.1rem solid $flow-node-color-def;
-  padding: 0.25rem 0.5rem;
+  border-top: $flow-line-width solid $flow-node-color-def;
+  padding: 0.1rem 0.5rem;
 }
 
 .react-flow__node-beta {
   color: $flow-node-color-beta;
-  border: 0.1rem solid $flow-node-color-beta;
-  border-radius: 9999rem;
+  border: $flow-line-width solid $flow-node-color-beta;
+  border-radius: $flow-handle-bottom-right-size;
 }
 
 .react-flow__node-lambda {
   color: $flow-node-color-lambda;
-  border: 0.1rem solid $flow-node-color-lambda;
+  border: $flow-line-width solid $flow-node-color-lambda;
   border-radius: 0.125rem;
+  border-bottom-right-radius: $flow-handle-bottom-right-size;
 }
 
 .react-flow__node-literal {
   color: $flow-node-color-literal;
-  border: 0.1rem solid $flow-node-color-literal;
-  border-radius: 0.125rem 1rem 0.125rem 0.125rem;
+  border: $flow-line-width solid $flow-node-color-literal;
+  border-radius: 1rem 0.125rem $flow-handle-bottom-right-size 0.125rem;
 }
 
 .react-flow__node-comment {
@@ -81,7 +87,7 @@ $flow-edge-colors: (
 }
 
 .react-flow__node.selected {
-  box-shadow: 0 0.1rem 0.5rem rgba($flow-node-color-fg, 0.75);
+  box-shadow: 0 0.1rem 0.4rem rgba($flow-node-color-fg, 0.5);
 }
 
 /* Name Display */
@@ -162,15 +168,22 @@ $handle_off: 0.35rem;
   }
 }
 
+.react-flow__handle {
+  transition:
+    border-width 0.1s ease-in-out,
+    border-color 0.1s ease-in-out,
+    box-shadow 0.1s ease-in-out;
+}
+
 .react-flow__handle.connecting {
-  border-width: 0.2rem;
+  border-width: calc(2 * $flow-line-width);
   box-shadow: 0 0 0.5rem $flow-node-color-handle-selected;
 }
 
 /* Handle mixins */
 
 @mixin flow-handle-border-style($style) {
-  border-width: 0.1rem;
+  border-width: $flow-line-width;
   border-style: $style;
 }
 
@@ -210,6 +223,37 @@ $handle_off: 0.35rem;
   }
 }
 
+@each $key, $color in $flow-node-colors {
+  .flow-handle-border-color-#{$key} {
+    border-color: $color;
+  }
+}
+
+.flow-handle-ret {
+  left: calc(
+    100% - ($flow-handle-bottom-right-size - $flow-handle-bottom-right-width) /
+      2
+  );
+  top: calc(
+    100% - $flow-handle-bottom-right-size + $flow-handle-bottom-right-width / 2
+  );
+  width: $flow-handle-bottom-right-size;
+  height: $flow-handle-bottom-right-size;
+  background-color: transparent;
+  border-width: 0;
+  border-right: $flow-handle-bottom-right-width solid;
+  border-bottom: $flow-handle-bottom-right-width solid;
+  border-radius: 0 0 100% 0;
+}
+
+.react-flow__handle.flow-handle-ret.connecting {
+  box-shadow: none;
+  border-width: 0;
+  border-right: calc(1.5 * $flow-handle-bottom-right-width) solid;
+  border-bottom: calc(1.5 * $flow-handle-bottom-right-width) solid;
+  border-color: $flow-node-color-handle-selected;
+}
+
 .flow-handle-hidden {
   opacity: 0;
 }
@@ -218,7 +262,8 @@ $handle_off: 0.35rem;
 
 .react-flow__edge path.react-flow__edge-path {
   stroke: map.get($flow-edge-colors, default);
-  stroke-width: 1.2;
+  stroke-width: 0.8;
+  transition: stroke-width 0.1s ease-in-out;
 }
 
 marker.react-flow__arrowhead polyline {
@@ -228,7 +273,7 @@ marker.react-flow__arrowhead polyline {
 
 .react-flow__edge.selected path.react-flow__edge-path {
   stroke: map.get($flow-edge-colors, default);
-  stroke-width: 2;
+  stroke-width: 1.6;
   filter: drop-shadow(0 0 0.25rem rgba($flow-node-color-fg, 0.75));
 }
 
@@ -245,4 +290,23 @@ marker.react-flow__arrowhead polyline {
 .flow-node-dimmed {
   font-size: 0.75rem;
   opacity: 0.5;
+}
+
+.flow-node-span-arg {
+  position: relative;
+  display: inline-block;
+  min-width: 1.2rem;
+  color: rgb(0, 0, 0, 0.2);
+  border-left: 0.05rem solid #00000088;
+  font-size: 0.5rem;
+}
+
+.flow-node-span-arg .react-flow__handle-top {
+  top: -0.6rem;
+}
+
+.flow-node-beta-container {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
 }

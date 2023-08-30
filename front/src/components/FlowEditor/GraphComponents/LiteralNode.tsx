@@ -57,7 +57,7 @@ const Literal = (props: LiteralProps) => {
         id={node.HANDLE_LITERAL_RET}
         type="source"
         position={Position.Bottom}
-        className="flow-handle-literal-ret"
+        className="flow-handle-ret flow-handle-border-color-literal"
       />
     </>
   );

@@ -309,20 +309,19 @@ export class FlowContextI {
 
   // Add
   addEmptyNodeAt(x: number, y: number) {
+    const emptyNode = {
+      id: genID(),
+      type: node.NodeType.Beta,
+      data: node.emptyBetaNode(),
+      position: {
+        x: x,
+        y: y,
+      },
+    };
     this.context.setNodes(this.inst, ns => {
-      return [
-        ...ns,
-        {
-          id: genID(),
-          type: node.NodeType.Beta,
-          data: node.emptyBetaNode(),
-          position: {
-            x: x,
-            y: y,
-          },
-        },
-      ];
+      return [...ns, emptyNode];
     });
+    return emptyNode;
   }
 
   addEmptyNode() {
@@ -332,7 +331,7 @@ export class FlowContextI {
     } else {
       center = [0, 0];
     }
-    this.addEmptyNodeAt(center[0], center[1]);
+    return this.addEmptyNodeAt(center[0], center[1]);
   }
 
   // Add edge

@@ -1,7 +1,6 @@
 import { memo } from "react";
 import { Handle, Position } from "reactflow";
 import NameDisplay from "./NameDisplay";
-import * as cnh from "./helper";
 import * as node from "../../../common/node";
 
 export type BetaNodeProps = {
@@ -15,7 +14,7 @@ const BetaNode = (props: BetaNodeProps) => {
   switch (props.data.betaType) {
     case node.BetaNodeType.App:
       {
-        inner = <div className="flow-node-dimmed">β</div>;
+        inner = <>&nbsp;</>;
         take = true;
       }
       break;
@@ -29,24 +28,23 @@ const BetaNode = (props: BetaNodeProps) => {
 
   return (
     <>
-      <div
-        style={{
-          minWidth: `${cnh.minLengthKeepingDistance(1, argc)}rem`,
-          paddingLeft: `${argc * 0.01}px`,
-        }}
-      >
+      <div className="flow-node-beta-container">
         {inner}
+        {argc > 0 ? <>&nbsp;</> : null}
+        {[...Array(argc)].map((_, i) => (
+          <span className="flow-node-span-arg">
+            {i}
+            <Handle
+              key={i}
+              id={`${node.HANDLE_BETA_ARG_PREFIX}${i}`}
+              type="target"
+              position={Position.Top}
+              className="flow-handle-beta-arg"
+            />
+          </span>
+        ))}
       </div>
-      {[...Array(argc)].map((_, i) => (
-        <Handle
-          key={i}
-          id={`${node.HANDLE_BETA_ARG_PREFIX}${i}`}
-          type="target"
-          position={Position.Top}
-          style={{ left: cnh.positionPercentage(i, argc) }}
-          className="flow-handle-beta-arg"
-        />
-      ))}
+
       {take ? (
         <Handle
           id={node.HANDLE_BETA_FUN}
@@ -66,7 +64,7 @@ const BetaNode = (props: BetaNodeProps) => {
         id={node.HANDLE_BETA_RET}
         type="source"
         position={Position.Bottom}
-        className="flow-handle-beta-ret"
+        className="flow-handle-ret flow-handle-border-color-beta"
       />
     </>
   );

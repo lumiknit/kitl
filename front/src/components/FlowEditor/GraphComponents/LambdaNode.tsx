@@ -43,7 +43,7 @@ const LambdaNode = (props: LambdaNodeProps) => {
         id={node.HANDLE_LAMBDA_RET}
         type="source"
         position={Position.Bottom}
-        className="flow-handle-lambda-ret"
+        className="flow-handle-ret flow-handle-border-color-lambda"
       />
       <Handle
         id="ret"

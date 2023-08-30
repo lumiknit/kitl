@@ -98,7 +98,10 @@ const FlowEditor = (props: FlowEditorProps) => {
     handleEdgesChange = onEdgesChangeSelection;
   }
   // Helpers
-  const addNode = useCallback(() => ctxI.addEmptyNode(), [ctxI]);
+  const addNode = useCallback(() => {
+    const n = ctxI.addEmptyNode();
+    props.openNodeEditor("nd:" + n.id, n.data);
+  }, [ctxI]);
 
   // Handlers
 
@@ -131,7 +134,8 @@ const FlowEditor = (props: FlowEditorProps) => {
       const zoomMultiplier = 1 / zoom;
       const x = (event.clientX - tx) * zoomMultiplier;
       const y = (event.clientY - ty) * zoomMultiplier;
-      ctxI.addEmptyNodeAt(x, y);
+      const n = ctxI.addEmptyNodeAt(x, y);
+      props.openNodeEditor("nd:" + n.id, n.data);
     },
     [ctxI],
   );
@@ -169,7 +173,7 @@ const FlowEditor = (props: FlowEditorProps) => {
         onConnect={handleConnect}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
-        nodeOrigin={[0.5, 0.5]}
+        nodeOrigin={[0.0, 0.0]}
         /* Flow View */
         fitView
         minZoom={0.5}
