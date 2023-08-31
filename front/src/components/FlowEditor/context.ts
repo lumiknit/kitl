@@ -879,16 +879,13 @@ export class FlowContextI {
         // Gather paths
         let lastID: string | undefined = undefined;
         const ee: Map<string, string> = new Map();
-        for(let i = 0; i + 1 < stack.length; i++) {
-          if(stack[i + 1] === undefined) {
-            if(lastID !== undefined) {
-              ee.set(stack[i]!, lastID);
-            }
-            lastID = stack[i]!;
-            if(lastID === n.id) {
-              ee.clear();
-            }
-            i++;
+        for(const pn of path) {
+          if(lastID !== undefined) {
+            ee.set(pn.id, lastID);
+          }
+          lastID = pn.id;
+          if(lastID === n.id) {
+            ee.clear();
           }
         }
         if(lastID !== undefined) {
@@ -927,7 +924,7 @@ export class FlowContextI {
         }
       }
     }
-    console.log(sourceEdges);
+    console.log(errorEdges);
     this.context.setEdges(this.inst, es => es.map(e => {
       if(errorEdges.has(e.id)) {
         return {
