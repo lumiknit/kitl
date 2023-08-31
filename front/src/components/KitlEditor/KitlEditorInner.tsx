@@ -48,6 +48,7 @@ const KitlEditorInner = (props: Props) => {
                 i18n.t("graphTools.tool." + name),
             );
           } catch (e) {
+            console.error(e);
             toast.error(
               i18n.t("graphTools.errorOccurred") +
                 " : " +

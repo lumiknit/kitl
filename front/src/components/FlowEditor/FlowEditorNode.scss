@@ -198,8 +198,8 @@ $flow-handle-br-offset: math.div(
 .react-flow__handle.flow-handle-param.connecting {
   box-shadow: none;
   border-width: 0;
-  border-right: calc(1.5 * $flow-handle-br-width) solid;
-  border-bottom: calc(1.5 * $flow-handle-br-width) solid;
+  border-left: calc(1.5 * $flow-handle-br-width) solid;
+  border-top: calc(1.5 * $flow-handle-br-width) solid;
   border-color: $flow-color-selected;
 }
 

@@ -28,17 +28,20 @@ export class MNodeSource {
   }
 }
 
-export class MNode {
+export class MNode<T> {
   // Minimal node data to apply graph algorithms
   id: string;
+  type: node.NodeType;
   x: number;
   y: number;
   width: number;
   height: number;
   sources: MNodeSource[];
+  data?: T;
 
   constructor(
     id: string,
+    type: node.NodeType,
     x: number,
     y: number,
     width: number,
@@ -46,6 +49,7 @@ export class MNode {
     sources: MNodeSource[],
   ) {
     this.id = id;
+    this.type = type;
     this.x = x;
     this.y = y;
     this.width = width;
@@ -53,9 +57,10 @@ export class MNode {
     this.sources = sources;
   }
 
-  static fromReactFlowNode(n: Node) {
+  static fromReactFlowNode<T>(n: Node): MNode<T> {
     return new MNode(
       n.id,
+      n.data.type,
       n.position.x,
       n.position.y,
       n.width ?? 0,
@@ -345,69 +350,102 @@ export class FlowContextI {
     const newEdges: Edge[] = [];
     // Then find selected nodes
     const nodes = this.inst.getNodes();
-    const selectedNodes = nodes.filter(n => n.selected);
     // Try to connect edges
-    if (selectedNodes.length > 0) {
-      let lambda: Node | null = null;
-      const args: Node[] = [];
-      for (const n of selectedNodes) {
-        switch (n.type) {
-          case node.NodeType.Lambda:
-            {
-              if (lambda === null) {
+    let lambda: Node | null = null;
+    const args: Node[] = [];
+    const rets: Set<Node> = new Set();
+    for (const n of nodes) {
+      if (!n.selected) continue;
+      switch (n.type) {
+        case node.NodeType.Lambda:
+          {
+            if (lambda === null) {
+              lambda = n;
+            } else {
+              if (n.position.x < lambda.position.x) {
+                args.push(lambda);
                 lambda = n;
               } else {
-                if (n.position.x < lambda.position.x) {
-                  args.push(lambda);
-                  lambda = n;
-                } else {
-                  args.push(n);
-                }
+                args.push(n);
               }
             }
-            break;
-          default:
-            args.push(n);
-        }
-      }
-      // Sort args by x
-      args.sort((a, b) => a.position.x - b.position.x);
-      // Create edges
-      if (lambda !== null) {
-        newEdges.push({
-          id: genID(),
-          source: lambda.id,
-          sourceHandle: node.HANDLE_VAL,
-          target: newNode.id,
-          targetHandle: node.HANDLE_BETA_FUN,
-          type: lambda.type,
-        });
-      }
-      for (let i = 0; i < args.length; i++) {
-        newEdges.push({
-          id: genID(),
-          source: args[i].id,
-          sourceHandle: node.HANDLE_VAL,
-          target: newNode.id,
-          targetHandle: node.HANDLE_BETA_ARG_PREFIX + i,
-          type: args[i].type,
-        });
-      }
-      // Update new node data
-      newNode.data.argc = args.length;
-      if (lambda !== null) {
-        newNode.position.x = 12 + lambda.position.x + (lambda.width ?? 0);
-        newNode.position.y = lambda.position.y;
-      } else if (args.length > 0) {
-        newNode.position.x = args[0].position.x;
-        newNode.position.y = 12 + args[0].position.y + (args[0].height ?? 0);
+          }
+          break;
+        case node.NodeType.Literal:
+          args.push(n);
+          break;
+        case node.NodeType.Beta:
+          rets.add(n);
+          break;
       }
     }
-    this.context.setNodes(this.inst, ns => [
-      ...ns.map(n => ({ ...n, selected: false })),
-      newNode,
-    ]);
-    this.context.setEdges(this.inst, es => [...es, ...newEdges]);
+    // Sort args by x
+    args.sort((a, b) => a.position.x - b.position.x);
+    // Create edges
+    if (lambda !== null) {
+      newEdges.push({
+        id: genID(),
+        source: lambda.id,
+        sourceHandle: node.HANDLE_VAL,
+        target: newNode.id,
+        targetHandle: node.HANDLE_BETA_FUN,
+        type: lambda.type,
+      });
+    }
+    for (let i = 0; i < args.length; i++) {
+      newEdges.push({
+        id: genID(),
+        source: args[i].id,
+        sourceHandle: node.HANDLE_VAL,
+        target: newNode.id,
+        targetHandle: node.HANDLE_BETA_ARG_PREFIX + i,
+        type: args[i].type,
+      });
+    }
+    const retIDs = new Set<string>();
+    for (const r of rets) {
+      newEdges.push({
+        id: genID(),
+        source: newNode.id,
+        sourceHandle: node.HANDLE_VAL,
+        target: r.id,
+        targetHandle: node.HANDLE_BETA_ARG_PREFIX + r.data.argc,
+        type: node.NodeType.Beta,
+      });
+      retIDs.add(r.id);
+    }
+    // Update new node data
+    newNode.data.argc = args.length;
+    if (lambda !== null) {
+      newNode.position.x = 12 + lambda.position.x + (lambda.width ?? 0);
+      newNode.position.y = lambda.position.y;
+    } else if (args.length > 0) {
+      newNode.position.x = args[0].position.x;
+      newNode.position.y = 12 + args[0].position.y + (args[0].height ?? 0);
+    } else if (rets.size > 0) {
+      const r = rets.values().next().value;
+      newNode.position.x = r.position.x;
+      newNode.position.y = r.position.y - 12 - (r.height ?? 0);
+    }
+    this.context.updateGraph(
+      this.inst,
+      ns => [
+        ...ns.map(n =>
+          retIDs.has(n.id)
+            ? {
+                ...n,
+                data: {
+                  ...n.data,
+                  argc: n.data.argc + 1,
+                },
+                selected: false,
+              }
+            : { ...n, selected: false },
+        ),
+        newNode,
+      ],
+      es => [...es, ...newEdges],
+    );
     return newNode;
   }
 
@@ -597,32 +635,38 @@ export class FlowContextI {
   // -- Heavy graph algorithms
 
   // Graph algorithm helper
-  getMNodes(): Map<string, MNode> {
+  getMNodes<T>(): Map<string, MNode<T>> {
     const nodes = this.inst.getNodes();
     const edges = this.inst.getEdges();
-    const nodeMap = new Map<string, MNode>();
+    const nodeMap = new Map<string, MNode<T>>();
     for (const n of nodes) {
-      nodeMap.set(n.id, MNode.fromReactFlowNode(n));
+      nodeMap.set(n.id, MNode.fromReactFlowNode<T>(n));
     }
     for (const e of edges) {
       const target = nodeMap.get(e.target);
       if (!target) continue;
       let index = 0;
       const handle = e.targetHandle ?? "";
-      if (handle === node.HANDLE_LAMBDA_RET) {
+      if (
+        handle === node.HANDLE_LAMBDA_RET ||
+        handle === node.HANDLE_BETA_FUN
+      ) {
         index = -1;
       } else if (handle.startsWith(node.HANDLE_BETA_ARG_PREFIX)) {
         index = parseInt(handle.slice(node.HANDLE_BETA_ARG_PREFIX.length));
       }
       target.sources.push(new MNodeSource(e.source, index));
     }
+    for (const n of nodeMap.values()) {
+      n.sources.sort((a, b) => a.index - b.index);
+    }
     return nodeMap;
   }
 
   selectUnreachables() {
-    const mnodes = this.getMNodes();
+    const mnodes = this.getMNodes<undefined>();
     // Find def node, which is the root of the graph
-    let defNode: MNode | null = null;
+    let defNode: MNode<undefined> | null = null;
     for (const n of mnodes.values()) {
       if (n.id === "##def") {
         defNode = n;
@@ -657,18 +701,120 @@ export class FlowContextI {
 
   // Layout
   layoutDefault() {
-    throw new Error("Unimplemented");
+    const margin = 12;
+    type Data = {
+      size?: { w: number; h: number };
+      position?: boolean;
+      left?: MNode<Data>;
+      hasArgs?: boolean;
+    };
+    const mnodes = this.getMNodes<Data>();
+    const defNode = mnodes.get("##def")!;
+    if (defNode === undefined) {
+      throw new Error("Cannot find root node");
+    }
+    const sizeDfs = (n: MNode<Data>): boolean => {
+      if (n.data === undefined) n.data = {};
+      else return true;
+      const argsSize = [0, 0];
+      const lambdaSize = [0, 0];
+      for (const s of n.sources) {
+        const sn = mnodes.get(s.id)!;
+        if (sizeDfs(sn)) continue;
+        const sw = sn.data!.size!.w;
+        const sh = sn.data!.size!.h;
+        if (s.index < 0) {
+          // Lambda
+          lambdaSize[0] = sw;
+          lambdaSize[1] = sh;
+          n.data!.left = sn;
+        } else {
+          if (argsSize[0] > 0) argsSize[0] += margin;
+          argsSize[0] += sw;
+          argsSize[1] = Math.max(argsSize[1], sh);
+          n.data!.hasArgs = true;
+        }
+      }
+      const size = [n.width, n.height];
+      if (argsSize[0] > 0) {
+        size[0] = Math.max(size[0], argsSize[0] + margin);
+        size[1] = size[1] + argsSize[1] + margin;
+      }
+      if (lambdaSize[0] > 0) {
+        size[0] = size[0] + lambdaSize[0] + margin;
+        size[1] = Math.max(size[1], lambdaSize[1]);
+      }
+      n.data!.size = { w: size[0], h: size[1] };
+      return false;
+    };
+    sizeDfs(defNode);
+    const positionDfs = (n: MNode<Data>, x: number, y: number) => {
+      if (n.data!.position) return;
+      n.data!.position = true;
+      let lx =
+        n.data!.left !== undefined ? n.data!.left!.data!.size!.w + margin : 0;
+      if (lx > 0) {
+        n.x = x + lx;
+      } else {
+        n.x = x + (n.data!.size!.w - n.width) / 2;
+      }
+      n.y = y - n.height;
+      for (const s of n.sources) {
+        const sn = mnodes.get(s.id)!;
+        if (s.index < 0) {
+          positionDfs(sn, x, y);
+        } else {
+          positionDfs(sn, x + lx, y - n.height - margin);
+          lx += margin + sn.data!.size!.w;
+        }
+      }
+    };
+    positionDfs(defNode, 0, 0);
+    this.context.setNodes(this.inst, ns =>
+      ns.map(n => {
+        const mnode = mnodes.get(n.id);
+        if (!mnode) return n;
+        return {
+          ...n,
+          position: {
+            x: mnode.x,
+            y: mnode.y,
+          },
+        };
+      }),
+    );
   }
 
   layoutLinear() {
-    const mnodes = this.getMNodes();
-    let x = 0;
-    let y = 0;
+    // Find all nodes and order only nodes reachable from def node
+    // Then layout them linearly
+    const mnodes = this.getMNodes<number>();
+    const ordered = [];
+    // DFS
+    const visited = new Set<string>();
+    const stack = ["##def"];
+    while (stack.length > 0) {
+      const id = stack.pop()!;
+      if (visited.has(id)) continue;
+      visited.add(id);
+      const n = mnodes.get(id);
+      if (!n) continue;
+      ordered.push(n);
+      for (const s of n.sources) {
+        stack.push(s.id);
+      }
+    }
+    // Find all unvisited nodes
     for (const n of mnodes.values()) {
-      n.x = x;
+      if (!visited.has(n.id)) {
+        ordered.push(n);
+      }
+    }
+    let y = 0;
+    for (const n of ordered.values()) {
+      y -= n.height + 12;
+      n.x = 0;
       n.y = y;
-      x += 16;
-      y += n.height + 16;
     }
     this.context.setNodes(this.inst, ns =>
       ns.map(n => {
@@ -683,7 +829,6 @@ export class FlowContextI {
         };
       }),
     );
-    throw new Error("Unimplemented");
   }
 
   validateGraph() {
