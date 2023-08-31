@@ -3,7 +3,7 @@ import { BezierEdge, EdgeProps, Position } from "reactflow";
 const DefaultEdge = (props: EdgeProps) => {
   const p = { ...props };
   const sourceHandleId = p.sourceHandleId;
-  if (sourceHandleId && sourceHandleId.endsWith("ret")) {
+  if (sourceHandleId && sourceHandleId.endsWith("val")) {
     p.sourceY -= 4;
     const dx = props.sourceX - props.targetX;
     const dy = props.sourceY - props.targetY;

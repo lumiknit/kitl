@@ -23,6 +23,10 @@ export enum NodeType {
   Comment = "comment",
 }
 
+// -- Common handle
+
+export const HANDLE_VAL = "val";
+
 // -- Each node type
 
 // Literal
@@ -30,8 +34,6 @@ export type LiteralNodeData = {
   type: NodeType.Literal;
   value: j.Json;
 };
-
-export const HANDLE_LITERAL_RET = "ret";
 
 // Beta
 
@@ -57,7 +59,6 @@ export type BetaNodeData = BetaAppNodeData | BetaNameNodeData;
 
 export const HANDLE_BETA_ARG_PREFIX = "arg-";
 export const handleBetaArg = (i: number) => `${HANDLE_BETA_ARG_PREFIX}${i}`;
-export const HANDLE_BETA_RET = "ret";
 export const HANDLE_BETA_FUN = "fun";
 
 export const emptyBetaNode = (): BetaNodeData => ({
@@ -88,11 +89,10 @@ export type LambdaAnyNodeData = {
 export type LambdaNodeData = LambdaPatternNodeData | LambdaAnyNodeData;
 
 export const HANDLE_LAMBDA_ARG = "arg";
-export const HANDLE_LAMBDA_BODY_ARG = "body-arg";
+export const HANDLE_LAMBDA_PARAM = "param";
 export const HANDLE_LAMBDA_ELEM_PREFIX = "elem-";
 export const handleLambdaElem = (i: number) =>
   `${HANDLE_LAMBDA_ELEM_PREFIX}${i}`;
-export const HANDLE_LAMBDA_BODY_RET = "body-ret";
 export const HANDLE_LAMBDA_RET = "ret";
 
 // Comment
@@ -256,9 +256,9 @@ export const convertNodeDataType = (
 export const nodeHandleSet = (node: NodeData): Set<string> => {
   switch (node.type) {
     case NodeType.Literal:
-      return new Set([HANDLE_LITERAL_RET]);
+      return new Set([HANDLE_VAL]);
     case NodeType.Beta: {
-      const set = new Set([HANDLE_BETA_RET]);
+      const set = new Set([HANDLE_VAL]);
       for (let i = 0; i < node.argc + 1; i++) {
         set.add(`${HANDLE_BETA_ARG_PREFIX}${i}`);
       }
@@ -268,11 +268,7 @@ export const nodeHandleSet = (node: NodeData): Set<string> => {
       return set;
     }
     case NodeType.Lambda: {
-      const set = new Set([
-        HANDLE_LAMBDA_RET,
-        HANDLE_LAMBDA_BODY_RET,
-        HANDLE_LAMBDA_BODY_ARG,
-      ]);
+      const set = new Set([HANDLE_VAL, HANDLE_LAMBDA_RET, HANDLE_LAMBDA_PARAM]);
       if (node.lambdaType === LambdaNodeType.Pattern) {
         set.add(HANDLE_LAMBDA_ARG);
         for (let i = 0; i < node.argc + 1; i++) {

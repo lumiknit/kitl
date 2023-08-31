@@ -161,7 +161,7 @@ $flow-handle-br-offset: math.div(
   }
 }
 
-.flow-handle-ret {
+.flow-handle-val {
   left: calc(100% - $flow-handle-br-offset);
   top: calc(100% - $flow-handle-br-offset);
   transform: translate(-50%, -50%);
@@ -174,7 +174,7 @@ $flow-handle-br-offset: math.div(
   border-radius: 0 0 100% 0;
 }
 
-.react-flow__handle.flow-handle-ret.connecting {
+.react-flow__handle.flow-handle-val.connecting {
   box-shadow: none;
   border-width: 0;
   border-right: calc(1.5 * $flow-handle-br-width) solid;

@@ -64,10 +64,10 @@ const BetaNode = (props: BetaNodeProps) => {
         className="flow-handle-hidden"
       />
       <Handle
-        id={node.HANDLE_BETA_RET}
+        id={node.HANDLE_VAL}
         type="source"
         position={Position.Bottom}
-        className="flow-handle-ret flow-handle-border-color-beta"
+        className="flow-handle-val flow-handle-border-color-beta"
       />
     </>
   );

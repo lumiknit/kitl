@@ -40,20 +40,20 @@ const LambdaNode = (props: LambdaNodeProps) => {
         {inner}
       </div>
       <Handle
-        id={node.HANDLE_LAMBDA_RET}
+        id={node.HANDLE_VAL}
         type="source"
         position={Position.Bottom}
-        className="flow-handle-ret flow-handle-border-color-lambda"
+        className="flow-handle-val flow-handle-border-color-lambda"
       />
       <Handle
-        id="ret"
+        id={node.HANDLE_LAMBDA_RET}
         type="target"
         position={Position.Left}
         style={{ top: cnh.positionPercentage(count - 1, count) }}
         className="flow-handle-lambda-in"
       />
       <Handle
-        id={node.HANDLE_LAMBDA_BODY_ARG}
+        id={node.HANDLE_LAMBDA_PARAM}
         type="source"
         position={Position.Left}
         style={{ top: cnh.positionPercentage(0, count) }}

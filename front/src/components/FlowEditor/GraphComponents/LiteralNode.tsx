@@ -54,10 +54,10 @@ const Literal = (props: LiteralProps) => {
         <div className="flow-node-container-body">{body}</div>
       </div>
       <Handle
-        id={node.HANDLE_LITERAL_RET}
+        id={node.HANDLE_VAL}
         type="source"
         position={Position.Bottom}
-        className="flow-handle-ret flow-handle-border-color-literal"
+        className="flow-handle-val flow-handle-border-color-literal"
       />
     </>
   );

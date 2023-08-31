@@ -325,13 +325,88 @@ export class FlowContextI {
   }
 
   addEmptyNode() {
+    // First, find center
     let center;
     if (this.storeApi) {
       center = this.context.getCenterZitter(this.storeApi.getState());
     } else {
       center = [0, 0];
     }
-    return this.addEmptyNodeAt(center[0], center[1]);
+    const newNode = {
+      id: genID(),
+      type: node.NodeType.Beta,
+      data: node.emptyBetaNode(),
+      position: {
+        x: center[0],
+        y: center[1],
+      },
+      selected: true,
+    };
+    const newEdges: Edge[] = [];
+    // Then find selected nodes
+    const nodes = this.inst.getNodes();
+    const selectedNodes = nodes.filter(n => n.selected);
+    // Try to connect edges
+    if (selectedNodes.length > 0) {
+      let lambda: Node | null = null;
+      const args: Node[] = [];
+      for (const n of selectedNodes) {
+        switch (n.type) {
+          case node.NodeType.Lambda:
+            {
+              if (lambda === null) {
+                lambda = n;
+              } else {
+                if (n.position.x < lambda.position.x) {
+                  args.push(lambda);
+                  lambda = n;
+                }
+              }
+            }
+            break;
+          default:
+            args.push(n);
+        }
+      }
+      // Sort args by x
+      args.sort((a, b) => a.position.x - b.position.x);
+      // Create edges
+      if (lambda !== null) {
+        newEdges.push({
+          id: genID(),
+          source: lambda.id,
+          sourceHandle: node.HANDLE_VAL,
+          target: newNode.id,
+          targetHandle: node.HANDLE_BETA_FUN,
+          type: lambda.type,
+        });
+      }
+      for (let i = 0; i < args.length; i++) {
+        newEdges.push({
+          id: genID(),
+          source: args[i].id,
+          sourceHandle: node.HANDLE_VAL,
+          target: newNode.id,
+          targetHandle: node.HANDLE_BETA_ARG_PREFIX + i,
+          type: args[i].type,
+        });
+      }
+      // Update new node data
+      newNode.data.argc = args.length;
+      if (lambda !== null) {
+        newNode.position.x = 12 + lambda.position.x + (lambda.width ?? 0);
+        newNode.position.y = lambda.position.y;
+      } else if (args.length > 0) {
+        newNode.position.x = args[0].position.x;
+        newNode.position.y = 12 + args[0].position.y + (args[0].height ?? 0);
+      }
+    }
+    this.context.setNodes(this.inst, ns => [
+      ...ns.map(n => ({ ...n, selected: false })),
+      newNode,
+    ]);
+    this.context.setEdges(this.inst, es => [...es, ...newEdges]);
+    return newNode;
   }
 
   // Add edge
@@ -532,7 +607,7 @@ export class FlowContextI {
       if (!target) continue;
       let index = 0;
       const handle = e.targetHandle ?? "";
-      if (handle === node.HANDLE_LAMBDA_BODY_RET) {
+      if (handle === node.HANDLE_LAMBDA_RET) {
         index = -1;
       } else if (handle.startsWith(node.HANDLE_BETA_ARG_PREFIX)) {
         index = parseInt(handle.slice(node.HANDLE_BETA_ARG_PREFIX.length));
