@@ -8,7 +8,9 @@ export type CommentNodeProps = {
 
 const CommentNode = (props: CommentNodeProps) => {
   return (
-    <div className="flow-node-container-comment">{props.data.content}</div>
+    <div className="flow-node-container-comment flow-node-serif">
+      {props.data.content}
+    </div>
   );
 };
 

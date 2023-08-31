@@ -1,8 +1,8 @@
-import { BezierEdge } from "reactflow";
+import DefaultEdge from "./Edge";
 
 export default {
-  default: BezierEdge,
-  literal: BezierEdge,
-  lambda: BezierEdge,
-  beta: BezierEdge,
+  default: DefaultEdge,
+  literal: DefaultEdge,
+  lambda: DefaultEdge,
+  beta: DefaultEdge,
 };

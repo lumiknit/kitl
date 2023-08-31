@@ -1,108 +1,219 @@
-$flow-node-color-bg: #fff;
-$flow-node-color-fg: #363d47;
-$flow-node-color-def: #b00279;
-$flow-node-color-beta: #5d5652;
-$flow-node-color-lambda: #db5614;
-$flow-node-color-literal: #085ed7;
-$flow-node-color-comment: #46923c;
-$flow-node-color-handle-selected: #1697dc;
+@use "sass:list";
+@use "sass:map";
+@use "sass:math";
+
+/* Color and size definitions */
+
+$flow-color-bg: #fff;
+$flow-color-selected: #1697dc;
+$flow-color-fg: #363d47;
+$flow-color-def: #b00279;
+$flow-color-beta: #5d5652;
+$flow-color-lambda: #db5614;
+$flow-color-literal: #085ed7;
+$flow-color-comment: #46923c;
 
 $flow-node-colors: (
-  bg: $flow-node-color-bg,
-  fg: $flow-node-color-fg,
-  def: $flow-node-color-def,
-  beta: $flow-node-color-beta,
-  lambda: $flow-node-color-lambda,
-  literal: $flow-node-color-literal,
-  comment: $flow-node-color-comment,
+  bg: $flow-color-bg,
+  fg: $flow-color-fg,
+  def: $flow-color-def,
+  beta: $flow-color-beta,
+  lambda: $flow-color-lambda,
+  literal: $flow-color-literal,
+  comment: $flow-color-comment,
 );
 
 $flow-edge-colors: (
-  default: #5b626a,
-  beta: $flow-node-color-beta,
-  lambda: $flow-node-color-lambda,
-  literal: $flow-node-color-literal,
-  selected: #1697dc,
+  default: $flow-color-fg,
+  beta: $flow-color-beta,
+  lambda: $flow-color-lambda,
+  literal: $flow-color-literal,
+  selected: $flow-color-selected,
 );
 
-$flow-line-width: 0.08rem;
-$flow-handle-bottom-right-size: 0.5rem;
-$flow-handle-bottom-right-width: 0.2rem;
+$flow-node-corner: 0.125rem;
+$flow-node-corner-deep: 0.5rem;
 
-@use "sass:list";
-@use "sass:map";
+$flow-line-width: 0.08rem;
+$flow-handle-size: 0.5rem;
+$flow-handle-br-size: 0.5rem;
+$flow-handle-br-width: 0.2rem;
+
+/* Pre calculated */
+
+$flow-handle-off: math.div($flow-handle-size + $flow-line-width, 2);
+$flow-handle-br-offset: math.div(
+  $flow-handle-br-size - $flow-handle-br-width,
+  2
+);
 
 /* Node shape */
 
 .react-flow__node {
-  font-size: 1rem;
-  line-height: 1;
-  font-family: sans-serif;
-  padding: 0.3rem 0.4rem;
-  text-align: center;
   min-width: 1rem;
   min-height: 1rem;
-  background-color: rgba(#fff, 0.8);
+  padding: 0.3rem 0.4rem;
+
+  font-family: sans-serif;
+  font-size: 1rem;
+  text-align: center;
+  line-height: 1;
+
+  background-color: rgba($flow-color-bg, 0.8);
   /*backdrop-filter: blur(0.1rem);*/
   transition: box-shadow 0.1s ease-in-out;
 }
 
 .react-flow__node-def {
-  color: $flow-node-color-def;
+  color: $flow-color-def;
   border: 0;
-  border-top: $flow-line-width solid $flow-node-color-def;
+  border-top: $flow-line-width solid $flow-color-def;
   padding: 0.1rem 0.5rem;
 }
 
 .react-flow__node-beta {
-  color: $flow-node-color-beta;
-  border: $flow-line-width solid $flow-node-color-beta;
-  border-radius: $flow-handle-bottom-right-size;
+  color: $flow-color-beta;
+  border: $flow-line-width solid $flow-color-beta;
+  border-radius: $flow-handle-br-size;
 }
 
 .react-flow__node-lambda {
-  color: $flow-node-color-lambda;
-  border: $flow-line-width solid $flow-node-color-lambda;
-  border-radius: 0.125rem;
-  border-bottom-right-radius: $flow-handle-bottom-right-size;
+  color: $flow-color-lambda;
+  border: $flow-line-width solid $flow-color-lambda;
+  border-radius: $flow-node-corner;
+  border-bottom-right-radius: $flow-handle-br-size;
 }
 
 .react-flow__node-literal {
-  color: $flow-node-color-literal;
-  border: $flow-line-width solid $flow-node-color-literal;
-  border-radius: 1rem 0.125rem $flow-handle-bottom-right-size 0.125rem;
+  color: $flow-color-literal;
+  border: $flow-line-width solid $flow-color-literal;
+  border-radius: $flow-node-corner-deep $flow-node-corner $flow-handle-br-size
+    $flow-node-corner;
 }
 
 .react-flow__node-comment {
   font-family: serif;
   font-size: 0.75rem;
   max-width: 20rem;
-  color: $flow-node-color-comment;
-  background: rgba($flow-node-color-bg, 0.5);
+  color: $flow-color-comment;
+  background: rgba($flow-color-bg, 0.5);
   border: 0;
-  border-left: 4px solid $flow-node-color-comment;
+  border-left: 4px solid $flow-color-comment;
   border-radius: 0;
   padding: 0.1rem 0.2rem;
   text-align: left;
 }
 
 .react-flow__node.selected {
-  box-shadow: 0 0.1rem 0.4rem rgba($flow-node-color-fg, 0.5);
+  box-shadow: 0 0.1rem 0.4rem rgba($flow-color-fg, 0.5);
 }
 
-/* Name Display */
-.flow-name-display {
-  display: inline-block;
-  text-align: left;
+/* Handles */
+
+.react-flow__handle {
+  width: $flow-handle-size;
+  height: $flow-handle-size;
 }
 
-.flow-name-display-name {
-  font-size: 1rem;
+@each $_, $pos in (left: left, top: top, right: right, bottom: bottom) {
+  .react-flow__handle-#{$pos} {
+    #{$pos}: -$flow-handle-off;
+  }
 }
 
-.flow-name-display-module {
-  font-size: 0.4rem;
-  font-style: italic;
+.react-flow__handle {
+  transition:
+    border-width 0.1s ease-in-out,
+    border-color 0.1s ease-in-out,
+    box-shadow 0.1s ease-in-out;
+}
+
+.react-flow__handle.connecting {
+  border-width: calc(2 * $flow-line-width);
+  outline: 0.0625rem dashed $flow-color-selected;
+  outline-offset: 0.125rem;
+}
+
+@mixin flow-handle-border-color($style, $fg, $bg) {
+  @if $style == in {
+    border-color: $fg;
+    background-color: $bg;
+  } @else {
+    border-color: $bg;
+    background-color: $fg;
+  }
+}
+
+/* Handle definitions */
+@each $kind in (in, out) {
+  @each $key, $color in $flow-node-colors {
+    .flow-handle-#{$key}-#{$kind} {
+      border-width: $flow-line-width;
+      border-style: solid;
+      @include flow-handle-border-color($kind, $color, $flow-color-bg);
+    }
+  }
+}
+
+@each $key, $color in $flow-node-colors {
+  .flow-handle-border-color-#{$key} {
+    border-color: $color;
+  }
+}
+
+.flow-handle-ret {
+  left: calc(100% - $flow-handle-br-offset);
+  top: calc(100% - $flow-handle-br-offset);
+  transform: translate(-50%, -50%);
+  width: $flow-handle-br-size;
+  height: $flow-handle-br-size;
+  background-color: transparent;
+  border-width: 0;
+  border-right: $flow-handle-br-width solid;
+  border-bottom: $flow-handle-br-width solid;
+  border-radius: 0 0 100% 0;
+}
+
+.react-flow__handle.flow-handle-ret.connecting {
+  box-shadow: none;
+  border-width: 0;
+  border-right: calc(1.5 * $flow-handle-br-width) solid;
+  border-bottom: calc(1.5 * $flow-handle-br-width) solid;
+  border-color: $flow-color-selected;
+}
+
+.flow-handle-hidden {
+  opacity: 0;
+}
+
+/* Edge */
+
+.react-flow__edge path.react-flow__edge-path {
+  stroke: map.get($flow-edge-colors, default);
+  stroke-width: 0.8;
+  transition: stroke-width 0.1s ease-in-out;
+}
+
+marker.react-flow__arrowhead polyline {
+  stroke: map.get($flow-edge-colors, default);
+  fill: map.get($flow-edge-colors, default);
+}
+
+.react-flow__edge.selected path.react-flow__edge-path {
+  stroke: map.get($flow-edge-colors, default);
+  stroke-width: 1.6;
+  filter: drop-shadow(0 0 0.25rem rgba($flow-color-fg, 0.75));
+}
+
+@each $key, $color in $flow-edge-colors {
+  // Define edge colors
+  .react-flow__edge-#{$key} path.react-flow__edge-path {
+    stroke: $color;
+  }
+
+  .react-flow__edge-#{$key}.selected path.react-flow__edge-path {
+    stroke: $color;
+  }
 }
 
 /* Node body */
@@ -142,171 +253,28 @@ $flow-handle-bottom-right-width: 0.2rem;
   max-width: 40rem;
 }
 
-.flow-node-container-comment {
-  font-family: serif;
-  font-size: 0.66rem;
-  white-space: pre-wrap;
-  word-break: break-all;
-  margin: 0.2rem 0;
+/* Name Display */
+.flow-name-display {
+  display: inline-block;
   text-align: left;
-  overflow: hidden;
-  max-width: 40rem;
 }
 
-/* Handles */
-
-.react-flow__handle {
-  width: 0.6rem;
-  height: 0.6rem;
+.flow-name-display-name {
+  font-size: 1rem;
 }
 
-$handle_off: 0.35rem;
-
-@each $_, $pos in (left: left, top: top, right: right, bottom: bottom) {
-  .react-flow__handle-#{$pos} {
-    #{$pos}: -$handle_off;
-  }
+.flow-name-display-module {
+  font-size: 0.4rem;
+  font-style: italic;
 }
 
-.react-flow__handle {
-  transition:
-    border-width 0.1s ease-in-out,
-    border-color 0.1s ease-in-out,
-    box-shadow 0.1s ease-in-out;
-}
+/* Other */
 
-.react-flow__handle.connecting {
-  border-width: calc(2 * $flow-line-width);
-  box-shadow: 0 0 0.5rem $flow-node-color-handle-selected;
-}
-
-/* Handle mixins */
-
-@mixin flow-handle-border-style($style) {
-  border-width: $flow-line-width;
-  border-style: $style;
-}
-
-@mixin flow-handle-border-color($style, $fg, $bg) {
-  @if $style == in {
-    border-color: $fg;
-    background-color: $bg;
-  } @else {
-    border-color: $bg;
-    background-color: $fg;
-  }
-}
-
-/* Handle definitions */
-@each $type,
-  $style
-    in (
-      arg: (
-        in,
-        solid,
-      ),
-      ret: (
-        out,
-        solid,
-      )
-    )
-{
-  @each $key, $color in $flow-node-colors {
-    .flow-handle-#{$key}-#{$type} {
-      @include flow-handle-border-style(list.nth($style, 2));
-      @include flow-handle-border-color(
-        list.nth($style, 1),
-        $color,
-        $flow-node-color-bg
-      );
-    }
-  }
-}
-
-@each $key, $color in $flow-node-colors {
-  .flow-handle-border-color-#{$key} {
-    border-color: $color;
-  }
-}
-
-.flow-handle-ret {
-  left: calc(
-    100% - ($flow-handle-bottom-right-size - $flow-handle-bottom-right-width) /
-      2
-  );
-  top: calc(
-    100% - $flow-handle-bottom-right-size + $flow-handle-bottom-right-width / 2
-  );
-  width: $flow-handle-bottom-right-size;
-  height: $flow-handle-bottom-right-size;
-  background-color: transparent;
-  border-width: 0;
-  border-right: $flow-handle-bottom-right-width solid;
-  border-bottom: $flow-handle-bottom-right-width solid;
-  border-radius: 0 0 100% 0;
-}
-
-.react-flow__handle.flow-handle-ret.connecting {
-  box-shadow: none;
-  border-width: 0;
-  border-right: calc(1.5 * $flow-handle-bottom-right-width) solid;
-  border-bottom: calc(1.5 * $flow-handle-bottom-right-width) solid;
-  border-color: $flow-node-color-handle-selected;
-}
-
-.flow-handle-hidden {
-  opacity: 0;
-}
-
-/* Edge */
-
-.react-flow__edge path.react-flow__edge-path {
-  stroke: map.get($flow-edge-colors, default);
-  stroke-width: 0.8;
-  transition: stroke-width 0.1s ease-in-out;
-}
-
-marker.react-flow__arrowhead polyline {
-  stroke: map.get($flow-edge-colors, default);
-  fill: map.get($flow-edge-colors, default);
-}
-
-.react-flow__edge.selected path.react-flow__edge-path {
-  stroke: map.get($flow-edge-colors, default);
-  stroke-width: 1.6;
-  filter: drop-shadow(0 0 0.25rem rgba($flow-node-color-fg, 0.75));
-}
-
-@each $key, $color in $flow-edge-colors {
-  .react-flow__edge-#{$key} path.react-flow__edge-path {
-    stroke: $color;
-  }
-
-  .react-flow__edge-#{$key}.selected path.react-flow__edge-path {
-    stroke: $color;
-  }
+.flow-serif {
+  font-family: serif;
 }
 
 .flow-node-dimmed {
   font-size: 0.75rem;
   opacity: 0.5;
-}
-
-.flow-node-span-arg {
-  position: relative;
-  display: inline-block;
-  min-width: 1.2rem;
-  color: rgb(0, 0, 0, 0.2);
-  border-left: 0.05rem solid #00000088;
-  font-size: 0.5rem;
-}
-
-.flow-node-span-arg .react-flow__handle-top {
-  top: -0.6rem;
-}
-
-.flow-node-beta-container {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
 }

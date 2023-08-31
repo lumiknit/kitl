@@ -3,6 +3,8 @@ import { Handle, Position } from "reactflow";
 import NameDisplay from "./NameDisplay";
 import * as node from "../../../common/node";
 
+import * as cnh from "./helper";
+
 export type BetaNodeProps = {
   data: node.BetaNodeData;
 };
@@ -28,20 +30,21 @@ const BetaNode = (props: BetaNodeProps) => {
 
   return (
     <>
-      <div className="flow-node-beta-container">
+      <div
+        style={{
+          minWidth: `${cnh.minLengthKeepingDistance(1, argc)}rem`,
+          paddingLeft: `${0.01 * argc}rem`, // For force rerendering
+        }}>
         {inner}
-        {argc > 0 ? <>&nbsp;</> : null}
         {[...Array(argc)].map((_, i) => (
-          <span className="flow-node-span-arg">
-            {i}
-            <Handle
-              key={i}
-              id={`${node.HANDLE_BETA_ARG_PREFIX}${i}`}
-              type="target"
-              position={Position.Top}
-              className="flow-handle-beta-arg"
-            />
-          </span>
+          <Handle
+            key={i}
+            id={`${node.HANDLE_BETA_ARG_PREFIX}${i}`}
+            type="target"
+            position={Position.Top}
+            style={{ left: cnh.positionPercentage(i, argc) }}
+            className="flow-handle-beta-in"
+          />
         ))}
       </div>
 
@@ -50,7 +53,7 @@ const BetaNode = (props: BetaNodeProps) => {
           id={node.HANDLE_BETA_FUN}
           type="target"
           position={Position.Left}
-          className="flow-handle-beta-arg"
+          className="flow-handle-beta-in"
         />
       ) : null}
       <Handle

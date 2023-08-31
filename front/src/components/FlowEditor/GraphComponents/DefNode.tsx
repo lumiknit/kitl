@@ -23,7 +23,7 @@ const DefNode = (props: DefNodeProps) => {
         id={node.HANDLE_DEF_ARG}
         type="target"
         position={Position.Top}
-        className="flow-handle-def-arg"
+        className="flow-handle-def-in"
       />
     </>
   );
