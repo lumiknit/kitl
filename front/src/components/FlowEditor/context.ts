@@ -832,7 +832,118 @@ export class FlowContextI {
   }
 
   validateGraph() {
-    throw new Error("Unimplemented");
+    // Check two things:
+    // 1. Cycles. Note that lambda parameter is consiedered as a separated leaf node
+    // 2. Parameters used before created. For example,
+    //    \a. b \b. a -> In this case, b is not defined.
+    type Data = {
+      id: string;
+      sources: Edge[];
+      processed?: boolean;
+      usedParams: Set<string>;
+    };
+    const edges = this.inst.getEdges();
+    const sourceEdges = new Map<string, Data>();
+    for (const e of edges) {
+      if(!sourceEdges.has(e.target)) {
+        sourceEdges.set(e.target, {
+          id: e.target,
+          sources: [],
+          usedParams: new Set(),
+        });
+      }
+      sourceEdges.get(e.target)!.sources.push(e);
+    }
+    const path: Data[] = [];
+    const mnodes = this.getMNodes<Data>();
+    const errorEdges: Set<string> = new Set();
+    let errorMsg = "";
+    // Check cycles
+    const stack: Array<string | undefined> = ["##def"];
+    while (stack.length > 0) {
+      const id = stack.pop();
+      if(id === undefined) {
+        const d = path.pop()!;
+        d.processed = true;
+        d.usedParams.delete(d.id);
+        if(path.length > 0) {
+          path[path.length - 1].usedParams = new Set([...path[path.length - 1].usedParams, ...d.usedParams]);
+        }
+        continue;
+      }
+      const n = mnodes.get(id);
+      const d = sourceEdges.get(id);
+      if(!n || !d) continue;
+      if (d.processed === true) continue; // Already processed
+      else if(d.processed === false) { // Cycle
+        // Gather paths
+        let lastID: string | undefined = undefined;
+        const ee: Map<string, string> = new Map();
+        for(let i = 0; i + 1 < stack.length; i++) {
+          if(stack[i + 1] === undefined) {
+            if(lastID !== undefined) {
+              ee.set(stack[i]!, lastID);
+            }
+            lastID = stack[i]!;
+            if(lastID === n.id) {
+              ee.clear();
+            }
+            i++;
+          }
+        }
+        if(lastID !== undefined) {
+          ee.set(n.id, lastID);
+        }
+        // Mark edges as error
+        for(const e of edges) {
+          const t = ee.get(e.source);
+          if(t === e.target) {
+            errorEdges.add(e.id);
+          }
+        }
+        d.processed = true;
+        errorMsg += "Cycle detected;";
+        continue;
+      }
+      d.processed = false;
+      path.push(d);
+      stack.push(undefined);
+      for (const e of sourceEdges.get(n.id)?.sources ?? []) {
+        const s = e.sourceHandle;
+        if(s && (s.startsWith(node.HANDLE_LAMBDA_ELEM_PREFIX) || s.startsWith(node.HANDLE_LAMBDA_PARAM))) {
+          d.usedParams.add(e.source);
+        } else {
+          stack.push(e.source);
+        }
+      }
+    }
+    // Check used params is not provided.
+    const d = sourceEdges.get("##def");
+    if(d && d.usedParams.size > 0) {
+      errorMsg += "Parameters used before created;";
+      for(const e of edges) {
+        if(d.usedParams.has(e.source) && (e.sourceHandle?.startsWith(node.HANDLE_LAMBDA_PARAM) || e.sourceHandle?.startsWith(node.HANDLE_LAMBDA_ELEM_PREFIX))) {
+          errorEdges.add(e.id);
+        }
+      }
+    }
+    console.log(sourceEdges);
+    this.context.setEdges(this.inst, es => es.map(e => {
+      if(errorEdges.has(e.id)) {
+        return {
+          ...e,
+          type: 'error',
+        };
+      } else {
+        return {
+          ...e,
+          type: mnodes.get(e.source)?.type ?? 'default',
+        };
+      }
+    }));
+    if(errorMsg !== "") {
+      throw new Error(errorMsg);
+    }
   }
 
   executeGraphTools(name: string) {

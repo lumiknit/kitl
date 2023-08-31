@@ -5,4 +5,5 @@ export default {
   literal: DefaultEdge,
   lambda: DefaultEdge,
   beta: DefaultEdge,
+  error: DefaultEdge,
 };

@@ -7,11 +7,12 @@
 $flow-color-bg: #fff;
 $flow-color-selected: #1697dc;
 $flow-color-fg: #363d47;
-$flow-color-def: #b00279;
+$flow-color-def: #827db2;
 $flow-color-beta: #5d5652;
-$flow-color-lambda: #db5614;
+$flow-color-lambda: #e47215;
 $flow-color-literal: #085ed7;
 $flow-color-comment: #46923c;
+$flow-color-error: #cc0000;
 
 $flow-node-colors: (
   bg: $flow-color-bg,
@@ -235,6 +236,16 @@ marker.react-flow__arrowhead polyline {
   .react-flow__edge-#{$key}.selected path.react-flow__edge-path {
     stroke: $color;
   }
+}
+
+.react-flow__edge-error path.react-flow__edge-path {
+  stroke: $flow-color-error;
+  stroke-dasharray: 3 1;
+}
+
+.react-flow__edge-error.selected path.react-flow__edge-path {
+  stroke: $flow-color-error;
+  stroke-dasharray: 3 1;
 }
 
 /* Node body */
