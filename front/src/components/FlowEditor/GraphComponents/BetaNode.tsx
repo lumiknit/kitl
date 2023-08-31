@@ -32,7 +32,7 @@ const BetaNode = (props: BetaNodeProps) => {
     <>
       <div
         style={{
-          minWidth: `${cnh.minLengthKeepingDistance(1, argc)}rem`,
+          minWidth: `${cnh.minLengthKeepingDistance(0.8, argc)}rem`,
           paddingLeft: `${0.01 * argc}rem`, // For force rerendering
         }}>
         {inner}

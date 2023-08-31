@@ -80,14 +80,14 @@ $flow-handle-br-offset: math.div(
 .react-flow__node-lambda {
   color: $flow-color-lambda;
   border: $flow-line-width solid $flow-color-lambda;
-  border-radius: $flow-node-corner;
-  border-bottom-right-radius: $flow-handle-br-size;
+  border-radius: $flow-handle-br-size $flow-node-corner $flow-handle-br-size
+    $flow-node-corner;
 }
 
 .react-flow__node-literal {
   color: $flow-color-literal;
   border: $flow-line-width solid $flow-color-literal;
-  border-radius: $flow-node-corner-deep $flow-node-corner $flow-handle-br-size
+  border-radius: $flow-node-corner $flow-node-corner $flow-handle-br-size
     $flow-node-corner;
 }
 
@@ -129,7 +129,7 @@ $flow-handle-br-offset: math.div(
 }
 
 .react-flow__handle.connecting {
-  border-width: calc(2 * $flow-line-width);
+  border-width: calc(1.5 * $flow-line-width);
   outline: 0.0625rem dashed $flow-color-selected;
   outline-offset: 0.125rem;
 }
@@ -175,6 +175,27 @@ $flow-handle-br-offset: math.div(
 }
 
 .react-flow__handle.flow-handle-val.connecting {
+  box-shadow: none;
+  border-width: 0;
+  border-right: calc(1.5 * $flow-handle-br-width) solid;
+  border-bottom: calc(1.5 * $flow-handle-br-width) solid;
+  border-color: $flow-color-selected;
+}
+
+.flow-handle-param {
+  left: $flow-handle-br-offset;
+  top: $flow-handle-br-offset;
+  transform: translate(-50%, -50%);
+  width: $flow-handle-br-size;
+  height: $flow-handle-br-size;
+  background-color: transparent;
+  border-width: 0;
+  border-left: $flow-handle-br-width solid;
+  border-top: $flow-handle-br-width solid;
+  border-radius: 100% 0 0 0;
+}
+
+.react-flow__handle.flow-handle-param.connecting {
   box-shadow: none;
   border-width: 0;
   border-right: calc(1.5 * $flow-handle-br-width) solid;

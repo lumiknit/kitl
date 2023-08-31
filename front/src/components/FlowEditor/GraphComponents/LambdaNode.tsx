@@ -29,13 +29,13 @@ const LambdaNode = (props: LambdaNodeProps) => {
   } else {
     inner = <div className="flow-node-container-body flow-node-dimmed">λ</div>;
   }
-  const count = 2 + argc;
+  const count = 1 + argc;
   return (
     <>
       <div
         className="flow-node-container"
         style={{
-          minHeight: `${cnh.minLengthKeepingDistance(1, count)}rem`,
+          minHeight: `${1 + cnh.minLengthKeepingDistance(0.6, count)}rem`,
         }}>
         {inner}
       </div>
@@ -56,8 +56,7 @@ const LambdaNode = (props: LambdaNodeProps) => {
         id={node.HANDLE_LAMBDA_PARAM}
         type="source"
         position={Position.Left}
-        style={{ top: cnh.positionPercentage(0, count) }}
-        className="flow-handle-lambda-out"
+        className="flow-handle-param flow-handle-border-color-lambda"
       />
       {props.data.lambdaType !== node.LambdaNodeType.Pattern ? null : (
         <Handle
@@ -73,7 +72,7 @@ const LambdaNode = (props: LambdaNodeProps) => {
           id={`${node.HANDLE_LAMBDA_ELEM_PREFIX}${i}`}
           type="source"
           position={Position.Left}
-          style={{ top: cnh.positionPercentage(i + 1, count) }}
+          style={{ top: cnh.positionPercentage(i, count) }}
           className="flow-handle-lambda-out"
         />
       ))}

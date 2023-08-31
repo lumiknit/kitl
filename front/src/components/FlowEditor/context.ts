@@ -360,6 +360,8 @@ export class FlowContextI {
                 if (n.position.x < lambda.position.x) {
                   args.push(lambda);
                   lambda = n;
+                } else {
+                  args.push(n);
                 }
               }
             }
