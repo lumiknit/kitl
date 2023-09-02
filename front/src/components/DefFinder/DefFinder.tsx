@@ -1,10 +1,10 @@
 import { memo, useCallback } from "react";
-import * as d from "../../common/def";
+import * as def from "../../common/def";
 import i18n from "../../locales/i18n";
 
 export type DefFinderProps = {
-  value: d.Def;
-  onChange?: (value: d.Def) => void;
+  value: def.Def;
+  onChange?: (value: def.Def) => void;
   className?: string;
 };
 
@@ -14,7 +14,7 @@ const DefFinder = (props: DefFinderProps) => {
   const handleNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const val = e.target.value;
-      props.onChange?.(d.newDef(d.DefType.Value, val, n.module));
+      props.onChange?.(def.newDef(def.DefType.Value, val, n.module));
     },
     [props.onChange],
   );
@@ -22,7 +22,7 @@ const DefFinder = (props: DefFinderProps) => {
   const handleModuleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const val = e.target.value;
-      props.onChange?.(d.newDef(d.DefType.Value, n.name, val));
+      props.onChange?.(def.newDef(def.DefType.Value, n.name, val));
     },
     [props.onChange],
   );

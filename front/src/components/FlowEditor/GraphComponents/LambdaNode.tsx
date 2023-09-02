@@ -27,46 +27,53 @@ const LambdaNode = (props: LambdaNodeProps) => {
       </>
     );
   } else {
-    inner = <div className="flow-node-container-body">λ</div>;
+    inner = <div className="flow-node-container-body flow-node-dimmed">λ</div>;
   }
-  const count = 2 + argc;
+  const count = 1 + argc;
   return (
     <>
       <div
         className="flow-node-container"
         style={{
-          minHeight: `${cnh.minLengthKeepingDistance(1, count)}rem`,
+          minHeight: `${1 + cnh.minLengthKeepingDistance(0.6, count)}rem`,
         }}>
         {inner}
       </div>
       <Handle
-        id={node.HANDLE_LAMBDA_VAL}
+        id={node.HANDLE_VAL}
         type="source"
         position={Position.Bottom}
-        className="flow-handle-lambda-ret"
+        className="flow-handle-val flow-handle-border-color-lambda"
       />
       <Handle
-        id="ret"
+        id={node.HANDLE_LAMBDA_RET}
         type="target"
         position={Position.Left}
         style={{ top: cnh.positionPercentage(count - 1, count) }}
-        className="flow-handle-lambda-arg"
+        className="flow-handle-lambda-in"
       />
       <Handle
-        id={node.HANDLE_LAMBDA_ARG}
+        id={node.HANDLE_LAMBDA_PARAM}
         type="source"
         position={Position.Left}
-        style={{ top: cnh.positionPercentage(0, count) }}
-        className="flow-handle-lambda-ret"
+        className="flow-handle-param flow-handle-border-color-lambda"
       />
+      {props.data.lambdaType !== node.LambdaNodeType.Pattern ? null : (
+        <Handle
+          id={node.HANDLE_LAMBDA_ARG}
+          type="target"
+          position={Position.Top}
+          className="flow-handle-lambda-in"
+        />
+      )}
       {[...Array(argc)].map((_, i) => (
         <Handle
           key={i}
           id={`${node.HANDLE_LAMBDA_ELEM_PREFIX}${i}`}
           type="source"
           position={Position.Left}
-          style={{ top: cnh.positionPercentage(i + 1, count) }}
-          className="flow-handle-lambda-ret"
+          style={{ top: cnh.positionPercentage(i, count) }}
+          className="flow-handle-lambda-out"
         />
       ))}
     </>

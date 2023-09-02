@@ -1,16 +1,16 @@
+import { BsQuote } from "react-icons/bs";
+import {
+  Tb123,
+  TbBraces,
+  TbCircleDashed,
+  TbCircleCheck,
+  TbCircleOff,
+} from "react-icons/tb";
+
 import { memo } from "react";
 import { Handle, Position } from "reactflow";
 import * as j from "../../../common/json";
 import * as node from "../../../common/node";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faHashtag,
-  faQuoteLeft,
-  faRectangleList,
-  faSquare,
-  faSquareCheck,
-  faSquareXmark,
-} from "@fortawesome/free-solid-svg-icons";
 
 export type LiteralProps = {
   data: node.LiteralNodeData;
@@ -22,23 +22,23 @@ const Literal = (props: LiteralProps) => {
   let body: any = null;
   switch (typeof val) {
     case "boolean":
-      icon = val ? faSquareCheck : faSquareXmark;
+      icon = val ? <TbCircleCheck /> : <TbCircleOff />;
       body = val ? "true" : "false";
       break;
     case "number":
-      icon = faHashtag;
+      icon = <Tb123 />;
       body = val.toString();
       break;
     case "string":
-      icon = faQuoteLeft;
+      icon = <BsQuote />;
       body = j.escapeString(val);
       break;
     case "object":
       if (val === null) {
-        icon = faSquare;
+        icon = <TbCircleDashed />;
         body = "null";
       } else {
-        icon = faRectangleList;
+        icon = <TbBraces />;
         body = (
           <pre className="flow-node-container-raw">
             {j.formatJsonCompact(val)}
@@ -50,16 +50,14 @@ const Literal = (props: LiteralProps) => {
   return (
     <>
       <div className="flow-node-container">
-        <div className="flow-node-container-icon">
-          <FontAwesomeIcon className="fa-fw" icon={icon} />
-        </div>
+        <div className="flow-node-container-icon">{icon}</div>
         <div className="flow-node-container-body">{body}</div>
       </div>
       <Handle
-        id={node.HANDLE_LITERAL_RET}
+        id={node.HANDLE_VAL}
         type="source"
         position={Position.Bottom}
-        className="flow-handle-literal-ret"
+        className="flow-handle-val flow-handle-border-color-literal"
       />
     </>
   );

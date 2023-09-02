@@ -1,7 +1,4 @@
 import { useCallback, useState } from "react";
-import toast from "react-hot-toast";
-
-import i18n from "../../locales/i18n";
 
 import * as node from "../../common/node";
 
@@ -14,12 +11,12 @@ import NodeEditorLambda from "./NodeEditorLambda";
 import NodeEditorBeta from "./NodeEditorBeta";
 import NodeEditorLiteral from "./NodeEditorLiteral";
 import * as literalEditor from "./NodeEditorLiteral";
+import { Callbacks } from "./types";
 
 export type NodeEditorProps = {
   path: string;
   defaultValue: node.NodeData;
-  onChange?: (value: node.NodeData) => void;
-  close?: () => void;
+  callbacks: Callbacks;
 };
 
 export type NodeEditorState = {
@@ -80,15 +77,15 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   const handleEditingTypeChange = useCallback(
     (ty: node.NodeType) => {
-      const newValue = node.convertNodeDataType(ty, state.value);
+      const value = node.convertNodeDataType(ty, state.lastValue);
+      props.callbacks.onChange?.(value);
       setState(oldState => ({
         ...oldState,
         editingType: ty,
-        value: newValue,
+        value: value,
       }));
-      props.onChange?.(newValue);
     },
-    [setState],
+    [props.callbacks, state, setState],
   );
 
   const handleChange = useCallback(
@@ -98,9 +95,9 @@ export const NodeEditor = (props: NodeEditorProps) => {
         value: value,
         lastValue: value,
       }));
-      props.onChange?.(value);
+      props.callbacks.onChange?.(value);
     },
-    [setState],
+    [props.callbacks, setState],
   );
 
   const handleLiteralStateChange = useCallback(
@@ -111,35 +108,18 @@ export const NodeEditor = (props: NodeEditorProps) => {
         literalState: s,
         value: v,
       }));
+      props.callbacks.onChange?.(v);
     },
-    [setState],
+    [state, setState],
   );
 
   const body = editorBody(state, handleChange, handleLiteralStateChange);
 
-  const discard = useCallback(() => {
-    setState(oldState => ({
-      ...oldState,
-      value: props.defaultValue,
-    }));
-    props.onChange?.(props.defaultValue);
-    setTimeout(() => props.close?.(), 0);
-    toast(i18n.t("nodeEditor.toast.discarded"));
-  }, [props, setState]);
-
-  const save = useCallback(() => {
-    props.close?.();
-    toast.success(i18n.t("nodeEditor.toast.saved"));
-  }, [props.close]);
-
   return (
     <div className="node-editor">
       <NodeEditorHeader
-        path={props.path}
-        value={state.value}
         editingType={state.editingType}
-        discard={discard}
-        save={save}
+        callbacks={props.callbacks}
         onEditingTypeChange={handleEditingTypeChange}
       />
       <div className="node-editor-body">{body}</div>

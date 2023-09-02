@@ -180,8 +180,8 @@ const NodeEditorJson = (props: NodeEditorJsonProps) => {
             className="flex-grow-1"
             selected={state.formatStyle}
             onClick={handleFormatClick}>
-            <span> Min </span>
-            <span> Pretty </span>
+            <span> {i18n.t("nodeEditor.json.btnMin")} </span>
+            <span> {i18n.t("nodeEditor.json.btnPretty")} </span>
             <span> YAML </span>
           </RadioButtons>
         </div>

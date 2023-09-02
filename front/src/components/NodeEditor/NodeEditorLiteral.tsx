@@ -1,12 +1,5 @@
 import * as node from "../../common/node";
 import * as j from "../../common/json";
-import {
-  faCode,
-  faHashtag,
-  faQuoteLeft,
-  faStar,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import RadioButtons from "../Helpers/RadioButtons";
 import { ReactElement } from "react";
 import NodeEditorJson from "./NodeEditorJson";
@@ -14,14 +7,22 @@ import NodeEditorNumber from "./NodeEditorNumber";
 import NodeEditorString from "./NodeEditorString";
 import i18n from "../../locales/i18n";
 
+import { BsQuote } from "react-icons/bs";
+import {
+  TbCircle,
+  TbCircleDashed,
+  TbCircleOff,
+  TbCircleCheck,
+  Tb123,
+  TbBraces,
+} from "react-icons/tb";
+
 export enum LiteralEditingType {
   Special = 0,
   Number,
   String,
   Raw,
 }
-
-const literalEditingTypeIcons = [faStar, faHashtag, faQuoteLeft, faCode];
 
 export const guessEditingType = (value: j.Json): LiteralEditingType => {
   if (typeof value === "number") {
@@ -95,9 +96,18 @@ const specialBody = (props: NodeEditorLiteralProps): ReactElement => {
         className="flex-grow-1"
         selected={selected}
         onClick={handleChange}>
-        <span>{i18n.t("value.null")}</span>
-        <span>{i18n.t("value.false")}</span>
-        <span>{i18n.t("value.true")}</span>
+        <span>
+          <TbCircleDashed />
+          {i18n.t("value.null")}
+        </span>
+        <span>
+          <TbCircleOff />
+          {i18n.t("value.false")}
+        </span>
+        <span>
+          <TbCircleCheck />
+          {i18n.t("value.true")}
+        </span>
       </RadioButtons>
     </div>
   );
@@ -121,7 +131,7 @@ const NodeEditorLiteral = (props: NodeEditorLiteralProps) => {
         break;
       case LiteralEditingType.String:
         v = JSON.stringify(v);
-        
+
         break;
     }
     props.updateState(
@@ -144,9 +154,10 @@ const NodeEditorLiteral = (props: NodeEditorLiteralProps) => {
           className="flex-grow-1"
           selected={props.state.editingType}
           onClick={handleLiteralTypeChange}>
-          {literalEditingTypeIcons.map((icon, i) => (
-            <FontAwesomeIcon key={i} icon={icon} />
-          ))}
+          <TbCircle />
+          <Tb123 />
+          <BsQuote />
+          <TbBraces />
         </RadioButtons>
       </div>
     </div>

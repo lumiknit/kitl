@@ -7,7 +7,6 @@ export type DropdownSelectProps = {
 
 const DropdownSelect = (props: DropdownSelectProps) => {
   const btnCls = `btn dropdown-toggle ${props.btnClassName}`;
-  console.log(props.options);
 
   const menus = props.options.map(option => {
     const handleClick = () => {

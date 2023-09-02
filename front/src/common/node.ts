@@ -23,6 +23,10 @@ export enum NodeType {
   Comment = "comment",
 }
 
+// -- Common handle
+
+export const HANDLE_VAL = "val";
+
 // -- Each node type
 
 // Literal
@@ -30,8 +34,6 @@ export type LiteralNodeData = {
   type: NodeType.Literal;
   value: j.Json;
 };
-
-export const HANDLE_LITERAL_RET = "ret";
 
 // Beta
 
@@ -57,7 +59,6 @@ export type BetaNodeData = BetaAppNodeData | BetaNameNodeData;
 
 export const HANDLE_BETA_ARG_PREFIX = "arg-";
 export const handleBetaArg = (i: number) => `${HANDLE_BETA_ARG_PREFIX}${i}`;
-export const HANDLE_BETA_RET = "ret";
 export const HANDLE_BETA_FUN = "fun";
 
 export const emptyBetaNode = (): BetaNodeData => ({
@@ -87,13 +88,12 @@ export type LambdaAnyNodeData = {
 
 export type LambdaNodeData = LambdaPatternNodeData | LambdaAnyNodeData;
 
-export const HANDLE_LAMBDA_FALLBACK = "fb";
 export const HANDLE_LAMBDA_ARG = "arg";
+export const HANDLE_LAMBDA_PARAM = "param";
 export const HANDLE_LAMBDA_ELEM_PREFIX = "elem-";
 export const handleLambdaElem = (i: number) =>
   `${HANDLE_LAMBDA_ELEM_PREFIX}${i}`;
 export const HANDLE_LAMBDA_RET = "ret";
-export const HANDLE_LAMBDA_VAL = "val";
 
 // Comment
 
@@ -109,6 +109,8 @@ export type DefNodeData = {
 };
 
 export const HANDLE_DEF_ARG = "arg";
+
+export const DEF_NODE_ID = "##def";
 
 // Node Data
 
@@ -157,22 +159,21 @@ export const nodeDataToInfoString = (data: NodeData): string => {
     case NodeType.Literal:
       return JSON.stringify(data.value);
     case NodeType.Beta:
-      if (data.betaType === BetaNodeType.App) {
-        return `. (${data.argc})`;
-      } else {
+      if (data.betaType === BetaNodeType.Name) {
         return `${data.name.name}@${data.name.module} (${data.argc})`;
       }
+      break;
     case NodeType.Lambda:
       if (data.lambdaType === LambdaNodeType.Pattern) {
         return `${data.pattern.name}@${data.pattern.module} (${data.argc})`;
-      } else {
-        return `lambda`;
       }
+      break;
     case NodeType.Comment:
       return data.content;
     case NodeType.Def:
       return `def`;
   }
+  return "";
 };
 
 export const extractName = (str: string): Name => {
@@ -252,4 +253,34 @@ export const convertNodeDataType = (
         type: NodeType.Def,
       };
   }
+};
+
+export const nodeHandleSet = (node: NodeData): Set<string> => {
+  switch (node.type) {
+    case NodeType.Literal:
+      return new Set([HANDLE_VAL]);
+    case NodeType.Beta: {
+      const set = new Set([HANDLE_VAL]);
+      for (let i = 0; i < node.argc + 1; i++) {
+        set.add(`${HANDLE_BETA_ARG_PREFIX}${i}`);
+      }
+      if (node.betaType === BetaNodeType.App) {
+        set.add(HANDLE_BETA_FUN);
+      }
+      return set;
+    }
+    case NodeType.Lambda: {
+      const set = new Set([HANDLE_VAL, HANDLE_LAMBDA_RET, HANDLE_LAMBDA_PARAM]);
+      if (node.lambdaType === LambdaNodeType.Pattern) {
+        set.add(HANDLE_LAMBDA_ARG);
+        for (let i = 0; i < node.argc + 1; i++) {
+          set.add(`${HANDLE_LAMBDA_ELEM_PREFIX}${i}`);
+        }
+      }
+      return set;
+    }
+    case NodeType.Def:
+      return new Set([HANDLE_DEF_ARG]);
+  }
+  return new Set();
 };
