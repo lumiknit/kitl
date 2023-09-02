@@ -358,18 +358,14 @@ export class FlowContextI {
       if (!n.selected) continue;
       switch (n.type) {
         case node.NodeType.Lambda:
-          {
             if (lambda === null) {
               lambda = n;
+            } else if (n.position.x < lambda.position.x) {
+              args.push(lambda);
+              lambda = n;
             } else {
-              if (n.position.x < lambda.position.x) {
-                args.push(lambda);
-                lambda = n;
-              } else {
-                args.push(n);
-              }
+              args.push(n);
             }
-          }
           break;
         case node.NodeType.Literal:
           args.push(n);
@@ -700,76 +696,7 @@ export class FlowContextI {
   }
 
   // Layout
-  layoutDefault() {
-    const margin = 12;
-    type Data = {
-      size?: { w: number; h: number };
-      position?: boolean;
-      left?: MNode<Data>;
-      hasArgs?: boolean;
-    };
-    const mnodes = this.getMNodes<Data>();
-    const defNode = mnodes.get("##def")!;
-    if (defNode === undefined) {
-      throw new Error("Cannot find root node");
-    }
-    const sizeDfs = (n: MNode<Data>): boolean => {
-      if (n.data === undefined) n.data = {};
-      else return true;
-      const argsSize = [0, 0];
-      const lambdaSize = [0, 0];
-      for (const s of n.sources) {
-        const sn = mnodes.get(s.id)!;
-        if (sizeDfs(sn)) continue;
-        const sw = sn.data!.size!.w;
-        const sh = sn.data!.size!.h;
-        if (s.index < 0) {
-          // Lambda
-          lambdaSize[0] = sw;
-          lambdaSize[1] = sh;
-          n.data!.left = sn;
-        } else {
-          if (argsSize[0] > 0) argsSize[0] += margin;
-          argsSize[0] += sw;
-          argsSize[1] = Math.max(argsSize[1], sh);
-          n.data!.hasArgs = true;
-        }
-      }
-      const size = [n.width, n.height];
-      if (argsSize[0] > 0) {
-        size[0] = Math.max(size[0], argsSize[0] + margin);
-        size[1] = size[1] + argsSize[1] + margin;
-      }
-      if (lambdaSize[0] > 0) {
-        size[0] = size[0] + lambdaSize[0] + margin;
-        size[1] = Math.max(size[1], lambdaSize[1]);
-      }
-      n.data!.size = { w: size[0], h: size[1] };
-      return false;
-    };
-    sizeDfs(defNode);
-    const positionDfs = (n: MNode<Data>, x: number, y: number) => {
-      if (n.data!.position) return;
-      n.data!.position = true;
-      let lx =
-        n.data!.left !== undefined ? n.data!.left!.data!.size!.w + margin : 0;
-      if (lx > 0) {
-        n.x = x + lx;
-      } else {
-        n.x = x + (n.data!.size!.w - n.width) / 2;
-      }
-      n.y = y - n.height;
-      for (const s of n.sources) {
-        const sn = mnodes.get(s.id)!;
-        if (s.index < 0) {
-          positionDfs(sn, x, y);
-        } else {
-          positionDfs(sn, x + lx, y - n.height - margin);
-          lx += margin + sn.data!.size!.w;
-        }
-      }
-    };
-    positionDfs(defNode, 0, 0);
+  updateNodePoisitionFromMNodes<T>(mnodes: Map<string, MNode<T>>) {
     this.context.setNodes(this.inst, ns =>
       ns.map(n => {
         const mnode = mnodes.get(n.id);
@@ -783,6 +710,82 @@ export class FlowContextI {
         };
       }),
     );
+  }
+
+  layoutDefault() {
+    const margin = 12;
+    type Data = {
+      size?: { w: number; h: number };
+      position?: boolean;
+      left?: MNode<Data>;
+    };
+    const mnodes = this.getMNodes<Data>();
+    const defNode = mnodes.get("##def")!;
+    if (defNode === undefined) {
+      throw new Error("Cannot find root node");
+    }
+    const sizeDfs = (n: MNode<Data>): boolean => {
+      if (n.data !== undefined) return true;
+      n.data = {};
+      const argsSize = { w: 0, h: 0 };
+      let leftSize = { w: 0, h: 0 };
+      for (const s of n.sources) {
+        const sn = mnodes.get(s.id)!;
+        if (sizeDfs(sn)) continue;
+        const ss = sn.data!.size!;
+        if (s.index < 0) { // Left 
+          leftSize = {...ss};
+          n.data!.left = sn;
+        } else {
+          if (argsSize.w > 0) argsSize.w += margin;
+          argsSize.w += ss.w;
+          argsSize.h = Math.max(argsSize.h, ss.h);
+        }
+      }
+      if(leftSize.w > 0) leftSize.w += margin;
+      if(argsSize.h > 0) argsSize.h += margin;
+      n.data!.size = {
+        w: Math.max(n.width, argsSize.w) + leftSize.w + margin,
+        h: Math.max(n.height + argsSize.h, leftSize.h),
+      };
+      return false;
+    };
+    sizeDfs(defNode);
+    const positionDfs = (n: MNode<Data>, x: number, y: number): number | undefined => {
+      if (n.data!.position) return;
+      n.data!.position = true;
+      const lx =
+        n.data!.left ? n.data!.left!.data!.size!.w + margin : 0;
+      let bx = lx;
+      let cnt = 0;
+      let ax = 0;
+      for (const s of n.sources) {
+        const sn = mnodes.get(s.id)!;
+        if (s.index < 0) {
+          positionDfs(sn, x, y);
+        } else {
+          const ret = positionDfs(sn, x + bx, y - n.height - margin);
+          if (ret !== undefined) {
+            cnt++;
+            ax += ret;
+            bx += margin + sn.data!.size!.w;
+          }
+        }
+      }
+      if (lx > 0) {
+        n.x = x + lx;
+      } else if (cnt > 0) {
+        n.x = ax / cnt - n.width / 2;
+        if (n.x < x + lx) n.x = x + lx;
+        else if(n.x + n.width > x + n.data!.size!.w) n.x = x + n.data!.size!.w - n.width;
+      } else {
+        n.x = x + (n.data!.size!.w - n.width) / 2;
+      }
+      n.y = y - n.height;
+      return n.x + n.width / 2;
+    };
+    positionDfs(defNode, 0, 0);
+    this.updateNodePoisitionFromMNodes(mnodes);
   }
 
   layoutLinear() {
@@ -816,19 +819,7 @@ export class FlowContextI {
       n.x = 0;
       n.y = y;
     }
-    this.context.setNodes(this.inst, ns =>
-      ns.map(n => {
-        const mnode = mnodes.get(n.id);
-        if (!mnode) return n;
-        return {
-          ...n,
-          position: {
-            x: mnode.x,
-            y: mnode.y,
-          },
-        };
-      }),
-    );
+    this.updateNodePoisitionFromMNodes(mnodes);
   }
 
   validateGraph() {

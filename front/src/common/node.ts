@@ -110,6 +110,8 @@ export type DefNodeData = {
 
 export const HANDLE_DEF_ARG = "arg";
 
+export const DEF_NODE_ID = "##def";
+
 // Node Data
 
 export type NodeData =
