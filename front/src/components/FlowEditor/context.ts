@@ -497,10 +497,17 @@ export class FlowContextI {
   }
 
   deleteSelected() {
+    const selectedNodes = new Set<string>();
+    for(const n of this.inst.getNodes()) {
+      if(n.selected) selectedNodes.add(n.id);
+    }
     this.context.updateGraph(
       this.inst,
       ns => ns.filter(n => !n.selected),
-      es => es.filter(e => !e.selected),
+      es => es.filter(e =>
+        !e.selected &&
+        !selectedNodes.has(e.source) &&
+        !selectedNodes.has(e.target)),
     );
   }
 
