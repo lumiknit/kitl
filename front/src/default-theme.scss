@@ -1,0 +1,74 @@
+/* Default colors */
+@media not (prefers-color-scheme: dark) {
+  :root {
+    /* common */
+    --kitl-bg-rgb: 255, 255, 255;
+    --kitl-fg-rgb: 16, 16, 16;
+
+    --kitl-bg-1-color: #f0f0f0;
+
+    /* flow graph */
+    --kitl-flow-selected-rgb: 22, 151, 220;
+    --kitl-flow-selected-color: #1697dc;
+    --kitl-flow-fg-color: #363d47;
+    --kitl-flow-def-color: #827db2;
+    --kitl-flow-beta-color: #545454;
+    --kitl-flow-lambda-color: #dc0462;
+    --kitl-flow-literal-color: #085ed7;
+    --kitl-flow-comment-color: #46923c;
+    --kitl-flow-error-color: #c40000;
+
+    /* react flow */
+    --kitl-rf-panel-btn-fg-color: #404040;
+    --kitl-rf-panel-btn-bg-color: #e8e8e8;
+    --kitl-rf-panel-btn-hover-bg-color: #f0f0f0;
+    --kitl-rf-panel-btn-active-bg-color: #c0c0c0;
+
+    /* Fab */
+    --kitl-fab-fg-color: #ffffff;
+    --kitl-fab-bg-color: #1e9ffb;
+    --kitl-fab-hover-bg-color: #54b4f9;
+    --kitl-fab-active-bg-color: #1b4d7a;
+  }
+}
+
+/* Dark mode colors */
+@media(prefers-color-scheme: dark) {
+  :root {
+    /* common */
+    --kitl-bg-rgb: 40, 40, 40;
+    --kitl-fg-rgb: 240, 240, 240;
+
+    --kitl-bg-1-color: #303030;
+
+    /* flow graph */
+    --kitl-flow-selected-rgb: 100, 203, 109;
+    --kitl-flow-selected-color: #64cb6d;
+    --kitl-flow-fg-color: #ccd3de;
+    --kitl-flow-def-color: #b2aafc;
+    --kitl-flow-beta-color: #d0d0d0;
+    --kitl-flow-lambda-color: #ff4686;
+    --kitl-flow-literal-color: #4797ff;
+    --kitl-flow-comment-color: #647b60;
+    --kitl-flow-error-color: #a13030;
+
+    /* react flow */
+    --kitl-rf-panel-btn-fg-color: #a0a0a0;
+    --kitl-rf-panel-btn-bg-color: #404040;
+    --kitl-rf-panel-btn-hover-bg-color: #606060;
+    --kitl-rf-panel-btn-active-bg-color: #282828;
+
+    /* Fab */
+    --kitl-fab-fg-color: #ffffff;
+    --kitl-fab-bg-color: #195c8b;
+    --kitl-fab-hover-bg-color: #287cb8;
+    --kitl-fab-active-bg-color: #234a6c;
+  }
+}
+
+:root {
+  --kitl-bg-color: rgb(var(--kitl-bg-rgb));
+  --kitl-fg-color: rgb(var(--kitl-fg-rgb));
+
+  --kitl-modal-overlay-color: #00000080;
+}

@@ -231,12 +231,6 @@ const FlowEditor = (props: FlowEditorProps) => {
         /* Badge */
         attributionPosition="top-center">
         <Controls />
-        <Background
-          color="#44f2"
-          size={4}
-          gap={32}
-          variant={BackgroundVariant.Cross}
-        />
       </ReactFlow>
       <FlowEditorHeader
         flowContext={props.context}

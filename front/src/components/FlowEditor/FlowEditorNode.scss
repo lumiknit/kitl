@@ -4,32 +4,21 @@
 
 /* Color and size definitions */
 
-$flow-color-bg: #fff;
-$flow-color-selected: #1697dc;
-$flow-color-fg: #363d47;
-$flow-color-def: #827db2;
-$flow-color-beta: #5d5652;
-$flow-color-lambda: #e47215;
-$flow-color-literal: #085ed7;
-$flow-color-comment: #46923c;
-$flow-color-error: #cc0000;
-
 $flow-node-colors: (
-  bg: $flow-color-bg,
-  fg: $flow-color-fg,
-  def: $flow-color-def,
-  beta: $flow-color-beta,
-  lambda: $flow-color-lambda,
-  literal: $flow-color-literal,
-  comment: $flow-color-comment,
+  fg: var(--kitl-flow-fg-color),
+  def: var(--kitl-flow-def-color),
+  beta: var(--kitl-flow-beta-color),
+  lambda: var(--kitl-flow-lambda-color),
+  literal: var(--kitl-flow-literal-color),
+  comment: var(--kitl-flow-comment-color),
 );
 
 $flow-edge-colors: (
-  default: $flow-color-fg,
-  beta: $flow-color-beta,
-  lambda: $flow-color-lambda,
-  literal: $flow-color-literal,
-  selected: $flow-color-selected,
+  default: var(--kitl-flow-fg-color),
+  beta: var(--kitl-flow-beta-color),
+  lambda: var(--kitl-flow-lambda-color),
+  literal: var(--kitl-flow-literal-color),
+  selected: var(--kitl-flow-selected-color),
 );
 
 $flow-node-corner: 0.125rem;
@@ -60,34 +49,34 @@ $flow-handle-br-offset: math.div(
   text-align: center;
   line-height: 1;
 
-  background-color: rgba($flow-color-bg, 0.8);
+  background-color: rgba(var(--kitl-bg-rgb), 0.8);
   /*backdrop-filter: blur(0.1rem);*/
   transition: box-shadow 0.1s ease-in-out;
 }
 
 .react-flow__node-def {
-  color: $flow-color-def;
+  color: var(--kitl-flow-def-color);
   border: 0;
-  border-top: $flow-line-width solid $flow-color-def;
+  border-top: $flow-line-width solid var(--kitl-flow-def-color);
   padding: 0.1rem 0.5rem;
 }
 
 .react-flow__node-beta {
-  color: $flow-color-beta;
-  border: $flow-line-width solid $flow-color-beta;
+  color: var(--kitl-flow-beta-color);
+  border: $flow-line-width solid var(--kitl-flow-beta-color);
   border-radius: $flow-handle-br-size;
 }
 
 .react-flow__node-lambda {
-  color: $flow-color-lambda;
-  border: $flow-line-width solid $flow-color-lambda;
+  color: var(--kitl-flow-lambda-color);
+  border: $flow-line-width solid var(--kitl-flow-lambda-color);
   border-radius: $flow-handle-br-size $flow-node-corner $flow-handle-br-size
     $flow-node-corner;
 }
 
 .react-flow__node-literal {
-  color: $flow-color-literal;
-  border: $flow-line-width solid $flow-color-literal;
+  color: var(--kitl-flow-literal-color);
+  border: $flow-line-width solid var(--kitl-flow-literal-color);
   border-radius: $flow-node-corner $flow-node-corner $flow-handle-br-size
     $flow-node-corner;
 }
@@ -96,17 +85,19 @@ $flow-handle-br-offset: math.div(
   font-family: serif;
   font-size: 0.75rem;
   max-width: 20rem;
-  color: $flow-color-comment;
-  background: rgba($flow-color-bg, 0.5);
+  color: var(--kitl-flow-comment-color);
+  background: rgba(var(--kitl-bg-rgb), 0.5);
   border: 0;
-  border-left: 4px solid $flow-color-comment;
+  border-left: 4px solid var(--kitl-flow-comment-color);
   border-radius: 0;
   padding: 0.1rem 0.2rem;
   text-align: left;
 }
 
 .react-flow__node.selected {
-  box-shadow: 0 0.1rem 0.4rem rgba($flow-color-fg, 0.5);
+  box-shadow: 0 0.1rem 0.3rem rgba(var(--kitl-flow-selected-rgb), 0.5);
+  outline: 0.0625rem dashed var(--kitl-flow-selected-color);
+  outline-offset: 0.15rem;
 }
 
 /* Handles */
@@ -131,7 +122,7 @@ $flow-handle-br-offset: math.div(
 
 .react-flow__handle.connecting {
   border-width: calc(1.5 * $flow-line-width);
-  outline: 0.0625rem dashed $flow-color-selected;
+  outline: 0.0625rem dashed var(--kitl-flow-selected-color);
   outline-offset: 0.125rem;
 }
 
@@ -151,7 +142,7 @@ $flow-handle-br-offset: math.div(
     .flow-handle-#{$key}-#{$kind} {
       border-width: $flow-line-width;
       border-style: solid;
-      @include flow-handle-border-color($kind, $color, $flow-color-bg);
+      @include flow-handle-border-color($kind, $color, var(--kitl-bg-color));
     }
   }
 }
@@ -180,7 +171,7 @@ $flow-handle-br-offset: math.div(
   border-width: 0;
   border-right: calc(1.5 * $flow-handle-br-width) solid;
   border-bottom: calc(1.5 * $flow-handle-br-width) solid;
-  border-color: $flow-color-selected;
+  border-color: var(--kitl-flow-selected-color);
 }
 
 .flow-handle-param {
@@ -201,7 +192,7 @@ $flow-handle-br-offset: math.div(
   border-width: 0;
   border-left: calc(1.5 * $flow-handle-br-width) solid;
   border-top: calc(1.5 * $flow-handle-br-width) solid;
-  border-color: $flow-color-selected;
+  border-color: var(--kitl-flow-selected-color);
 }
 
 .flow-handle-hidden {
@@ -222,9 +213,9 @@ marker.react-flow__arrowhead polyline {
 }
 
 .react-flow__edge.selected path.react-flow__edge-path {
-  stroke: map.get($flow-edge-colors, default);
+  stroke: var(--kitl-flow-selected-color);
   stroke-width: 1.6;
-  filter: drop-shadow(0 0 0.25rem rgba($flow-color-fg, 0.75));
+  filter: drop-shadow(0 0 0.25rem rgba(var(--kitl-flow-fg-color), 0.75));
 }
 
 @each $key, $color in $flow-edge-colors {
@@ -232,19 +223,15 @@ marker.react-flow__arrowhead polyline {
   .react-flow__edge-#{$key} path.react-flow__edge-path {
     stroke: $color;
   }
-
-  .react-flow__edge-#{$key}.selected path.react-flow__edge-path {
-    stroke: $color;
-  }
 }
 
 .react-flow__edge-error path.react-flow__edge-path {
-  stroke: $flow-color-error;
+  stroke: var(--kitl-flow-error-color);
   stroke-dasharray: 3 1;
 }
 
 .react-flow__edge-error.selected path.react-flow__edge-path {
-  stroke: $flow-color-error;
+  stroke: var(--kitl-flow-error-color);
   stroke-dasharray: 3 1;
 }
 

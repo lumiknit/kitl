@@ -90,7 +90,7 @@ const FlowEditorHeader = (props: FlowEditorHeaderProps) => {
     () => (
       <button
         key="del"
-        className="btn btn-danger"
+        className="btn btn-danger flex-grow-1 px-0"
         onClick={() => ctxI.deleteSelected()}>
         <TbBackspace />
       </button>
