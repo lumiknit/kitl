@@ -2,6 +2,8 @@
 
 import { IClient } from "./client";
 import * as t from "./storage";
+import * as idbfs from "./idbfs";
+idbfs.IDBFS;
 
 export class LocalClient implements IClient {
   isConnected(): boolean {

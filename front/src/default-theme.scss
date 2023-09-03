@@ -72,11 +72,12 @@
 
   --kitl-modal-overlay-color: #00000080;
 
-  --kitl-sans-serif: 'Noto Sans', sans-serif;
-  --kitl-serif: 'Noto Serif', serif;
-  --kitl-monospace: 'Jetbrains Mono', Consolas, Menlo, Monaco, Courier, monospace;
+  --kitl-sans-serif: "Noto Sans", sans-serif;
+  --kitl-serif: "Noto Serif", serif;
+  --kitl-monospace: "Jetbrains Mono", Consolas, Menlo, Monaco, Courier,
+    monospace;
 }
 
 body {
-  font-family: var(--kitl-sans-serif)
+  font-family: var(--kitl-sans-serif);
 }

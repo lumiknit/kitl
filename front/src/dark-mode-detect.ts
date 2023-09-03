@@ -14,7 +14,6 @@
       const bgColor = getComputedStyle(
         document.documentElement,
       ).getPropertyValue("--kitl-bg");
-      console.log(bgColor);
       // Set theme color
       const metaThemeColor = document.querySelector('meta[name="theme-color"]');
       if (metaThemeColor) metaThemeColor.setAttribute("content", bgColor);

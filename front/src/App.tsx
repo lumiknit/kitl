@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import KitlEditor from "./components/KitlEditor/KitlEditor.tsx";
+import "./client/client-manager.ts";
 import { Toaster } from "react-hot-toast";
 
 import "./dark-mode-detect.ts";
