@@ -47,8 +47,8 @@
     --kitl-flow-fg-color: #ccd3de;
     --kitl-flow-def-color: #b2aafc;
     --kitl-flow-beta-color: #d0d0d0;
-    --kitl-flow-lambda-color: #ff4686;
-    --kitl-flow-literal-color: #4797ff;
+    --kitl-flow-lambda-color: #fa618a;
+    --kitl-flow-literal-color: #6bbafa;
     --kitl-flow-comment-color: #647b60;
     --kitl-flow-error-color: #a13030;
 
@@ -71,4 +71,12 @@
   --kitl-fg-color: rgb(var(--kitl-fg-rgb));
 
   --kitl-modal-overlay-color: #00000080;
+
+  --kitl-sans-serif: 'Noto Sans', sans-serif;
+  --kitl-serif: 'Noto Serif', serif;
+  --kitl-monospace: 'Jetbrains Mono', Consolas, Menlo, Monaco, Courier, monospace;
+}
+
+body {
+  font-family: var(--kitl-sans-serif)
 }

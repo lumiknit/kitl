@@ -16,7 +16,7 @@ textarea.code-area {
   border-radius: 0.25rem;
   outline: transparent;
   background-color: transparent;
-  font-family: monospace;
+  font-family: var(--kitl-monospace);
   resize: none;
   -moz-tab-size: 2;
   -o-tab-size: 2;
