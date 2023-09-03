@@ -1,8 +1,6 @@
 import { MouseEventHandler, useCallback, useMemo, useState } from "react";
 
 import ReactFlow, {
-  Background,
-  BackgroundVariant,
   Controls,
   Node,
   Edge,
