@@ -1,3 +1,5 @@
+import { StorageItemType, StorageItem } from "./storage";
+
 /* Indexed DB based file system */
 
 const dbName = "kitl-idbfs";
@@ -54,11 +56,6 @@ const refinePath = (path: string): [string, string[]] => {
 };
 
 /* Types */
-
-enum StorageItemType {
-  File,
-  Directory,
-}
 
 type StorageItemMeta = {
   path: string;
@@ -176,26 +173,25 @@ export class IDBFS {
   }
 
   /* File type */
-  public async isFile(path: string): Promise<boolean> {
+  public async getFileType(path: string): Promise<StorageItemType> {
     const s = await openStores("readonly");
     const [p] = refinePath(path);
     try {
       const r = await s.meta.get(p);
-      return r.type === StorageItemType.File;
+      return r.type;
     } catch {
-      return false;
+      return StorageItemType.NotFound;
     }
   }
 
+  public async isFile(path: string): Promise<boolean> {
+    const type = await this.getFileType(path);
+    return type === StorageItemType.File;
+  }
+
   public async isDirectory(path: string): Promise<boolean> {
-    const s = await openStores("readonly");
-    const [p] = refinePath(path);
-    try {
-      const r = await s.meta.get(p);
-      return r.type === StorageItemType.File;
-    } catch {
-      return false;
-    }
+    const type = await this.getFileType(path);
+    return type === StorageItemType.Directory;
   }
 
   /* Directory */
@@ -235,7 +231,7 @@ export class IDBFS {
     }
   }
 
-  public async list(path: string): Promise<string[]> {
+  public async getFileNames(path: string): Promise<string[]> {
     const s = await openStores("readonly");
     const [p] = refinePath(path);
     // Check if the path is a directory
@@ -251,6 +247,23 @@ export class IDBFS {
       .filter(s => s.length > 0);
     return lst;
   }
+
+  public async list(path: string): Promise<StorageItem[]> {
+    const s = await openStores("readonly");
+    const fileNames = await this.getFileNames(path);
+    const lst = [];
+    for(const name of fileNames) {
+      const p = joinPath([path, name]);
+      const meta = await s.meta.get(p);
+      lst.push({
+        type: meta.type,
+        name,
+        size: meta.size,
+      });
+    }
+    return lst;
+  }
+
 
   /* File */
 

@@ -1,8 +1,8 @@
 // File
 export enum StorageItemType {
-  NotFound = "not-found",
-  File = "file",
-  Directory = "directory",
+  NotFound,
+  File,
+  Directory,
 }
 
 export type StorageItem = {
@@ -11,21 +11,18 @@ export type StorageItem = {
   size: number;
 };
 
-export type FileMeta = {
-  name: string;
-};
-
 export interface IStorageClient {
   /* Query */
   getFileType(path: string): Promise<StorageItemType>;
 
   /* Operations */
-  list(path: string): Promise<FileMeta[]>;
   mkdir(path: string): Promise<void>;
+  list(path: string): Promise<StorageItem[]>;
 
   read(path: string): Promise<string>;
   write(path: string, content: string): Promise<void>;
 
-  delete(path: string): Promise<void>;
-  rename(path: string, newPath: string): Promise<void>;
+  remove(path: string): Promise<void>;
+  copy(path: string, newPath: string): Promise<void>;
+  move(path: string, newPath: string): Promise<void>;
 }

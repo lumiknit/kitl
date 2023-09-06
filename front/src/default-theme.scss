@@ -9,7 +9,7 @@
 
     /* flow graph */
     --kitl-flow-selected-rgb: 22, 151, 220;
-    --kitl-flow-selected-color: #1697dc;
+    --kitl-flow-selected-color: #19a822;
     --kitl-flow-fg-color: #363d47;
     --kitl-flow-def-color: #827db2;
     --kitl-flow-beta-color: #545454;
@@ -36,26 +36,26 @@
 @media (prefers-color-scheme: dark) {
   :root {
     /* common */
-    --kitl-bg-rgb: 40, 40, 40;
+    --kitl-bg-rgb: 24, 24, 24;
     --kitl-fg-rgb: 240, 240, 240;
 
     --kitl-bg-1-color: #303030;
 
     /* flow graph */
     --kitl-flow-selected-rgb: 100, 203, 109;
-    --kitl-flow-selected-color: #64cb6d;
+    --kitl-flow-selected-color: #6cba71;
     --kitl-flow-fg-color: #ccd3de;
     --kitl-flow-def-color: #b2aafc;
     --kitl-flow-beta-color: #d0d0d0;
-    --kitl-flow-lambda-color: #fa618a;
+    --kitl-flow-lambda-color: #ff5678;
     --kitl-flow-literal-color: #6bbafa;
     --kitl-flow-comment-color: #647b60;
     --kitl-flow-error-color: #a13030;
 
     /* react flow */
     --kitl-rf-panel-btn-fg-color: #a0a0a0;
-    --kitl-rf-panel-btn-bg-color: #404040;
-    --kitl-rf-panel-btn-hover-bg-color: #606060;
+    --kitl-rf-panel-btn-bg-color: #383838;
+    --kitl-rf-panel-btn-hover-bg-color: #505050;
     --kitl-rf-panel-btn-active-bg-color: #282828;
 
     /* Fab */

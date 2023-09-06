@@ -5,23 +5,11 @@ export type BrowserHeaderProps = {
   storage: string;
   path: string;
   pathType: string;
-
-  onClose: () => void;
-  changeStorage: (value: string) => void;
-  changePath: (value: string) => void;
-
-  newFile: () => void;
-  newFolder: () => void;
-  cut: () => void;
-  copy: () => void;
-  paste: () => void;
-  delete: () => void;
-  rename: () => void;
 };
 
 const BrowserHeader = (props: BrowserHeaderProps) => {
   return (
-    <div className="m-Browser-header shadow">
+    <div className="m-browser-header shadow">
       <div className="input-group">
         <button
           className="btn btn-primary dropdown-toggle"

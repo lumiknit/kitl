@@ -1,12 +1,4 @@
 import { File } from "./Browser";
-/*import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  IconDefinition,
-  faCheckSquare,
-  faFile,
-  faFolder,
-  faSquare,
-} from "@fortawesome/free-solid-svg-icons";*/
 
 export type BrowserListProps = {
   type: string;
@@ -16,11 +8,6 @@ export type BrowserListProps = {
   checkAll: () => void;
   clickItem: (name: string) => void;
 };
-
-/*const icons: { [key: string]: IconDefinition } = {
-  directory: faFolder,
-  file: faFile,
-};*/
 
 const Item = (props: {
   type: string;
