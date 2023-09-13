@@ -108,3 +108,5 @@ export class ClientManager {
 
   // Executors
 }
+
+export default new ClientManager();

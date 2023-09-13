@@ -1,77 +1,76 @@
-/*import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClose, faFolderTree } from "@fortawesome/free-solid-svg-icons";*/
+import {
+  TbClipboard,
+  TbCopy,
+  TbFilePlus,
+  TbFolderPlus,
+  TbFolderSearch,
+  TbScissors,
+  TbTag,
+  TbTrash,
+  TbX,
+} from "react-icons/tb";
+import DropdownSelect from "../Helpers/DropdownSelect";
 
 export type BrowserHeaderProps = {
+  storages: string[];
   storage: string;
   path: string;
-  pathType: string;
+
+  onClose: () => void;
+};
+
+const PopupBtn = (props: {
+  icon: JSX.Element;
+  text: string;
+  onClick: () => void;
+}) => {
+  return (
+    <a href="#" className="dropdown-item" onClick={props.onClick}>
+      {props.icon} {props.text}
+    </a>
+  );
 };
 
 const BrowserHeader = (props: BrowserHeaderProps) => {
+  const buttons = [
+    <PopupBtn icon={<TbFilePlus />} text="New File" onClick={props.newFile} />,
+    <PopupBtn
+      icon={<TbFolderPlus />}
+      text="New Folder"
+      onClick={props.newFolder}
+    />,
+    <hr />,
+    <PopupBtn icon={<TbScissors />} text="Cut" onClick={props.cut} />,
+    <PopupBtn icon={<TbCopy />} text="Copy" onClick={props.copy} />,
+    <PopupBtn icon={<TbClipboard />} text="Paste" onClick={props.paste} />,
+    <PopupBtn icon={<TbTrash />} text="Delete" onClick={props.delete} />,
+    <hr />,
+    <PopupBtn icon={<TbTag />} text="Rename" onClick={props.rename} />,
+  ];
   return (
     <div className="m-browser-header shadow">
       <div className="input-group">
         <button
-          className="btn btn-primary dropdown-toggle"
+          className="btn btn-primary"
           type="button"
           data-bs-toggle="dropdown"
-          aria-expanded="false"></button>
+          aria-expanded="false">
+          <TbFolderSearch />
+        </button>
         <ul className="dropdown-menu">
-          <li>
-            <a href="#" className="dropdown-item" onClick={props.newFile}>
-              New File
-            </a>
-          </li>
-          <li>
-            <a href="#" className="dropdown-item" onClick={props.newFolder}>
-              New Folder
-            </a>
-          </li>
-          <li>
-            <hr />
-          </li>
-          <li>
-            <a href="#" className="dropdown-item" onClick={props.cut}>
-              Cut
-            </a>
-          </li>
-          <li>
-            <a href="#" className="dropdown-item" onClick={props.copy}>
-              Copy
-            </a>
-          </li>
-          <li>
-            <a href="#" className="dropdown-item" onClick={props.paste}>
-              Paste
-            </a>
-          </li>
-          <li>
-            <a href="#" className="dropdown-item" onClick={props.delete}>
-              Delete
-            </a>
-          </li>
-          <li>
-            <hr />
-          </li>
-          <li>
-            <a href="#" className="dropdown-item" onClick={props.rename}>
-              Rename
-            </a>
-          </li>
+          {buttons.map((button, index) => {
+            return <li key={index}>{button}</li>;
+          })}
         </ul>
-        {/*
         <DropdownSelect
-          options={Object.keys(storageManager.storages)}
-          value={props.storage}
           btnClassName="btn-primary"
+          options={props.storages}
+          value={props.storage}
           onChange={props.changeStorage}
         />
-  */}
         <input
           type="text"
-          className={
-            "form-control" + (props.pathType === "unknown" ? " is-invalid" : "")
-          }
+          className="form-control"
           placeholder="Path"
           value={props.path}
           readOnly={true}
@@ -80,7 +79,9 @@ const BrowserHeader = (props: BrowserHeaderProps) => {
         <button
           className="btn btn-danger"
           type="button"
-          onClick={props.onClose}></button>
+          onClick={props.onClose}>
+          <TbX />
+        </button>
       </div>
     </div>
   );

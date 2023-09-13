@@ -55,6 +55,7 @@ export const initialState = (value: node.NodeData): NodeEditorLiteralState => {
 export type NodeEditorLiteralProps = {
   value: node.LiteralNodeData;
   onChange: (value: node.LiteralNodeData) => void;
+  onReturnKey?: () => void;
   state: NodeEditorLiteralState;
   updateState: (
     state: NodeEditorLiteralState,
@@ -177,7 +178,11 @@ const NodeEditorLiteral = (props: NodeEditorLiteralProps) => {
       break;
     case LiteralEditingType.Number:
       body = (
-        <NodeEditorNumber value={props.value.value} onChange={updateValue} />
+        <NodeEditorNumber
+          value={props.value.value}
+          onChange={updateValue}
+          onReturnKey={props.onReturnKey}
+        />
       );
       break;
     case LiteralEditingType.String:

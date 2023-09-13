@@ -27,6 +27,7 @@ export type NodeEditorState = {
 };
 
 const editorBody = (
+  props: NodeEditorProps,
   state: NodeEditorState,
   handleChange: (value: node.NodeData) => void,
   handleLiteralStateChange: (s: literalEditor.NodeEditorLiteralState) => void,
@@ -44,6 +45,7 @@ const editorBody = (
         <NodeEditorLambda
           value={state.value as node.LambdaNodeData}
           onChange={handleChange}
+          onReturnKey={props.callbacks.close}
         />
       );
     case node.NodeType.Beta:
@@ -51,6 +53,7 @@ const editorBody = (
         <NodeEditorBeta
           value={state.value as node.BetaNodeData}
           onChange={handleChange}
+          onReturnKey={props.callbacks.close}
         />
       );
     case node.NodeType.Literal:
@@ -58,6 +61,7 @@ const editorBody = (
         <NodeEditorLiteral
           value={state.value as node.LiteralNodeData}
           onChange={handleChange}
+          onReturnKey={props.callbacks.close}
           state={state.literalState}
           updateState={handleLiteralStateChange}
         />
@@ -113,7 +117,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     [state, setState],
   );
 
-  const body = editorBody(state, handleChange, handleLiteralStateChange);
+  const body = editorBody(props, state, handleChange, handleLiteralStateChange);
 
   return (
     <div className="node-editor">

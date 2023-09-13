@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ClientManager, Location } from "../../client/client-manager";
+import clientManager, { Location } from "../../client/client-manager";
 import { StorageItem } from "../../client/storage";
 import BrowserHeader from "./BrowserHeader";
 import BrowserList from "./BrowserList";
@@ -15,29 +15,39 @@ export const fileMetaToList = (): File[] => {
 
 export type BrowserProps = {
   path: string;
-  clientManager: ClientManager;
   onClose?: (value: string) => void;
 };
 
+export enum ListType {
+  NotLoaded,
+  Directory,
+  Image,
+  Kitl,
+}
+
 export type BrowserState = {
   location: Location;
+  type: ListType;
   list: File[];
 };
 
-const Browser = async (props: BrowserProps) => {
+const Browser = (props: BrowserProps) => {
   const [state, setState] = useState<BrowserState>(() => {
-    const location = props.clientManager.parsePath(props.path);
+    const location = clientManager.parsePath(props.path);
     const list: File[] = [];
     return {
       location,
+      type: ListType.NotLoaded,
       list,
     };
   });
   return (
     <>
       <BrowserHeader
-      />
-      <BrowserList
+        storages={clientManager.clientList()}
+        storage={state.location.host}
+        path={state.location.path}
+        onClose={() => (props.onClose ? props.onClose(".") : undefined)}
       />
     </>
   );

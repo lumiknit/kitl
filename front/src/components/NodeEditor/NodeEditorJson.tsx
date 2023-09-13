@@ -194,6 +194,7 @@ const NodeEditorJson = (props: NodeEditorJsonProps) => {
         errorMessage={
           state.hasError ? i18n.t("nodeEditor.json.syntaxError") : undefined
         }
+        autoFocus={true}
       />
     </div>
   );

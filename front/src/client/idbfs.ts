@@ -252,7 +252,7 @@ export class IDBFS {
     const s = await openStores("readonly");
     const fileNames = await this.getFileNames(path);
     const lst = [];
-    for(const name of fileNames) {
+    for (const name of fileNames) {
       const p = joinPath([path, name]);
       const meta = await s.meta.get(p);
       lst.push({
@@ -263,7 +263,6 @@ export class IDBFS {
     }
     return lst;
   }
-
 
   /* File */
 

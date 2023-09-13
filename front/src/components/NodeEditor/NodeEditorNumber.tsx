@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useCallback, useState } from "react";
 import * as j from "../../common/json";
 import RadioButtons from "../Helpers/RadioButtons";
 import i18n from "../../locales/i18n";
@@ -6,6 +6,7 @@ import i18n from "../../locales/i18n";
 export type NodeEditorNumberProps = {
   value: j.Json;
   onChange: (value: j.Json) => void;
+  onReturnKey?: () => void;
 };
 
 export type NodeEditorNumberState = {
@@ -136,6 +137,15 @@ const NodeEditorNumber = (props: NodeEditorNumberProps) => {
     }
   };
 
+  const checkReturnKey = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        props.onReturnKey?.();
+      }
+    },
+    [props.onReturnKey],
+  );
+
   let radioIndex = baseToIndex.get(state.base);
   if (radioIndex === undefined) {
     radioIndex = 2;
@@ -166,7 +176,9 @@ const NodeEditorNumber = (props: NodeEditorNumberProps) => {
           type={inputType}
           value={state.content}
           onChange={handleInputChange}
+          onKeyDown={checkReturnKey}
           pattern={pattern}
+          autoFocus={true}
         />
       </div>
     </div>
