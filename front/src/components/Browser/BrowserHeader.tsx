@@ -22,7 +22,7 @@ export type BrowserHeaderProps = {
 const PopupBtn = (props: {
   icon: JSX.Element;
   text: string;
-  onClick: () => void;
+  onClick?: () => void;
 }) => {
   return (
     <a href="#" className="dropdown-item" onClick={props.onClick}>
@@ -33,19 +33,18 @@ const PopupBtn = (props: {
 
 const BrowserHeader = (props: BrowserHeaderProps) => {
   const buttons = [
-    <PopupBtn icon={<TbFilePlus />} text="New File" onClick={props.newFile} />,
+    <PopupBtn icon={<TbFilePlus />} text="New File" />,
     <PopupBtn
       icon={<TbFolderPlus />}
       text="New Folder"
-      onClick={props.newFolder}
     />,
     <hr />,
-    <PopupBtn icon={<TbScissors />} text="Cut" onClick={props.cut} />,
-    <PopupBtn icon={<TbCopy />} text="Copy" onClick={props.copy} />,
-    <PopupBtn icon={<TbClipboard />} text="Paste" onClick={props.paste} />,
-    <PopupBtn icon={<TbTrash />} text="Delete" onClick={props.delete} />,
+    <PopupBtn icon={<TbScissors />} text="Cut" />,
+    <PopupBtn icon={<TbCopy />} text="Copy" />,
+    <PopupBtn icon={<TbClipboard />} text="Paste" />,
+    <PopupBtn icon={<TbTrash />} text="Delete" />,
     <hr />,
-    <PopupBtn icon={<TbTag />} text="Rename" onClick={props.rename} />,
+    <PopupBtn icon={<TbTag />} text="Rename" />,
   ];
   return (
     <div className="m-browser-header shadow">
@@ -66,7 +65,7 @@ const BrowserHeader = (props: BrowserHeaderProps) => {
           btnClassName="btn-primary"
           options={props.storages}
           value={props.storage}
-          onChange={props.changeStorage}
+          onChange={() => {}}
         />
         <input
           type="text"
@@ -74,7 +73,7 @@ const BrowserHeader = (props: BrowserHeaderProps) => {
           placeholder="Path"
           value={props.path}
           readOnly={true}
-          onChange={e => props.changePath(e.target.value)}
+          onChange={e => {e}}
         />
         <button
           className="btn btn-danger"

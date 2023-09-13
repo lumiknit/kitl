@@ -32,7 +32,7 @@ export type BrowserState = {
 };
 
 const Browser = (props: BrowserProps) => {
-  const [state, setState] = useState<BrowserState>(() => {
+  const [state] = useState<BrowserState>(() => {
     const location = clientManager.parsePath(props.path);
     const list: File[] = [];
     return {
@@ -48,6 +48,9 @@ const Browser = (props: BrowserProps) => {
         storage={state.location.host}
         path={state.location.path}
         onClose={() => (props.onClose ? props.onClose(".") : undefined)}
+      />
+      <BrowserList
+        path={state.location.path}
       />
     </>
   );
