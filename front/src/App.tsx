@@ -1,7 +1,13 @@
-import type { Component } from "solid-js";
+import { type Component } from "solid-js";
+
+import { Localed, s } from "./locales";
 
 const App: Component = () => {
-	return <div>Hello</div>;
+	return (
+		<Localed>
+			{s("node.literal")}
+		</Localed>
+	);
 };
 
 export default App;
