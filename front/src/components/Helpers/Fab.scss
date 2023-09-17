@@ -15,21 +15,24 @@ div.f-fab {
   cursor: pointer;
   user-select: none;
 
-  color: #ffffff;
-  background-color: #1b91d6;
+  color: var(--kitl-fab-fg-color);
+  background-color: var(--kitl-fab-bg-color);
   box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.75);
 
   transition:
+    transform 0.25s ease,
     background-color 0.25s ease,
     box-shadow 0.25s ease;
 }
 
 div.f-fab:hover {
-  background-color: #39a0fa;
-  box-shadow: 0 0.15rem 0.75rem rgba(0, 0, 0, 0.875);
+  transform: translateY(-0.05rem);
+  background-color: var(--kitl-fab-hover-bg-color);
+  box-shadow: 0 0.175rem 0.75rem rgba(0, 0, 0, 0.6);
 }
 
 div.f-fab:active {
-  background-color: #1b4d7a;
+  transform: translateY(0.05rem);
+  background-color: var(--kitl-fab-active-bg-color);
   box-shadow: none;
 }

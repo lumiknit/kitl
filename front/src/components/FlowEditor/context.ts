@@ -358,14 +358,14 @@ export class FlowContextI {
       if (!n.selected) continue;
       switch (n.type) {
         case node.NodeType.Lambda:
-            if (lambda === null) {
-              lambda = n;
-            } else if (n.position.x < lambda.position.x) {
-              args.push(lambda);
-              lambda = n;
-            } else {
-              args.push(n);
-            }
+          if (lambda === null) {
+            lambda = n;
+          } else if (n.position.x < lambda.position.x) {
+            args.push(lambda);
+            lambda = n;
+          } else {
+            args.push(n);
+          }
           break;
         case node.NodeType.Literal:
           args.push(n);
@@ -497,10 +497,20 @@ export class FlowContextI {
   }
 
   deleteSelected() {
+    const selectedNodes = new Set<string>();
+    for (const n of this.inst.getNodes()) {
+      if (n.selected) selectedNodes.add(n.id);
+    }
     this.context.updateGraph(
       this.inst,
       ns => ns.filter(n => !n.selected),
-      es => es.filter(e => !e.selected),
+      es =>
+        es.filter(
+          e =>
+            !e.selected &&
+            !selectedNodes.has(e.source) &&
+            !selectedNodes.has(e.target),
+        ),
     );
   }
 
@@ -733,8 +743,9 @@ export class FlowContextI {
         const sn = mnodes.get(s.id)!;
         if (sizeDfs(sn)) continue;
         const ss = sn.data!.size!;
-        if (s.index < 0) { // Left 
-          leftSize = {...ss};
+        if (s.index < 0) {
+          // Left
+          leftSize = { ...ss };
           n.data!.left = sn;
         } else {
           if (argsSize.w > 0) argsSize.w += margin;
@@ -742,8 +753,8 @@ export class FlowContextI {
           argsSize.h = Math.max(argsSize.h, ss.h);
         }
       }
-      if(leftSize.w > 0) leftSize.w += margin;
-      if(argsSize.h > 0) argsSize.h += margin;
+      if (leftSize.w > 0) leftSize.w += margin;
+      if (argsSize.h > 0) argsSize.h += margin;
       n.data!.size = {
         w: Math.max(n.width, argsSize.w) + leftSize.w + margin,
         h: Math.max(n.height + argsSize.h, leftSize.h),
@@ -751,11 +762,14 @@ export class FlowContextI {
       return false;
     };
     sizeDfs(defNode);
-    const positionDfs = (n: MNode<Data>, x: number, y: number): number | undefined => {
+    const positionDfs = (
+      n: MNode<Data>,
+      x: number,
+      y: number,
+    ): number | undefined => {
       if (n.data!.position) return;
       n.data!.position = true;
-      const lx =
-        n.data!.left ? n.data!.left!.data!.size!.w + margin : 0;
+      const lx = n.data!.left ? n.data!.left!.data!.size!.w + margin : 0;
       let bx = lx;
       let cnt = 0;
       let ax = 0;
@@ -777,7 +791,8 @@ export class FlowContextI {
       } else if (cnt > 0) {
         n.x = ax / cnt - n.width / 2;
         if (n.x < x + lx) n.x = x + lx;
-        else if(n.x + n.width > x + n.data!.size!.w) n.x = x + n.data!.size!.w - n.width;
+        else if (n.x + n.width > x + n.data!.size!.w)
+          n.x = x + n.data!.size!.w - n.width;
       } else {
         n.x = x + (n.data!.size!.w - n.width) / 2;
       }
@@ -836,7 +851,7 @@ export class FlowContextI {
     const edges = this.inst.getEdges();
     const sourceEdges = new Map<string, Data>();
     for (const e of edges) {
-      if(!sourceEdges.has(e.target)) {
+      if (!sourceEdges.has(e.target)) {
         sourceEdges.set(e.target, {
           id: e.target,
           sources: [],
@@ -853,39 +868,42 @@ export class FlowContextI {
     const stack: Array<string | undefined> = ["##def"];
     while (stack.length > 0) {
       const id = stack.pop();
-      if(id === undefined) {
+      if (id === undefined) {
         const d = path.pop()!;
         d.processed = true;
         d.usedParams.delete(d.id);
-        if(path.length > 0) {
-          path[path.length - 1].usedParams = new Set([...path[path.length - 1].usedParams, ...d.usedParams]);
+        if (path.length > 0) {
+          path[path.length - 1].usedParams = new Set([
+            ...path[path.length - 1].usedParams,
+            ...d.usedParams,
+          ]);
         }
         continue;
       }
       const n = mnodes.get(id);
       const d = sourceEdges.get(id);
-      if(!n || !d) continue;
-      if (d.processed === true) continue; // Already processed
-      else if(d.processed === false) { // Cycle
+      if (!n || !d) continue;
+      if (d.processed === true) continue;
+      else if (d.processed === false) {
         // Gather paths
         let lastID: string | undefined = undefined;
         const ee: Map<string, string> = new Map();
-        for(const pn of path) {
-          if(lastID !== undefined) {
+        for (const pn of path) {
+          if (lastID !== undefined) {
             ee.set(pn.id, lastID);
           }
           lastID = pn.id;
-          if(lastID === n.id) {
+          if (lastID === n.id) {
             ee.clear();
           }
         }
-        if(lastID !== undefined) {
+        if (lastID !== undefined) {
           ee.set(n.id, lastID);
         }
         // Mark edges as error
-        for(const e of edges) {
+        for (const e of edges) {
           const t = ee.get(e.source);
-          if(t === e.target) {
+          if (t === e.target) {
             errorEdges.add(e.id);
           }
         }
@@ -898,7 +916,11 @@ export class FlowContextI {
       stack.push(undefined);
       for (const e of sourceEdges.get(n.id)?.sources ?? []) {
         const s = e.sourceHandle;
-        if(s && (s.startsWith(node.HANDLE_LAMBDA_ELEM_PREFIX) || s.startsWith(node.HANDLE_LAMBDA_PARAM))) {
+        if (
+          s &&
+          (s.startsWith(node.HANDLE_LAMBDA_ELEM_PREFIX) ||
+            s.startsWith(node.HANDLE_LAMBDA_PARAM))
+        ) {
           d.usedParams.add(e.source);
         } else {
           stack.push(e.source);
@@ -907,29 +929,35 @@ export class FlowContextI {
     }
     // Check used params is not provided.
     const d = sourceEdges.get("##def");
-    if(d && d.usedParams.size > 0) {
+    if (d && d.usedParams.size > 0) {
       errorMsg += "Parameters used before created;";
-      for(const e of edges) {
-        if(d.usedParams.has(e.source) && (e.sourceHandle?.startsWith(node.HANDLE_LAMBDA_PARAM) || e.sourceHandle?.startsWith(node.HANDLE_LAMBDA_ELEM_PREFIX))) {
+      for (const e of edges) {
+        if (
+          d.usedParams.has(e.source) &&
+          (e.sourceHandle?.startsWith(node.HANDLE_LAMBDA_PARAM) ||
+            e.sourceHandle?.startsWith(node.HANDLE_LAMBDA_ELEM_PREFIX))
+        ) {
           errorEdges.add(e.id);
         }
       }
     }
     console.log(errorEdges);
-    this.context.setEdges(this.inst, es => es.map(e => {
-      if(errorEdges.has(e.id)) {
-        return {
-          ...e,
-          type: 'error',
-        };
-      } else {
-        return {
-          ...e,
-          type: mnodes.get(e.source)?.type ?? 'default',
-        };
-      }
-    }));
-    if(errorMsg !== "") {
+    this.context.setEdges(this.inst, es =>
+      es.map(e => {
+        if (errorEdges.has(e.id)) {
+          return {
+            ...e,
+            type: "error",
+          };
+        } else {
+          return {
+            ...e,
+            type: mnodes.get(e.source)?.type ?? "default",
+          };
+        }
+      }),
+    );
+    if (errorMsg !== "") {
       throw new Error(errorMsg);
     }
   }

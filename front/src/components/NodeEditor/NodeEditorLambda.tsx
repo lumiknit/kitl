@@ -11,6 +11,7 @@ import i18n from "../../locales/i18n";
 export type NodeEditorLambdaProps = {
   value: node.LambdaNodeData;
   onChange: (value: node.NodeData) => void;
+  onReturnKey?: () => void;
 };
 
 const NodeEditorLambda = (props: NodeEditorLambdaProps) => {
@@ -88,11 +89,14 @@ const NodeEditorLambda = (props: NodeEditorLambdaProps) => {
       <NodeEditorArgc
         defaultValue={argc}
         onChange={handleArgcChange}
+        onReturnKey={props.onReturnKey}
         readonly={props.value.lambdaType === node.LambdaNodeType.Any}
       />
       <DefFinder
         value={d.newDef(d.DefType.Value, pattern.name, pattern.module)}
         onChange={handleDefChange}
+        onReturnKey={props.onReturnKey}
+        autoFocus={true}
       />
     </>
   );

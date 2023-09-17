@@ -4,6 +4,7 @@ import i18n from "../../locales/i18n";
 export type NodeEditorArgcProps = {
   defaultValue: number;
   onChange?: (value: number) => void;
+  onReturnKey?: () => void;
   className?: string;
   readonly?: boolean;
 };
@@ -36,6 +37,15 @@ const NodeEditorArgc = (props: NodeEditorArgcProps) => {
     },
     [props.onChange],
   );
+  const checkReturnKey = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        props.onReturnKey?.();
+      }
+    },
+    [props.onReturnKey],
+  );
+
   return (
     <div className={`form-floating mb-1 ${props.className}`}>
       {props.readonly ? (
@@ -53,6 +63,7 @@ const NodeEditorArgc = (props: NodeEditorArgcProps) => {
           className="form-control"
           defaultValue={props.defaultValue}
           onChange={onArgcChange}
+          onKeyDown={checkReturnKey}
           placeholder="Argument Count"
           pattern="[0-9]*"
         />

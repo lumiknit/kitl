@@ -13,7 +13,7 @@ const DefNode = (props: DefNodeProps) => {
     <>
       <div className="flow-node-container">
         <div className="flow-node-container-icon flow-node-container-icon-lg">
-          ≕
+          Δ
         </div>
         <div className="flow-node-container-body">
           <NameDisplay name={props.data} />

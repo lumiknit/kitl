@@ -1,6 +1,6 @@
 import { ReactElement, useState } from "react";
 import { FlowContext } from "../FlowEditor/context";
-import BrowserModal from "../Modal/BrowserModal";
+import BrowserModal from "../Browser/BrowserModal";
 import NodeEditorModal from "../NodeEditor/NodeEditorModal";
 import GraphToolsModal from "../Modal/GraphToolsModal";
 

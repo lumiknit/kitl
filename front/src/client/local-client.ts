@@ -2,39 +2,54 @@
 
 import { IClient } from "./client";
 import * as t from "./storage";
+import * as idbfs from "./idbfs";
 
 export class LocalClient implements IClient {
+  fs: idbfs.IDBFS;
+
+  constructor() {
+    this.fs = new idbfs.IDBFS();
+  }
+
   isConnected(): boolean {
     return true;
   }
 
-  getFileType(): Promise<t.StorageItemType> {
-    throw new Error("Method not implemented.");
+  /* IStorageClient */
+
+  async getFileType(path: string): Promise<t.StorageItemType> {
+    return await this.fs.getFileType(path);
   }
 
-  list(): Promise<t.FileMeta[]> {
-    throw new Error("Method not implemented.");
+  async mkdir(path: string): Promise<void> {
+    return await this.fs.mkdir(path);
   }
 
-  read(): Promise<string> {
-    throw new Error("Method not implemented.");
+  async list(path: string): Promise<t.StorageItem[]> {
+    return await this.fs.list(path);
   }
 
-  write(): Promise<void> {
-    throw new Error("Method not implemented.");
+  async read(path: string): Promise<string> {
+    return await this.fs.read(path);
   }
 
-  delete(): Promise<void> {
-    throw new Error("Method not implemented.");
+  async write(path: string, content: string): Promise<void> {
+    return await this.fs.write(path, content);
   }
 
-  mkdir(): Promise<void> {
-    throw new Error("Method not implemented.");
+  async remove(path: string): Promise<void> {
+    return await this.fs.remove(path);
   }
 
-  rename(): Promise<void> {
-    throw new Error("Method not implemented.");
+  async copy(path: string, newPath: string): Promise<void> {
+    return await this.fs.copy(path, newPath);
   }
+
+  async move(path: string, newPath: string): Promise<void> {
+    return await this.fs.move(path, newPath);
+  }
+
+  /* Executor */
 
   execute(): Promise<string> {
     throw new Error("Method not implemented.");
@@ -44,3 +59,5 @@ export class LocalClient implements IClient {
     throw new Error("Method not implemented.");
   }
 }
+
+export default LocalClient;

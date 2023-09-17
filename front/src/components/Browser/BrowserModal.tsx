@@ -1,5 +1,5 @@
-import Browser from "../Browser/Browser";
-import Modal from "./Modal";
+import Browser from "./Browser";
+import Modal from "../Modal/Modal";
 
 export type BrowserModelProps = {
   open: boolean;
@@ -18,7 +18,7 @@ const BrowserModal = (props: BrowserModelProps) => {
 
   return (
     <Modal open={props.open} onClose={onClose} fullHeight={true}>
-      <Browser onClose={onClose} />
+      <Browser path={props.path} onClose={onClose} />
     </Modal>
   );
 };

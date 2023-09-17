@@ -11,6 +11,7 @@ import i18n from "../../locales/i18n";
 export type NodeEditorBetaProps = {
   value: node.BetaNodeData;
   onChange: (value: node.NodeData) => void;
+  onReturnKey?: () => void;
 };
 
 const NodeEditorBeta = (props: NodeEditorBetaProps) => {
@@ -75,10 +76,13 @@ const NodeEditorBeta = (props: NodeEditorBetaProps) => {
             argc,
           });
         }}
+        onReturnKey={props.onReturnKey}
       />
       <DefFinder
         value={def.newDef(def.DefType.Value, name.name, name.module)}
         onChange={onDefChange}
+        onReturnKey={props.onReturnKey}
+        autoFocus={true}
       />
     </>
   );

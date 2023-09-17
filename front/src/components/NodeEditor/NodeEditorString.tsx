@@ -62,6 +62,7 @@ const NodeEditorString = (props: NodeEditorStringProps) => {
         textareaRef={textareaRef}
         defaultValue={state.defaultValue}
         onChange={handleChange}
+        autoFocus={true}
       />
     </div>
   );
