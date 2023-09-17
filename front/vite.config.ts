@@ -1,32 +1,20 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import ViteYaml from "@modyfi/vite-plugin-yaml";
+import solidPlugin from "vite-plugin-solid";
+// import devtools from 'solid-devtools/vite';
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), ViteYaml()],
-  base: "",
-  build: {
-    minify: "terser",
-    sourcemap: false,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          react: ["react", "react-dom", "react-router", "react-router-dom"],
-          reactflow: ["reactflow", "reactflow/dist/style.css"],
-          yaml: ["yaml"],
-          vendor: [
-            "bootstrap",
-            "bootstrap/dist/css/bootstrap.min.css",
-            "bootstrap/dist/js/bootstrap.min.js",
-            "react-hot-toast",
-            "i18next",
-            "i18next-browser-languagedetector",
-            "react-i18next",
-          ],
-          icons: ["react-icons"],
-        },
-      },
-    },
-  },
+	plugins: [
+		/* 
+    Uncomment the following line to enable solid-devtools.
+    For more info see https://github.com/thetarnav/solid-devtools/tree/main/packages/extension#readme
+    */
+		// devtools(),
+		solidPlugin(),
+	],
+	server: {
+		port: 3000,
+	},
+	build: {
+		target: "esnext",
+	},
 });
