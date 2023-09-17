@@ -1,5 +1,7 @@
 import { Component, For, createSignal } from "solid-js";
 
+import { Wrap, ef } from "../common";
+
 export enum ToastType {
 	Success,
 	Warning,
@@ -22,17 +24,15 @@ export type ToastOptions = {
 	seconds?: number;
 };
 
-export type ToastCreation = {
-	run?: (message: string, options?: ToastOptions) => void;
-};
+export type ToastCreationFn = (message: string, options?: ToastOptions) => void;
 
-let globalToastCreation: ToastCreation = {};
+let globalToastCreation: Wrap<ToastCreationFn> = [ef];
 export const toast = (message: string, options?: ToastOptions) => {
-	globalToastCreation.run?.(message, options);
+	globalToastCreation[0](message, options);
 };
 
 type ToastContainerProps = {
-	creation?: ToastCreation;
+	creation?: Wrap<ToastCreationFn>;
 };
 
 type Toast = {
@@ -54,7 +54,7 @@ const ToastContainer: Component<ToastContainerProps> = props => {
 		counter: 0,
 		toasts: [],
 	});
-	creation.run = (message: string, options?: ToastOptions) => {
+	creation[0] = (message: string, options?: ToastOptions) => {
 		setState(s => {
 			let ttl = options?.seconds ?? 2;
 			if (ttl < 0.2) {
