@@ -5,6 +5,9 @@ settings:
     excludeLinksFromLockfile: false
 
 dependencies:
+    "@tabler/icons-solidjs":
+        specifier: ^2.34.0
+        version: 2.34.0(solid-js@1.7.6)
     solid-js:
         specifier: ^1.7.6
         version: 1.7.6
@@ -1024,6 +1027,25 @@ packages:
         dependencies:
             solid-js: 1.7.6
         dev: true
+
+    /@tabler/icons-solidjs@2.34.0(solid-js@1.7.6):
+        resolution:
+            {
+                integrity: sha512-BeWdBlwZqqrU48PCW8UqunNtnAXEJdjA1lHcDC2y90ewvYmocpVeVzhLOp1VNW/s+Ft1d+p/z7KZzqeWBLyBtA==,
+            }
+        peerDependencies:
+            solid-js: ^1.4.7
+        dependencies:
+            "@tabler/icons": 2.34.0
+            solid-js: 1.7.6
+        dev: false
+
+    /@tabler/icons@2.34.0:
+        resolution:
+            {
+                integrity: sha512-65GsJsT4ZBETWcdrNxbsjsbRoZvbVk3CcU2SafaElrzP1wpOeuAn9aELVEbxhdyZyP9dg2SCfgH6iAArJgp7lw==,
+            }
+        dev: false
 
     /@types/babel__core@7.20.1:
         resolution:

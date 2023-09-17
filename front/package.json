@@ -37,6 +37,7 @@
 		"vite-plugin-solid": "^2.7.0"
 	},
 	"dependencies": {
+		"@tabler/icons-solidjs": "^2.34.0",
 		"solid-js": "^1.7.6"
 	}
 }

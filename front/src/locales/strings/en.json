@@ -1,101 +1,101 @@
 {
-  "ERROR": "ERROR",
-  "WARN": "WARN",
-  "INFO": "INFO",
-  "SUCCESS": "SUCCESS",
-  "modified": "modified",
-  "value": {
-    "null": "null",
-    "true": "true",
-    "false": "false",
-    "number": "number",
-    "string": "string",
-    "array": "array",
-    "object": "objeect",
-    "bin": "bin",
-    "oct": "oct",
-    "dec": "dec",
-    "hex": "hex"
-  },
-  "node": {
-    "literal": "literal",
-    "def": "def",
-    "lambda": "lambda",
-    "beta": "beta",
-    "comment": "comment"
-  },
-  "defFinder": {
-    "name": "Name",
-    "module": "Module"
-  },
-  "nodeEditor": {
-    "common": {
-      "argc": "Argument Count",
-      "name": "Name",
-      "module": "Module",
-      "comment": "Comment",
-      "literal": "Literal",
-      "lambda": "Lambda",
-      "beta": "Beta"
-    },
-    "menu": {
-      "discard": "Discard"
-    },
-    "toast": {
-      "saved": "Node data saved!",
-      "discarded": "Node changes discarded"
-    },
-    "string": {
-      "showEscape": "Show escape characters"
-    },
-    "json": {
-      "format": "Format",
-      "formatDescription": "Format: JSON5",
-      "formatToSave": "Format to save",
-      "valid": "Valid",
-      "syntaxError": "JSON Syntax Error!",
-      "btnMin": "min",
-      "btnPretty": "pretty"
-    },
-    "lambda": {
-      "withPattern": "With pattern matching"
-    },
-    "beta": {
-      "withName": "With name"
-    }
-  },
-  "graphTools": {
-    "errorOccurred": "Error occurred during graph tools",
-    "success": "Success!",
-    "layout": "Layout",
-    "optimization": "Optimization",
-    "validate": "Validate",
-    "tool": {
-      "layoutLinear": "Linear Layout",
-      "layoutDefault": "Default Layout",
-      "selectUnreachables": "Select Unreachables",
-      "validateGraph": "Validate Graph"
-    }
-  },
-  "flowEditor": {
-    "menu": {
-      "addTools": "Add Node Tools",
-      "selectTools": "Select & Edit Tools",
-      "browser": "Browser",
-      "launch": "Launch",
-      "graphTools": "Graph Tools"
-    },
-    "toast": {
-      "undo": "Undo",
-      "redo": "Redo",
-      "nothingToUndo": "Nothing to undo!",
-      "nothingToRedo": "Nothing to redo!",
-      "copy": "Copied!",
-      "cut": "Cutted!",
-      "paste": "Pasted!",
-      "nothingToCopy": "Nothing to copy",
-      "nothingToCut": "Nothing to cut",
-      "nothingToPaste": "Nothing to paste"
-    }
-  }
+	"ERROR": "ERROR",
+	"WARN": "WARN",
+	"INFO": "INFO",
+	"SUCCESS": "SUCCESS",
+	"modified": "modified",
+	"value": {
+		"null": "null",
+		"true": "true",
+		"false": "false",
+		"number": "number",
+		"string": "string",
+		"array": "array",
+		"object": "objeect",
+		"bin": "bin",
+		"oct": "oct",
+		"dec": "dec",
+		"hex": "hex"
+	},
+	"node": {
+		"literal": "literal",
+		"def": "def",
+		"lambda": "lambda",
+		"beta": "beta",
+		"comment": "comment"
+	},
+	"defFinder": {
+		"name": "Name",
+		"module": "Module"
+	},
+	"nodeEditor": {
+		"common": {
+			"argc": "Argument Count",
+			"name": "Name",
+			"module": "Module",
+			"comment": "Comment",
+			"literal": "Literal",
+			"lambda": "Lambda",
+			"beta": "Beta"
+		},
+		"menu": {
+			"discard": "Discard"
+		},
+		"toast": {
+			"saved": "Node data saved!",
+			"discarded": "Node changes discarded"
+		},
+		"string": {
+			"showEscape": "Show escape characters"
+		},
+		"json": {
+			"format": "Format",
+			"formatDescription": "Format: JSON5",
+			"formatToSave": "Format to save",
+			"valid": "Valid",
+			"syntaxError": "JSON Syntax Error!",
+			"btnMin": "min",
+			"btnPretty": "pretty"
+		},
+		"lambda": {
+			"withPattern": "With pattern matching"
+		},
+		"beta": {
+			"withName": "With name"
+		}
+	},
+	"graphTools": {
+		"errorOccurred": "Error occurred during graph tools",
+		"success": "Success!",
+		"layout": "Layout",
+		"optimization": "Optimization",
+		"validate": "Validate",
+		"tool": {
+			"layoutLinear": "Linear Layout",
+			"layoutDefault": "Default Layout",
+			"selectUnreachables": "Select Unreachables",
+			"validateGraph": "Validate Graph"
+		}
+	},
+	"flowEditor": {
+		"menu": {
+			"addTools": "Add Node Tools",
+			"selectTools": "Select & Edit Tools",
+			"browser": "Browser",
+			"launch": "Launch",
+			"graphTools": "Graph Tools"
+		},
+		"toast": {
+			"undo": "Undo",
+			"redo": "Redo",
+			"nothingToUndo": "Nothing to undo!",
+			"nothingToRedo": "Nothing to redo!",
+			"copy": "Copied!",
+			"cut": "Cutted!",
+			"paste": "Pasted!",
+			"nothingToCopy": "Nothing to copy",
+			"nothingToCut": "Nothing to cut",
+			"nothingToPaste": "Nothing to paste"
+		}
+	}
 }
