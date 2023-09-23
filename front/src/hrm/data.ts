@@ -1,4 +1,5 @@
 import { genID } from "../common";
+import { SBox, VBox } from "../common/types";
 
 /* Graph data */
 
@@ -11,8 +12,8 @@ export type Position = {
 };
 
 export type Size = {
-	width: number;
-	height: number;
+	w: number;
+	h: number;
 };
 
 export type NodeData = {
@@ -21,12 +22,15 @@ export type NodeData = {
 };
 
 export type NodeUIData = {
+	ref?: any;
 	size?: Size;
-	selected: boolean;
+	selected: SBox<boolean>;
+	position: VBox<Position>;
 };
 
 export const emptyNodeUIData = (): NodeUIData => ({
-	selected: false,
+	selected: [false, undefined],
+	position: [undefined, undefined],
 });
 
 export type NodeP = {

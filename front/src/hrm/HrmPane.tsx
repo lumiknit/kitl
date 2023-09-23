@@ -9,7 +9,8 @@ import {
 
 import { Box2 } from "../common";
 
-import * as ph from "./pointer-helper";
+import * as ph from "../common/pointer-helper";
+import { VBox } from "../common/types";
 
 export type HrmTransform = {
 	x: number; // x offset
@@ -25,7 +26,7 @@ const transformToStyle = (t: HrmTransform) =>
 type HrmPaneProps = {
 	children: JSXElement;
 	t: HrmTransform;
-	u?: Box2<Accessor<HrmTransform>, Setter<HrmTransform>>;
+	u?: VBox<HrmTransform>;
 	onClick: (e: ph.ClickEvent) => void;
 	onDoubleClick: (e: ph.ClickEvent) => void;
 	onLongPress: (e: ph.BaseEvent) => void;

@@ -76,6 +76,7 @@ export type DragEvent = BaseEvent & {
 };
 
 export type Handlers = {
+	onPress?: (e: ClickEvent) => void;
 	onClick?: (e: ClickEvent) => void;
 	onDoubleClick?: (e: ClickEvent) => void;
 	onLongPress?: (e: BaseEvent) => void;
@@ -115,50 +116,6 @@ const mapID = (s: State, id: PointerID): PointerID => {
 };
 
 export const addEventListeners = (s: State, el: HTMLElement) => {
-	const activatePointer = (id: PointerID, x: number, y: number): void => {
-		// Button Down / Touch Start event
-		// Try to get old state
-		const now = Date.now(),
-			p = s.o.get(id);
-		let cnt =
-			p && // Pointer still exists
-			p.c === 1 && // Already clicked once
-			now - p.t <= DOUBLE_CLICK_TIME // Within double click time
-				? 2
-				: 1;
-		s.o.delete(id);
-		s.c.set(id, {
-			id,
-			x,
-			y,
-			b: BSPressed,
-			c: cnt,
-			t: now,
-		});
-		if (s.l) {
-			ct(s.l.u);
-		}
-		s.l = {
-			id,
-			x,
-			y,
-			u: st(() => {
-				const p = s.c.get(id);
-				if (
-					p && // Pointer still exists
-					s.l && // Long press still exists
-					p.id === s.l.id && // Pointer is the same
-					p.b === BSPressed && // Pointer is not moved
-					s.c.size === 1 // Only one pointer
-				) {
-					s.handlers.onLongPress?.({ x, y });
-					s.c.delete(id);
-				}
-				s.l = undefined;
-			}, LONG_PRESS_TIME),
-		};
-	};
-
 	const updatePointer = (id: PointerID, x: number, y: number): boolean => {
 		// Move event
 		const p = s.c.get(id);
@@ -245,14 +202,14 @@ export const addEventListeners = (s: State, el: HTMLElement) => {
 		}, DOUBLE_CLICK_TIME);
 		ct(s.l?.u);
 		s.l = undefined;
+		if(s.c.size === 0) {
+			for(const k in HANDLERS) {
+				window.removeEventListener(k, HANDLERS[k]);
+			}
+		}
 	};
 
 	const HANDLERS: { [k: string]: any } = {
-		mousedown: (e: MouseEvent) => {
-			if (e.button !== 0) return;
-			activatePointer(-1, e.clientX, e.clientY);
-			e.stopPropagation();
-		},
 		mousemove: (e: MouseEvent) => {
 			if (!(e.buttons & 1)) return;
 			updatePointer(-1, e.clientX, e.clientY);
@@ -268,13 +225,6 @@ export const addEventListeners = (s: State, el: HTMLElement) => {
 		},
 		mouseleave: () => {
 			s.c.delete(-1);
-		},
-		touchstart: (e: TouchEvent) => {
-			for (const t of e.changedTouches) {
-				activatePointer(mapID(s, t.identifier), t.clientX, t.clientY);
-			}
-			e.preventDefault();
-			e.stopPropagation();
 		},
 		touchmove: (e: TouchEvent) => {
 			for (const t of e.changedTouches) {
@@ -298,12 +248,88 @@ export const addEventListeners = (s: State, el: HTMLElement) => {
 			}
 		},
 	};
-	for(const k in HANDLERS) {
-		el.addEventListener(k, HANDLERS[k]);
+
+	const activatePointer = (id: PointerID, ce: ClickEvent): void => {
+		// Button Down / Touch Start event
+		// Try to get old state
+		const now = Date.now(),
+			p = s.o.get(id);
+		let cnt =
+			p && // Pointer still exists
+			p.c === 1 && // Already clicked once
+			now - p.t <= DOUBLE_CLICK_TIME // Within double click time
+				? 2
+				: 1;
+		s.o.delete(id);
+		s.c.set(id, {
+			id,
+			x: ce.x,
+			y: ce.y,
+			b: BSPressed,
+			c: cnt,
+			t: now,
+		});
+		if (s.l) {
+			ct(s.l.u);
+		}
+		s.l = {
+			id,
+			x: ce.x,
+			y: ce.y,
+			u: st(() => {
+				const p = s.c.get(id);
+				if (
+					p && // Pointer still exists
+					s.l && // Long press still exists
+					p.id === s.l.id && // Pointer is the same
+					p.b === BSPressed && // Pointer is not moved
+					s.c.size === 1 // Only one pointer
+				) {
+					s.handlers.onLongPress?.({ x: ce.x, y: ce.y });
+					s.c.delete(id);
+				}
+				s.l = undefined;
+			}, LONG_PRESS_TIME),
+		};
+		if(s.c.size === 1) {
+			for(const k in HANDLERS) {
+				window.addEventListener(k, HANDLERS[k]);
+			}
+		}
+		ce.pointers = s.c.size;
+		s.handlers.onPress?.(ce);
+	};
+
+	const START_HANDLERS: { [k: string]: any } = {
+		mousedown: (e: MouseEvent) => {
+			if (e.button !== 0) return;
+			activatePointer(-1, {
+				pointers: 1,
+				x: e.clientX,
+				y: e.clientY,
+				modifiers: modifiersFromHTMLEvent(e),
+			});
+			e.stopPropagation();
+		},
+		touchstart: (e: TouchEvent) => {
+			for (const t of e.changedTouches) {
+				activatePointer(mapID(s, t.identifier), {
+					pointers: 1,
+					x: t.clientX,
+					y: t.clientY,
+					modifiers: modifiersFromHTMLEvent(e),
+				});
+			}
+			e.preventDefault();
+			e.stopPropagation();
+		},
+	};
+	for(const k in START_HANDLERS) {
+		el.addEventListener(k, START_HANDLERS[k]);
 	}
 	return () => {
-		for(const k in HANDLERS) {
-			el.removeEventListener(k, HANDLERS[k]);
+		for(const k in START_HANDLERS) {
+			el.removeEventListener(k, START_HANDLERS[k]);
 		}
 	};
 };

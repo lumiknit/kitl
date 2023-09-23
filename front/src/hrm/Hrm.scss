@@ -40,6 +40,11 @@ div.hrm-node {
 	box-shadow: 0 0.125rem 0.25rem #0002;
 }
 
+div.hrm-node.selected {
+	outline: 0.125rem dashed rgb(107, 196, 255);
+	outline-offset: 0.25rem;
+}
+
 div.hrm-node-row {
 	display: flex;
 	flex-direction: row;
