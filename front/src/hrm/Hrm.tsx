@@ -5,6 +5,8 @@ import { Edge, Node, View } from "./data";
 import HrmPane from "./HrmPane";
 
 import { toast } from "../block/ToastContainer";
+import HrmNodes from "./HrmNodes";
+import HrmEdges from "./HrmEdges";
 
 export type HrmProps = {
 	nodes: Node[];
@@ -32,11 +34,12 @@ const Hrm: Component<HrmProps> = props => {
 					y: 0,
 					z: 1,
 				}}
-				onClick={(x, y, c) => toast("Click " + c)}
-				onDoubleClick={() => toast("Double click")}>
-				<For each={props.nodes}>
-					{node => <div class="hrm-node">{node.id}</div>}
-				</For>
+				onClick={e => {toast("Click " + e.pointers);}}
+				onDoubleClick={e => {toast("Double click " + e.pointers);}}
+				onLongPress={e => {toast("Long press");}}
+			>
+				<HrmNodes nodes={props.nodes} />
+				<HrmEdges nodes={props.nodes} edges={props.edges} />
 			</HrmPane>
 		</div>
 	);

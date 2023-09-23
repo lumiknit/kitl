@@ -1,6 +1,6 @@
 div.hrm-container {
 	display: block;
-	background-color: #f003;
+	//background-color: #f003;
 	width: 100dvw;
 	height: 100dvh;
 	margin: 0;
@@ -17,13 +17,61 @@ div.hrm-view {
 	position: relative;
 	left: 0;
 	top: 0;
-	width: min-content;
-	height: min-content;
+	width: max-content;
+	height: max-content;
 	overflow: visible;
+	transform-origin: top left;
 }
 
+// Node
+
 div.hrm-node {
-	display: block;
-	padding: 0.5rem;
-	border: 1px solid black;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: fit-content;
+	min-height: 1.5rem;
+
+	display: flex;
+	padding: 0.2rem;
+
+	background: rgb(255, 226, 238);
+	border-radius: 999rem;
+	box-shadow: 0 0.125rem 0.25rem #0002;
+}
+
+div.hrm-node-row {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+
+	cursor: pointer;
+}
+
+// Handle
+
+div.hrm-handle {
+	display: inline-block;
+	width: 1.2rem;
+	height: 1rem;
+	margin: 0 0.35rem;
+	background-color: rgb(107, 196, 255);
+	border-radius: 0.5rem;
+}
+
+// Edge
+
+svg.hrm-edge {
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+}
+
+path {
 }

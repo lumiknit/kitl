@@ -45,13 +45,21 @@ export const substantiateNode = (node: NodeP): Node => ({
 	ui: emptyNodeUIData(),
 });
 
-export type Edge = {
-	id: ID;
+export type EdgeP = {
 	sourceID: ID;
-	sourceHandle: ID;
+	sourceHandle?: ID;
 	targetID: ID;
-	targetHandle: ID;
+	targetHandle?: ID;
 };
+
+export type Edge = EdgeP & {
+	id: ID;
+};
+
+export const substantiateEdge = (edge: EdgeP): Edge => ({
+	...edge,
+	id: genID(),
+});
 
 /* View data */
 export type View = {
