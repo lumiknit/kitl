@@ -1,12 +1,5 @@
 import { Component, type JSX } from "solid-js";
 
-import {
-	IconArrowRight,
-	IconBox,
-	IconCheckbox,
-	IconSquare,
-} from "@tabler/icons-solidjs";
-
 export type TextProps = {
 	children: JSX.Element;
 

@@ -5,9 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
-  '@tabler/icons-solidjs':
-    specifier: ^2.35.0
-    version: 2.35.0(solid-js@1.7.12)
+  solid-icons:
+    specifier: ^1.0.12
+    version: 1.0.12(solid-js@1.7.12)
   solid-js:
     specifier: ^1.7.12
     version: 1.7.12
@@ -775,19 +775,6 @@ packages:
       solid-js: 1.7.12
     dev: true
 
-  /@tabler/icons-solidjs@2.35.0(solid-js@1.7.12):
-    resolution: {integrity: sha512-Z90jZ5GDzE3qTsmq4QIvnvFJE8tdKX9SCzrTt4Au3nCZ2qBurHw6wa8vwETchtBMvNVGtoxkiI1zwpwhoxhdKw==}
-    peerDependencies:
-      solid-js: ^1.4.7
-    dependencies:
-      '@tabler/icons': 2.35.0
-      solid-js: 1.7.12
-    dev: false
-
-  /@tabler/icons@2.35.0:
-    resolution: {integrity: sha512-qW/itKdmFvfGw6mAQ+cZy+2MYTXb0XdGAVhO3obYLJEfsSPMwQRO0S9ckFk1xMQX/Tj7REC3TEmWUBWNi3/o3g==}
-    dev: false
-
   /@types/babel__core@7.20.2:
     resolution: {integrity: sha512-pNpr1T1xLUc2l3xJKuPtsEky3ybxN3m4fJkknfIpTCTfIZCDW57oAg+EfCgIIp2rvCe0Wn++/FfodDS4YXxBwA==}
     dependencies:
@@ -1178,6 +1165,15 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /solid-icons@1.0.12(solid-js@1.7.12):
+    resolution: {integrity: sha512-HOIQ2nFGLEH9/QHnMiu6CZkEMrRlrEvxpX3V3XikvQQ/CQNhOKl2vLQALaJYgz3MvfPP5wkid+q79tTdIw5YGQ==}
+    engines: {node: '>= 16'}
+    peerDependencies:
+      solid-js: '*'
+    dependencies:
+      solid-js: 1.7.12
+    dev: false
 
   /solid-js@1.7.12:
     resolution: {integrity: sha512-QoyoOUKu14iLoGxjxWFIU8+/1kLT4edQ7mZESFPonsEXZ//VJtPKD8Ud1aTKzotj+MNWmSs9YzK6TdY+fO9Eww==}
