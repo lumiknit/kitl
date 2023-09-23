@@ -1,7 +1,7 @@
 import { genID } from "../common";
 import { SBox, VBox } from "../common/types";
 
-/* Graph data */
+/* Helper Types */
 
 export type ID = string;
 export type Type = string;
@@ -16,22 +16,19 @@ export type Size = {
 	h: number;
 };
 
+/* Node */
+
 export type NodeData = {
 	type: Type;
 	[key: string]: any;
 };
 
 export type NodeUIData = {
-	ref?: any;
+	ref?: HTMLElement;
 	size?: Size;
 	selected: SBox<boolean>;
 	position: VBox<Position>;
 };
-
-export const emptyNodeUIData = (): NodeUIData => ({
-	selected: [false, undefined],
-	position: [undefined, undefined],
-});
 
 export type NodeP = {
 	data: NodeData;
@@ -43,11 +40,18 @@ export type Node = NodeP & {
 	ui: NodeUIData;
 };
 
+export const emptyNodeUIData = (): NodeUIData => ({
+	selected: [false, undefined],
+	position: [undefined, undefined],
+});
+
 export const substantiateNode = (node: NodeP): Node => ({
 	...node,
 	id: genID(),
 	ui: emptyNodeUIData(),
 });
+
+/* Edge */
 
 export type EdgeP = {
 	sourceID: ID;
@@ -56,17 +60,23 @@ export type EdgeP = {
 	targetHandle?: ID;
 };
 
+export type EdgeUIData = {
+	ref?: HTMLElement;
+	selected: SBox<boolean>;
+};
+
 export type Edge = EdgeP & {
 	id: ID;
+	ui: EdgeUIData;
 };
+
+export const emptyEdgeUIData = (): EdgeUIData => ({
+	selected: [false, undefined],
+});
 
 export const substantiateEdge = (edge: EdgeP): Edge => ({
 	...edge,
 	id: genID(),
+	ui: emptyEdgeUIData(),
 });
 
-/* View data */
-export type View = {
-	pan: Position;
-	zoom: number;
-};

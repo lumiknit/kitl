@@ -6,7 +6,6 @@ import HrmEdge from "./HrmEdge";
 
 type HrmEdgesProps = {
 	edges: Edge[];
-	nodes: Node[];
 };
 
 const HrmEdges: Component<HrmEdgesProps> = props => {

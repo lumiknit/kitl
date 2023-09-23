@@ -4,7 +4,7 @@ import { ID, Node, Position } from "./data";
 import { addEventListeners, newState } from "../common/pointer-helper";
 import { toast } from "../block/ToastContainer";
 import { Update, Updater, VBox } from "../common/types";
-import { HrmActions } from "./Hrm";
+import { HrmActions } from "./actions";
 
 type HrmNodeProps = {
 	node: Node;

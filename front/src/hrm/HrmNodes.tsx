@@ -3,7 +3,7 @@ import { Component, For } from "solid-js";
 import { Node } from "./data";
 
 import HrmNode from "./HrmNode";
-import { HrmActions } from "./Hrm";
+import { HrmActions } from "./actions";
 
 type HrmNodesProps = {
 	nodes: Node[];
