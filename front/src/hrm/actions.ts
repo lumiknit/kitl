@@ -1,12 +1,9 @@
-import {
-	Node,
-	Edge,
-} from './data';
+import { Node } from "./data";
 
 export type HrmActions = {
 	// Getters
 	getNodes: () => Node[];
-	getEdges: () => Edge[];
+	getNode: (id: string) => Node | undefined;
 
 	// Selection
 	selectAll: () => void;

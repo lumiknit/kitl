@@ -4,6 +4,7 @@ import { SBox, VBox } from "../common/types";
 /* Helper Types */
 
 export type ID = string;
+export type HandleID = number;
 export type Type = string;
 
 export type Position = {
@@ -23,6 +24,22 @@ export type NodeData = {
 	[key: string]: any;
 };
 
+export type Handle = {
+	name: string;
+	sourceID?: ID;
+	sourceHandle?: HandleID;
+};
+
+export type HandleData = {
+	items: Handle[];
+	lhs: number; // Number of handles at lhs
+};
+
+export type HandleUIData = {
+	ref?: HTMLElement;
+	selected: SBox<boolean>;
+};
+
 export type NodeUIData = {
 	ref?: HTMLElement;
 	size?: Size;
@@ -33,11 +50,13 @@ export type NodeUIData = {
 export type NodeP = {
 	data: NodeData;
 	position: Position;
+	handles: HandleData;
 };
 
 export type Node = NodeP & {
 	id: ID;
 	ui: NodeUIData;
+	hui: HandleUIData[];
 };
 
 export const emptyNodeUIData = (): NodeUIData => ({
@@ -49,34 +68,5 @@ export const substantiateNode = (node: NodeP): Node => ({
 	...node,
 	id: genID(),
 	ui: emptyNodeUIData(),
+	hui: [],
 });
-
-/* Edge */
-
-export type EdgeP = {
-	sourceID: ID;
-	sourceHandle?: ID;
-	targetID: ID;
-	targetHandle?: ID;
-};
-
-export type EdgeUIData = {
-	ref?: HTMLElement;
-	selected: SBox<boolean>;
-};
-
-export type Edge = EdgeP & {
-	id: ID;
-	ui: EdgeUIData;
-};
-
-export const emptyEdgeUIData = (): EdgeUIData => ({
-	selected: [false, undefined],
-});
-
-export const substantiateEdge = (edge: EdgeP): Edge => ({
-	...edge,
-	id: genID(),
-	ui: emptyEdgeUIData(),
-});
-

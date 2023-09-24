@@ -1,18 +1,25 @@
 import { Component, For } from "solid-js";
 
-import { Edge, Node } from "./data";
-
+import { Node } from "./data";
+import { HrmActions } from "./actions";
 import HrmEdge from "./HrmEdge";
 
 type HrmEdgesProps = {
-	edges: Edge[];
+	node: Node;
+	actions: HrmActions;
 };
 
 const HrmEdges: Component<HrmEdgesProps> = props => {
 	return (
-		<div class="hrm-edges">
-			<For each={props.edges}>{edge => <HrmEdge edge={edge} />}</For>
-		</div>
+		<For each={props.node.handles.items}>
+			{(_handle, index) => (
+				<HrmEdge
+					node={props.node}
+					index={index()}
+					actions={props.actions}
+				/>
+			)}
+		</For>
 	);
 };
 

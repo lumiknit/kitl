@@ -115,7 +115,7 @@ const mapID = (s: State, id: PointerID): PointerID => {
 	}
 };
 
-export const addEventListeners = (s: State, el: HTMLElement) => {
+export const addEventListeners = (s: State, el: Element) => {
 	const updatePointer = (id: PointerID, x: number, y: number): boolean => {
 		// Move event
 		const p = s.c.get(id);
@@ -202,8 +202,8 @@ export const addEventListeners = (s: State, el: HTMLElement) => {
 		}, DOUBLE_CLICK_TIME);
 		ct(s.l?.u);
 		s.l = undefined;
-		if(s.c.size === 0) {
-			for(const k in HANDLERS) {
+		if (s.c.size === 0) {
+			for (const k in HANDLERS) {
 				window.removeEventListener(k, HANDLERS[k]);
 			}
 		}
@@ -291,8 +291,8 @@ export const addEventListeners = (s: State, el: HTMLElement) => {
 				s.l = undefined;
 			}, LONG_PRESS_TIME),
 		};
-		if(s.c.size === 1) {
-			for(const k in HANDLERS) {
+		if (s.c.size === 1) {
+			for (const k in HANDLERS) {
 				window.addEventListener(k, HANDLERS[k]);
 			}
 		}
@@ -324,11 +324,11 @@ export const addEventListeners = (s: State, el: HTMLElement) => {
 			e.stopPropagation();
 		},
 	};
-	for(const k in START_HANDLERS) {
+	for (const k in START_HANDLERS) {
 		el.addEventListener(k, START_HANDLERS[k]);
 	}
 	return () => {
-		for(const k in START_HANDLERS) {
+		for (const k in START_HANDLERS) {
 			el.removeEventListener(k, START_HANDLERS[k]);
 		}
 	};

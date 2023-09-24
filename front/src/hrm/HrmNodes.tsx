@@ -4,6 +4,7 @@ import { Node } from "./data";
 
 import HrmNode from "./HrmNode";
 import { HrmActions } from "./actions";
+import HrmEdges from "./HrmEdges";
 
 type HrmNodesProps = {
 	nodes: Node[];
@@ -12,14 +13,16 @@ type HrmNodesProps = {
 
 const HrmNodes: Component<HrmNodesProps> = props => {
 	return (
-		<div class="hrm-nodes">
-			<For each={props.nodes}>{node =>
-				<HrmNode
-					node={node}
-					actions={props.actions}
-				/>
-			}</For>
-		</div>
+		<>
+			<For each={props.nodes}>
+				{node => (
+					<>
+						<HrmNode node={node} actions={props.actions} />
+						<HrmEdges node={node} actions={props.actions} />
+					</>
+				)}
+			</For>
+		</>
 	);
 };
 

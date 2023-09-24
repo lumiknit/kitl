@@ -17,7 +17,7 @@ div.hrm-view {
 	position: relative;
 	left: 0;
 	top: 0;
-	width: max-content;
+	width: 100dvw;
 	height: max-content;
 	overflow: visible;
 	transform-origin: top left;
@@ -29,13 +29,13 @@ div.hrm-node {
 	position: absolute;
 	left: 0;
 	top: 0;
-	width: fit-content;
+	width: auto;
 	min-height: 1.5rem;
 
 	display: flex;
-	padding: 0.2rem;
+	padding: 0.3rem;
 
-	background: rgb(255, 226, 238);
+	border: 0.1rem solid rgb(255, 226, 238);
 	border-radius: 999rem;
 	box-shadow: 0 0.125rem 0.25rem #0002;
 }
@@ -58,15 +58,23 @@ div.hrm-node-row {
 	cursor: pointer;
 }
 
+div.hrm-node-body {
+	display: inline-block;
+	padding: 0.2rem 0.5rem;
+	margin-left: 0.2rem;
+}
+
+div.hrm-node-body:first-child {
+	margin-left: 0;
+}
+
 // Handle
 
 div.hrm-handle {
 	display: inline-block;
-	width: 1.2rem;
-	height: 1rem;
-	margin: 0 0.35rem;
+	color: #fff;
 	background-color: rgb(107, 196, 255);
-	border-radius: 0.5rem;
+	border-radius: 999rem;
 }
 
 // Edge
@@ -76,6 +84,9 @@ svg.hrm-edge {
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
+	overflow: visible;
+	width: 0;
+	height: 0;
 }
 
 path {

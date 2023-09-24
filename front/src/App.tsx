@@ -1,46 +1,49 @@
-import { For, type Component } from "solid-js";
+import { type Component } from "solid-js";
 
 import { Localed, s } from "./locales";
 
 import "./block";
-import { Button, Color, InputCheck, InputGroup, InputText } from "./block";
-import InputLabel from "./block/InputLabel";
 import { default as ToastContainer, toast } from "./block/ToastContainer";
-import { Node, Edge, substantiateNode, substantiateEdge, Hrm } from "./hrm";
+import { Node, substantiateNode, Hrm } from "./hrm";
 
 const App: Component = () => {
-	const nodes: Node[] = [
-		substantiateNode({
-			data: {
-				type: "default",
-				label: "Test",
-			},
-			position: {
-				x: 0,
-				y: 0,
-			},
-		}),
-		substantiateNode({
-			data: {
-				type: "default",
-				label: "Test",
-			},
-			position: {
-				x: 100,
-				y: 100,
-			},
-		}),
-	];
-	const edges: Edge[] = [
-		substantiateEdge({
-			sourceID: nodes[0].id,
-			targetID: nodes[1].id,
-		}),
-	];
+	const nodeA = substantiateNode({
+		data: {
+			type: "default",
+			label: "Test",
+		},
+		position: {
+			x: 0,
+			y: 0,
+		},
+		handles: {
+			items: [{ name: "a" }, { name: "b" }, { name: "ret" }],
+			lhs: 1,
+		},
+	});
+	const nodeB = substantiateNode({
+		data: {
+			type: "default",
+			label: "Test",
+		},
+		position: {
+			x: 100,
+			y: 100,
+		},
+		handles: {
+			items: [
+				{ name: "arg", sourceID: nodeA.id },
+				{ name: "b" },
+				{ name: "c", sourceID: nodeA.id, sourceHandle: 1 },
+			],
+			lhs: 2,
+		},
+	});
+	const nodes: Node[] = [nodeA, nodeB];
 	return (
 		<Localed>
 			<ToastContainer />
-			<Hrm nodes={nodes} edges={edges} />
+			<Hrm nodes={nodes} />
 		</Localed>
 	);
 };
