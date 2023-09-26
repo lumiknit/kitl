@@ -1,46 +1,45 @@
 import { Show, createEffect, createSignal } from "solid-js";
-import { HrmActions } from "./actions";
 
-import { Node } from "./data";
+import { Handle, Node, Nodes } from "./data";
+import { GraphState } from "./state";
+import { VWrap } from "../common/types";
 
 type HrmEdgeProps = {
-	actions: HrmActions;
-	node: Node;
+	g: GraphState;
+	nodeW: VWrap<Node>;
+	handleW: VWrap<Handle>;
 	index: number;
 };
 
 const HrmEdge = (props: HrmEdgeProps) => {
-	const handle = props.node.handles.items[props.index];
-	const hui = props.node.hui[props.index];
+	const [n] = props.nodeW;
+	const [h, update] = props.handleW;
 
-	const [path, setPath] = createSignal<string>("");
+	const path = () => {
+		const handle = h();
+		const node = n();
+		if (!handle.sourceID) return "";
+		if (!node.ref) return "";
+		if (!handle.ref) return "";
+		const href = handle.ref;
+		const p = node.position;
+		const x = p.x + href.offsetLeft + href.offsetWidth / 2;
+		const y = p.y + href.offsetTop + href.offsetHeight / 2;
 
-	const updatePath = () => {
-		if (!handle.sourceID) return;
-		if (!props.node.ui.ref) return;
-		if (!hui?.ref) return;
-		const p = props.node.ui.position[0]?.();
-		const x = p.x + hui.ref.offsetLeft + hui.ref.offsetWidth / 2;
-		const y = p.y + hui.ref.offsetTop + hui.ref.offsetHeight / 2;
-
-		const src = props.actions.getNode(handle.sourceID);
-		console.log(src);
+		const nodes: Nodes = props.g.nodes();
+		const src = nodes.get(handle.sourceID);
 		if (!src) return;
-		const pos = src.ui.position[0]?.();
-		const size = src.ui.size;
-		const x2 = pos?.x ?? 0 + size.w / 2;
-		const y2 = pos?.y ?? 0 + size.h / 2;
+		const srcNode = src[0]();
+		const pos = srcNode.position;
+		const size = srcNode.size;
+		const x2 = pos.x + size.w / 2;
+		const y2 = pos.y + size.h / 2;
 
-		const s = `M ${x} ${y} l ${x2 - x} ${y2 - y}`;
-		setPath(s);
+		return `M ${x} ${y} l ${x2 - x} ${y2 - y}`;
 	};
 
-	createEffect(() => {
-		updatePath();
-	});
-
 	return (
-		<Show when={handle.sourceID}>
+		<Show when={h().sourceID}>
 			<svg class="hrm-edge">
 				<path
 					class="hrm-edge-path"

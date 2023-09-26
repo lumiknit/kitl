@@ -1,13 +1,4 @@
-import {
-	Accessor,
-	Component,
-	JSXElement,
-	Setter,
-	createEffect,
-	createSignal,
-} from "solid-js";
-
-import { Box2 } from "../common";
+import { Component, JSXElement, createEffect, createSignal } from "solid-js";
 
 import * as ph from "../common/pointer-helper";
 import { VBox } from "../common/types";

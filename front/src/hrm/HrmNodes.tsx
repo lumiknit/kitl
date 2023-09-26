@@ -1,24 +1,21 @@
 import { Component, For } from "solid-js";
 
-import { Node } from "./data";
-
 import HrmNode from "./HrmNode";
-import { HrmActions } from "./actions";
 import HrmEdges from "./HrmEdges";
+import { GraphState } from "./state";
 
 type HrmNodesProps = {
-	nodes: Node[];
-	actions: HrmActions;
+	g: GraphState;
 };
 
 const HrmNodes: Component<HrmNodesProps> = props => {
 	return (
 		<>
-			<For each={props.nodes}>
-				{node => (
+			<For each={[...props.g.nodes()]}>
+				{([id, nodeW]) => (
 					<>
-						<HrmNode node={node} actions={props.actions} />
-						<HrmEdges node={node} actions={props.actions} />
+						<HrmNode g={props.g} id={id} nodeW={nodeW} />
+						<HrmEdges g={props.g} id={id} nodeW={nodeW} />
 					</>
 				)}
 			</For>

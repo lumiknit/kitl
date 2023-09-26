@@ -1,29 +1,33 @@
-import { Component, Show, createEffect } from "solid-js";
+import { Component, createEffect } from "solid-js";
 
-import { HandleUIData, Node } from "./data";
+import { Handle, Node } from "./data";
+import { GraphState } from "./state";
+import { VWrap } from "../common/types";
 
 type HrmHandleProps = {
+	g: GraphState;
 	node: Node;
 	index: number;
+	handleW: VWrap<Handle>;
 };
 
 const HrmHandle: Component<HrmHandleProps> = props => {
+	const [h, update] = props.handleW;
 	let handleRef: HTMLDivElement | undefined;
-	const handle = props.node.handles.items[props.index];
 
 	createEffect(() => {
 		if (!handleRef) return;
-		const hUI: HandleUIData = {
+		update(h => ({
+			...h,
 			ref: handleRef,
-			selected: [false, () => {}],
-		};
-		props.node.hui[props.index] = hUI;
+			selected: false,
+		}));
 	});
 
 	return (
 		<>
 			<div ref={handleRef} class="hrm-node-body hrm-handle">
-				{handle.name}
+				{h().name}
 			</div>
 		</>
 	);

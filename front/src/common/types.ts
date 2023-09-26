@@ -16,7 +16,7 @@ Getter & Updater are used for state management. e.g. createSignal
 
 export type Getter<T> = () => T;
 export type Update<T> = (old: T) => T;
-export type Updater<T> = (update: Update<T>) => void;
+export type Updater<T> = (update: T | Update<T>) => void;
 
 /*
 SWrap & SBox are helper to pass state to other (as react)
