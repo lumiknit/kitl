@@ -1,7 +1,17 @@
-import { Component, JSXElement, createEffect, createSignal } from "solid-js";
+import {
+	Component,
+	For,
+	JSXElement,
+	createEffect,
+	createSignal,
+} from "solid-js";
 
 import * as ph from "../common/pointer-helper";
 import { VBox } from "../common/types";
+
+import { TbZoomIn, TbZoomOut, TbZoomReset } from "solid-icons/tb";
+
+import "./HrmPane.scss";
 
 export type HrmTransform = {
 	x: number; // x offset
@@ -82,20 +92,71 @@ const HrmPane: Component<HrmPaneProps> = props => {
 			e => {
 				if (!paneRef) return;
 				e.preventDefault();
-				const newZ = Math.pow(2, e.deltaY / -100),
-					rect = paneRef.getBoundingClientRect();
-				setT(s => ({
-					x: s.x * newZ - (e.clientX - rect.left) * (newZ - 1),
-					y: s.y * newZ - (e.clientY - rect.top) * (newZ - 1),
-					z: s.z * newZ,
-				}));
+				if (e.ctrlKey || e.metaKey) {
+					// Zoom
+					const newZ = Math.pow(2, e.deltaY / -100),
+						rect = paneRef.getBoundingClientRect();
+					setT(s => ({
+						x: s.x * newZ - (e.clientX - rect.left) * (newZ - 1),
+						y: s.y * newZ - (e.clientY - rect.top) * (newZ - 1),
+						z: s.z * newZ,
+					}));
+				} else {
+					setT(s => ({
+						x: s.x - e.deltaX,
+						y: s.y - e.deltaY,
+						z: s.z,
+					}));
+				}
 			},
 			{ passive: false },
 		);
 	});
 
+	type Control = [HTMLButtonElement | undefined, JSXElement, () => void];
+	const controls: Control[] = [
+		[
+			undefined,
+			<TbZoomIn />,
+			() => {
+				setT(s => ({ ...s, z: s.z * 1.1 }));
+			},
+		],
+		[
+			undefined,
+			<TbZoomOut />,
+			() => {
+				setT(s => ({ ...s, z: s.z / 1.1 }));
+			},
+		],
+		[
+			undefined,
+			<TbZoomReset />,
+			() => {
+				setT(s => ({ ...s, z: 1 }));
+			},
+		],
+	];
+	createEffect(() => {
+		for (const [ref] of controls) {
+			if (!ref) continue;
+			ref.addEventListener("mousedown", e => {
+				e.stopPropagation();
+			});
+		}
+	});
+
 	return (
 		<div ref={paneRef} class="hrm-pane">
+			<div class="hrm-pane-controls">
+				<For each={controls}>
+					{c => (
+						<button ref={c[0]} onClick={c[2]}>
+							{c[1]}
+						</button>
+					)}
+				</For>
+			</div>
 			<div
 				class="hrm-view"
 				ref={viewRef}

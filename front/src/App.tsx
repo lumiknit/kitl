@@ -9,7 +9,7 @@ import { NodeF, NodesF, Hrm } from "./hrm";
 const App: Component = () => {
 	const nodes: NodesF = [
 		{
-			id: "abc",
+			id: "n1",
 			data: {
 				type: "default",
 				label: "Test",
@@ -20,28 +20,66 @@ const App: Component = () => {
 			},
 			handles: {
 				lhs: 1,
-				items: [{ name: "a" }, { name: "b" }, { name: "ret" }],
+				items: [{ name: "lhs" }, { name: "arg1" }, { name: "arg2" }],
 			},
 		},
 		{
-			id: "zxc",
+			id: "n2",
 			data: {
 				type: "default",
 				label: "Hello",
 			},
 			position: {
 				x: 100,
-				y: 0,
+				y: 100,
 			},
 			handles: {
 				lhs: 1,
 				items: [
 					{
-						name: "a",
-						sourceID: "abc",
+						name: "fallback",
+						sourceID: "n1",
 					},
-					{ name: "b" },
+					{ name: "arg" },
+					{ name: "1" },
+					{ name: "2" },
 					{ name: "ret" },
+				],
+			},
+		},
+		{
+			id: "n3",
+			data: {
+				type: "default",
+				label: "Hello",
+			},
+			position: {
+				x: 200,
+				y: 200,
+			},
+			handles: {
+				lhs: 1,
+				items: [
+					{ name: "fn", sourceID: "n1" },
+					{ name: "1", sourceID: "n2" },
+				],
+			},
+		},
+		{
+			id: "n4",
+			data: {
+				type: "default",
+				label: "Hello",
+			},
+			position: {
+				x: 300,
+				y: 300,
+			},
+			handles: {
+				lhs: 0,
+				items: [
+					{ name: "1", sourceID: "n1" },
+					{ name: "2", sourceID: "n3" },
 				],
 			},
 		},
@@ -49,7 +87,9 @@ const App: Component = () => {
 	return (
 		<Localed>
 			<ToastContainer />
-			<Hrm initialNodes={nodes} />
+			<div class="kitl-editor">
+				<Hrm initialNodes={nodes} />
+			</div>
 		</Localed>
 	);
 };

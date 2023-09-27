@@ -1,6 +1,7 @@
 import { Component } from "solid-js";
 
 import "./Hrm.scss";
+import "./HrmColors.scss";
 import { Nodes, NodesF } from "./data";
 import HrmPane, { HrmTransform } from "./HrmPane";
 

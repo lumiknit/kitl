@@ -1,8 +1,8 @@
 import { For, createEffect } from "solid-js";
-import { ID, Node, Position } from "./data";
+import { ID, Node, cBd, cBg } from "./data";
 
 import { addEventListeners, newState } from "../common/pointer-helper";
-import { Updater, VWrap } from "../common/types";
+import { VWrap } from "../common/types";
 import HrmHandle from "./HrmHandle";
 import { GraphState } from "./state";
 
@@ -24,15 +24,15 @@ const HrmNode = (props: HrmNodeProps) => {
 			...n,
 			ref: ref,
 			size: {
-				w: ref.clientWidth,
-				h: ref.clientHeight,
+				w: ref.offsetWidth,
+				h: ref.offsetHeight,
 			},
 			selected: false,
 		}));
 		// DO NOT touch handles
 		return addEventListeners(
 			newState({
-				onClick: e => {
+				onClick: () => {
 					props.g.toggleNodeOne(props.id);
 				},
 				onDrag: e => {
@@ -50,7 +50,9 @@ const HrmNode = (props: HrmNodeProps) => {
 
 	return (
 		<div
-			class={`hrm-node ${n().selected ? "selected" : ""}`}
+			class={`hrm-node ${n().selected ? "selected" : ""} ${cBd(
+				n().color,
+			)}`}
 			ref={nodeRef}
 			style={{
 				left: `${n().position.x}px`,

@@ -1,0 +1,52 @@
+div.hrm-pane {
+	width: 100%;
+	height: 100%;
+}
+
+div.hrm-view {
+	position: relative;
+	left: 0;
+	top: 0;
+	width: 100dvw;
+	height: max-content;
+	overflow: visible;
+	transform-origin: top left;
+}
+
+// Pane Controls
+
+div.hrm-pane-controls {
+	position: absolute;
+	left: 0.5rem;
+	bottom: 0.5rem;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: center;
+	border: 1px solid #ccc;
+	z-index: 10;
+}
+
+div.hrm-pane-controls > button {
+	display: inline-block;
+	background-color: #ddd;
+	padding: 0.25rem;
+	border: 0;
+	border-bottom: 1px solid #ccc;
+}
+
+div.hrm-pane-controls > button:last-child {
+	border-bottom: 0;
+}
+
+div.hrm-pane-controls > button:hover {
+	background-color: #ccc;
+}
+
+div.hrm-pane-controls > button:active {
+	background-color: #bbb;
+}
+
+div.hrm-pane-controls > button:disabled {
+	background-color: #ddd;
+}

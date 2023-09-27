@@ -2,6 +2,17 @@ import { VWrap } from "../common/types";
 
 import { createSignal } from "solid-js";
 
+/* Const */
+
+export const NODE_COLORS = 9;
+export type NodeColor = number;
+export const cBg = (color?: NodeColor) =>
+	color === undefined ? "" : `hrm-c-bg-${color}`;
+export const cBd = (color?: NodeColor) =>
+	color === undefined ? "" : `hrm-c-bd-${color}`;
+export const cStr = (color?: NodeColor) =>
+	color === undefined ? "" : `hrm-c-stroke-${color}`;
+
 /* Helper Types */
 
 export type ID = string;
@@ -34,6 +45,7 @@ export type HandleC = {
 export type HandleUI = {
 	ref?: HTMLElement;
 	selected: boolean;
+	color?: NodeColor;
 };
 
 // Handle (for UI, solidjs)
@@ -73,6 +85,7 @@ export type NodeUI = {
 	ref?: HTMLElement;
 	size: Size;
 	selected: boolean;
+	color: NodeColor;
 };
 
 // Node (for UI, solidjs)
@@ -114,6 +127,7 @@ export const thawNodes = (nodes: NodesF): Nodes => {
 			},
 			selected: false,
 			handles: thawHandles(node.handles),
+			color: Math.floor(Math.random() * NODE_COLORS),
 		});
 		thawed.set(node.id, vw);
 	}
