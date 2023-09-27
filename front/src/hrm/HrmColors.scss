@@ -2,17 +2,33 @@ $node-color-fg: #000;
 $node-color-bg: #fff;
 $node-color-disabled: #ddd;
 $node-colors: (
-	#ddaec9,
-	#b199c1,
-	#ffc598,
-	#f89ba1,
 	#f38fb4,
+	#f89ba1,
+	#ffc598,
+	#d3e17d,
+	#90c47c,
 	#b6d0c8,
 	#8dc9d3,
 	#96b0f8,
-	#88a6fa
+	#88a6fa,
+	#a290e8,
+	#ddaec9,
+	#b199c1,
 );
-$node-colors-fg: (#000, #fff, #000, #000, #fff, #000, #000, #fff, #fff);
+$node-colors-fg: (
+	#fff,
+	#fff, 
+	#000, 
+	#000, 
+	#fff, 
+	#000, 
+	#000, 
+	#fff, 
+	#fff,
+	#fff,
+	#fff,
+	#000,
+);
 
 @for $i from 1 through length($node-colors) {
 	.hrm-c-bg-#{$i - 1} {

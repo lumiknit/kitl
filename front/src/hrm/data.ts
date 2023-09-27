@@ -4,7 +4,7 @@ import { createSignal } from "solid-js";
 
 /* Const */
 
-export const NODE_COLORS = 9;
+export const NODE_COLORS = 12;
 export type NodeColor = number;
 export const cBg = (color?: NodeColor) =>
 	color === undefined ? "" : `hrm-c-bg-${color}`;

@@ -57,7 +57,7 @@ const HrmEdge = (props: HrmEdgeProps) => {
 			hh,
 		);
 
-		const dist = 0.125 * Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+		const dist = 0.175 * Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
 
 		return `M ${x1} ${y1} C ${x1 + vx1 * dist} ${y1 + vy1 * dist}, ${
 			x2 + vx2 * dist
