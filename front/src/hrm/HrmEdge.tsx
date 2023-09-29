@@ -1,14 +1,6 @@
-import { Show, Switch } from "solid-js";
+import { Show } from "solid-js";
 
-import {
-	Handle,
-	HandleType,
-	Node,
-	Nodes,
-	SinkHandleData,
-	SourceHandleData,
-	cStr,
-} from "./data";
+import { Handle, HandleType, Node, SinkHandleData, cStr } from "./data";
 import { State } from "./state";
 import { VWrap, nearestPointInPill } from "@/common";
 
@@ -52,10 +44,10 @@ const HrmEdge = (props: HrmEdgeProps) => {
 		);
 		const [x1, y1, vx1, vy1] = nearestPointInPill(x2, y2, handleRect);
 		const dist = 0.2 * Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-		return `M ${x1} ${y1}
+		return `M ${x1 - 0.5 * vx1} ${y1 - 0.5 * vy1}
 			C ${x1 + vx1 * dist} ${y1 + vy1 * dist},
 			${x2 + vx2 * dist} ${y2 + vy2 * dist},
-			${x2} ${y2}`;
+			${x2 - 0.5 * vx2} ${y2 - 0.5 * vy2}`;
 	};
 
 	return (

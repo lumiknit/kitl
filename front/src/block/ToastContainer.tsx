@@ -3,25 +3,16 @@ import { Component, For, createSignal } from "solid-js";
 import { Wrap, ef } from "@/common";
 
 export enum ToastType {
-	Success,
-	Warning,
-	Error,
+	Success = 0,
+	Warning = 1,
+	Error = 2,
 }
 
-const toastIcon = (type?: ToastType) => {
-	switch (type) {
-		case ToastType.Success:
-			return "✅";
-		case ToastType.Warning:
-			return "⚠️";
-		case ToastType.Error:
-			return "🚫";
-	}
-};
+const toastIcons = ["✅", "⚠️", "🚫"];
 
 export type ToastOptions = {
 	type?: ToastType;
-	seconds?: number;
+	ttl?: number;
 };
 
 export type ToastCreationFn = (message: string, options?: ToastOptions) => void;
@@ -44,56 +35,48 @@ type Toast = {
 };
 
 type ToastContainerState = {
-	counter: number;
+	cnt: number;
 	toasts: Toast[];
 };
 
 const ToastContainer: Component<ToastContainerProps> = props => {
 	const creation = props.creation ?? globalToastCreation;
 	const [state, setState] = createSignal<ToastContainerState>({
-		counter: 0,
+		cnt: 0,
 		toasts: [],
 	});
 	creation[0] = (message: string, options?: ToastOptions) => {
 		setState(s => {
-			let ttl = options?.seconds ?? 2;
-			if (ttl < 0.2) {
-				ttl = 0.2;
-			}
-			const toasts = s.toasts;
-			const id = s.counter;
-			const timeout = window.setTimeout(() => {
-				setState(s => ({
-					...s,
-					toasts: s.toasts.filter(toast => toast.id !== id),
-				}));
-			}, ttl * 1000);
-			window.setTimeout(
-				() => {
-					setState(s => ({
-						...s,
-						toasts: s.toasts.map(toast =>
-							toast.id === id
-								? {
-										...toast,
-										class: "toast-animation-out",
-								  }
-								: toast,
-						),
-					}));
-				},
-				ttl * 1000 - 100,
+			const toasts = s.toasts,
+				id = s.cnt,
+				ttl = Math.max(200, options?.ttl ?? 2000),
+				timeout = (f: (ts: Toast[]) => Toast[], t: number) =>
+					window.setTimeout(
+						() => setState(s => ({ ...s, toasts: f(s.toasts) })),
+						t,
+					),
+				to = timeout(
+					toasts => toasts.filter(toast => toast.id !== id),
+					ttl,
+				);
+			timeout(
+				toasts =>
+					toasts.map(toast =>
+						toast.id === id
+							? { ...toast, class: "toast-a-out" }
+							: toast,
+					),
+				ttl - 100,
 			);
-			console.log(options?.type);
 			toasts.push({
 				id,
 				type: options?.type,
-				class: "toast-animation-in",
+				class: "toast-a-in",
 				message,
-				timeout,
+				timeout: to,
 			});
 			return {
-				counter: s.counter + 1,
+				cnt: s.cnt + 1,
 				toasts,
 			};
 		});
@@ -103,7 +86,7 @@ const ToastContainer: Component<ToastContainerProps> = props => {
 			<For each={state().toasts}>
 				{item => (
 					<div class={`toast ${item.class}`}>
-						{toastIcon(item.type)}
+						{item.type ? toastIcons[item.type] : ""}
 						{item.message}
 					</div>
 				)}

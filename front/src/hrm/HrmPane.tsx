@@ -7,15 +7,13 @@ import {
 } from "solid-js";
 
 import * as ph from "@/common/pointer-helper";
-import { VBox } from "@/common/types";
 
 import { TbZoomIn, TbZoomOut, TbZoomReset } from "solid-icons/tb";
 
 import "./HrmPane.scss";
 import { Transform } from "./data";
 import { State } from "./state";
-
-const distanceSquare = (dx: number, dy: number) => dx * dx + dy * dy;
+import { distSquare } from "@/common";
 
 const transformToStyle = (t: Transform) =>
 	`translate(${t.x}px, ${t.y}px) scale(${t.z})`;
@@ -30,7 +28,13 @@ type HrmPaneProps = {
 
 const HrmPane: Component<HrmPaneProps> = props => {
 	let paneRef: HTMLDivElement | undefined;
-	const [t, setT] = createSignal<Transform>({ x: 0, y: 0, z: 1 });
+	const [t, setT] = createSignal<Transform>({ x: 0, y: 0, z: 1 }),
+		tr = (dx: number, dy: number, dz: number) =>
+			setT(s => ({
+				x: s.x * dz + dx,
+				y: s.y * dz + dy,
+				z: s.z * dz,
+			}));
 	props.g.transform[0] = t;
 	props.g.transform[1] = setT;
 
@@ -42,34 +46,22 @@ const HrmPane: Component<HrmPaneProps> = props => {
 				onDoubleClick: props.onDoubleClick,
 				onLongPress: props.onLongPress,
 				onDrag: e => {
-					const viewRef = props.g.viewRef;
-					if (!viewRef) return;
 					const dx = e.x - e.ox,
-						dy = e.y - e.oy;
-					if (e.pivot) {
+						dy = e.y - e.oy,
+						pivot = e.pivot;
+					if (pivot) {
 						const newZ = Math.sqrt(
-								distanceSquare(
-									e.pivot.x - e.x,
-									e.pivot.y - e.y,
-								) /
-									distanceSquare(
-										e.pivot.x - e.ox,
-										e.pivot.y - e.oy,
-									),
+								distSquare(pivot.x - e.x, pivot.y - e.y) /
+									distSquare(pivot.x - e.ox, pivot.y - e.oy),
 							),
-							rect = viewRef.getBoundingClientRect();
-						// Get size of viewRef
-						setT(s => ({
-							x: s.x + (dx - rect.width * (newZ - 1)) / 2,
-							y: s.y + (dy - rect.height * (newZ - 1)) / 2,
-							z: s.z * newZ,
-						}));
+							mZ = newZ - 1;
+						tr(
+							(dx - (pivot.x + e.ox) * mZ) / 2,
+							(dy - (pivot.y + e.oy) * mZ) / 2,
+							newZ,
+						);
 					} else {
-						setT(s => ({
-							x: s.x + dx,
-							y: s.y + dy,
-							z: s.z,
-						}));
+						tr(dx, dy, 1);
 					}
 				},
 			}),
@@ -88,49 +80,29 @@ const HrmPane: Component<HrmPaneProps> = props => {
 					// Zoom
 					const newZ = Math.pow(2, e.deltaY / -100),
 						rect = paneRef.getBoundingClientRect();
-					setT(s => ({
-						x: s.x * newZ - (e.clientX - rect.left) * (newZ - 1),
-						y: s.y * newZ - (e.clientY - rect.top) * (newZ - 1),
-						z: s.z * newZ,
-					}));
+					tr(
+						(e.clientX - rect.left) * (1 - newZ),
+						(e.clientY - rect.top) * (1 - newZ),
+						newZ,
+					);
 				} else {
-					setT(s => ({
-						x: s.x - e.deltaX,
-						y: s.y - e.deltaY,
-						z: s.z,
-					}));
+					tr(-e.deltaX, -e.deltaY, 1);
 				}
 			},
 			{ passive: false },
 		);
 	});
 
-	type Control = [HTMLButtonElement | undefined, JSXElement, () => void];
+	type Control =
+		| [JSXElement, () => any]
+		| [JSXElement, () => any, HTMLButtonElement | undefined];
 	const controls: Control[] = [
-		[
-			undefined,
-			<TbZoomIn />,
-			() => {
-				setT(s => ({ ...s, z: s.z * 1.1 }));
-			},
-		],
-		[
-			undefined,
-			<TbZoomOut />,
-			() => {
-				setT(s => ({ ...s, z: s.z / 1.1 }));
-			},
-		],
-		[
-			undefined,
-			<TbZoomReset />,
-			() => {
-				setT(s => ({ ...s, z: 1 }));
-			},
-		],
+		[<TbZoomIn />, () => tr(0, 0, 1.1)],
+		[<TbZoomOut />, () => tr(0, 0, 1 / 1.1)],
+		[<TbZoomReset />, () => setT(s => ({ ...s, z: 1 }))],
 	];
 	createEffect(() => {
-		for (const [ref] of controls) {
+		for (const [, , ref] of controls) {
 			if (!ref) continue;
 			ref.addEventListener("mousedown", e => {
 				e.stopPropagation();
@@ -143,8 +115,8 @@ const HrmPane: Component<HrmPaneProps> = props => {
 			<div class="hrm-pane-controls">
 				<For each={controls}>
 					{c => (
-						<button ref={c[0]} onClick={c[2]}>
-							{c[1]}
+						<button ref={c[2]} onClick={c[1]}>
+							{c[0]}
 						</button>
 					)}
 				</For>

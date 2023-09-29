@@ -1,5 +1,8 @@
 /* Types and constants */
 
+import { toast } from "@/block/ToastContainer";
+import { distSquare } from "./geometry";
+
 const MOVE_THRESHOLD = 4;
 const DOUBLE_CLICK_TIME = 300;
 const MULTI_TAP_TIME = 100;
@@ -119,25 +122,22 @@ export const addEventListeners = (s: State, el: Element) => {
 	const updatePointer = (id: PointerID, x: number, y: number): boolean => {
 		// Move event
 		const p = s.c.get(id);
-		if (!p) return false;
-		// Update pointers
-		const dx = x - p.x,
-			dy = y - p.y;
-		const dist = dx * dx + dy * dy;
-		if (p.b !== BSMoved && dist < MOVE_THRESHOLD) {
+		if (
+			!p ||
+			(p.b !== BSMoved && distSquare(x - p.x, y - p.y) < MOVE_THRESHOLD)
+		) {
 			return false;
 		}
 		// Update view
-		let event: DragEvent = {
-			x,
-			y,
-			ox: p.x,
-			oy: p.y,
-		};
-		const firstTwo = [...s.c.keys()].slice(0, 2);
-		if (firstTwo.length === 2) {
-			let key = firstTwo[0] === id ? firstTwo[1] : firstTwo[0];
-			const pivot = s.c.get(key);
+		const event: DragEvent = {
+				x,
+				y,
+				ox: p.x,
+				oy: p.y,
+			},
+			[a, b] = s.c.keys();
+		if (b) {
+			const pivot = s.c.get(a === id ? b : a);
 			if (pivot) {
 				event.pivot = {
 					x: pivot.x,
@@ -253,13 +253,13 @@ export const addEventListeners = (s: State, el: Element) => {
 		// Button Down / Touch Start event
 		// Try to get old state
 		const now = Date.now(),
-			p = s.o.get(id);
-		let cnt =
-			p && // Pointer still exists
-			p.c === 1 && // Already clicked once
-			now - p.t <= DOUBLE_CLICK_TIME // Within double click time
-				? 2
-				: 1;
+			p = s.o.get(id),
+			cnt =
+				p && // Pointer still exists
+				p.c === 1 && // Already clicked once
+				now - p.t <= DOUBLE_CLICK_TIME // Within double click time
+					? 2
+					: 1;
 		s.o.delete(id);
 		s.c.set(id, {
 			id,

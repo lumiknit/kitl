@@ -14,6 +14,9 @@ export type Rect = Position & Size;
 
 /* Helpers */
 
+export const distSquare = (dx: number, dy: number) => dx * dx + dy * dy;
+export const dist = (dx: number, dy: number) => Math.sqrt(distSquare(dx, dy));
+
 export const transposeRect = (rect: Rect): Rect => ({
 	x: rect.y,
 	y: rect.x,
@@ -45,7 +48,7 @@ export const nearestPointInHPill = (
 	if (Math.abs(ox) > m) {
 		const z = ox > 0 ? 1 : -1,
 			x = ox - z * m,
-			d = Math.sqrt(x * x + oy * oy) / hh;
+			d = dist(x, oy) / hh;
 		ox = z * m + x / d;
 		oy /= d;
 		// Calculate normal vector

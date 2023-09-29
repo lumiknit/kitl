@@ -10,8 +10,8 @@ body {
 .kitl-editor {
 	background-color: #fff;
 	position: absolute;
-	left: 5dvw;
-	top: 10dvh;
-	height: 80dvh;
-	width: 80dvw;
+	left: 0dvw;
+	top: 0dvh;
+	height: 100dvh;
+	width: 100dvw;
 }

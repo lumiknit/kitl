@@ -120,6 +120,7 @@ $ui-border-radius: 0.25rem;
 	right: 0;
 	align-items: center;
 	pointer-events: none;
+	transition: margin-bottom 0.1s ease-in-out;
 }
 
 @keyframes toast-in {
@@ -133,7 +134,7 @@ $ui-border-radius: 0.25rem;
 	}
 }
 
-.toast-animation-in {
+.toast-a-in {
 	animation: toast-in 0.1s ease;
 }
 
@@ -148,7 +149,7 @@ $ui-border-radius: 0.25rem;
 	}
 }
 
-.toast-animation-out {
+.toast-a-out {
 	animation: toast-out 0.1s ease;
 }
 

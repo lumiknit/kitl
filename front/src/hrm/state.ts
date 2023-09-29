@@ -70,7 +70,7 @@ export class State {
 	toggleNodeOne(id: NodeID) {
 		// Check is selected
 		for (const [nid, node] of this.nodes()) {
-			if (nid === id) {
+			if (nid !== id) {
 				node[1](n =>
 					n.selected
 						? {
