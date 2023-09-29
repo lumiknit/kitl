@@ -6,8 +6,8 @@ import {
 	createSignal,
 } from "solid-js";
 
-import * as ph from "../common/pointer-helper";
-import { VBox } from "../common/types";
+import * as ph from "@kitl-common/pointer-helper";
+import { VBox } from "@kitl-common/types";
 
 import { TbZoomIn, TbZoomOut, TbZoomReset } from "solid-icons/tb";
 

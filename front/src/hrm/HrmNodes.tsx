@@ -18,13 +18,13 @@ const HrmNodes: Component<HrmNodesProps> = props => {
 					</>
 				)}
 			</For>
-			<For each={[...props.g.nodes()]}>
-				{([id, nodeW]) => (
-					<svg class="hrm-edges">
+			<svg class="hrm-edges">
+				<For each={[...props.g.nodes()]}>
+					{([id, nodeW]) => (
 						<HrmEdges g={props.g} id={id} nodeW={nodeW} />
-					</svg>
-				)}
-			</For>
+					)}
+				</For>
+			</svg>
 		</>
 	);
 };

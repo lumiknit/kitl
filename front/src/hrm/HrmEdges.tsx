@@ -3,7 +3,7 @@ import { Component, For } from "solid-js";
 import { ID, Node } from "./data";
 import HrmEdge from "./HrmEdge";
 import { GraphState } from "./state";
-import { VWrap } from "../common/types";
+import { VWrap } from "@kitl-common/types";
 
 type HrmEdgesProps = {
 	g: GraphState;

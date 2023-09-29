@@ -2,7 +2,7 @@ import { Show } from "solid-js";
 
 import { Handle, Node, Nodes, cStr } from "./data";
 import { GraphState } from "./state";
-import { VWrap, nearestPointInPill } from "../common";
+import { VWrap, nearestPointInPill } from "@kitl-common";
 
 type HrmEdgeProps = {
 	g: GraphState;

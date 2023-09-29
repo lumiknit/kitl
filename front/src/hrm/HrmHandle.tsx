@@ -2,7 +2,7 @@ import { Component, createEffect } from "solid-js";
 
 import { Handle, Node, NodeColor, cBg } from "./data";
 import { GraphState } from "./state";
-import { VWrap } from "../common/types";
+import { VWrap } from "@kitl-common/types";
 
 type HrmHandleProps = {
 	g: GraphState;

@@ -1,8 +1,8 @@
 import { For, createEffect } from "solid-js";
-import { ID, Node, cBd, cBg } from "./data";
+import { ID, Node, cBd } from "./data";
 
-import { addEventListeners, newState } from "../common/pointer-helper";
-import { VWrap } from "../common/types";
+import { addEventListeners, newState } from "@kitl-common/pointer-helper";
+import { VWrap } from "@kitl-common";
 import HrmHandle from "./HrmHandle";
 import { GraphState } from "./state";
 

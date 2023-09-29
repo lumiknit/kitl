@@ -10,6 +10,16 @@
 		"jsxImportSource": "solid-js",
 		"types": ["vite/client"],
 		"noEmit": true,
-		"isolatedModules": true
+		"isolatedModules": true,
+		"baseUrl": "./src",
+		"paths": {
+			"@kitl/*": ["*"],
+			"@kitl-common": ["common"],
+			"@kitl-common/*": ["common/*"],
+			"@kitl-components": ["components"],
+			"@kitl-components/*": ["components/*"],
+			"@kitl-hrm": ["hrm"],
+			"@kitl-hrm/*": ["hrm/*"]
+		}
 	}
 }

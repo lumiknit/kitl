@@ -7,7 +7,7 @@ import HrmPane, { HrmTransform } from "./HrmPane";
 
 import { toast } from "../block/ToastContainer";
 import HrmNodes from "./HrmNodes";
-import { VBox } from "../common/types";
+import { VBox } from "@kitl-common/types";
 import { GraphState } from "./state";
 
 export type HrmProps = {
