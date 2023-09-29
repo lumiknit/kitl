@@ -11,6 +11,8 @@ import {
 } from "./data";
 import { State } from "./state";
 import { VWrap } from "@/common/types";
+import { addEventListeners, newState } from "@/common/pointer-helper";
+import { toast } from "@/block/ToastContainer";
 
 type HrmHandleProps = {
 	g: State;
@@ -50,6 +52,14 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 				colorClass,
 			};
 		});
+		return addEventListeners(
+			newState({
+				onClick: e => {
+					toast("handle a clicked");
+				},
+			}),
+			handleRef,
+		);
 	});
 
 	return (

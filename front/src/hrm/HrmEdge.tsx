@@ -1,8 +1,10 @@
-import { Show } from "solid-js";
+import { Show, createEffect } from "solid-js";
 
 import { Handle, HandleType, Node, SinkHandleData, cStr } from "./data";
 import { State } from "./state";
 import { VWrap, nearestPointInPill } from "@/common";
+import { addEventListeners, newState } from "@/common/pointer-helper";
+import { toast } from "@/block/ToastContainer";
 
 type HrmEdgeProps = {
 	g: State;
@@ -12,6 +14,7 @@ type HrmEdgeProps = {
 };
 
 const HrmEdge = (props: HrmEdgeProps) => {
+	let clickPathRef: SVGPathElement | undefined;
 	const [n] = props.nodeW;
 	const [h, update] = props.handleW;
 
@@ -50,6 +53,18 @@ const HrmEdge = (props: HrmEdgeProps) => {
 			${x2 - 0.5 * vx2} ${y2 - 0.5 * vy2}`;
 	};
 
+	createEffect(() => {
+		if (!clickPathRef) return;
+		return addEventListeners(
+			newState({
+				onClick: e => {
+					toast("edge clicked");
+				},
+			}),
+			clickPathRef,
+		);
+	});
+
 	return (
 		<Show
 			when={
@@ -59,6 +74,14 @@ const HrmEdge = (props: HrmEdgeProps) => {
 			<path
 				class={`hrm-edge-path ${cStr(h().color)}`}
 				stroke-width="4px"
+				fill="transparent"
+				d={path()}
+			/>
+			<path
+				class="cursor-pointer"
+				ref={clickPathRef}
+				stroke="#f004"
+				stroke-width="1rem"
 				fill="transparent"
 				d={path()}
 			/>

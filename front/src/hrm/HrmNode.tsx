@@ -7,6 +7,7 @@ import { VWrap } from "@/common";
 import HrmHandle from "./HrmHandle";
 import { State } from "./state";
 import HrmNodeBody from "./HrmNodeBody";
+import { toast } from "@/block/ToastContainer";
 
 type HrmNodeProps = {
 	g: State;
@@ -17,7 +18,8 @@ type HrmNodeProps = {
 const HrmNode = (props: HrmNodeProps) => {
 	const [n, update]: VWrap<Node> = props.nodeW;
 	console.log("[HrmNode] render");
-	let nodeRef: HTMLDivElement | undefined;
+	let nodeRef: HTMLDivElement | undefined,
+		handleRef: HTMLDivElement | undefined;
 
 	createEffect(() => {
 		if (!nodeRef) return;
@@ -48,6 +50,18 @@ const HrmNode = (props: HrmNodeProps) => {
 				},
 			}),
 			nodeRef,
+		);
+	});
+
+	createEffect(() => {
+		if (!handleRef) return;
+		return addEventListeners(
+			newState({
+				onClick: e => {
+					toast("handle clicked");
+				},
+			}),
+			handleRef,
 		);
 	});
 
@@ -84,6 +98,7 @@ const HrmNode = (props: HrmNodeProps) => {
 					)}
 				</For>
 			</div>
+			<div ref={handleRef} class="hrm-node-handle" />
 		</div>
 	);
 };
