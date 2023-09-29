@@ -1,14 +1,16 @@
 import { For, createEffect } from "solid-js";
-import { ID, Node, cBd } from "./data";
+import { NodeID } from "@/common";
+import { Node, cBd } from "./data";
 
-import { addEventListeners, newState } from "@kitl-common/pointer-helper";
-import { VWrap } from "@kitl-common";
+import { addEventListeners, newState } from "@/common/pointer-helper";
+import { VWrap } from "@/common";
 import HrmHandle from "./HrmHandle";
 import { GraphState } from "./state";
+import HrmNodeBody from "./HrmNodeBody";
 
 type HrmNodeProps = {
 	g: GraphState;
-	id: ID;
+	id: NodeID;
 	nodeW: VWrap<Node>;
 };
 
@@ -59,7 +61,7 @@ const HrmNode = (props: HrmNodeProps) => {
 				top: `${n().position.y}px`,
 			}}>
 			<div class="hrm-node-row">
-				<For each={n().handles.items.slice(0, n().handles.lhs)}>
+				<For each={n().handles.slice(0, n().handles.lhs)}>
 					{(handle, index) => (
 						<HrmHandle
 							g={props.g}
@@ -69,8 +71,8 @@ const HrmNode = (props: HrmNodeProps) => {
 						/>
 					)}
 				</For>
-				<div class="hrm-node-body">{props.id}</div>
-				<For each={n().handles.items.slice(n().handles.lhs)}>
+				<HrmNodeBody data={n().data} />
+				<For each={n().handles.slice(n().handles.lhs)}>
 					{(handle, index) => (
 						<HrmHandle
 							g={props.g}

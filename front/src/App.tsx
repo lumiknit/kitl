@@ -4,83 +4,69 @@ import { Localed, s } from "./locales";
 
 import "./block";
 import { default as ToastContainer, toast } from "./block/ToastContainer";
-import { NodeF, NodesF, Hrm } from "./hrm";
+import { Node, NodeType, Nodes } from "@/common";
+import { Hrm } from "@/hrm";
 
 const App: Component = () => {
-	const nodes: NodesF = [
+	const nodes: Nodes = [
 		{
 			id: "n1",
-			data: {
-				type: "default",
-				label: "Test",
-			},
-			position: {
-				x: 0,
-				y: 0,
-			},
-			handles: {
-				lhs: 1,
-				items: [{ name: "lhs" }, { name: "arg1" }, { name: "arg2" }],
+			pos: { x: 0, y: 0 },
+			x: {
+				type: NodeType.Alpha,
+				val: "Hello, world!",
 			},
 		},
 		{
 			id: "n2",
-			data: {
-				type: "default",
-				label: "Hello",
-			},
-			position: {
-				x: 100,
-				y: 100,
-			},
-			handles: {
-				lhs: 1,
-				items: [
-					{
-						name: "fallback",
-						sourceID: "n1",
-					},
-					{ name: "arg" },
-					{ name: "1" },
-					{ name: "2" },
-					{ name: "ret" },
-				],
+			pos: { x: 0, y: 64 },
+			x: {
+				type: NodeType.Beta,
+				args: [{ id: "n1" }],
 			},
 		},
 		{
 			id: "n3",
-			data: {
-				type: "default",
-				label: "Hello",
-			},
-			position: {
-				x: 200,
-				y: 200,
-			},
-			handles: {
-				lhs: 1,
-				items: [
-					{ name: "fn", sourceID: "n1" },
-					{ name: "1", sourceID: "n2" },
-				],
+			pos: { x: 0, y: 128 },
+			x: {
+				type: NodeType.Delta,
+				comment: "Hello, world!",
 			},
 		},
 		{
 			id: "n4",
-			data: {
-				type: "default",
-				label: "Hello",
+			pos: { x: 0, y: 192 },
+			x: {
+				type: NodeType.Lambda,
+				ret: {
+					id: "n6",
+					handle: 1,
+				},
 			},
-			position: {
-				x: 300,
-				y: 300,
+		},
+		{
+			id: "n5",
+			pos: { x: 0, y: 256 },
+			x: {
+				type: NodeType.Nu,
+				name: {
+					name: "Hello",
+					module: "main.test.last",
+				},
+				lhs: 2,
+				args: [{ id: "n1" }, { id: "n2" }, { id: "n3" }],
 			},
-			handles: {
-				lhs: 0,
-				items: [
-					{ name: "1", sourceID: "n1" },
-					{ name: "2", sourceID: "n3" },
-				],
+		},
+		{
+			id: "n6",
+			pos: { x: 0, y: 320 },
+			x: {
+				type: NodeType.Pi,
+				name: {
+					name: "Hello",
+					module: "World",
+				},
+				args: 3,
 			},
 		},
 	];

@@ -1,6 +1,6 @@
 $node-color-fg: #000;
 $node-color-bg: #fff;
-$node-color-disabled: #ddd;
+$node-color-disabled: #bbb;
 $node-colors: (
 	(#f38fb4, #fff),
 	(#f89ba1, #fff),
@@ -35,4 +35,11 @@ $node-colors: (
 	.hrm-c-stroke-#{$i - 1} {
 		stroke: nth(nth($node-colors, $i), 1);
 	}
+}
+
+.hrm-c-bd-empty {
+	border-style: dotted;
+	border-color: $node-color-disabled;
+	color: $node-color-disabled;
+	background-color: $node-color-bg;
 }

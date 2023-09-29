@@ -1,6 +1,6 @@
 import { Component, For, createSignal } from "solid-js";
 
-import { Wrap, ef } from "@kitl-common";
+import { Wrap, ef } from "@/common";
 
 export enum ToastType {
 	Success,

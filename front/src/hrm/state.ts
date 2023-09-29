@@ -1,17 +1,18 @@
 import { createSignal } from "solid-js";
-import { ID, Nodes, NodesF, thawNodes } from "./data";
+import { NodeID, Nodes as CNodes } from "@/common";
+import { Nodes, thawNodes } from "./data";
 
 export class GraphState {
 	nodes: () => Nodes;
 	update: (a: Nodes | ((ns: Nodes) => Nodes)) => void;
 
-	constructor(initialNodes: NodesF) {
+	constructor(initialNodes: CNodes) {
 		const [nodes, setNodes] = createSignal<Nodes>(thawNodes(initialNodes));
 		this.nodes = nodes;
 		this.update = setNodes;
 	}
 
-	translateSelectedNodes(id: ID, dx: number, dy: number, zoom: number) {
+	translateSelectedNodes(id: NodeID, dx: number, dy: number, zoom: number) {
 		for (const [nid, node] of this.nodes()) {
 			node[1](n => {
 				if (nid !== id && !n.selected) return n;
@@ -48,7 +49,7 @@ export class GraphState {
 		}
 	}
 
-	toggleNodeOne(id: ID) {
+	toggleNodeOne(id: NodeID) {
 		// Check is selected
 		for (const [nid, node] of this.nodes()) {
 			if (nid === id) {

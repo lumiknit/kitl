@@ -36,7 +36,7 @@ export type AlphaNodeData = {
 export type BetaNodeData = {
 	// Beta reduction node
 	type: NodeType.Beta;
-	fn: Source;
+	fn?: Source;
 	args: Source[];
 };
 
@@ -44,20 +44,20 @@ export type DeltaNodeData = {
 	// Definition node
 	type: NodeType.Delta;
 	comment: string;
-	ret: Source;
+	ret?: Source;
 };
 
 export type LambdaNodeData = {
 	// Lambda node
 	type: NodeType.Lambda;
-	args: number;
-	ret: Source;
+	ret?: Source;
 };
 
 export type NuNodeData = {
 	// Named app node
 	type: NodeType.Nu;
 	name: Name;
+	lhs: number;
 	args: Source[];
 };
 
@@ -66,8 +66,8 @@ export type PiNodeData = {
 	type: NodeType.Pi;
 	name: Name;
 	args: number;
-	fallback: Source;
-	ret: Source;
+	fallback?: Source;
+	ret?: Source;
 };
 
 export type NodeData =

@@ -43,14 +43,54 @@ div.hrm-container {
 	cursor: pointer;
 }
 
-.hrm-node-body {
-	display: inline-block;
+.hrm-node-item {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
 	padding: 0.2rem 0.5rem;
 	margin-left: 0.2rem;
 }
 
-.hrm-node-body:first-child {
+.hrm-node-item:first-child {
 	margin-left: 0;
+}
+
+.hrm-node-body {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+}
+
+.hrm-node-body:first-child {
+	margin-left: 0.2rem;
+}
+
+.hrm-node-body:last-child {
+	margin-right: 0.2rem;
+}
+
+.hrm-node-name {
+	display: flex;
+	flex-direction: column;
+	align-items: left;
+	line-height: 1;
+}
+
+.hrm-node-mark {
+	margin-right: 0.2rem;
+	font-size: 1.2rem;
+	opacity: 0.33;
+}
+
+.hrm-node-name-name {
+	font-size: 1rem;
+}
+
+.hrm-node-name-module {
+	font-size: 0.5rem;
 }
 
 // Handle

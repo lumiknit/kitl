@@ -1,8 +1,16 @@
 import { Component, createEffect } from "solid-js";
 
-import { Handle, Node, NodeColor, cBg } from "./data";
+import {
+	Handle,
+	HandleType,
+	Node,
+	NodeColor,
+	cBd,
+	cBdEmpty,
+	cBg,
+} from "./data";
 import { GraphState } from "./state";
-import { VWrap } from "@kitl-common/types";
+import { VWrap } from "@/common/types";
 
 type HrmHandleProps = {
 	g: GraphState;
@@ -18,20 +26,28 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 	createEffect(() => {
 		if (!handleRef) return;
 		update(h => {
-			let color: NodeColor | undefined = undefined;
-			if (h.sourceID) {
-				const nodeV = props.g.nodes().get(h.sourceID);
+			let color;
+			let colorClass = cBdEmpty;
+			if (h.data.type === HandleType.Source) {
+				color = h.data.color;
+				colorClass = cBd(color);
+			} else if (h.data.sourceID) {
+				const nodeV = props.g.nodes().get(h.data.sourceID);
 				if (nodeV) {
 					const node = nodeV[0]();
 					color = node.color;
+					if (h.data.sourceHandle) {
+						color = node.handles[h.data.sourceHandle][0]().color;
+					}
+					colorClass = cBg(color);
 				}
 			}
-			console.log("color", color);
 			return {
 				...h,
 				ref: handleRef,
 				selected: false,
 				color,
+				colorClass,
 			};
 		});
 	});
@@ -40,7 +56,7 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 		<>
 			<div
 				ref={handleRef}
-				class={`hrm-node-body hrm-handle ${cBg(h().color)}`}>
+				class={`hrm-node-item hrm-handle ${h().colorClass}`}>
 				{h().name}
 			</div>
 		</>
