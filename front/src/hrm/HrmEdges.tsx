@@ -4,10 +4,10 @@ import { VWrap, NodeID } from "@/common";
 
 import { Node } from "./data";
 import HrmEdge from "./HrmEdge";
-import { GraphState } from "./state";
+import { State } from "./state";
 
 type HrmEdgesProps = {
-	g: GraphState;
+	g: State;
 	id: NodeID;
 	nodeW: VWrap<Node>;
 };

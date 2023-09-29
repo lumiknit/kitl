@@ -1,17 +1,19 @@
-import { Component } from "solid-js";
+import { Component, createEffect } from "solid-js";
+
+import { toast } from "@/block/ToastContainer";
+import { Nodes as CNodes } from "@/common";
+
+import { Nodes } from "./data";
+import HrmPane from "./HrmPane";
+import HrmNodes from "./HrmNodes";
+
+import { State } from "./state";
 
 import "./Hrm.scss";
 import "./HrmColors.scss";
-import { Nodes, NodesF } from "./data";
-import HrmPane, { HrmTransform } from "./HrmPane";
-
-import { toast } from "../block/ToastContainer";
-import HrmNodes from "./HrmNodes";
-import { VBox } from "@/common/types";
-import { GraphState } from "./state";
 
 export type HrmProps = {
-	initialNodes: NodesF;
+	initialNodes: CNodes;
 };
 
 export type HrmState = {
@@ -19,18 +21,11 @@ export type HrmState = {
 };
 
 const Hrm: Component<HrmProps> = props => {
-	const g = new GraphState(props.initialNodes);
-	const transform: VBox<HrmTransform> = [undefined, undefined];
-
+	const g = new State(props.initialNodes);
 	return (
-		<div class="hrm-container">
+		<div ref={g.rootRef} class="hrm-container">
 			<HrmPane
-				t={{
-					x: 0,
-					y: 0,
-					z: 1,
-				}}
-				u={transform}
+				g={g}
 				onClick={e => g.deselectAll()}
 				onDoubleClick={e => {
 					toast("Double click " + e.pointers);

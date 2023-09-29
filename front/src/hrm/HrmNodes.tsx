@@ -2,10 +2,10 @@ import { Component, For } from "solid-js";
 
 import HrmNode from "./HrmNode";
 import HrmEdges from "./HrmEdges";
-import { GraphState } from "./state";
+import { State } from "./state";
 
 type HrmNodesProps = {
-	g: GraphState;
+	g: State;
 };
 
 const HrmNodes: Component<HrmNodesProps> = props => {

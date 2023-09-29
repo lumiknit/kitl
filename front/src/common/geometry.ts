@@ -10,23 +10,28 @@ export type Size = {
 	h: number;
 };
 
+export type Rect = Position & Size;
+
 /* Helpers */
+
+export const transposeRect = (rect: Rect): Rect => ({
+	x: rect.y,
+	y: rect.x,
+	w: rect.h,
+	h: rect.w,
+});
 
 export const nearestPointInHPill = (
 	// External point
 	px: number,
 	py: number,
-	// Pill
-	left: number,
-	top: number,
-	width: number,
-	height: number,
+	rect: Rect,
 ): [number, number, number, number] => {
 	// NOTE: it only covers width > height
-	const hw = width / 2,
-		hh = height / 2,
-		cx = left + hw,
-		cy = top + hh,
+	const hw = rect.w / 2,
+		hh = rect.h / 2,
+		cx = rect.x + hw,
+		cy = rect.y + hh,
 		m = hw - hh;
 	let ox = px - cx,
 		oy = py - cy,
@@ -54,23 +59,11 @@ export const nearestPointInPill = (
 	// External point
 	px: number,
 	py: number,
-	// Pill
-	left: number,
-	top: number,
-	width: number,
-	height: number,
+	rect: Rect,
 ): [number, number, number, number] => {
-	if (width > height)
-		return nearestPointInHPill(px, py, left, top, width, height);
+	if (rect.w > rect.h) return nearestPointInHPill(px, py, rect);
 	else {
-		const [x, y, vx, vy] = nearestPointInHPill(
-			py,
-			px,
-			top,
-			left,
-			height,
-			width,
-		);
-		return [y, x, vy, vx];
+		const [y, x, vy, vx] = nearestPointInHPill(py, px, transposeRect(rect));
+		return [x, y, vx, vy];
 	}
 };

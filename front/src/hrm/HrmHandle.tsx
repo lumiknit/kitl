@@ -9,11 +9,11 @@ import {
 	cBdEmpty,
 	cBg,
 } from "./data";
-import { GraphState } from "./state";
+import { State } from "./state";
 import { VWrap } from "@/common/types";
 
 type HrmHandleProps = {
-	g: GraphState;
+	g: State;
 	node: Node;
 	index: number;
 	handleW: VWrap<Handle>;

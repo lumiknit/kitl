@@ -253,3 +253,10 @@ export const freezeNodes = (nodes: Nodes): CNodes => {
 	}
 	return result;
 };
+
+/* Transform */
+export type Transform = {
+	x: number; // x offset
+	y: number; // y offset
+	z: number; // zoom
+};

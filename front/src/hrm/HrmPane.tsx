@@ -12,36 +12,27 @@ import { VBox } from "@/common/types";
 import { TbZoomIn, TbZoomOut, TbZoomReset } from "solid-icons/tb";
 
 import "./HrmPane.scss";
-
-export type HrmTransform = {
-	x: number; // x offset
-	y: number; // y offset
-	z: number; // zoom
-};
+import { Transform } from "./data";
+import { State } from "./state";
 
 const distanceSquare = (dx: number, dy: number) => dx * dx + dy * dy;
 
-const transformToStyle = (t: HrmTransform) =>
+const transformToStyle = (t: Transform) =>
 	`translate(${t.x}px, ${t.y}px) scale(${t.z})`;
 
 type HrmPaneProps = {
 	children: JSXElement;
-	t: HrmTransform;
-	u?: VBox<HrmTransform>;
+	g: State;
 	onClick: (e: ph.ClickEvent) => void;
 	onDoubleClick: (e: ph.ClickEvent) => void;
 	onLongPress: (e: ph.BaseEvent) => void;
 };
 
 const HrmPane: Component<HrmPaneProps> = props => {
-	let paneRef: HTMLDivElement | undefined,
-		viewRef: HTMLDivElement | undefined;
-	const [t, setT] = createSignal<HrmTransform>(props.t);
-
-	if (props.u) {
-		props.u[0] = t;
-		props.u[1] = setT;
-	}
+	let paneRef: HTMLDivElement | undefined;
+	const [t, setT] = createSignal<Transform>({ x: 0, y: 0, z: 1 });
+	props.g.transform[0] = t;
+	props.g.transform[1] = setT;
 
 	createEffect(() => {
 		if (!paneRef) return;
@@ -51,6 +42,7 @@ const HrmPane: Component<HrmPaneProps> = props => {
 				onDoubleClick: props.onDoubleClick,
 				onLongPress: props.onLongPress,
 				onDrag: e => {
+					const viewRef = props.g.viewRef;
 					if (!viewRef) return;
 					const dx = e.x - e.ox,
 						dy = e.y - e.oy;
@@ -159,7 +151,7 @@ const HrmPane: Component<HrmPaneProps> = props => {
 			</div>
 			<div
 				class="hrm-view"
-				ref={viewRef}
+				ref={props.g.viewRef}
 				style={{
 					transform: transformToStyle(t()),
 				}}>
