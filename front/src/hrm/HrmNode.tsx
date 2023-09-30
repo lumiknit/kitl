@@ -57,8 +57,8 @@ const HrmNode = (props: HrmNodeProps) => {
 		if (!handleRef) return;
 		return addEventListeners(
 			newState({
-				onClick: e => {
-					toast("handle clicked");
+				onPress: e => {
+					props.g.editEdge(props.id);
 				},
 			}),
 			handleRef,
@@ -80,8 +80,9 @@ const HrmNode = (props: HrmNodeProps) => {
 					{(handle, index) => (
 						<HrmHandle
 							g={props.g}
+							nodeID={props.id}
 							node={n()}
-							index={index() + n().handles.lhs}
+							handleID={index()}
 							handleW={handle}
 						/>
 					)}
@@ -91,8 +92,9 @@ const HrmNode = (props: HrmNodeProps) => {
 					{(handle, index) => (
 						<HrmHandle
 							g={props.g}
+							nodeID={props.id}
 							node={n()}
-							index={index() + n().handles.lhs}
+							handleID={index() + n().handles.lhs}
 							handleW={handle}
 						/>
 					)}

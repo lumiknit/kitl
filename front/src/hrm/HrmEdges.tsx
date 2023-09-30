@@ -21,7 +21,8 @@ const HrmEdges: Component<HrmEdgesProps> = props => {
 					g={props.g}
 					nodeW={props.nodeW}
 					handleW={handle}
-					index={index()}
+					nodeID={props.id}
+					handleID={index()}
 				/>
 			)}
 		</For>

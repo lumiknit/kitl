@@ -12,7 +12,6 @@ export type TextProps = {
 
 const InputText: Component<TextProps> = props => {
 	let ref;
-	console.log(ref);
 	return (
 		<>
 			<label class="checkbox">

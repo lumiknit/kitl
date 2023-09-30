@@ -1,8 +1,8 @@
-import { Show, createEffect } from "solid-js";
+import { Show, createEffect, createSignal } from "solid-js";
 
 import { Handle, HandleType, Node, SinkHandleData, cStr } from "./data";
 import { State } from "./state";
-import { VWrap, nearestPointInPill } from "@/common";
+import { HandleID, NodeID, VWrap, pathBetweenPills } from "@/common";
 import { addEventListeners, newState } from "@/common/pointer-helper";
 import { toast } from "@/block/ToastContainer";
 
@@ -10,15 +10,19 @@ type HrmEdgeProps = {
 	g: State;
 	nodeW: VWrap<Node>;
 	handleW: VWrap<Handle>;
-	index: number;
+	nodeID: NodeID;
+	handleID: HandleID;
 };
 
 const HrmEdge = (props: HrmEdgeProps) => {
+	console.log("[HrmEdge] render");
+
 	let clickPathRef: SVGPathElement | undefined;
 	const [n] = props.nodeW;
 	const [h, update] = props.handleW;
 
 	const path = () => {
+		console.log("[HrmEdge] Effect (path)");
 		n(); // For reactive re-rendering
 		// Get target handle
 		const handle = h();
@@ -40,17 +44,15 @@ const HrmEdge = (props: HrmEdgeProps) => {
 		const handleRect = props.g.viewRect(handle.ref),
 			srcRect = props.g.viewRect(srcRef);
 		if (!srcRect || !handleRect) return "";
-		const [x2, y2, vx2, vy2] = nearestPointInPill(
-			handleRect.x + handleRect.w / 2,
-			handleRect.y + handleRect.h / 2,
-			srcRect,
-		);
-		const [x1, y1, vx1, vy1] = nearestPointInPill(x2, y2, handleRect);
-		const dist = 0.2 * Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-		return `M ${x1 - 0.5 * vx1} ${y1 - 0.5 * vy1}
-			C ${x1 + vx1 * dist} ${y1 + vy1 * dist},
-			${x2 + vx2 * dist} ${y2 + vy2 * dist},
-			${x2 - 0.5 * vx2} ${y2 - 0.5 * vy2}`;
+		if (props.nodeID === sourceID) {
+			const DIST = 30;
+			return `M ${srcRect.x + srcRect.w / 2} ${srcRect.y}
+				C ${srcRect.x + srcRect.w / 2} ${srcRect.y - DIST},
+					${handleRect.x + handleRect.w / 2} ${handleRect.y - DIST},
+					${handleRect.x + handleRect.w / 2} ${handleRect.y}`;
+		} else {
+			return pathBetweenPills(srcRect, handleRect);
+		}
 	};
 
 	createEffect(() => {
@@ -59,6 +61,10 @@ const HrmEdge = (props: HrmEdgeProps) => {
 			newState({
 				onClick: e => {
 					toast("edge clicked");
+				},
+				onDoubleClick: e => {
+					toast("edge double clicked");
+					props.g.deleteEdge(props.nodeID, props.handleID);
 				},
 			}),
 			clickPathRef,

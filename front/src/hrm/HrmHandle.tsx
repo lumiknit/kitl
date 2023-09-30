@@ -1,23 +1,17 @@
-import { Component, createEffect } from "solid-js";
+import { Component, batch, createEffect, createSignal } from "solid-js";
 
-import {
-	Handle,
-	HandleType,
-	Node,
-	NodeColor,
-	cBd,
-	cBdEmpty,
-	cBg,
-} from "./data";
+import { Handle, HandleType, Node, cBd, cBdEmpty, cBg } from "./data";
 import { State } from "./state";
 import { VWrap } from "@/common/types";
 import { addEventListeners, newState } from "@/common/pointer-helper";
 import { toast } from "@/block/ToastContainer";
+import { HandleID, NodeID } from "@/common";
 
 type HrmHandleProps = {
 	g: State;
+	nodeID: NodeID;
+	handleID: HandleID;
 	node: Node;
-	index: number;
 	handleW: VWrap<Handle>;
 };
 
@@ -27,9 +21,9 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 
 	createEffect(() => {
 		if (!handleRef) return;
+		h();
 		update(h => {
-			let color;
-			let colorClass = cBdEmpty;
+			let color, colorClass;
 			if (h.data.type === HandleType.Source) {
 				color = h.data.color;
 				colorClass = cBd(color);
@@ -44,18 +38,28 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 					colorClass = cBg(color);
 				}
 			}
+			if (
+				color === h.color &&
+				colorClass === h.colorClass &&
+				h.ref === handleRef
+			) {
+				return h;
+			}
 			return {
 				...h,
 				ref: handleRef,
-				selected: false,
 				color,
 				colorClass,
 			};
 		});
+	});
+
+	createEffect(() => {
+		if (!handleRef) return;
 		return addEventListeners(
 			newState({
-				onClick: e => {
-					toast("handle a clicked");
+				onPress: e => {
+					props.g.editEdge(props.nodeID, props.handleID);
 				},
 			}),
 			handleRef,
@@ -66,7 +70,9 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 		<>
 			<div
 				ref={handleRef}
-				class={`hrm-node-item hrm-handle ${h().colorClass}`}>
+				class={`hrm-node-item hrm-handle ${
+					h().colorClass ?? cBdEmpty
+				}`}>
 				{h().name}
 			</div>
 		</>

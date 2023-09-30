@@ -60,6 +60,7 @@ export type SinkHandleData = {
 	type: HandleType.Sink;
 	sourceID?: NodeID;
 	sourceHandle?: HandleID;
+	edgeSelected?: boolean;
 };
 
 export type HandleData = SourceHandleData | SinkHandleData;
@@ -68,7 +69,7 @@ export type Handle = {
 	ref?: HTMLElement;
 	name: string;
 	data: HandleData;
-	selected: boolean;
+	selected?: boolean;
 	color?: NodeColor;
 	colorClass?: string;
 };
@@ -101,7 +102,6 @@ const sourceHandle = (name: string): VWrap<Handle> =>
 			type: HandleType.Source,
 			color: randomColor(),
 		},
-		selected: false,
 	});
 
 const sourceToSinkHandle = (name: string, source?: Source): VWrap<Handle> =>
@@ -112,7 +112,6 @@ const sourceToSinkHandle = (name: string, source?: Source): VWrap<Handle> =>
 			sourceID: source?.id,
 			sourceHandle: source?.handle,
 		},
-		selected: false,
 	});
 
 export const thawHandles = (node: CNode): Handles => {

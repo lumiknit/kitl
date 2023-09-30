@@ -70,3 +70,18 @@ export const nearestPointInPill = (
 		return [x, y, vx, vy];
 	}
 };
+
+export const pathBetweenPills = (srcRect: Rect, sinkRect: Rect) => {
+	const [x2, y2, vx2, vy2] = nearestPointInPill(
+		sinkRect.x + sinkRect.w / 2,
+		sinkRect.y + sinkRect.h / 2,
+		srcRect,
+	);
+	const [x1, y1, vx1, vy1] = nearestPointInPill(x2, y2, sinkRect);
+	const dist = 0.2 * Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+	return `M ${x1 - 0.5 * vx1} ${y1 - 0.5 * vy1} C ${x1 + vx1 * dist} ${
+		y1 + vy1 * dist
+	}, ${x2 + vx2 * dist} ${y2 + vy2 * dist}, ${x2 - 0.5 * vx2} ${
+		y2 - 0.5 * vy2
+	}`;
+};
