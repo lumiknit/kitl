@@ -29,10 +29,10 @@ const Hrm: Component<HrmProps> = props => {
 				g={g}
 				onClick={e => g.deselectAll()}
 				onDoubleClick={e => {
-					toast("Double click " + e.pointers);
+					toast("[Hrm] Double click " + e.pointers);
 				}}
 				onLongPress={e => {
-					toast("Long press");
+					toast("[Hrm] Long press");
 				}}>
 				<HrmNodes g={g} />
 				<HrmEditingEdge g={g} />

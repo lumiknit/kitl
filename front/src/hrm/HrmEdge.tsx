@@ -49,22 +49,6 @@ const HrmEdge = (props: HrmEdgeProps) => {
 			: pathBetweenPills(srcRect, handleRect);
 	};
 
-	createEffect(() => {
-		if (!clickPathRef) return;
-		return addEventListeners(
-			newState({
-				onClick: e => {
-					toast("edge clicked");
-				},
-				onDoubleClick: e => {
-					toast("edge double clicked");
-					props.g.deleteEdge(props.nodeID, props.handleID);
-				},
-			}),
-			clickPathRef,
-		);
-	});
-
 	return (
 		<Show
 			when={
@@ -80,10 +64,16 @@ const HrmEdge = (props: HrmEdgeProps) => {
 			<path
 				class="cursor-pointer"
 				ref={clickPathRef}
-				//stroke="#f004"
+				stroke="#f004"
 				stroke-width="1rem"
 				fill="transparent"
 				d={path()}
+				onClick={() => {
+					toast("ASD");
+				}}
+				onDblClick={() => {
+					props.g.deleteEdge(props.nodeID, props.handleID);
+				}}
 			/>
 		</Show>
 	);

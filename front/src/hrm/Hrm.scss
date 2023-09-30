@@ -120,12 +120,18 @@ div.hrm-container {
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
+	pointer-events: none;
 	overflow: visible;
-	width: 0;
-	height: 0;
+	width: 9999rem;
+	height: 9999rem;
+}
+
+.hrm-edges path {
+	pointer-events: stroke;
 }
 
 .hrm-editing-edge-handle {
+	pointer-events: none;
 	position: absolute;
 	visibility: hidden;
 	outline: 2px dashed #f00;

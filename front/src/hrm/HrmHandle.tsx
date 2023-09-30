@@ -67,6 +67,9 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 				onRelease: e => {
 					props.g.resetEditingEdge();
 				},
+				onDoubleClick: e => {
+					props.g.deleteEdge(props.nodeID, props.handleID);
+				},
 			}),
 			handleRef,
 		);
@@ -75,15 +78,21 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 	createEffect(() => {
 		if (!handleRef) return;
 		// Edge edit events
-		const events = {
-			mouseenter: () =>
+		const events: { [key: string]: (e: any) => void } = {
+			pointerenter: () =>
 				props.g.enterEditingEnd(
 					props.nodeID,
 					handleRef,
 					props.handleID,
 				),
-			mouseleave: () => props.g.leaveEditingEnd(handleRef),
-			mouseup: () => props.g.pickEditingEnd(props.nodeID, props.handleID),
+			pointerdown: e => {
+				e.target?.releasePointerCapture(e.pointerId);
+			},
+			pointerleave: () => props.g.leaveEditingEnd(handleRef),
+			pointerup: e => {
+				props.g.pickEditingEnd(props.nodeID, props.handleID);
+				e.stopPropagation();
+			},
 		};
 		for (const [k, v] of Object.entries(events)) {
 			handleRef.addEventListener(k, v);

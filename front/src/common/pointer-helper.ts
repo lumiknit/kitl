@@ -229,11 +229,13 @@ export const addEventListeners = (s: State, el: Element) => {
 			s.c.delete(-1);
 		},
 		touchmove: (e: TouchEvent) => {
+			console.log("TM");
 			for (const t of e.changedTouches) {
 				updatePointer(mapID(s, t.identifier), t.clientX, t.clientY);
 			}
 		},
 		touchend: (e: TouchEvent) => {
+			console.log("TE");
 			for (const t of e.changedTouches) {
 				deactivatePointer(mapID(s, t.identifier), {
 					pointers: e.touches.length,
@@ -245,6 +247,7 @@ export const addEventListeners = (s: State, el: Element) => {
 			}
 		},
 		touchcancel: (e: TouchEvent) => {
+			console.log("TC");
 			for (const t of e.changedTouches) {
 				s.t.delete(t.identifier);
 			}
@@ -314,6 +317,7 @@ export const addEventListeners = (s: State, el: Element) => {
 			e.stopPropagation();
 		},
 		touchstart: (e: TouchEvent) => {
+			console.log("TouchStart", e.target);
 			for (const t of e.changedTouches) {
 				activatePointer(mapID(s, t.identifier), {
 					pointers: 1,

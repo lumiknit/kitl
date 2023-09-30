@@ -81,23 +81,13 @@ export class State {
 
 	selectAll() {
 		for (const [_, node] of this.nodes()) {
-			node[1](n => {
-				return {
-					...n,
-					selected: true,
-				};
-			});
+			node[1](n => (n.selected ? n : { ...n, selected: true }));
 		}
 	}
 
 	deselectAll() {
 		for (const [_, node] of this.nodes()) {
-			node[1](n => {
-				return {
-					...n,
-					selected: false,
-				};
-			});
+			node[1](n => (n.selected ? { ...n, selected: false } : n));
 		}
 	}
 
@@ -183,7 +173,7 @@ export class State {
 				return this.setEdge(e.nodeID, e.handleID, id, handle);
 			}
 		}
-		return this.resetEditingEdge();
+		//return this.resetEditingEdge();
 	}
 
 	setEdge(
@@ -234,6 +224,10 @@ export class State {
 		}
 		// Check if it is a source
 		const e = this.editingEdge[0]();
+		if (e.nodeID === id && e.handleID === handle) {
+			this.resetEditingEdge();
+			return;
+		}
 		if (!isSource === e.isSource) {
 			return isSource
 				? this.setEdge(e.nodeID!, e.handleID!, id, handle)
