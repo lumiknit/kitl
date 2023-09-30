@@ -6,34 +6,47 @@ import {
 	Rect,
 	HandleID,
 	Position,
+	origin,
 } from "@/common";
-import { Handle, HandleType, Nodes, Transform, thawNodes } from "./data";
+import { HandleType, Nodes, Transform, thawNodes } from "./data";
 
 export type EditingEdge = {
-	sinkID?: NodeID;
-	sinkHandle?: HandleID;
-	srcID?: NodeID;
-	srcHandle?: HandleID;
+	isSource?: boolean;
+	nodeID?: NodeID;
+	handleID?: HandleID;
 	end: Position;
+	endRef?: HTMLDivElement;
 };
 
 export class State {
 	rootRef?: HTMLDivElement;
 	viewRef?: HTMLDivElement;
 
-	editingEdge: EditingEdge = {
-		end: { x: 0, y: 0 },
-	};
+	editingEdge: VWrap<EditingEdge>;
 
 	nodes: () => Nodes;
 	update: (a: Nodes | ((ns: Nodes) => Nodes)) => void;
 
-	transform: VWrap<Transform> = [() => ({ x: 0, y: 0, z: 0 }), () => {}];
+	transform: VWrap<Transform>;
 
 	constructor(initialNodes: CNodes) {
 		const [nodes, setNodes] = createSignal<Nodes>(thawNodes(initialNodes));
 		this.nodes = nodes;
 		this.update = setNodes;
+		this.editingEdge = createSignal({ end: origin });
+		this.transform = [() => ({ x: 0, y: 0, z: 1 }), () => {}];
+	}
+
+	// View & Transforms
+
+	viewPos(x: number, y: number): Position | undefined {
+		if (this.viewRef === undefined) return;
+		const rootRect = this.viewRef!.getBoundingClientRect();
+		const t = untrack(this.transform[0]);
+		return {
+			x: (x - rootRect.left) / t.z,
+			y: (y - rootRect.top) / t.z,
+		};
 	}
 
 	viewRect(elem: HTMLElement): Rect | undefined {
@@ -48,6 +61,8 @@ export class State {
 			h: rect.height / t.z,
 		};
 	}
+
+	// Selected Nodes
 
 	translateSelectedNodes(id: NodeID, dx: number, dy: number, zoom: number) {
 		for (const [nid, node] of this.nodes()) {
@@ -107,7 +122,69 @@ export class State {
 		}
 	}
 
-	// Edit
+	// Deletion
+
+	deleteEdge(id: NodeID, handle: HandleID) {
+		console.log("deleteEdge", id, handle);
+		const node = this.nodes().get(id);
+		if (!node) return;
+		const [n] = node,
+			h = n().handles[handle];
+		h[1](h =>
+			h.data.type !== HandleType.Sink
+				? h
+				: {
+						...h,
+						data: { type: HandleType.Sink },
+				  },
+		);
+	}
+
+	// Editing Edge
+
+	resetEditingEdge() {
+		this.editingEdge[1]({
+			end: origin,
+		});
+	}
+
+	enterEditingEnd(id: NodeID, ref?: HTMLDivElement, handle?: HandleID) {
+		this.editingEdge[1](e =>
+			e.nodeID !== undefined && (e.nodeID !== id || e.handleID !== handle)
+				? {
+						...e,
+						endRef: ref,
+				  }
+				: e,
+		);
+	}
+
+	leaveEditingEnd(ref?: HTMLDivElement) {
+		this.editingEdge[1](e =>
+			e.nodeID !== undefined && e.endRef === ref
+				? {
+						...e,
+						endRef: undefined,
+				  }
+				: e,
+		);
+	}
+
+	pickEditingEnd(id: NodeID, handle?: HandleID) {
+		// If editing edge from other exists, connect.
+		const e = this.editingEdge[0]();
+		if (
+			e.nodeID !== undefined &&
+			(e.nodeID !== id || e.handleID !== handle)
+		) {
+			if (e.isSource && handle !== undefined) {
+				return this.setEdge(id, handle, e.nodeID, e.handleID);
+			} else if (!e.isSource && e.handleID !== undefined) {
+				return this.setEdge(e.nodeID, e.handleID, id, handle);
+			}
+		}
+		return this.resetEditingEdge();
+	}
 
 	setEdge(
 		sinkID: NodeID,
@@ -133,75 +210,41 @@ export class State {
 						},
 				  },
 		);
+		this.resetEditingEdge();
 	}
 
-	deleteEdge(id: NodeID, handle: HandleID) {
-		console.log("deleteEdge", id, handle);
-		const nodes = this.nodes(),
-			node = nodes.get(id);
-		if (!node) return;
-		const [n] = node,
-			h = n().handles[handle];
-		h[1](h =>
-			h.data.type !== HandleType.Sink
-				? h
-				: {
-						...h,
-						data: { type: HandleType.Sink },
-				  },
-		);
+	updateEdgeEnd(end: Position) {
+		this.editingEdge[1](e => ({
+			...e,
+			end,
+		}));
 	}
 
-	editEdgeSource(id: NodeID, handle?: HandleID) {
-		console.log("editEdgeSource", id, handle);
-		if (this.editingEdge.sinkID !== undefined) {
-			this.setEdge(
-				this.editingEdge.sinkID,
-				this.editingEdge.sinkHandle!,
-				id,
-				handle,
-			);
-			this.editingEdge = {
-				end: { x: 0, y: 0 },
-			};
-		} else {
-			this.editingEdge.srcID = id;
-			this.editingEdge.srcHandle = handle;
-		}
-	}
-
-	editEdgeSink(id: NodeID, handle: HandleID) {
-		console.log("editEdgeSink", id, handle);
-		if (this.editingEdge.srcID !== undefined) {
-			this.setEdge(
-				id,
-				handle,
-				this.editingEdge.srcID,
-				this.editingEdge.srcHandle,
-			);
-			this.editingEdge = {
-				end: { x: 0, y: 0 },
-			};
-		} else {
-			this.editingEdge.sinkID = id;
-			this.editingEdge.sinkHandle = handle;
-		}
-	}
-
-	editEdge(id: NodeID, handle?: HandleID) {
+	editEdge(id: NodeID, handle?: HandleID, pos?: Position) {
 		// Add to editing edge, and add edge when it completed
 		// Find the node
-		const nodes = this.nodes();
-		const node = nodes.get(id);
+		const node = this.nodes().get(id);
 		if (!node) return;
 		const [n] = node;
-		if (handle === undefined) return this.editEdgeSource(id);
-		// Find the handle
-		const h = n().handles[handle];
-		if (h === undefined) return;
+		let isSource = true;
+		if (handle !== undefined) {
+			const h = n().handles[handle];
+			if (h === undefined) return;
+			isSource = h[0]().data.type === HandleType.Source;
+		}
 		// Check if it is a source
-		if (h[0]().data.type === HandleType.Source)
-			return this.editEdgeSource(id, handle);
-		else return this.editEdgeSink(id, handle);
+		const e = this.editingEdge[0]();
+		if (!isSource === e.isSource) {
+			return isSource
+				? this.setEdge(e.nodeID!, e.handleID!, id, handle)
+				: this.setEdge(id, handle!, e.nodeID!, e.handleID);
+		} else {
+			this.editingEdge[1]({
+				isSource,
+				nodeID: id,
+				handleID: handle,
+				end: pos ?? origin,
+			});
+		}
 	}
 }

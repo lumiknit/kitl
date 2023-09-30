@@ -84,6 +84,7 @@ export type Handlers = {
 	onDoubleClick?: (e: ClickEvent) => void;
 	onLongPress?: (e: BaseEvent) => void;
 	onDrag?: (e: DragEvent) => void;
+	onRelease?: (e: BaseEvent) => void;
 };
 
 type State = {
@@ -162,6 +163,7 @@ export const addEventListeners = (s: State, el: Element) => {
 		p.b = BSReleased;
 		if (oldB === BSMoved) {
 			p.c = 0;
+			s.handlers.onRelease?.(ce);
 			return;
 		}
 		if (p.c === 2) {

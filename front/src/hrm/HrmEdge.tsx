@@ -2,7 +2,7 @@ import { Show, createEffect, createSignal } from "solid-js";
 
 import { Handle, HandleType, Node, SinkHandleData, cStr } from "./data";
 import { State } from "./state";
-import { HandleID, NodeID, VWrap, pathBetweenPills } from "@/common";
+import { HandleID, NodeID, VWrap, pathBetweenPills, pathSelf } from "@/common";
 import { addEventListeners, newState } from "@/common/pointer-helper";
 import { toast } from "@/block/ToastContainer";
 
@@ -29,13 +29,13 @@ const HrmEdge = (props: HrmEdgeProps) => {
 		if (handle.data.type !== HandleType.Sink) return "";
 		const sourceID = handle.data.sourceID,
 			sourceHandle = handle.data.sourceHandle;
-		if (!handle.ref || !sourceID) return "";
+		if (!handle.ref || sourceID === undefined) return "";
 		// Get source node or handle
 		const src = props.g.nodes().get(sourceID);
 		if (!src) return;
 		const srcNode = src[0]();
 		let srcRef = srcNode.ref;
-		if (sourceHandle) {
+		if (sourceHandle !== undefined) {
 			const sh = srcNode.handles[sourceHandle][0]();
 			if (!sh.ref) return "";
 			srcRef = sh.ref;
@@ -44,15 +44,9 @@ const HrmEdge = (props: HrmEdgeProps) => {
 		const handleRect = props.g.viewRect(handle.ref),
 			srcRect = props.g.viewRect(srcRef);
 		if (!srcRect || !handleRect) return "";
-		if (props.nodeID === sourceID) {
-			const DIST = 30;
-			return `M ${srcRect.x + srcRect.w / 2} ${srcRect.y}
-				C ${srcRect.x + srcRect.w / 2} ${srcRect.y - DIST},
-					${handleRect.x + handleRect.w / 2} ${handleRect.y - DIST},
-					${handleRect.x + handleRect.w / 2} ${handleRect.y}`;
-		} else {
-			return pathBetweenPills(srcRect, handleRect);
-		}
+		return props.nodeID === sourceID
+			? pathSelf(srcRect, handleRect)
+			: pathBetweenPills(srcRect, handleRect);
 	};
 
 	createEffect(() => {
@@ -86,7 +80,7 @@ const HrmEdge = (props: HrmEdgeProps) => {
 			<path
 				class="cursor-pointer"
 				ref={clickPathRef}
-				stroke="#f004"
+				//stroke="#f004"
 				stroke-width="1rem"
 				fill="transparent"
 				d={path()}

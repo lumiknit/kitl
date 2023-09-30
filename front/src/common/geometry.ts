@@ -12,6 +12,10 @@ export type Size = {
 
 export type Rect = Position & Size;
 
+/* Constant */
+
+export const origin: Position = { x: 0, y: 0 };
+
 /* Helpers */
 
 export const distSquare = (dx: number, dy: number) => dx * dx + dy * dy;
@@ -84,4 +88,13 @@ export const pathBetweenPills = (srcRect: Rect, sinkRect: Rect) => {
 	}, ${x2 + vx2 * dist} ${y2 + vy2 * dist}, ${x2 - 0.5 * vx2} ${
 		y2 - 0.5 * vy2
 	}`;
+};
+
+export const pathSelf = (srcRect: Rect, sinkRect: Rect) => {
+	const DIST = 30;
+	return `M ${srcRect.x + srcRect.w / 2} ${srcRect.y} C ${
+		srcRect.x + srcRect.w / 2
+	} ${srcRect.y - DIST},
+			${sinkRect.x + sinkRect.w / 2} ${sinkRect.y - DIST},
+					${sinkRect.x + sinkRect.w / 2} ${sinkRect.y}`;
 };

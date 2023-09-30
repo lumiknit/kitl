@@ -11,6 +11,7 @@ import { State } from "./state";
 
 import "./Hrm.scss";
 import "./HrmColors.scss";
+import HrmEditingEdge from "./HrmEditingEdge";
 
 export type HrmProps = {
 	initialNodes: CNodes;
@@ -34,6 +35,7 @@ const Hrm: Component<HrmProps> = props => {
 					toast("Long press");
 				}}>
 				<HrmNodes g={g} />
+				<HrmEditingEdge g={g} />
 			</HrmPane>
 		</div>
 	);

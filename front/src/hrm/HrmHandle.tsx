@@ -32,17 +32,13 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 				if (nodeV) {
 					const node = nodeV[0]();
 					color = node.color;
-					if (h.data.sourceHandle) {
+					if (h.data.sourceHandle !== undefined) {
 						color = node.handles[h.data.sourceHandle][0]().color;
 					}
 					colorClass = cBg(color);
 				}
 			}
-			if (
-				color === h.color &&
-				colorClass === h.colorClass &&
-				h.ref === handleRef
-			) {
+			if (color === h.color && h.ref === handleRef) {
 				return h;
 			}
 			return {
@@ -59,11 +55,45 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 		return addEventListeners(
 			newState({
 				onPress: e => {
-					props.g.editEdge(props.nodeID, props.handleID);
+					props.g.editEdge(
+						props.nodeID,
+						props.handleID,
+						props.g.viewPos(e.x, e.y),
+					);
+				},
+				onDrag: e => {
+					props.g.updateEdgeEnd(props.g.viewPos(e.x, e.y)!);
+				},
+				onRelease: e => {
+					props.g.resetEditingEdge();
 				},
 			}),
 			handleRef,
 		);
+	});
+
+	createEffect(() => {
+		if (!handleRef) return;
+		// Edge edit events
+		const events = {
+			mouseenter: () =>
+				props.g.enterEditingEnd(
+					props.nodeID,
+					handleRef,
+					props.handleID,
+				),
+			mouseleave: () => props.g.leaveEditingEnd(handleRef),
+			mouseup: () => props.g.pickEditingEnd(props.nodeID, props.handleID),
+		};
+		for (const [k, v] of Object.entries(events)) {
+			handleRef.addEventListener(k, v);
+		}
+		return () => {
+			if (!handleRef) return;
+			for (const [k, v] of Object.entries(events)) {
+				handleRef.removeEventListener(k, v);
+			}
+		};
 	});
 
 	return (

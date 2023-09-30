@@ -7,7 +7,6 @@ import { VWrap } from "@/common";
 import HrmHandle from "./HrmHandle";
 import { State } from "./state";
 import HrmNodeBody from "./HrmNodeBody";
-import { toast } from "@/block/ToastContainer";
 
 type HrmNodeProps = {
 	g: State;
@@ -48,6 +47,9 @@ const HrmNode = (props: HrmNodeProps) => {
 						1,
 					);
 				},
+				onRelease: e => {
+					props.g.resetEditingEdge();
+				},
 			}),
 			nodeRef,
 		);
@@ -58,11 +60,40 @@ const HrmNode = (props: HrmNodeProps) => {
 		return addEventListeners(
 			newState({
 				onPress: e => {
-					props.g.editEdge(props.id);
+					props.g.editEdge(
+						props.id,
+						undefined,
+						props.g.viewPos(e.x, e.y),
+					);
+				},
+				onDrag: e => {
+					props.g.updateEdgeEnd(props.g.viewPos(e.x, e.y)!);
+				},
+				onRelease: e => {
+					props.g.resetEditingEdge();
 				},
 			}),
 			handleRef,
 		);
+	});
+
+	createEffect(() => {
+		if (!nodeRef) return;
+		// Edge edit events
+		const events = {
+			mouseenter: () => props.g.enterEditingEnd(props.id, nodeRef),
+			mouseleave: () => props.g.leaveEditingEnd(nodeRef),
+			mouseup: () => props.g.pickEditingEnd(props.id),
+		};
+		for (const [k, v] of Object.entries(events)) {
+			nodeRef.addEventListener(k, v, { passive: true });
+		}
+		return () => {
+			if (!nodeRef) return;
+			for (const [k, v] of Object.entries(events)) {
+				nodeRef.removeEventListener(k, v);
+			}
+		};
 	});
 
 	return (
