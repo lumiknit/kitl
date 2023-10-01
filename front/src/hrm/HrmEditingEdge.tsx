@@ -9,18 +9,10 @@ type HrmEditingEdgeProps = {
 const HrmEditingEdge: Component<HrmEditingEdgeProps> = props => {
 	const path = () => {
 		const e = props.g.editingEdge[0]();
-		if (!e || e.nodeID === undefined) return "";
+		if (!e || !e.nodeID) return "";
 		const node = props.g.nodes().get(e.nodeID);
 		if (!node) return "";
-		const n = node[0]();
-		let ref = n.ref;
-		if (e.handleID !== undefined) {
-			const h = n.handles[e.handleID][0]();
-			if (!h.ref) return "";
-			ref = h.ref;
-		}
-		if (!ref) return "";
-		const rect = props.g.viewRect(ref);
+		const rect = props.g.viewRectOf(e.nodeID, e.handleID);
 		if (!rect) return "";
 		let endRefRect: Rect | undefined;
 		if (e.endRef) {
@@ -37,18 +29,8 @@ const HrmEditingEdge: Component<HrmEditingEdgeProps> = props => {
 	const style = (): JSX.CSSProperties => {
 		// Get node and handle
 		const e = props.g.editingEdge[0]();
-		if (!e || e.nodeID === undefined) return {};
-		const node = props.g.nodes().get(e.nodeID);
-		if (!node) return {};
-		const n = node[0]();
-		let ref = n.ref;
-		if (e.handleID !== undefined) {
-			const h = n.handles[e.handleID][0]();
-			if (!h.ref) return {};
-			ref = h.ref;
-		}
-		if (!ref) return {};
-		const rect = props.g.viewRect(ref);
+		if (!e || !e.nodeID) return {};
+		const rect = props.g.viewRectOf(e.nodeID, e.handleID);
 		if (!rect) return {};
 		return {
 			visibility: "visible",

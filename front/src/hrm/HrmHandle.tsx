@@ -1,10 +1,9 @@
-import { Component, batch, createEffect, createSignal } from "solid-js";
+import { Component, createEffect } from "solid-js";
 
 import { Handle, HandleType, Node, cBd, cBdEmpty, cBg } from "./data";
 import { State } from "./state";
 import { VWrap } from "@/common/types";
-import { addEventListeners, newState } from "@/common/pointer-helper";
-import { toast } from "@/block/ToastContainer";
+import { addEventListeners } from "@/common/pointer-helper";
 import { HandleID, NodeID } from "@/common";
 
 type HrmHandleProps = {
@@ -18,6 +17,19 @@ type HrmHandleProps = {
 const HrmHandle: Component<HrmHandleProps> = props => {
 	const [h, update] = props.handleW;
 	let handleRef: HTMLDivElement | undefined;
+
+	const handleEvents: { [key: string]: (e: any) => void } = {
+		pointerenter: () =>
+			props.g.enterEditingEnd(props.nodeID, handleRef, props.handleID),
+		pointerdown: e => {
+			e.target?.releasePointerCapture(e.pointerId);
+		},
+		pointerleave: () => props.g.leaveEditingEnd(handleRef),
+		pointerup: e => {
+			props.g.pickEditingEnd(props.nodeID, props.handleID);
+			e.stopPropagation();
+		},
+	};
 
 	createEffect(() => {
 		if (!handleRef) return;
@@ -38,22 +50,19 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 					colorClass = cBg(color);
 				}
 			}
-			if (color === h.color && h.ref === handleRef) {
-				return h;
-			}
-			return {
-				...h,
-				ref: handleRef,
-				color,
-				colorClass,
-			};
+			return color === h.color && h.ref === handleRef
+				? h
+				: { ...h, ref: handleRef, color, colorClass };
 		});
+		for (const [k, v] of Object.entries(handleEvents)) {
+			handleRef.addEventListener(k, v);
+		}
 	});
 
 	createEffect(() => {
 		if (!handleRef) return;
-		return addEventListeners(
-			newState({
+		addEventListeners(
+			{
 				onPress: e => {
 					props.g.editEdge(
 						props.nodeID,
@@ -70,39 +79,9 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 				onDoubleClick: e => {
 					props.g.deleteEdge(props.nodeID, props.handleID);
 				},
-			}),
+			},
 			handleRef,
 		);
-	});
-
-	createEffect(() => {
-		if (!handleRef) return;
-		// Edge edit events
-		const events: { [key: string]: (e: any) => void } = {
-			pointerenter: () =>
-				props.g.enterEditingEnd(
-					props.nodeID,
-					handleRef,
-					props.handleID,
-				),
-			pointerdown: e => {
-				e.target?.releasePointerCapture(e.pointerId);
-			},
-			pointerleave: () => props.g.leaveEditingEnd(handleRef),
-			pointerup: e => {
-				props.g.pickEditingEnd(props.nodeID, props.handleID);
-				e.stopPropagation();
-			},
-		};
-		for (const [k, v] of Object.entries(events)) {
-			handleRef.addEventListener(k, v);
-		}
-		return () => {
-			if (!handleRef) return;
-			for (const [k, v] of Object.entries(events)) {
-				handleRef.removeEventListener(k, v);
-			}
-		};
 	});
 
 	return (

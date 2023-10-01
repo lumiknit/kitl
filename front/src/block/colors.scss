@@ -33,43 +33,9 @@
 	--rgb-warning-light: 247, 219, 150;
 	--rgb-warning-dark: 246, 187, 66;
 	--rgb-warning-text: var(--rgb-black);
-
-	--rgb-beta: 101, 109, 120;
-	--rgb-beta-light: 156, 163, 174;
-	--rgb-beta-dark: 67, 74, 84;
-	--rgb-beta-text: var(--rgb-white);
-	--rgb-delta: 172, 146, 236;
-	--rgb-delta-light: 205, 186, 255;
-	--rgb-delta-dark: 150, 122, 220;
-	--rgb-delta-text: var(--rgb-black);
-	--rgb-lambda: 223, 98, 173;
-	--rgb-lambda-light: 245, 138, 202;
-	--rgb-lambda-dark: 193, 63, 141;
-	--rgb-lambda-text: var(--rgb-white);
-	--rgb-literal: 79, 193, 233;
-	--rgb-literal-light: 164, 229, 253;
-	--rgb-literal-dark: 59, 175, 218;
-	--rgb-literal-text: var(--rgb-black);
-	--rgb-comment: 72, 207, 173;
-	--rgb-comment-light: 154, 252, 227;
-	--rgb-comment-dark: 55, 188, 155;
-	--rgb-comment-text: var(--rgb-black);
 }
 
-$color-names: (
-	fg,
-	bg,
-	primary,
-	secondary,
-	success,
-	danger,
-	warning,
-	beta,
-	delta,
-	lambda,
-	literal,
-	comment
-);
+$color-names: (fg, bg, primary, secondary, success, danger, warning);
 
 // bg colors
 

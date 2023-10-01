@@ -9,6 +9,7 @@ import {
 	Nodes as CNodes,
 	NodeType,
 	Source,
+	clamp,
 } from "@/common";
 
 import { createSignal } from "solid-js";
@@ -24,25 +25,25 @@ export const nodeColors = () =>
 export const randomColor = () => Math.floor(Math.random() * nodeColors());
 export type NodeColor = number;
 export const cBg = (color?: NodeColor) =>
-	color === undefined ? "" : `hrm-c-bg-${color}`;
+	color! >= 0 ? `hrm-c-bg-${color}` : "";
 export const cBd = (color?: NodeColor) =>
-	color === undefined ? "" : `hrm-c-bd-${color}`;
+	color! >= 0 ? `hrm-c-bd-${color}` : "";
 export const cStr = (color?: NodeColor) =>
-	color === undefined ? "" : `hrm-c-stroke-${color}`;
+	color! >= 0 ? `hrm-c-stroke-${color}` : "";
 export const cBdEmpty = "hrm-c-bd-empty";
 
 /* Symbols */
 
-export const SYM_FALLBACK = "⎇";
-export const SYM_FN = "𝑓";
-export const SYM_ARG = "𝑥";
-export const SYM_RET = "𝑦";
-export const SYM_ALPHA = "𝛂";
-export const SYM_BETA = "𝛃";
-export const SYM_DELTA = "𝚫";
-export const SYM_LAMBDA = "𝛌";
-export const SYM_NU = "𝛎";
-export const SYM_PI = "𝛑";
+export const SYM_FALLBACK = "⎇",
+	SYM_FN = "𝑓",
+	SYM_ARG = "𝑥",
+	SYM_RET = "𝑦",
+	SYM_ALPHA = "𝛂",
+	SYM_BETA = "𝛃",
+	SYM_DELTA = "𝚫",
+	SYM_LAMBDA = "𝛌",
+	SYM_NU = "𝛎",
+	SYM_PI = "𝛑";
 
 /* Handle */
 
@@ -60,7 +61,6 @@ export type SinkHandleData = {
 	type: HandleType.Sink;
 	sourceID?: NodeID;
 	sourceHandle?: HandleID;
-	edgeSelected?: boolean;
 };
 
 export type HandleData = SourceHandleData | SinkHandleData;
@@ -115,46 +115,48 @@ const sourceToSinkHandle = (name: string, source?: Source): VWrap<Handle> =>
 	});
 
 export const thawHandles = (node: CNode): Handles => {
-	const a: any = [];
-	a.lhs = 0;
-	const result: Handles = a;
+	let lhs = 0,
+		result: any;
 	switch (node.x.type) {
 		case NodeType.Alpha:
+			result = [];
 			break; // No Handles
 		case NodeType.Beta:
-			{
-				result.push(sourceToSinkHandle(SYM_FN, node.x.fn));
-				for (const idx in node.x.args) {
-					const arg = node.x.args[idx];
-					result.push(sourceToSinkHandle(idx, arg));
-				}
-				result.lhs = 1;
-			}
-			break;
-		case NodeType.Delta:
-			result.push(sourceToSinkHandle(SYM_RET, node.x.ret));
-			break;
-		case NodeType.Lambda:
-			result.push(sourceHandle(SYM_ARG));
-			result.push(sourceToSinkHandle(SYM_RET, node.x.ret));
-			break;
-		case NodeType.Nu:
+			lhs = 1;
+			result = [sourceToSinkHandle(SYM_FN, node.x.fn)];
 			for (const idx in node.x.args) {
 				const arg = node.x.args[idx];
 				result.push(sourceToSinkHandle(idx, arg));
 			}
-			result.lhs = Math.max(0, Math.min(node.x.args.length, node.x.lhs));
+			break;
+		case NodeType.Delta:
+			result = [sourceToSinkHandle(SYM_RET, node.x.ret)];
+			break;
+		case NodeType.Lambda:
+			result = [
+				sourceHandle(SYM_ARG),
+				sourceToSinkHandle(SYM_RET, node.x.ret),
+			];
+			break;
+		case NodeType.Nu:
+			result = node.x.args.map((arg, idx) =>
+				sourceToSinkHandle(String(idx), arg),
+			);
+			lhs = clamp(node.x.lhs, 0, node.x.args.length);
 			break;
 		case NodeType.Pi:
-			result.push(sourceToSinkHandle(SYM_FALLBACK, node.x.fallback));
-			result.push(sourceHandle(SYM_ARG));
+			result = [
+				sourceToSinkHandle(SYM_FALLBACK, node.x.fallback),
+				sourceHandle(SYM_ARG),
+			];
 			for (let i = 0; i < node.x.args; i++) {
 				result.push(sourceHandle(String(i + 1)));
 			}
 			result.push(sourceToSinkHandle(SYM_RET, node.x.ret));
-			result.lhs = 1;
+			lhs = 1;
 			break;
 	}
+	result.lhs = lhs;
 	return result;
 };
 
@@ -179,7 +181,7 @@ export const thawNodes = (nodes: CNodes): Nodes => {
 };
 
 const freezeSource = (handle: HandleData): Source | undefined => {
-	if (handle.type === HandleType.Sink && handle.sourceID !== undefined) {
+	if (handle.type === HandleType.Sink && handle.sourceID) {
 		return {
 			id: handle.sourceID,
 			handle: handle.sourceHandle,
@@ -188,18 +190,19 @@ const freezeSource = (handle: HandleData): Source | undefined => {
 };
 
 const freezeNodeData = (node: Node): NodeData => {
+	const f = (index: number) => freezeSource(node.handles[index][0]().data);
 	switch (node.data.type) {
 		case NodeType.Alpha:
 			return node.data;
 		case NodeType.Beta: {
 			const args: Source[] = [];
 			for (let i = 1; i < node.handles.length; i++) {
-				const frozen = freezeSource(node.handles[i][0]().data);
+				const frozen = f(i);
 				if (frozen) args.push(frozen);
 			}
 			return {
 				type: NodeType.Beta,
-				fn: freezeSource(node.handles[0][0]().data),
+				fn: f(0),
 				args,
 			};
 		}
@@ -207,24 +210,23 @@ const freezeNodeData = (node: Node): NodeData => {
 			return {
 				type: NodeType.Delta,
 				comment: node.data.comment,
-				ret: freezeSource(node.handles[0][0]().data),
+				ret: f(0),
 			};
 		case NodeType.Lambda:
 			return {
 				type: NodeType.Lambda,
-				ret: freezeSource(node.handles[1][0]().data),
+				ret: f(1),
 			};
 		case NodeType.Nu: {
-			const args: Source[] = [];
-			for (let i = 0; i < node.handles.length; i++) {
-				const frozen = freezeSource(node.handles[i][0]().data);
-				if (frozen) args.push(frozen);
-			}
 			return {
 				type: NodeType.Nu,
 				name: node.data.name,
 				lhs: node.data.lhs,
-				args: args,
+				args: node.handles.reduce<Source[]>((acc, h) => {
+					const frozen = freezeSource(h[0]().data);
+					if (frozen) acc.push(frozen);
+					return acc;
+				}, []),
 			};
 		}
 		case NodeType.Pi:
@@ -232,10 +234,8 @@ const freezeNodeData = (node: Node): NodeData => {
 				type: NodeType.Pi,
 				name: node.data.name,
 				args: node.data.args,
-				fallback: freezeSource(node.handles[0][0]().data),
-				ret: freezeSource(
-					node.handles[node.handles.length - 1][0]().data,
-				),
+				fallback: f(0),
+				ret: f(node.handles.length - 1),
 			};
 	}
 };
@@ -258,4 +258,13 @@ export type Transform = {
 	x: number; // x offset
 	y: number; // y offset
 	z: number; // zoom
+};
+
+/* Editing Edges */
+export type EditingEdge = {
+	isSource?: boolean;
+	nodeID?: NodeID;
+	handleID?: HandleID;
+	end: Position;
+	endRef?: HTMLDivElement;
 };

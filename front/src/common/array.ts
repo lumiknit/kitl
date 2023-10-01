@@ -5,18 +5,19 @@ export const makeArray = <T>(
 	defaultValue: T,
 	length?: number,
 ): T[] => {
+	const isLengthUnd = length === undefined;
 	if (value === undefined) {
-		if (length === undefined) {
+		if (isLengthUnd) {
 			return [defaultValue];
 		}
 		return Array(length).fill(defaultValue);
 	} else if (Array.isArray(value)) {
-		if (length === undefined || length < value.length) {
+		if (isLengthUnd || length < value.length) {
 			return value;
 		}
 		return value.concat(Array(length - value.length).fill(defaultValue));
 	} else {
-		if (length === undefined) {
+		if (isLengthUnd) {
 			return [value];
 		}
 		return Array(length).fill(value);

@@ -50,10 +50,10 @@ export const nearestPointInHPill = (
 	if (oy > hh) (oy = hh), (vy = 1);
 	// If the point is outsize of rounded rectangle, filter
 	if (Math.abs(ox) > m) {
-		const z = ox > 0 ? 1 : -1,
-			x = ox - z * m,
+		const z = ox > 0 ? m : -m,
+			x = ox - z,
 			d = dist(x, oy) / hh;
-		ox = z * m + x / d;
+		ox = z + x / d;
 		oy /= d;
 		// Calculate normal vector
 		vx = x / hh;
@@ -77,24 +77,22 @@ export const nearestPointInPill = (
 
 export const pathBetweenPills = (srcRect: Rect, sinkRect: Rect) => {
 	const [x2, y2, vx2, vy2] = nearestPointInPill(
-		sinkRect.x + sinkRect.w / 2,
-		sinkRect.y + sinkRect.h / 2,
-		srcRect,
-	);
-	const [x1, y1, vx1, vy1] = nearestPointInPill(x2, y2, sinkRect);
-	const dist = 0.2 * Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-	return `M ${x1 - 0.5 * vx1} ${y1 - 0.5 * vy1} C ${x1 + vx1 * dist} ${
-		y1 + vy1 * dist
-	}, ${x2 + vx2 * dist} ${y2 + vy2 * dist}, ${x2 - 0.5 * vx2} ${
-		y2 - 0.5 * vy2
-	}`;
+			sinkRect.x + sinkRect.w / 2,
+			sinkRect.y + sinkRect.h / 2,
+			srcRect,
+		),
+		[x1, y1, vx1, vy1] = nearestPointInPill(x2, y2, sinkRect),
+		d = 0.2 * dist(x2 - x1, y2 - y1);
+	return `M ${x1 - vx1 / 2} ${y1 - vy1 / 2} C ${x1 + vx1 * d} ${
+		y1 + vy1 * d
+	}, ${x2 + vx2 * d} ${y2 + vy2 * d}, ${x2 - vx2 / 2} ${y2 - vy2 / 2}`;
 };
 
 export const pathSelf = (srcRect: Rect, sinkRect: Rect) => {
-	const DIST = 30;
-	return `M ${srcRect.x + srcRect.w / 2} ${srcRect.y} C ${
-		srcRect.x + srcRect.w / 2
-	} ${srcRect.y - DIST},
-			${sinkRect.x + sinkRect.w / 2} ${sinkRect.y - DIST},
-					${sinkRect.x + sinkRect.w / 2} ${sinkRect.y}`;
+	const DIST = 30,
+		cx1 = srcRect.x + srcRect.w / 2,
+		cx2 = sinkRect.x + sinkRect.w / 2;
+	return `M ${cx1} ${srcRect.y} C ${cx1} ${srcRect.y - DIST}, ${cx2} ${
+		sinkRect.y - DIST
+	}, ${cx2} ${sinkRect.y}`;
 };

@@ -1,13 +1,12 @@
-import { For, createEffect } from "solid-js";
-import { NodeID } from "@/common";
-import { Node, cBd } from "./data";
+import { For, Show, createEffect } from "solid-js";
+import { Getter, NodeID, ROOT_NODES } from "@/common";
+import { Handle, Node, cBd } from "./data";
 
-import { addEventListeners, newState } from "@/common/pointer-helper";
+import { addEventListeners } from "@/common/pointer-helper";
 import { VWrap } from "@/common";
 import HrmHandle from "./HrmHandle";
 import { State } from "./state";
 import HrmNodeBody from "./HrmNodeBody";
-import { toast } from "@/block/ToastContainer";
 
 type HrmNodeProps = {
 	g: State;
@@ -20,6 +19,25 @@ const HrmNode = (props: HrmNodeProps) => {
 	console.log("[HrmNode] render");
 	let nodeRef: HTMLDivElement | undefined,
 		handleRef: HTMLDivElement | undefined;
+
+	const nodeEvents: { [key: string]: (e: any) => void } = {
+		pointerenter: () => {
+			if (ROOT_NODES.has(n().data.type)) return;
+			props.g.enterEditingEnd(props.id, nodeRef);
+		},
+		pointerdown: e => {
+			e.target?.releasePointerCapture(e.pointerId);
+		},
+		pointerleave: () => {
+			if (ROOT_NODES.has(n().data.type)) return;
+			props.g.leaveEditingEnd(nodeRef);
+		},
+		pointerup: e => {
+			if (ROOT_NODES.has(n().data.type)) return;
+			props.g.pickEditingEnd(props.id);
+			e.stopPropagation();
+		},
+	};
 
 	createEffect(() => {
 		if (!nodeRef) return;
@@ -34,32 +52,34 @@ const HrmNode = (props: HrmNodeProps) => {
 			selected: false,
 		}));
 		// DO NOT touch handles
-		return addEventListeners(
-			newState({
+		addEventListeners(
+			{
 				onClick: () => {
 					props.g.toggleNodeOne(props.id);
 				},
 				onDrag: e => {
-					const zoom = props.g.transform[0]().z;
 					props.g.translateSelectedNodes(
 						props.id,
-						(e.x - e.ox) / zoom,
-						(e.y - e.oy) / zoom,
-						1,
+						e.dx,
+						e.dy,
+						props.g.transform[0]().z,
 					);
 				},
 				onRelease: e => {
 					props.g.resetEditingEdge();
 				},
-			}),
+			},
 			nodeRef,
 		);
+		for (const [k, v] of Object.entries(nodeEvents)) {
+			nodeRef.addEventListener(k, v, { passive: true });
+		}
 	});
 
 	createEffect(() => {
 		if (!handleRef) return;
-		return addEventListeners(
-			newState({
+		addEventListeners(
+			{
 				onPress: e => {
 					props.g.editEdge(
 						props.id,
@@ -68,41 +88,30 @@ const HrmNode = (props: HrmNodeProps) => {
 					);
 				},
 				onDrag: e => {
-					props.g.updateEdgeEnd(props.g.viewPos(e.x, e.y)!);
+					const p = props.g.viewPos(e.x, e.y);
+					if (p) props.g.updateEdgeEnd(p);
 				},
 				onRelease: e => {
 					props.g.resetEditingEdge();
 				},
-			}),
+			},
 			handleRef,
 		);
 	});
 
-	createEffect(() => {
-		if (!nodeRef) return;
-		// Edge edit events
-		const events: { [key: string]: (e: any) => void } = {
-			pointerenter: () => props.g.enterEditingEnd(props.id, nodeRef),
-			pointerdown: e => {
-				e.target?.releasePointerCapture(e.pointerId);
-			},
-			pointerleave: () => props.g.leaveEditingEnd(nodeRef),
-			pointerup: e => {
-				props.g.pickEditingEnd(props.id);
-				e.stopPropagation();
-			},
-		};
-		for (const [k, v] of Object.entries(events)) {
-			nodeRef.addEventListener(k, v, { passive: true });
-		}
-		return () => {
-			if (!nodeRef) return;
-			for (const [k, v] of Object.entries(events)) {
-				nodeRef.removeEventListener(k, v);
-			}
-		};
-	});
+	const hrmHandle = (handle: VWrap<Handle>, index: Getter<number>) => (
+			<HrmHandle
+				g={props.g}
+				nodeID={props.id}
+				node={n()}
+				handleID={index()}
+				handleW={handle}
+			/>
+		),
+		hrmHandleRHS = (handle: VWrap<Handle>, index: Getter<number>) =>
+			hrmHandle(handle, () => index() + n().handles.lhs);
 
+	const position = () => n().position;
 	return (
 		<div
 			class={`hrm-node ${n().selected ? "selected" : ""} ${cBd(
@@ -110,35 +119,21 @@ const HrmNode = (props: HrmNodeProps) => {
 			)}`}
 			ref={nodeRef}
 			style={{
-				left: `${n().position.x}px`,
-				top: `${n().position.y}px`,
+				left: `${position().x}px`,
+				top: `${position().y}px`,
 			}}>
 			<div class="hrm-node-row">
 				<For each={n().handles.slice(0, n().handles.lhs)}>
-					{(handle, index) => (
-						<HrmHandle
-							g={props.g}
-							nodeID={props.id}
-							node={n()}
-							handleID={index()}
-							handleW={handle}
-						/>
-					)}
+					{hrmHandle}
 				</For>
 				<HrmNodeBody data={n().data} />
 				<For each={n().handles.slice(n().handles.lhs)}>
-					{(handle, index) => (
-						<HrmHandle
-							g={props.g}
-							nodeID={props.id}
-							node={n()}
-							handleID={index() + n().handles.lhs}
-							handleW={handle}
-						/>
-					)}
+					{hrmHandleRHS}
 				</For>
 			</div>
-			<div ref={handleRef} class="hrm-node-handle" />
+			<Show when={!ROOT_NODES.has(n().data.type)}>
+				<div ref={handleRef} class="hrm-node-handle" />
+			</Show>
 		</div>
 	);
 };

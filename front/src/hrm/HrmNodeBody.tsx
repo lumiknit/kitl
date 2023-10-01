@@ -13,6 +13,10 @@ const HrmName = (props: { name: Name }) => (
 	</div>
 );
 
+const Mark = (props: { mark: string }) => (
+	<div class="hrm-node-mark">{props.mark}</div>
+);
+
 const HrmNodeBody = (props: HrmNodeBodyProps) => {
 	return (
 		<div class="hrm-node-item hrm-node-body">
@@ -21,19 +25,19 @@ const HrmNodeBody = (props: HrmNodeBodyProps) => {
 					{JSON.stringify((props.data as AlphaNodeData).val)}
 				</Match>
 				<Match when={props.data.type === NodeType.Beta}>
-					<div class="hrm-node-mark">{SYM_BETA}</div>
+					<Mark mark={SYM_BETA} />
 				</Match>
 				<Match when={props.data.type === NodeType.Delta}>
-					<div class="hrm-node-mark">{SYM_DELTA}</div>
+					<Mark mark={SYM_DELTA} />
 				</Match>
 				<Match when={props.data.type === NodeType.Lambda}>
-					<div class="hrm-node-mark">{SYM_LAMBDA}</div>
+					<Mark mark={SYM_LAMBDA} />
 				</Match>
 				<Match when={props.data.type === NodeType.Nu}>
 					<HrmName name={(props.data as any).name} />
 				</Match>
 				<Match when={props.data.type === NodeType.Pi}>
-					<div class="hrm-node-mark">{SYM_PI}</div>
+					<Mark mark={SYM_PI} />
 					<HrmName name={(props.data as any).name} />
 				</Match>
 			</Switch>

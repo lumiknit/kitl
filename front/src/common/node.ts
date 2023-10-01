@@ -20,6 +20,13 @@ export enum NodeType {
 	Pi = "p", // Patterned Lambda
 }
 
+// Node properties
+// Root: The root node of whole tree. Cannot be deleted & has no parent.
+export const ROOT_NODES = new Set([NodeType.Delta]);
+// Expandable: Able to add handle/edge on the left/right most.
+export const LEFT_EXPANDABLE_NODES = new Set([NodeType.Nu]);
+export const RIGHT_EXPANDABLE_NODES = new Set([NodeType.Beta, NodeType.Pi]);
+
 export type Source = {
 	id: NodeID;
 	handle?: HandleID;

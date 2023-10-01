@@ -3,18 +3,18 @@
 import { toast } from "@/block/ToastContainer";
 import { distSquare } from "./geometry";
 
-const MOVE_THRESHOLD = 4;
-const DOUBLE_CLICK_TIME = 300;
-const MULTI_TAP_TIME = 100;
-const LONG_PRESS_TIME = 750;
+const MOVE_THRESHOLD = 4,
+	DOUBLE_CLICK_TIME = 300,
+	MULTI_TAP_TIME = 100,
+	LONG_PRESS_TIME = 750;
 
-const st = window.setTimeout;
-const ct = window.clearTimeout;
+const st = window.setTimeout,
+	ct = window.clearTimeout;
 
 type ButtonState = number;
-const BSReleased = 0;
-const BSPressed = 1;
-const BSMoved = 2;
+const BSReleased = 0,
+	BSPressed = 1,
+	BSMoved = 2;
 
 type PointerID = number;
 
@@ -72,6 +72,8 @@ export type ClickEvent = BaseEvent & {
 export type DragEvent = BaseEvent & {
 	ox: number;
 	oy: number;
+	dx: number;
+	dy: number;
 	pivot?: {
 		x: number;
 		y: number;
@@ -99,34 +101,32 @@ type State = {
 
 /* Functions */
 
-export const newState = (handlers?: Handlers): State => ({
-	t: new Map(),
-	c: new Map(),
-	o: new Map(),
-	handlers: handlers ?? {},
-});
-
+let idCounter = 0;
 const mapID = (s: State, id: PointerID): PointerID => {
-	const v = s.t.get(id);
-	if (v !== undefined) return v;
-	// From 0 find smallest unused number
-	const ids = new Set(s.t.values());
-	for (let i = 0; ; i++) {
-		if (!ids.has(i)) {
-			s.t.set(id, i);
-			return i;
-		}
+	let v = s.t.get(id);
+	if (v === undefined) {
+		idCounter = (idCounter + 1) % 0x7fffffff;
+		s.t.set(id, idCounter);
+		v = idCounter;
 	}
+	return v;
 };
 
-export const addEventListeners = (s: State, el: Element) => {
+export const addEventListeners = (handles: Handlers, el: Element) => {
+	const s: State = {
+		t: new Map(),
+		c: new Map(),
+		o: new Map(),
+		handlers: handles,
+	};
+
 	const updatePointer = (id: PointerID, x: number, y: number): boolean => {
 		// Move event
 		const p = s.c.get(id);
-		if (
-			!p ||
-			(p.b !== BSMoved && distSquare(x - p.x, y - p.y) < MOVE_THRESHOLD)
-		) {
+		if (!p) return false;
+		const dx = x - p.x,
+			dy = y - p.y;
+		if (p.b !== BSMoved && distSquare(dx, dy) < MOVE_THRESHOLD) {
 			return false;
 		}
 		// Update view
@@ -135,16 +135,12 @@ export const addEventListeners = (s: State, el: Element) => {
 				y,
 				ox: p.x,
 				oy: p.y,
+				dx,
+				dy,
 			},
 			[a, b] = s.c.keys();
 		if (b) {
-			const pivot = s.c.get(a === id ? b : a);
-			if (pivot) {
-				event.pivot = {
-					x: pivot.x,
-					y: pivot.y,
-				};
-			}
+			event.pivot = s.c.get(a === id ? b : a);
 		}
 		p.b = BSMoved;
 		p.x = x;
@@ -213,29 +209,29 @@ export const addEventListeners = (s: State, el: Element) => {
 
 	const HANDLERS: { [k: string]: any } = {
 		mousemove: (e: MouseEvent) => {
-			if (!(e.buttons & 1)) return;
-			updatePointer(-1, e.clientX, e.clientY);
+			if (e.buttons & 1) {
+				updatePointer(-1, e.clientX, e.clientY);
+			}
 		},
 		mouseup: (e: MouseEvent) => {
-			if (e.button !== 0) return;
-			deactivatePointer(-1, {
-				pointers: 1,
-				x: e.clientX,
-				y: e.clientY,
-				modifiers: modifiersFromHTMLEvent(e),
-			});
+			if (e.button === 0) {
+				deactivatePointer(-1, {
+					pointers: 1,
+					x: e.clientX,
+					y: e.clientY,
+					modifiers: modifiersFromHTMLEvent(e),
+				});
+			}
 		},
 		mouseleave: () => {
 			s.c.delete(-1);
 		},
 		touchmove: (e: TouchEvent) => {
-			console.log("TM");
 			for (const t of e.changedTouches) {
 				updatePointer(mapID(s, t.identifier), t.clientX, t.clientY);
 			}
 		},
 		touchend: (e: TouchEvent) => {
-			console.log("TE");
 			for (const t of e.changedTouches) {
 				deactivatePointer(mapID(s, t.identifier), {
 					pointers: e.touches.length,
@@ -247,7 +243,6 @@ export const addEventListeners = (s: State, el: Element) => {
 			}
 		},
 		touchcancel: (e: TouchEvent) => {
-			console.log("TC");
 			for (const t of e.changedTouches) {
 				s.t.delete(t.identifier);
 			}
@@ -317,7 +312,6 @@ export const addEventListeners = (s: State, el: Element) => {
 			e.stopPropagation();
 		},
 		touchstart: (e: TouchEvent) => {
-			console.log("TouchStart", e.target);
 			for (const t of e.changedTouches) {
 				activatePointer(mapID(s, t.identifier), {
 					pointers: 1,

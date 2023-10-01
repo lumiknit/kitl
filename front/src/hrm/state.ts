@@ -7,16 +7,18 @@ import {
 	HandleID,
 	Position,
 	origin,
+	ROOT_NODES,
 } from "@/common";
-import { HandleType, Nodes, Transform, thawNodes } from "./data";
+import {
+	EditingEdge,
+	HandleType,
+	Nodes,
+	Transform,
+	freezeNodes,
+	thawNodes,
+} from "./data";
 
-export type EditingEdge = {
-	isSource?: boolean;
-	nodeID?: NodeID;
-	handleID?: HandleID;
-	end: Position;
-	endRef?: HTMLDivElement;
-};
+/* State */
 
 export class State {
 	rootRef?: HTMLDivElement;
@@ -25,22 +27,64 @@ export class State {
 	editingEdge: VWrap<EditingEdge>;
 
 	nodes: () => Nodes;
-	update: (a: Nodes | ((ns: Nodes) => Nodes)) => void;
+	setNodes: (a: Nodes | ((ns: Nodes) => Nodes)) => void;
 
 	transform: VWrap<Transform>;
+
+	history: CNodes[];
+	historyIndex: number;
 
 	constructor(initialNodes: CNodes) {
 		const [nodes, setNodes] = createSignal<Nodes>(thawNodes(initialNodes));
 		this.nodes = nodes;
-		this.update = setNodes;
+		this.setNodes = setNodes;
 		this.editingEdge = createSignal({ end: origin });
 		this.transform = [() => ({ x: 0, y: 0, z: 1 }), () => {}];
+		// History
+		this.history = [initialNodes];
+		this.historyIndex = 0;
+	}
+
+	// Graph save/load
+
+	thaw(frozen: CNodes) {
+		this.setNodes(thawNodes(frozen));
+		this.history = [frozen];
+		this.historyIndex = 0;
+	}
+
+	freeze(): CNodes {
+		return freezeNodes(this.nodes());
+	}
+
+	// History
+
+	saveHistory() {
+		this.historyIndex++;
+		if (this.history.length > this.historyIndex) {
+			this.history = this.history.slice(0, this.historyIndex);
+		}
+		this.history.push(this.freeze());
+	}
+
+	undo() {
+		if (this.historyIndex > 0) {
+			this.historyIndex--;
+			this.thaw(this.history[this.historyIndex]);
+		}
+	}
+
+	redo() {
+		if (this.historyIndex < this.history.length - 1) {
+			this.historyIndex++;
+			this.thaw(this.history[this.historyIndex]);
+		}
 	}
 
 	// View & Transforms
 
 	viewPos(x: number, y: number): Position | undefined {
-		if (this.viewRef === undefined) return;
+		if (!this.viewRef) return;
 		const rootRect = this.viewRef!.getBoundingClientRect();
 		const t = untrack(this.transform[0]);
 		return {
@@ -49,8 +93,8 @@ export class State {
 		};
 	}
 
-	viewRect(elem: HTMLElement): Rect | undefined {
-		if (this.viewRef === undefined) return;
+	viewRect(elem?: HTMLElement): Rect | undefined {
+		if (!elem || !this.viewRef) return;
 		const rootRect = this.viewRef!.getBoundingClientRect();
 		const rect = elem.getBoundingClientRect();
 		const t = untrack(this.transform[0]);
@@ -60,6 +104,22 @@ export class State {
 			w: rect.width / t.z,
 			h: rect.height / t.z,
 		};
+	}
+
+	// Node / Handle Getter
+
+	ref(id: NodeID, handle?: HandleID) {
+		const node = this.nodes().get(id);
+		if (!node) return;
+		const n = node[0]();
+		if (handle === undefined) return n.ref;
+		const h = n.handles[handle];
+		if (!h) return;
+		return h[0]().ref;
+	}
+
+	viewRectOf(id: NodeID, handle?: HandleID): Rect | undefined {
+		return this.viewRect(this.ref(id, handle));
 	}
 
 	// Selected Nodes
@@ -140,7 +200,7 @@ export class State {
 
 	enterEditingEnd(id: NodeID, ref?: HTMLDivElement, handle?: HandleID) {
 		this.editingEdge[1](e =>
-			e.nodeID !== undefined && (e.nodeID !== id || e.handleID !== handle)
+			e.nodeID && (e.nodeID !== id || e.handleID !== handle)
 				? {
 						...e,
 						endRef: ref,
@@ -151,7 +211,7 @@ export class State {
 
 	leaveEditingEnd(ref?: HTMLDivElement) {
 		this.editingEdge[1](e =>
-			e.nodeID !== undefined && e.endRef === ref
+			e.nodeID && e.endRef === ref
 				? {
 						...e,
 						endRef: undefined,
@@ -163,17 +223,13 @@ export class State {
 	pickEditingEnd(id: NodeID, handle?: HandleID) {
 		// If editing edge from other exists, connect.
 		const e = this.editingEdge[0]();
-		if (
-			e.nodeID !== undefined &&
-			(e.nodeID !== id || e.handleID !== handle)
-		) {
+		if (e.nodeID && (e.nodeID !== id || e.handleID !== handle)) {
 			if (e.isSource && handle !== undefined) {
 				return this.setEdge(id, handle, e.nodeID, e.handleID);
 			} else if (!e.isSource && e.handleID !== undefined) {
 				return this.setEdge(e.nodeID, e.handleID, id, handle);
 			}
 		}
-		//return this.resetEditingEdge();
 	}
 
 	setEdge(
@@ -182,12 +238,19 @@ export class State {
 		srcID: NodeID,
 		srcHandle?: HandleID,
 	) {
-		console.log("setEdge", sinkID, sinkHandle, srcID, srcHandle);
+		// Check source
 		const nodes = this.nodes(),
-			node = nodes.get(sinkID);
-		if (!node) return;
-		const [n] = node,
-			h = n().handles[sinkHandle];
+			sinkNode = nodes.get(sinkID),
+			srcNode = nodes.get(srcID);
+		if (!sinkNode || !srcNode) return;
+		if (srcHandle === undefined) {
+			if (ROOT_NODES.has(srcNode[0]().data.type)) return;
+		} else {
+			const h = srcNode[0]().handles[srcHandle];
+			if (!h || h[0]().data.type !== HandleType.Source) return;
+		}
+
+		const h = sinkNode[0]().handles[sinkHandle];
 		h[1](h =>
 			h.data.type !== HandleType.Sink
 				? h
@@ -219,7 +282,7 @@ export class State {
 		let isSource = true;
 		if (handle !== undefined) {
 			const h = n().handles[handle];
-			if (h === undefined) return;
+			if (!h) return;
 			isSource = h[0]().data.type === HandleType.Source;
 		}
 		// Check if it is a source
