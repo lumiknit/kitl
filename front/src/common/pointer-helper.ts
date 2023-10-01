@@ -1,6 +1,5 @@
 /* Types and constants */
 
-import { toast } from "@/block/ToastContainer";
 import { distSquare } from "./geometry";
 
 const MOVE_THRESHOLD = 4,

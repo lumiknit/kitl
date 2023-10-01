@@ -1,4 +1,4 @@
-import { Component, JSXElement, type JSX } from "solid-js";
+import { Component, type JSX } from "solid-js";
 
 export type TextProps = {
 	class?: string;

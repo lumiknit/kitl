@@ -1,10 +1,10 @@
 import { type Component } from "solid-js";
 
-import { Localed, s } from "./locales";
+import { Localed, } from "./locales";
 
 import "./block";
-import { default as ToastContainer, toast } from "./block/ToastContainer";
-import { Node, NodeType, Nodes } from "@/common";
+import { default as ToastContainer } from "./block/ToastContainer";
+import { NodeType, Nodes } from "@/common";
 import { Hrm } from "@/hrm";
 
 const App: Component = () => {

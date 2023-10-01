@@ -3,7 +3,7 @@ let strings: Map<string, string> = new Map();
 
 export const getLocale = () => locale;
 
-const objToFlatMap = (dst: Map<string, string>, prefix: string, obj: any) => {
+const objToFlatMap = (dst: Map<string, string>, prefix: string, obj: {[key: string]: any}) => {
 	for (const key in obj) {
 		const val = obj[key];
 		const newKey = prefix ? `${prefix}.${key}` : key;
@@ -22,7 +22,7 @@ export const loadStrings = async (l?: string) => {
 				const data = await import(`./strings/${lang}.json`);
 				const map = new Map();
 				objToFlatMap(map, "", data);
-				locale = locale;
+				locale = lang;
 				strings = map;
 				return true;
 			} catch (e) {

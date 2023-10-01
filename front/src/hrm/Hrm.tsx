@@ -1,4 +1,4 @@
-import { Component, createEffect } from "solid-js";
+import { Component } from "solid-js";
 
 import { toast } from "@/block/ToastContainer";
 import { Nodes as CNodes } from "@/common";
@@ -27,11 +27,11 @@ const Hrm: Component<HrmProps> = props => {
 		<div ref={g.rootRef} class="hrm-container">
 			<HrmPane
 				g={g}
-				onClick={e => g.deselectAll()}
+				onClick={() => g.deselectAll()}
 				onDoubleClick={e => {
 					toast("[Hrm] Double click " + e.pointers);
 				}}
-				onLongPress={e => {
+				onLongPress={() => {
 					toast("[Hrm] Long press");
 				}}>
 				<HrmNodes g={g} />

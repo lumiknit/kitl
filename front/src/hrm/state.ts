@@ -1,4 +1,4 @@
-import { batch, createSignal, untrack } from "solid-js";
+import { createSignal, untrack } from "solid-js";
 import {
 	NodeID,
 	Nodes as CNodes,
@@ -140,13 +140,13 @@ export class State {
 	}
 
 	selectAll() {
-		for (const [_, node] of this.nodes()) {
+		for (const [, node] of this.nodes()) {
 			node[1](n => (n.selected ? n : { ...n, selected: true }));
 		}
 	}
 
 	deselectAll() {
-		for (const [_, node] of this.nodes()) {
+		for (const [, node] of this.nodes()) {
 			node[1](n => (n.selected ? { ...n, selected: false } : n));
 		}
 	}

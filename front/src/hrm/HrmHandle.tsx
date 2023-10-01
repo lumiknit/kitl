@@ -73,10 +73,10 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 				onDrag: e => {
 					props.g.updateEdgeEnd(props.g.viewPos(e.x, e.y)!);
 				},
-				onRelease: e => {
+				onRelease: () => {
 					props.g.resetEditingEdge();
 				},
-				onDoubleClick: e => {
+				onDoubleClick: () => {
 					props.g.deleteEdge(props.nodeID, props.handleID);
 				},
 			},

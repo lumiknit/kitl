@@ -29,7 +29,7 @@ const DropdownButton: Component<DropdownButtonProps> = props => {
 					setVisible(false);
 				}}>
 				<For each={props.list}>
-					{(item, index) => (
+					{(item) => (
 						<>
 							<Show when={item.length > 0}>
 								<hr />

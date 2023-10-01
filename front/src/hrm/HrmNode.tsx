@@ -65,7 +65,7 @@ const HrmNode = (props: HrmNodeProps) => {
 						props.g.transform[0]().z,
 					);
 				},
-				onRelease: e => {
+				onRelease: () => {
 					props.g.resetEditingEdge();
 				},
 			},
@@ -91,7 +91,7 @@ const HrmNode = (props: HrmNodeProps) => {
 					const p = props.g.viewPos(e.x, e.y);
 					if (p) props.g.updateEdgeEnd(p);
 				},
-				onRelease: e => {
+				onRelease: () => {
 					props.g.resetEditingEdge();
 				},
 			},

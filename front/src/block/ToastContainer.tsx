@@ -17,7 +17,7 @@ export type ToastOptions = {
 
 export type ToastCreationFn = (message: string, options?: ToastOptions) => void;
 
-let globalToastCreation: Wrap<ToastCreationFn> = [ef];
+const globalToastCreation: Wrap<ToastCreationFn> = [ef];
 export const toast = (message: string, options?: ToastOptions) => {
 	globalToastCreation[0](message, options);
 };
