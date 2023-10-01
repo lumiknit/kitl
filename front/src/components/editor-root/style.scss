@@ -1,0 +1,28 @@
+.editor-root {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100dvw;
+	height: 100dvh;
+}
+
+.editor-root-hrm {
+	top: 0;
+	left: 0;
+	width: 100dvw;
+	height: 100dvh;
+}
+
+// Header
+
+.editor-root-hrm-header-wrapper {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+}
+
+.editor-root-hrm-header {
+	margin: 0.5rem;
+	z-index: 9;
+}

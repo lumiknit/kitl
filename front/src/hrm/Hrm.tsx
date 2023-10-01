@@ -1,7 +1,7 @@
 import { Component } from "solid-js";
 
 import { toast } from "@/block/ToastContainer";
-import { Nodes as CNodes } from "@/common";
+import { Box, Nodes as CNodes } from "@/common";
 
 import { Nodes } from "./data";
 import HrmPane from "./HrmPane";
@@ -14,7 +14,8 @@ import "./HrmColors.scss";
 import HrmEditingEdge from "./HrmEditingEdge";
 
 export type HrmProps = {
-	initialNodes: CNodes;
+	initialNodes?: CNodes;
+	stateBox?: Box<State>;
 };
 
 export type HrmState = {
@@ -23,13 +24,17 @@ export type HrmState = {
 
 const Hrm: Component<HrmProps> = props => {
 	const g = new State(props.initialNodes);
+	if (props.stateBox) {
+		props.stateBox[0] = g;
+	}
 	return (
 		<div ref={g.rootRef} class="hrm-container">
 			<HrmPane
 				g={g}
 				onClick={() => g.deselectAll()}
 				onDoubleClick={e => {
-					toast("[Hrm] Double click " + e.pointers);
+					const p = g.viewPos(e.x, e.y);
+					g.addEmptyNode(p);
 				}}
 				onLongPress={() => {
 					toast("[Hrm] Long press");

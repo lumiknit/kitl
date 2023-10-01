@@ -114,7 +114,7 @@ const sourceToSinkHandle = (name: string, source?: Source): VWrap<Handle> =>
 		},
 	});
 
-export const thawHandles = (node: CNode): Handles => {
+const thawHandles = (node: CNode): Handles => {
 	let lhs = 0,
 		result: any;
 	switch (node.x.type) {
@@ -160,22 +160,23 @@ export const thawHandles = (node: CNode): Handles => {
 	return result;
 };
 
+export const thawNode = (node: CNode): VWrap<Node> =>
+	createSignal({
+		color: randomColor(),
+		data: node.x,
+		handles: thawHandles(node),
+		position: node.pos,
+		size: {
+			w: 0,
+			h: 0,
+		},
+		selected: false,
+	});
+
 export const thawNodes = (nodes: CNodes): Nodes => {
 	const result: Nodes = new Map();
 	for (const node of nodes) {
-		const thawed: Node = {
-			color: randomColor(),
-			data: node.x,
-			handles: thawHandles(node),
-			position: node.pos,
-			size: {
-				w: 0,
-				h: 0,
-			},
-			selected: false,
-		};
-		const signal: VWrap<Node> = createSignal(thawed);
-		result.set(node.id, signal);
+		result.set(node.id, thawNode(node));
 	}
 	return result;
 };

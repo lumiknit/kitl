@@ -7,11 +7,6 @@ body {
 	background-color: #f00;
 }
 
-.kitl-editor {
-	background-color: #fff;
-	position: absolute;
-	left: 0dvw;
-	top: 0dvh;
-	height: 100dvh;
-	width: 100dvw;
+svg.icon {
+	vertical-align: sub;
 }

@@ -6,7 +6,7 @@ import {
 	createSignal,
 } from "solid-js";
 
-import { TbZoomIn, TbZoomOut, TbZoomReset } from "solid-icons/tb";
+import { TbZoomIn, TbZoomInArea, TbZoomOut, TbZoomReset } from "solid-icons/tb";
 
 import "./HrmPane.scss";
 import { Transform } from "./data";
@@ -73,10 +73,44 @@ const HrmPane: Component<HrmPaneProps> = props => {
 	type Control =
 		| [JSXElement, () => any]
 		| [JSXElement, () => any, HTMLButtonElement | undefined];
+	const dz = 1.1;
 	const controls: Control[] = [
-		[<TbZoomIn />, () => tr(0, 0, 1.1)],
-		[<TbZoomOut />, () => tr(0, 0, 1 / 1.1)],
-		[<TbZoomReset />, () => setT(s => ({ ...s, z: 1 }))],
+		[
+			<TbZoomIn />,
+			() =>
+				tr(
+					((paneRef?.offsetWidth ?? 0) * (1 - dz)) / 2,
+					((paneRef?.offsetHeight ?? 0) * (1 - dz)) / 2,
+					dz,
+				),
+		],
+		[
+			<TbZoomOut />,
+			() =>
+				tr(
+					((paneRef?.offsetWidth ?? 0) * (1 - 1 / dz)) / 2,
+					((paneRef?.offsetHeight ?? 0) * (1 - 1 / dz)) / 2,
+					1 / dz,
+				),
+		],
+		[<TbZoomReset />, () => setT(() => ({ x: 0, y: 0, z: 1 }))],
+		[
+			<TbZoomInArea />,
+			() => {
+				const rect = props.g.usedRect();
+				console.log(rect);
+				const paneSize = props.g.size();
+				if (!rect || !paneSize) return;
+				rect.w = Math.max(rect.w, 1);
+				rect.h = Math.max(rect.h, 1);
+				const zoomX = paneSize.w / rect.w,
+					zoomY = paneSize.h / rect.h,
+					z = Math.min(zoomX, zoomY);
+				const x = -rect.x * z + (paneSize.w - rect.w * z) / 2,
+					y = -rect.y * z + (paneSize.h - rect.h * z) / 2;
+				setT({ x, y, z });
+			},
+		],
 	];
 
 	createEffect(() => {
@@ -113,7 +147,7 @@ const HrmPane: Component<HrmPaneProps> = props => {
 			<div class="hrm-pane-controls">
 				<For each={controls}>
 					{c => (
-						<button ref={c[2]} onClick={c[1]}>
+						<button ref={c[2]} onPointerDown={c[1]}>
 							{c[0]}
 						</button>
 					)}

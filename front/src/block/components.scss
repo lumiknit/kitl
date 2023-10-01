@@ -22,7 +22,6 @@ $ui-border-radius: 0.25rem;
 
 /* Dropdown */
 .dropdown {
-	position: relative;
 	display: inline-block;
 }
 
@@ -37,10 +36,13 @@ $ui-border-radius: 0.25rem;
 
 .dropdown-menu > a {
 	color: rgba(var(--rgb-fg), 1);
-	padding: 0.5rem;
+	padding: 0.5rem 0.8rem;
 	text-decoration: none;
 	display: block;
 	border-radius: $ui-border-radius;
+	user-select: none;
+	-webkit-user-select: none;
+	cursor: pointer;
 }
 
 .dropdown-menu > a:active {

@@ -55,7 +55,7 @@ const HrmNode = (props: HrmNodeProps) => {
 		addEventListeners(
 			{
 				onClick: () => {
-					props.g.toggleNodeOne(props.id);
+					props.g.selectOneNode(props.id);
 				},
 				onDrag: e => {
 					props.g.translateSelectedNodes(

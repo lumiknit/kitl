@@ -6,10 +6,4 @@ export enum Color {
 	success = "success",
 	danger = "danger",
 	warning = "warning",
-
-	beta = "beta",
-	delta = "delta",
-	lambda = "lambda",
-	literal = "literal",
-	comment = "comment",
 }

@@ -1,6 +1,7 @@
 import { createSignal, untrack } from "solid-js";
 import {
 	NodeID,
+	Node as CNode,
 	Nodes as CNodes,
 	VWrap,
 	Rect,
@@ -8,6 +9,10 @@ import {
 	Position,
 	origin,
 	ROOT_NODES,
+	NodeType,
+	genID,
+	BetaNodeData,
+	Size,
 } from "@/common";
 import {
 	EditingEdge,
@@ -15,27 +20,39 @@ import {
 	Nodes,
 	Transform,
 	freezeNodes,
+	thawNode,
 	thawNodes,
 } from "./data";
 
 /* State */
 
 export class State {
-	rootRef?: HTMLDivElement;
-	viewRef?: HTMLDivElement;
-
-	editingEdge: VWrap<EditingEdge>;
-
+	// Graph data
 	nodes: () => Nodes;
 	setNodes: (a: Nodes | ((ns: Nodes) => Nodes)) => void;
 
+	// View data
 	transform: VWrap<Transform>;
 
+	// References
+	rootRef?: HTMLDivElement;
+	viewRef?: HTMLDivElement;
+
+	// Editing Edge
+	editingEdge: VWrap<EditingEdge>;
+
+	// Undo/redo history
 	history: CNodes[];
 	historyIndex: number;
 
-	constructor(initialNodes: CNodes) {
-		const [nodes, setNodes] = createSignal<Nodes>(thawNodes(initialNodes));
+	// Mode
+	selectMode: boolean = false;
+
+	constructor(initialNodes?: CNodes) {
+		if (!initialNodes) initialNodes = [];
+		const [nodes, setNodes] = createSignal<Nodes>(thawNodes(initialNodes), {
+			equals: false,
+		});
 		this.nodes = nodes;
 		this.setNodes = setNodes;
 		this.editingEdge = createSignal({ end: origin });
@@ -69,21 +86,26 @@ export class State {
 
 	undo() {
 		if (this.historyIndex > 0) {
-			this.historyIndex--;
-			this.thaw(this.history[this.historyIndex]);
+			this.setNodes(thawNodes(this.history[--this.historyIndex]));
 		}
 	}
 
 	redo() {
 		if (this.historyIndex < this.history.length - 1) {
-			this.historyIndex++;
-			this.thaw(this.history[this.historyIndex]);
+			this.setNodes(thawNodes(this.history[++this.historyIndex]));
 		}
 	}
 
 	// View & Transforms
 
+	size(): Size | undefined {
+		if (!this.rootRef) return;
+		const rect = this.rootRef.getBoundingClientRect();
+		return { w: rect.width, h: rect.height };
+	}
+
 	viewPos(x: number, y: number): Position | undefined {
+		// Client position to graph position
 		if (!this.viewRef) return;
 		const rootRect = this.viewRef!.getBoundingClientRect();
 		const t = untrack(this.transform[0]);
@@ -106,6 +128,29 @@ export class State {
 		};
 	}
 
+	// Range
+
+	usedRect(): Rect {
+		// Return the smallest rect that contains all nodes
+		const r = { x: 0, y: 0, w: 0, h: 0 };
+		for (const [, node] of this.nodes()) {
+			const n = node[0]();
+			const pos = n.position;
+			const size = n.size;
+			if (r.x > pos.x) {
+				r.w += r.x - pos.x;
+				r.x = pos.x;
+			}
+			if (r.y > pos.y) {
+				r.h += r.y - pos.y;
+				r.y = pos.y;
+			}
+			r.w = Math.max(r.w, pos.x + size.w - r.x);
+			r.h = Math.max(r.h, pos.y + size.h - r.y);
+		}
+		return r;
+	}
+
 	// Node / Handle Getter
 
 	ref(id: NodeID, handle?: HandleID) {
@@ -120,6 +165,39 @@ export class State {
 
 	viewRectOf(id: NodeID, handle?: HandleID): Rect | undefined {
 		return this.viewRect(this.ref(id, handle));
+	}
+
+	// Add
+
+	addEmptyNode(pos?: Position) {
+		if (!pos) {
+			const t = this.transform[0]();
+			const rootRef = this.rootRef;
+			if (!rootRef) {
+				pos = { x: 0, y: 0 };
+			} else {
+				// Find center
+				const rect = rootRef.getBoundingClientRect();
+				pos = {
+					x: (rect.width / 2 - t.x) / t.z,
+					y: (rect.height / 2 - t.y) / t.z,
+				};
+			}
+		}
+		const x: BetaNodeData = {
+			type: NodeType.Beta,
+			args: [],
+		};
+		const emptyNode: CNode = {
+			id: genID(),
+			pos,
+			x,
+		};
+		this.setNodes(ns => {
+			ns.set(emptyNode.id, thawNode(emptyNode));
+			return ns;
+		});
+		this.saveHistory();
 	}
 
 	// Selected Nodes
@@ -151,10 +229,15 @@ export class State {
 		}
 	}
 
-	toggleNodeOne(id: NodeID) {
+	selectOneNode(id: NodeID) {
 		// Check is selected
 		for (const [nid, node] of this.nodes()) {
-			if (nid !== id) {
+			if (nid === id) {
+				node[1](n => ({
+					...n,
+					selected: !n.selected,
+				}));
+			} else if (!this.selectMode) {
 				node[1](n =>
 					n.selected
 						? {
@@ -163,16 +246,49 @@ export class State {
 						  }
 						: n,
 				);
-			} else {
-				node[1](n => ({
-					...n,
-					selected: !n.selected,
-				}));
 			}
 		}
 	}
 
 	// Deletion
+
+	deleteSelectedNodes() {
+		this.setNodes(ns => {
+			// Find delete nodes
+			const toDelete = new Set<NodeID>();
+			for (const [id, node] of ns) {
+				const n = node[0]();
+				if (n.selected && !ROOT_NODES.has(n.data.type)) {
+					toDelete.add(id);
+				}
+			}
+			for (const [id, node] of ns) {
+				if (toDelete.has(id)) {
+					ns.delete(id);
+				} else {
+					// Delete edges to deleted nodes
+					const n = node[0]();
+					const handles = n.handles;
+					for (const [, update] of handles) {
+						update(h => {
+							if (h.data.type === HandleType.Sink) {
+								const sourceID = h.data.sourceID;
+								if (sourceID && toDelete.has(sourceID)) {
+									return {
+										...h,
+										data: { type: HandleType.Sink },
+									};
+								}
+							}
+							return h;
+						});
+					}
+				}
+			}
+			return ns;
+		});
+		this.saveHistory();
+	}
 
 	deleteEdge(id: NodeID, handle: HandleID) {
 		console.log("deleteEdge", id, handle);
@@ -264,6 +380,7 @@ export class State {
 				  },
 		);
 		this.resetEditingEdge();
+		this.saveHistory();
 	}
 
 	updateEdgeEnd(end: Position) {

@@ -92,3 +92,14 @@ export type Node = {
 };
 
 export type Nodes = Node[];
+
+export const emptyGraph = (): Nodes => [
+	{
+		id: "#def",
+		pos: { x: 0, y: 0 },
+		x: {
+			type: NodeType.Delta,
+			comment: "",
+		},
+	},
+];
