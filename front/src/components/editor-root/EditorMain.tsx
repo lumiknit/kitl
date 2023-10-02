@@ -11,7 +11,7 @@ const MainEditor: Component = () => {
 	return (
 		<div class="editor-root">
 			<HrmEditor stateBox={state} />
-			<div class="editor-root-hrm-header-wrapper">
+			<div class="w-100 abs-lt">
 				<EditorHrmHeader stateBox={state} />
 			</div>
 		</div>

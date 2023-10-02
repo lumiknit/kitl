@@ -28,7 +28,7 @@ const Hrm: Component<HrmProps> = props => {
 		props.stateBox[0] = g;
 	}
 	return (
-		<div ref={g.rootRef} class="hrm-container">
+		<div ref={g.rootRef} class="hrm-container w-100 h-100">
 			<HrmPane
 				g={g}
 				onClick={() => g.deselectAll()}

@@ -1,6 +1,9 @@
 $node-color-fg: #000;
 $node-color-bg: #fff;
 $node-color-empty: #bbb;
+$node-color-comment: #548154;
+$node-color-select: #0095ff;
+$node-color-connect: #c21717;
 $node-colors: (
 	(#f38fb4, #fff),
 	(#f89ba1, #fff),
@@ -46,4 +49,11 @@ $node-colors: (
 
 .hrm-c-stroke-empty {
 	stroke: $node-color-empty;
+}
+
+:root {
+	--hrm-c-empty: #{$node-color-empty};
+	--hrm-c-comment: #{$node-color-comment};
+	--hrm-c-select: #{$node-color-select};
+	--hrm-c-connect: #{$node-color-connect};
 }

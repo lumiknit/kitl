@@ -77,7 +77,7 @@
 			"validateGraph": "그래프 검사"
 		}
 	},
-	"flowEditor": {
+	"mainEditor": {
 		"menu": {
 			"addTools": "노드 추가 도구",
 			"selectTools": "선택 및 편집 도구",

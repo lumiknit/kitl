@@ -114,7 +114,7 @@ const HrmNode = (props: HrmNodeProps) => {
 	const position = () => n().position;
 	return (
 		<div
-			class={`hrm-node ${n().selected ? "selected" : ""} ${cBd(
+			class={`hrm-node abs-lt ${n().selected ? "selected" : ""} ${cBd(
 				n().color,
 			)}`}
 			ref={nodeRef}
@@ -122,7 +122,7 @@ const HrmNode = (props: HrmNodeProps) => {
 				left: `${position().x}px`,
 				top: `${position().y}px`,
 			}}>
-			<div class="hrm-node-row">
+			<div class="hrm-node-row no-user-select">
 				<For each={n().handles.slice(0, n().handles.lhs)}>
 					{hrmHandle}
 				</For>

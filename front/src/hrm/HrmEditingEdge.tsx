@@ -42,7 +42,7 @@ const HrmEditingEdge: Component<HrmEditingEdgeProps> = props => {
 	};
 	return (
 		<>
-			<svg class="hrm-edges">
+			<svg class="hrm-edges no-user-select no-pointer-events">
 				<path
 					class={`hrm-edge-path hrm-c-stroke-empty`}
 					stroke-width="3px"
@@ -50,7 +50,10 @@ const HrmEditingEdge: Component<HrmEditingEdgeProps> = props => {
 					d={path()}
 				/>
 			</svg>
-			<div class="hrm-editing-edge-handle" style={style()} />
+			<div
+				class="hrm-editing-edge-handle no-pointer-events"
+				style={style()}
+			/>
 		</>
 	);
 };

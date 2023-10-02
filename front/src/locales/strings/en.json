@@ -77,7 +77,7 @@
 			"validateGraph": "Validate Graph"
 		}
 	},
-	"flowEditor": {
+	"mainEditor": {
 		"menu": {
 			"addTools": "Add Node Tools",
 			"selectTools": "Select & Edit Tools",

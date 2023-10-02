@@ -24,14 +24,14 @@ enum ToolSet {
 	Edit,
 }
 
-const TOOL_SET_INFO = [
+const TOOL_SET_INFO = () => [
 	{
-		name: "Add",
-		icon: () => <TbSquarePlus />,
+		name: s("mainEditor.menu.addTools"),
+		icon: <TbSquarePlus />,
 	},
 	{
-		name: "Edit",
-		icon: () => <TbEdit />,
+		name: s("mainEditor.menu.selectTools"),
+		icon: <TbEdit />,
 	},
 ];
 
@@ -44,7 +44,7 @@ type EditorHrmHeaderProps = {
 };
 
 const toolSetIcon = (toolSet: ToolSet) => {
-	return TOOL_SET_INFO[toolSet].icon();
+	return TOOL_SET_INFO()[toolSet].icon;
 };
 
 const toolSet = (toolSet: ToolSet, stateBox: Box<State>) => {
@@ -115,7 +115,7 @@ const toolSet = (toolSet: ToolSet, stateBox: Box<State>) => {
 };
 
 const toolSetMenus = (g: Box<State>, setS: Updater<EditorHrmHeaderState>) => {
-	return TOOL_SET_INFO.map((info, idx) => {
+	return TOOL_SET_INFO().map((info, idx) => {
 		return (
 			<a
 				onClick={() => {
@@ -128,7 +128,7 @@ const toolSetMenus = (g: Box<State>, setS: Updater<EditorHrmHeaderState>) => {
 					}
 				}}>
 				{" "}
-				{info.icon()} {info.name}
+				{info.icon} {info.name}
 			</a>
 		);
 	});
@@ -143,16 +143,13 @@ const EditorHrmHeader: Component<EditorHrmHeaderProps> = props => {
 			toolSetMenus(props.stateBox, setState),
 			[
 				<a>
-					{" "}
-					<TbFolderSearch /> {s("")}{" "}
+					<TbFolderSearch /> {s("mainEditor.menu.browser")}
 				</a>,
 				<a>
-					{" "}
-					<TbRocket /> Launch{" "}
+					<TbRocket /> {s("mainEditor.menu.launch")}
 				</a>,
 				<a>
-					{" "}
-					<TbBinaryTree /> Graph Tools{" "}
+					<TbBinaryTree /> {s("mainEditor.menu.graphTools")}
 				</a>,
 			],
 		];

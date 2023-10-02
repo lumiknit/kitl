@@ -1,8 +1,6 @@
 div.hrm-container {
 	display: block;
 	background-color: #ffff;
-	width: 100%;
-	height: 100%;
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
@@ -11,22 +9,19 @@ div.hrm-container {
 // Node
 
 .hrm-node {
-	position: absolute;
-	left: 0;
-	top: 0;
 	width: auto;
 	min-height: 1.5rem;
 
 	display: flex;
 	padding: 0.3rem;
 
-	border: 2px solid #ddd;
+	border: 2px solid var(--hrm-c-empty);
 	border-radius: 999rem;
 	box-shadow: 0 0.125rem 0.25rem #0002;
 }
 
 .hrm-node.selected {
-	outline: 0.125rem dashed #ddd;
+	outline: 0.125rem dashed var(--hrm-c-select);
 	outline-offset: 0.25rem;
 }
 
@@ -34,12 +29,6 @@ div.hrm-container {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-
-	user-select: none;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-
 	cursor: pointer;
 }
 
@@ -94,6 +83,18 @@ div.hrm-container {
 	font-size: 0.5rem;
 }
 
+.hrm-node-comment {
+	position: absolute;
+	width: 40rem;
+	text-align: left;
+	border-left: 0.25rem solid var(--hrm-c-comment);
+	color: var(--hrm-c-comment);
+	padding: 0.25rem;
+	font-family: serif;
+	left: 0;
+	top: 110%;
+}
+
 .hrm-node-handle {
 	//background-color: #f004;
 	cursor: pointer;
@@ -108,7 +109,7 @@ div.hrm-container {
 
 .hrm-handle {
 	display: inline-block;
-	border: 2px solid #ccc;
+	border: 2px solid var(--hrm-c-empty);
 	border-radius: 999rem;
 }
 
@@ -116,11 +117,6 @@ div.hrm-container {
 
 .hrm-edges {
 	position: absolute;
-	user-select: none;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	pointer-events: none;
 	overflow: visible;
 	width: 9999rem;
 	height: 9999rem;
@@ -131,10 +127,9 @@ div.hrm-container {
 }
 
 .hrm-editing-edge-handle {
-	pointer-events: none;
 	position: absolute;
 	visibility: hidden;
-	outline: 2px dashed #f00;
+	outline: 2px dashed var(--hrm-c-connect);
 	outline-offset: 2px;
 	border-radius: 9999rem;
 }

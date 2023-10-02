@@ -1,7 +1,16 @@
-let locale: string = "";
-let strings: Map<string, string> = new Map();
+import { createSignal } from "solid-js";
 
-export const getLocale = () => locale;
+type State = {
+	locale: string;
+	strings: Map<string, string>;
+};
+
+const [state, setState] = createSignal<State>({
+	locale: "",
+	strings: new Map(),
+});
+
+export const getLocale = () => state().locale;
 
 const objToFlatMap = (
 	dst: Map<string, string>,
@@ -26,8 +35,11 @@ export const loadStrings = async (l?: string) => {
 				const data = await import(`./strings/${lang}.json`);
 				const map = new Map();
 				objToFlatMap(map, "", data);
-				locale = lang;
-				strings = map;
+				setState({
+					locale: lang,
+					strings: map,
+				});
+				console.log(map);
 				return true;
 			} catch (e) {
 				continue;
@@ -37,5 +49,5 @@ export const loadStrings = async (l?: string) => {
 };
 
 export const s = (key: string) => {
-	return strings.get(key) || key;
+	return state().strings.get(key) || key;
 };

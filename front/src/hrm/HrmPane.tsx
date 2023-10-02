@@ -143,7 +143,7 @@ const HrmPane: Component<HrmPaneProps> = props => {
 	});
 
 	return (
-		<div ref={paneRef} class="hrm-pane">
+		<div ref={paneRef} class="hrm-pane w-100 h-100">
 			<div class="hrm-pane-controls">
 				<For each={controls}>
 					{c => (

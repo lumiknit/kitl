@@ -1,5 +1,11 @@
 import { Match, Switch } from "solid-js";
-import { AlphaNodeData, Name, NodeData, NodeType } from "@/common";
+import {
+	AlphaNodeData,
+	DeltaNodeData,
+	Name,
+	NodeData,
+	NodeType,
+} from "@/common";
 import { SYM_BETA, SYM_DELTA, SYM_LAMBDA, SYM_PI } from "./data";
 
 type HrmNodeBodyProps = {
@@ -29,6 +35,9 @@ const HrmNodeBody = (props: HrmNodeBodyProps) => {
 				</Match>
 				<Match when={props.data.type === NodeType.Delta}>
 					<Mark mark={SYM_DELTA} />
+					<pre class="hrm-node-comment no-user-select no-pointer-events">
+						{(props.data as DeltaNodeData).comment}
+					</pre>
 				</Match>
 				<Match when={props.data.type === NodeType.Lambda}>
 					<Mark mark={SYM_LAMBDA} />
