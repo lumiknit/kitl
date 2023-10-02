@@ -1,4 +1,4 @@
-import { Match, Switch } from "solid-js";
+import { Match, Show, Switch } from "solid-js";
 import {
 	AlphaNodeData,
 	DeltaNodeData,
@@ -35,9 +35,11 @@ const HrmNodeBody = (props: HrmNodeBodyProps) => {
 				</Match>
 				<Match when={props.data.type === NodeType.Delta}>
 					<Mark mark={SYM_DELTA} />
-					<pre class="hrm-node-comment no-user-select no-pointer-events">
-						{(props.data as DeltaNodeData).comment}
-					</pre>
+					<Show when = {(props.data as DeltaNodeData).comment}>
+						<pre class="hrm-node-comment no-user-select no-pointer-events">
+							{(props.data as DeltaNodeData).comment}
+						</pre>
+					</Show>
 				</Match>
 				<Match when={props.data.type === NodeType.Lambda}>
 					<Mark mark={SYM_LAMBDA} />

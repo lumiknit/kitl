@@ -18,6 +18,7 @@ import {
 } from "solid-icons/tb";
 import { Component, createSignal } from "solid-js";
 import { s } from "@/locales";
+import { ModalActions } from "./Modals";
 
 enum ToolSet {
 	Add,
@@ -41,6 +42,7 @@ type EditorHrmHeaderState = {
 
 type EditorHrmHeaderProps = {
 	stateBox: Box<State>;
+	modalActionsBox: Box<ModalActions>;
 };
 
 const toolSetIcon = (toolSet: ToolSet) => {
@@ -148,7 +150,7 @@ const EditorHrmHeader: Component<EditorHrmHeaderProps> = props => {
 				<a>
 					<TbRocket /> {s("mainEditor.menu.launch")}
 				</a>,
-				<a>
+				<a onClick={() => props.modalActionsBox?.[0]?.openGraphTools()}>
 					<TbBinaryTree /> {s("mainEditor.menu.graphTools")}
 				</a>,
 			],

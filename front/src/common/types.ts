@@ -7,8 +7,12 @@ They are used to extract values from a closure or component.
 export type Wrap<T> = [T];
 export type Box<T> = Wrap<T | undefined>;
 
+export const emptyBox = <T>(): Box<T> => [undefined];
+
 export type Wrap2<S, T> = [S, T];
 export type Box2<S, T> = Wrap2<S | undefined, T | undefined>;
+
+export const emptyBox2 = <S, T>(): Box2<S, T> => [undefined, undefined];
 
 /*
 Getter & Updater are used for state management. e.g. createSignal

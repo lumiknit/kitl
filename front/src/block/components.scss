@@ -29,6 +29,7 @@ $ui-border-radius: 0.25rem;
 	position: absolute;
 	min-width: 10rem;
 	z-index: 10;
+	padding: 0.25rem;
 	background-color: rgba(var(--rgb-bg-hard), 1);
 	border-radius: $ui-border-radius;
 	box-shadow: 0 0.25rem 0.5rem rgba(var(--rgb-black), 0.25);
@@ -36,7 +37,7 @@ $ui-border-radius: 0.25rem;
 
 .dropdown-menu > a {
 	color: rgba(var(--rgb-fg), 1);
-	padding: 0.5rem 0.8rem;
+	padding: 0.5rem;
 	text-decoration: none;
 	display: block;
 	border-radius: $ui-border-radius;
@@ -45,13 +46,17 @@ $ui-border-radius: 0.25rem;
 	cursor: pointer;
 }
 
+.dropdown-menu > a:hover {
+	background-color: rgba(var(--rgb-primary), 0.25);
+}
+
 .dropdown-menu > a:active {
-	background-color: rgba(var(--rgb-bg), 1);
+	background-color: rgba(var(--rgb-fg), 0.25);
 }
 
 .dropdown-menu > hr {
 	border-color: rgba(var(--rgb-fg), 0.125);
-	margin: 0;
+	margin: 1px 0;
 }
 
 /* Input */
@@ -76,6 +81,11 @@ $ui-border-radius: 0.25rem;
 .form-control[type="password"]:focus,
 .form-control[type="number"]:focus {
 	outline: 0.125rem solid rgba(var(--rgb-primary), 0.5);
+}
+
+input.form-control[type="text"]:disabled {
+	color: rgba(var(--rgb-fg), 1);
+	background-color: rgba(var(--rgb-bg), 1);
 }
 
 .checkbox > input {
@@ -113,7 +123,7 @@ $ui-border-radius: 0.25rem;
 
 .toast-container {
 	z-index: 100000;
-	position: fixed;
+	position: fixe d;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;

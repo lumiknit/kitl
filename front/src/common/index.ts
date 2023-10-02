@@ -4,4 +4,4 @@ export * from "./json";
 export * from "./key";
 export * from "./math";
 export * from "./node";
-export type * from "./types";
+export * from "./types";
