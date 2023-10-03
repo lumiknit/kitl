@@ -20,11 +20,7 @@ const GraphToolsModal: Component<GraphToolsModalProps> = props => {
 				<InputLabel color={Color.primary}>
 					<TbBinaryTree />
 				</InputLabel>
-				<InputText
-					class="flex-1"
-					disabled={true}
-					value="Graph Tools"
-				/>
+				<InputText class="flex-1" disabled={true} value="Graph Tools" />
 				<Button color={Color.danger} onClick={props.onClose}>
 					<TbX />
 				</Button>
@@ -32,16 +28,28 @@ const GraphToolsModal: Component<GraphToolsModalProps> = props => {
 			{/* Body */}
 
 			<h3> {s("graphTools.layout")} </h3>
-			<Button color={Color.primary}> {s("graphTools.tool.layoutDefault")} </Button>
-			<Button color={Color.secondary}> {s("graphTools.tool.layoutLinear")} </Button>
+			<Button color={Color.primary}>
+				{" "}
+				{s("graphTools.tool.layoutDefault")}{" "}
+			</Button>
+			<Button color={Color.secondary}>
+				{" "}
+				{s("graphTools.tool.layoutLinear")}{" "}
+			</Button>
 
 			<h3> {s("graphTools.optimization")} </h3>
-			<Button color={Color.warning}> {s("graphTools.tool.selectUnreachables")} </Button>
+			<Button color={Color.warning}>
+				{" "}
+				{s("graphTools.tool.selectUnreachables")}{" "}
+			</Button>
 
 			<h3> {s("graphTools.validate")} </h3>
-			<Button color={Color.danger}> {s("graphTools.tool.validateGraph")} </Button>
+			<Button color={Color.danger}>
+				{" "}
+				{s("graphTools.tool.validateGraph")}{" "}
+			</Button>
 		</Modal>
-	)
+	);
 };
 
 export default GraphToolsModal;

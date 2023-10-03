@@ -19,6 +19,7 @@ import {
 	HandleType,
 	Nodes,
 	Transform,
+	freezeNode,
 	freezeNodes,
 	thawNode,
 	thawNodes,
@@ -38,6 +39,9 @@ export class State {
 	rootRef?: HTMLDivElement;
 	viewRef?: HTMLDivElement;
 
+	// Editing Node
+	editingNode: VWrap<CNode | undefined>;
+
 	// Editing Edge
 	editingEdge: VWrap<EditingEdge>;
 
@@ -55,6 +59,7 @@ export class State {
 		});
 		this.nodes = nodes;
 		this.setNodes = setNodes;
+		this.editingNode = createSignal();
 		this.editingEdge = createSignal({ end: origin });
 		this.transform = [() => ({ x: 0, y: 0, z: 1 }), () => {}];
 		// History
@@ -419,6 +424,15 @@ export class State {
 				handleID: handle,
 				end: pos ?? origin,
 			});
+		}
+	}
+
+	// Edit Node
+	editNode(id: NodeID) {
+		// Find node
+		const node = this.nodes().get(id);
+		if (node) {
+			this.editingNode[1](freezeNode(id, node[0]()));
 		}
 	}
 }

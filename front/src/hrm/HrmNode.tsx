@@ -68,6 +68,9 @@ const HrmNode = (props: HrmNodeProps) => {
 				onRelease: () => {
 					props.g.resetEditingEdge();
 				},
+				onDoubleClick: () => {
+					props.g.editNode(props.id);
+				},
 			},
 			nodeRef,
 		);

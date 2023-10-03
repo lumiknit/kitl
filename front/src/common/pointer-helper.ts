@@ -100,15 +100,17 @@ type State = {
 
 /* Functions */
 
-let idCounter = 0;
 const mapID = (s: State, id: PointerID): PointerID => {
-	let v = s.t.get(id);
-	if (v === undefined) {
-		idCounter = (idCounter + 1) % 0x7fffffff;
-		s.t.set(id, idCounter);
-		v = idCounter;
+	const v = s.t.get(id);
+	if (v !== undefined) return v;
+	// From 0 find smallest unused number
+	const ids = new Set(s.t.values());
+	for (let i = 0; ; i++) {
+		if (!ids.has(i)) {
+			s.t.set(id, i);
+			return i;
+		}
 	}
-	return v;
 };
 
 export const addEventListeners = (handles: Handlers, el: Element) => {

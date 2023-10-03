@@ -20,10 +20,7 @@ const MainEditor: Component = () => {
 					modalActionsBox={modalActionsBox}
 				/>
 			</div>
-			<Modals
-				actionsBox={modalActionsBox}
-				stateBox={state}
-			/>
+			<Modals actionsBox={modalActionsBox} stateBox={state} />
 		</div>
 	);
 };

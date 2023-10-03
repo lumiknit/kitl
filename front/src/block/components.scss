@@ -69,6 +69,7 @@ $ui-border-radius: 0.25rem;
 	padding: 0.5rem;
 }
 
+.code-area > textarea.form-control,
 .form-control[type="text"],
 .form-control[type="password"],
 .form-control[type="number"] {
@@ -77,15 +78,30 @@ $ui-border-radius: 0.25rem;
 	padding: 0.5rem;
 }
 
+.code-area > textarea.form-control:focus,
 .form-control[type="text"]:focus,
 .form-control[type="password"]:focus,
 .form-control[type="number"]:focus {
 	outline: 0.125rem solid rgba(var(--rgb-primary), 0.5);
 }
 
+.code-area > textarea.form-control:disabled,
 input.form-control[type="text"]:disabled {
 	color: rgba(var(--rgb-fg), 1);
 	background-color: rgba(var(--rgb-bg), 1);
+}
+
+.code-area > textarea {
+	font-family: monospace;
+	resize: both;
+	width: 25rem;
+}
+
+.code-area > textarea.code-area-hidden {
+	visibility: hidden;
+	height: 1px;
+	margin: 0;
+	padding: 0;
 }
 
 .checkbox > input {

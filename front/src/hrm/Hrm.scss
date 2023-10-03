@@ -133,3 +133,16 @@ div.hrm-container {
 	outline-offset: 2px;
 	border-radius: 9999rem;
 }
+
+// Node Editor
+
+.hrm-edit-overlay {
+	position: absolute;
+	z-index: 1;
+	top: 0;
+	left: 0;
+}
+
+.hrm-edit-overlay .edit {
+	border: 1px solid black;
+}

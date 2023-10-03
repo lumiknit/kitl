@@ -35,7 +35,7 @@ const HrmNodeBody = (props: HrmNodeBodyProps) => {
 				</Match>
 				<Match when={props.data.type === NodeType.Delta}>
 					<Mark mark={SYM_DELTA} />
-					<Show when = {(props.data as DeltaNodeData).comment}>
+					<Show when={(props.data as DeltaNodeData).comment}>
 						<pre class="hrm-node-comment no-user-select no-pointer-events">
 							{(props.data as DeltaNodeData).comment}
 						</pre>

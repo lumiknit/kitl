@@ -12,6 +12,7 @@ import { State } from "./state";
 import "./Hrm.scss";
 import "./HrmColors.scss";
 import HrmEditingEdge from "./HrmEditingEdge";
+import HrmEditOverlay from "./HrmEditOverlay";
 
 export type HrmProps = {
 	initialNodes?: CNodes;
@@ -41,6 +42,7 @@ const Hrm: Component<HrmProps> = props => {
 				}}>
 				<HrmNodes g={g} />
 				<HrmEditingEdge g={g} />
+				<HrmEditOverlay g={g} />
 			</HrmPane>
 		</div>
 	);

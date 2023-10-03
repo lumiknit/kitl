@@ -241,15 +241,16 @@ const freezeNodeData = (node: Node): NodeData => {
 	}
 };
 
+export const freezeNode = (id: NodeID, node: Node): CNode => ({
+	id,
+	pos: node.position,
+	x: freezeNodeData(node),
+});
+
 export const freezeNodes = (nodes: Nodes): CNodes => {
 	const result: CNodes = [];
 	for (const [id, n] of nodes.entries()) {
-		const node = n[0]();
-		result.push({
-			id: id,
-			pos: node.position,
-			x: freezeNodeData(node),
-		});
+		result.push(freezeNode(id, n[0]()));
 	}
 	return result;
 };
