@@ -149,7 +149,7 @@ const thawHandles = (node: CNode): Handles => {
 				sourceToSinkHandle(SYM_FALLBACK, node.x.fallback),
 				sourceHandle(SYM_ARG),
 			];
-			for (let i = 0; i < node.x.args; i++) {
+			for (let i = 0; i < node.x.elems; i++) {
 				result.push(sourceHandle(String(i + 1)));
 			}
 			result.push(sourceToSinkHandle(SYM_RET, node.x.ret));
@@ -234,7 +234,7 @@ const freezeNodeData = (node: Node): NodeData => {
 			return {
 				type: NodeType.Pi,
 				name: node.data.name,
-				args: node.data.args,
+				elems: node.data.elems,
 				fallback: f(0),
 				ret: f(node.handles.length - 1),
 			};

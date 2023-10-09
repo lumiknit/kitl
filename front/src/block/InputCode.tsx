@@ -1,4 +1,4 @@
-import { Component, type JSX } from "solid-js";
+import { Component, Ref, type JSX } from "solid-js";
 
 const indentTextareaContent = (content: string, start: number, end: number) => {
 	// Indent selection and return new value and range
@@ -55,13 +55,13 @@ export type CodeProps = {
 	disabled?: boolean;
 	placeholder?: string;
 	value?: string;
+	ref?: Ref<HTMLTextAreaElement>;
 
 	onChange?: JSX.ChangeEventHandler<HTMLTextAreaElement, Event>;
 	onKeyDown?: JSX.EventHandler<HTMLTextAreaElement, KeyboardEvent>;
 };
 
 const InputCode: Component<CodeProps> = props => {
-	let ref: HTMLTextAreaElement | undefined;
 	let hiddenRef: HTMLTextAreaElement | undefined;
 
 	const resizeTextarea = (textarea: HTMLTextAreaElement) => {
@@ -150,7 +150,7 @@ const InputCode: Component<CodeProps> = props => {
 	return (
 		<div class="code-area">
 			<textarea
-				ref={ref}
+				ref={props.ref}
 				autofocus={props.autofocus}
 				disabled={props.disabled}
 				class={`form-control ${props.class ?? ""}`}

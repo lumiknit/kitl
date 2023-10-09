@@ -15,7 +15,9 @@ type HrmNodeBodyProps = {
 const HrmName = (props: { name: Name }) => (
 	<div class="hrm-node-name">
 		<div class="hrm-node-name-name">{props.name.name}</div>
-		<div class="hrm-node-name-module">{"@" + props.name.module}</div>
+		<Show when={props.name.module}>
+			<div class="hrm-node-name-module">{"@" + props.name.module}</div>
+		</Show>
 	</div>
 );
 
@@ -28,7 +30,9 @@ const HrmNodeBody = (props: HrmNodeBodyProps) => {
 		<div class="hrm-node-item hrm-node-body">
 			<Switch>
 				<Match when={props.data.type === NodeType.Alpha}>
-					{JSON.stringify((props.data as AlphaNodeData).val)}
+					<div class="hrm-node-json">
+						{JSON.stringify((props.data as AlphaNodeData).val)}
+					</div>
 				</Match>
 				<Match when={props.data.type === NodeType.Beta}>
 					<Mark mark={SYM_BETA} />

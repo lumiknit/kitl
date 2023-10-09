@@ -1,4 +1,4 @@
-import { createSignal, untrack } from "solid-js";
+import { batch, createSignal, untrack } from "solid-js";
 import {
 	NodeID,
 	Node as CNode,
@@ -13,11 +13,13 @@ import {
 	genID,
 	BetaNodeData,
 	Size,
+	parseNodeData,
 } from "@/common";
 import {
 	EditingEdge,
 	HandleType,
 	Nodes,
+	SinkHandleData,
 	Transform,
 	freezeNode,
 	freezeNodes,
@@ -434,5 +436,55 @@ export class State {
 		if (node) {
 			this.editingNode[1](freezeNode(id, node[0]()));
 		}
+	}
+
+	applyEditNode(s: string) {
+		batch(() => {
+			// Convert string to node
+			const editing = this.editingNode[0]();
+			if (!editing) return;
+			const id = editing?.id;
+			const data = parseNodeData(s);
+			const newNode: CNode = {
+				...editing,
+				x: data,
+			};
+			const thawed = thawNode(newNode);
+			// Get original node
+			const oldNode = this.nodes().get(id);
+			// Transfer original edges
+			const oldHandles = oldNode ? oldNode[0]().handles : [];
+			const newHandles = thawed[0]().handles;
+			for (let i = 0; i < newHandles.length; i++) {
+				console.log("Update", i, newHandles[i]);
+				const oldHandle = oldHandles[i];
+				newHandles[i][1](h => {
+					if (h.data.type !== HandleType.Sink) return h;
+					const data: SinkHandleData = { type: HandleType.Sink };
+					if (oldHandle) {
+						// Try to get original edge
+						const oldEdge = oldHandle[0]().data;
+						if (oldEdge.type === HandleType.Sink) {
+							data.sourceID = oldEdge.sourceID;
+							data.sourceHandle = oldEdge.sourceHandle;
+						}
+					}
+					// Otherwise, remove edge
+					return {
+						...h,
+						data,
+					};
+				});
+			}
+			this.setNodes(ns => {
+				ns.set(id, thawed);
+				return ns;
+			});
+			this.editingNode[1](undefined);
+		});
+	}
+
+	cancelEditNode() {
+		this.editingNode[1](undefined);
 	}
 }

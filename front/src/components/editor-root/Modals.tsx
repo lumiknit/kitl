@@ -2,11 +2,9 @@ import { Component, Match, Switch, createSignal } from "solid-js";
 import { Box, Getter, Updater } from "@/common";
 import GraphToolsModal from "./GraphToolsModal";
 import { State } from "@/hrm";
-import NodeEditorModal from "../node-editor/NodeEditorModal";
 
 enum ModalType {
 	None,
-	NodeEditor,
 	Browser,
 	Launch,
 	GraphTools,
@@ -36,13 +34,6 @@ export class ModalActions {
 		}));
 	}
 
-	openNodeEditor() {
-		this.setState(s => ({
-			...s,
-			type: ModalType.NodeEditor,
-		}));
-	}
-
 	openGraphTools() {
 		this.setState(s => ({
 			...s,
@@ -64,9 +55,6 @@ const Modals: Component<ModalsProps> = props => {
 
 	return (
 		<Switch>
-			<Match when={actions.state().type === ModalType.NodeEditor}>
-				<NodeEditorModal onClose={() => actions.close()} />
-			</Match>
 			<Match when={actions.state().type === ModalType.GraphTools}>
 				<GraphToolsModal
 					onClose={() => actions.close()}

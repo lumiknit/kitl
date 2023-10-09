@@ -1,9 +1,35 @@
-import { Component, Show, createEffect } from "solid-js";
+import { Component, For, Show, createEffect } from "solid-js";
 import { State } from "./state";
-import { Node } from "@/common";
+import { Node, stringifyNodeData } from "@/common";
 import { Button, Color, InputGroup } from "@/block";
 import InputCode from "@/block/InputCode";
-import { TbDots, TbSquareCheck, TbTrash } from "solid-icons/tb";
+import { TbSquareCheck, TbTrash } from "solid-icons/tb";
+
+type SuggestProps = {
+	label: string;
+	text: string;
+	selection?: number;
+};
+
+const Suggest: Component<SuggestProps> = props => {
+	return (
+		<button class="suggest" onClick={() => alert(props.label)}>
+			{props.label}
+		</button>
+	);
+};
+
+type SuggestsProps = {
+	items: SuggestProps[];
+};
+
+const Suggests: Component<SuggestsProps> = props => {
+	return (
+		<div class="suggests">
+			<For each={props.items}>{item => <Suggest {...item} />}</For>
+		</div>
+	);
+};
 
 type InnerProps = {
 	g: State;
@@ -12,6 +38,7 @@ type InnerProps = {
 
 const HrmEditOverlayInner: Component<InnerProps> = props => {
 	let ref: HTMLDivElement | undefined;
+	let taRef: HTMLTextAreaElement | undefined;
 	createEffect(() => {
 		if (ref) {
 			const events = ["mousedown", "touchstart", "pointerdown", "wheel"];
@@ -29,25 +56,46 @@ const HrmEditOverlayInner: Component<InnerProps> = props => {
 				transform: `translate(${props.node.pos.x}px, ${props.node.pos.y}px)`,
 			}}>
 			<InputGroup class="shadow-1 w-fit">
-				<Button color={Color.success}>
-					{" "}
-					<TbSquareCheck />{" "}
-				</Button>
-				<Button color={Color.danger}>
+				<Button
+					color={Color.danger}
+					onClick={() => props.g.cancelEditNode()}>
 					{" "}
 					<TbTrash />{" "}
 				</Button>
-				<Button color={Color.secondary}>
+				<Button
+					color={Color.success}
+					onClick={() =>
+						props.g.applyEditNode(taRef ? taRef.value : "")
+					}>
 					{" "}
-					<TbDots />{" "}
+					<TbSquareCheck />{" "}
 				</Button>
 			</InputGroup>
 			<InputCode
-				autofocus
-				autoresize
+				ref={taRef}
+				autofocus={true}
+				autoresize={true}
 				class="shadow-1"
 				placeholder="[NODE DATA]"
-				value={props.node.id}
+				value={stringifyNodeData(props.node.x)}
+			/>
+			<Suggests
+				items={[
+					{ label: "beta", text: "beta" },
+					{ label: "gamma", text: "gamma" },
+					{ label: "delta", text: "delta" },
+					{ label: "epsilon", text: "epsilon" },
+					{ label: "omega", text: "omega" },
+					{ label: "alpha", text: "alpha" },
+					{ label: "{", text: "{" },
+					{ label: "beta", text: "beta" },
+					{ label: "gamma", text: "gamma" },
+					{ label: "delta", text: "delta" },
+					{ label: "epsilon", text: "epsilon" },
+					{ label: "omega", text: "omega" },
+					{ label: "alpha", text: "alpha" },
+					{ label: "{", text: "{" },
+				]}
 			/>
 		</div>
 	);

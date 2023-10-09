@@ -62,6 +62,13 @@ div.hrm-container {
 	margin-right: 0.2rem;
 }
 
+.hrm-node-json {
+	// Pre
+	font-family: monospace;
+	font-size: 0.8rem;
+	white-space: pre-wrap;
+}
+
 .hrm-node-name {
 	display: flex;
 	flex-direction: column;
@@ -145,4 +152,28 @@ div.hrm-container {
 
 .hrm-edit-overlay .edit {
 	border: 1px solid black;
+}
+
+.hrm-edit-overlay .suggests {
+	max-width: 20rem;
+}
+
+.hrm-edit-overlay .suggest {
+	display: inline-block;
+	font-size: 0.75rem;
+	padding: 0.175rem 0.375rem;
+	margin: 0.1rem;
+	background-color: #ffff;
+	border: 1px solid #0002;
+	border-radius: 999rem;
+	box-shadow: 0 0.125rem 0.125rem #0002;
+	transition: box-shadow 0.05s ease-in-out;
+}
+
+.hrm-edit-overlay .suggest:hover {
+	box-shadow: 0 0.175rem 0.175rem #0004;
+}
+
+.hrm-edit-overlay .suggest:active {
+	box-shadow: 0 0 0 #0008;
 }
