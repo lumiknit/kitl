@@ -1,6 +1,6 @@
 # kitl
 
-![kitl logo](front/public/kitl_label.svg)
+![kitl logo](front/public/kitl_text.svg)
 
 kitl [kit̚tʰʌl ]
 

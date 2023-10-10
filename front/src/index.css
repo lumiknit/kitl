@@ -1,0 +1,12 @@
+html,
+body {
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	overscroll-behavior: contain;
+	background-color: #f00;
+}
+
+svg.icon {
+	vertical-align: sub;
+}

@@ -1,0 +1,179 @@
+div.hrm-container {
+	display: block;
+	background-color: #ffff;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+// Node
+
+.hrm-node {
+	width: auto;
+	min-height: 1.5rem;
+
+	display: flex;
+	padding: 0.3rem;
+
+	border: 2px solid var(--hrm-c-empty);
+	border-radius: 999rem;
+	box-shadow: 0 0.125rem 0.25rem #0002;
+}
+
+.hrm-node.selected {
+	outline: 0.125rem dashed var(--hrm-c-select);
+	outline-offset: 0.25rem;
+}
+
+.hrm-node-row {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	cursor: pointer;
+}
+
+.hrm-node-item {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	padding: 0.2rem 0.4rem;
+	margin-left: 0.2rem;
+	line-height: 1;
+}
+
+.hrm-node-item:first-child {
+	margin-left: 0;
+}
+
+.hrm-node-body {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+}
+
+.hrm-node-body:first-child {
+	margin-left: 0.2rem;
+}
+
+.hrm-node-body:last-child {
+	margin-right: 0.2rem;
+}
+
+.hrm-node-json {
+	// Pre
+	font-family: monospace;
+	font-size: 0.8rem;
+	white-space: pre-wrap;
+}
+
+.hrm-node-name {
+	display: flex;
+	flex-direction: column;
+	align-items: left;
+	line-height: 1;
+}
+
+.hrm-node-mark {
+	margin-right: 0.2rem;
+	font-size: 1.2rem;
+	opacity: 0.33;
+}
+
+.hrm-node-name-name {
+	font-size: 1rem;
+}
+
+.hrm-node-name-module {
+	font-size: 0.5rem;
+}
+
+.hrm-node-comment {
+	position: absolute;
+	width: 40rem;
+	text-align: left;
+	border-left: 0.25rem solid var(--hrm-c-comment);
+	color: var(--hrm-c-comment);
+	padding: 0.25rem;
+	font-family: serif;
+	left: 0;
+	top: 110%;
+}
+
+.hrm-node-handle {
+	//background-color: #f004;
+	cursor: pointer;
+	position: absolute;
+	width: 100%;
+	height: 0.6rem;
+	left: 0;
+	bottom: -0.3rem;
+}
+
+// Handle
+
+.hrm-handle {
+	display: inline-block;
+	border: 2px solid var(--hrm-c-empty);
+	border-radius: 999rem;
+}
+
+// Edge
+
+.hrm-edges {
+	position: absolute;
+	overflow: visible;
+	width: 9999rem;
+	height: 9999rem;
+}
+
+.hrm-edges path {
+	pointer-events: stroke;
+}
+
+.hrm-editing-edge-handle {
+	position: absolute;
+	visibility: hidden;
+	outline: 2px dashed var(--hrm-c-connect);
+	outline-offset: 2px;
+	border-radius: 9999rem;
+}
+
+// Node Editor
+
+.hrm-edit-overlay {
+	position: absolute;
+	z-index: 1;
+	top: 0;
+	left: 0;
+}
+
+.hrm-edit-overlay .edit {
+	border: 1px solid black;
+}
+
+.hrm-edit-overlay .suggests {
+	max-width: 20rem;
+}
+
+.hrm-edit-overlay .suggest {
+	display: inline-block;
+	font-size: 0.75rem;
+	padding: 0.175rem 0.375rem;
+	margin: 0.1rem;
+	background-color: #ffff;
+	border: 1px solid #0002;
+	border-radius: 999rem;
+	box-shadow: 0 0.0625rem 0.125rem #0002;
+	transition: box-shadow 0.05s ease-in-out;
+}
+
+.hrm-edit-overlay .suggest:hover {
+	box-shadow: 0 0.08375rem 0.175rem #0004;
+}
+
+.hrm-edit-overlay .suggest:active {
+	box-shadow: 0 0 0 #0008;
+}
