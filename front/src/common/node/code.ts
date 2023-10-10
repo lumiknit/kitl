@@ -1,108 +1,51 @@
-import * as j from "./json";
-import * as name from "./name";
-import { Position } from "./geometry";
+import { NodeData, NodeType } from "./base";
 
-// -- Helper types
+// Node editing helpers
 
-export type Name = name.Name;
+// Detector
 
-export type NodeID = string;
-export type HandleID = number;
-
-// -- Node types
-
-export enum NodeType {
-	Alpha = "a", // Literal / Leaf node
-	Beta = "b", // Unnamed app
-	Delta = "d", // Definition
-	Lambda = "l", // Unpatterned Lambda
-	Nu = "n", // Named app
-	Pi = "p", // Patterned Lambda
+export enum CodeType {
+	Empty,
+	Literal,
+	Beta,
+	Lambda,
 }
 
-// Node properties
-// Root: The root node of whole tree. Cannot be deleted & has no parent.
-export const ROOT_NODES = new Set([NodeType.Delta]);
-// Expandable: Able to add handle/edge on the left/right most.
-export const LEFT_EXPANDABLE_NODES = new Set([NodeType.Nu]);
-export const RIGHT_EXPANDABLE_NODES = new Set([NodeType.Beta, NodeType.Pi]);
-
-export type Source = {
-	id: NodeID;
-	handle?: HandleID;
+const lambdaStarts = new Set(["\\", "λ"]);
+const jsonStarts = new Set([
+	'"',
+	"{",
+	"[",
+	"'",
+	"1",
+	"2",
+	"3",
+	"4",
+	"5",
+	"6",
+	"7",
+	"8",
+	"9",
+	"0",
+]);
+export const detectCodeType = (s: string): CodeType => {
+	let p = 0;
+	// Skip whitespace
+	while (p < s.length && s.charCodeAt(p) <= 32) p++;
+	// Extract the first character
+	const first = s[p];
+	if (first === undefined) return CodeType.Empty;
+	if (lambdaStarts.has(first)) return CodeType.Lambda;
+	if (jsonStarts.has(first)) return CodeType.Literal;
+	// Otherwise, try to parse as json
+	try {
+		JSON.parse(s);
+		return CodeType.Literal;
+	} catch (e) {
+		// Ignore
+	}
+	return CodeType.Beta;
 };
-
-// -- Each node type
-
-export type AlphaNodeData = {
-	// Literal / Leaf node
-	type: NodeType.Alpha;
-	val: j.Json;
-};
-
-export type BetaNodeData = {
-	// Beta reduction node
-	type: NodeType.Beta;
-	fn?: Source;
-	args: Source[];
-};
-
-export type DeltaNodeData = {
-	// Definition node
-	type: NodeType.Delta;
-	comment: string;
-	ret?: Source;
-};
-
-export type LambdaNodeData = {
-	// Lambda node
-	type: NodeType.Lambda;
-	ret?: Source;
-};
-
-export type NuNodeData = {
-	// Named app node
-	type: NodeType.Nu;
-	name: Name;
-	lhs: number;
-	args: Source[];
-};
-
-export type PiNodeData = {
-	// Patterned Lambda
-	type: NodeType.Pi;
-	name: Name;
-	elems: number;
-	fallback?: Source;
-	ret?: Source;
-};
-
-export type NodeData =
-	| AlphaNodeData
-	| BetaNodeData
-	| DeltaNodeData
-	| LambdaNodeData
-	| NuNodeData
-	| PiNodeData;
-
-export type Node = {
-	id: NodeID;
-	pos: Position;
-	x: NodeData;
-};
-
-export type Nodes = Node[];
-
-export const emptyGraph = (): Nodes => [
-	{
-		id: "#def",
-		pos: { x: 0, y: 0 },
-		x: {
-			type: NodeType.Delta,
-			comment: "",
-		},
-	},
-];
 
 // Parser
 

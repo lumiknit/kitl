@@ -29,20 +29,20 @@
 		"preview": "vite preview"
 	},
 	"devDependencies": {
-		"@types/node": "^20.6.3",
-		"@typescript-eslint/eslint-plugin": "^6.7.3",
-		"@typescript-eslint/parser": "^6.7.3",
-		"eslint": "^8.50.0",
+		"@types/node": "^20.8.4",
+		"@typescript-eslint/eslint-plugin": "^6.7.5",
+		"@typescript-eslint/parser": "^6.7.5",
+		"eslint": "^8.51.0",
 		"eslint-plugin-solid": "^0.13.0",
-		"sass": "^1.68.0",
+		"sass": "^1.69.1",
 		"solid-devtools": "^0.27.7",
 		"typescript": "^5.2.2",
-		"vite": "^4.4.9",
+		"vite": "^4.4.11",
 		"vite-plugin-solid": "^2.7.0",
 		"vite-tsconfig-paths": "^4.2.1"
 	},
 	"dependencies": {
 		"solid-icons": "^1.0.12",
-		"solid-js": "^1.7.12"
+		"solid-js": "^1.8.0"
 	}
 }
