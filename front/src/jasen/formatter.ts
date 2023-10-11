@@ -2,9 +2,6 @@ import { Value } from "./types";
 
 const guessIsJsonLong = (value: Value): boolean => {
 	switch (typeof value) {
-		case "boolean":
-		case "number":
-			return false;
 		case "string":
 			return value.length > 20;
 		case "object":
@@ -16,67 +13,75 @@ const guessIsJsonLong = (value: Value): boolean => {
 				return Object.keys(value).length > 1;
 			}
 	}
+	return false;
 };
 
 export const compactify = (value: Value, indentLevel: number = 0): string => {
 	switch (typeof value) {
-		case "boolean":
-		case "number":
-		case "string":
-			return JSON.stringify(value);
-		case "object":
+		case "object": {
 			if (value === null) {
 				return "null";
-			} else if (Array.isArray(value)) {
+			}
+			const indent = " ".repeat(2 * (indentLevel + 1)),
+				sep = ",\n" + indent;
+			if (Array.isArray(value)) {
 				const arr = value;
 				if (arr.length === 0) {
 					return "[]";
 				} else if (arr.length === 1) {
-					return `[${compactify(arr[0], indentLevel + 1)}]`;
+					return guessIsJsonLong(arr[0])
+						? `[ ${compactify(arr[0], indentLevel + 1)} ]`
+						: `[${compactify(arr[0], indentLevel + 1)}]`;
 				}
 				let s = "[ ";
-				const sep = ",\n" + " ".repeat(2 * (indentLevel + 1));
 				for (let i = 0; i < arr.length; i++) {
 					if (i > 0) {
 						s += sep;
 					}
 					s += compactify(arr[i], indentLevel + 1);
 				}
-				s += " ]";
-				return s;
+				return s + " ]";
 			} else {
-				const obj = value;
-				const keys = Object.keys(obj);
+				const obj = value,
+					keys = Object.keys(obj);
 				if (keys.length === 0) {
 					return "{}";
 				} else if (keys.length === 1) {
-					return `{${JSON.stringify(keys[0])}: ${compactify(
-						obj[keys[0]],
-						indentLevel + 1,
-					)}}`;
+					const key = keys[0],
+						value = obj[key];
+					return guessIsJsonLong(value)
+						? `{ ${JSON.stringify(key)}:\n  ${indent}${compactify(
+								value,
+								indentLevel + 2,
+						  )}}`
+						: `{${JSON.stringify(key)}: ${compactify(
+								value,
+								indentLevel + 1,
+						  )}}`;
 				}
 				let s = "{ ";
-				const sep = ",\n" + " ".repeat(2 * (indentLevel + 1));
-				const sepC = "\n" + " ".repeat(2 * (indentLevel + 2));
+				const sepC = "\n  " + indent;
 				for (let i = 0; i < keys.length; i++) {
+					const key = keys[i],
+						value = obj[key];
 					if (i > 0) {
 						s += sep;
 					}
 
-					if (guessIsJsonLong(obj[keys[i]])) {
-						s += `${JSON.stringify(keys[i])}:${sepC}${compactify(
-							obj[keys[i]],
-							indentLevel + 2,
-						)}`;
-					} else {
-						s += `${JSON.stringify(keys[i])}: ${compactify(
-							obj[keys[i]],
-							indentLevel + 1,
-						)}`;
-					}
+					s += guessIsJsonLong(value)
+						? `${JSON.stringify(key)}:${sepC}${compactify(
+								value,
+								indentLevel + 2,
+						  )}`
+						: `${JSON.stringify(key)}: ${compactify(
+								value,
+								indentLevel + 1,
+						  )}`;
 				}
-				s += " }";
-				return s;
+				return s + " }";
 			}
+		}
+		default:
+			return JSON.stringify(value);
 	}
 };
