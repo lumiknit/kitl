@@ -7,6 +7,7 @@ import {
 	NodeType,
 } from "@/common";
 import { SYM_BETA, SYM_DELTA, SYM_LAMBDA, SYM_PI } from "./data";
+import { compactify } from "@/jasen";
 
 type HrmNodeBodyProps = {
 	data: NodeData;
@@ -31,7 +32,7 @@ const HrmNodeBody = (props: HrmNodeBodyProps) => {
 			<Switch>
 				<Match when={props.data.type === NodeType.Alpha}>
 					<div class="hrm-node-json">
-						{JSON.stringify((props.data as AlphaNodeData).val)}
+						{compactify((props.data as AlphaNodeData).val)}
 					</div>
 				</Match>
 				<Match when={props.data.type === NodeType.Beta}>

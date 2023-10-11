@@ -1,2 +1,3 @@
-export * from "./types";
+export * from "./formatter";
 export * from "./parser";
+export * from "./types";
