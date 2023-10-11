@@ -5,6 +5,10 @@ import { Button, Color, InputGroup } from "@/block";
 import InputCode from "@/block/InputCode";
 import { TbSquareCheck, TbTrash } from "solid-icons/tb";
 
+import * as jasen from "@/jasen";
+
+console.log(jasen.parse);
+
 type SuggestProps = {
 	label: string;
 	text: string;

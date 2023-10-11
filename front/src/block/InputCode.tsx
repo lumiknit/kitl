@@ -58,6 +58,7 @@ export type CodeProps = {
 	ref?: Ref<HTMLTextAreaElement>;
 
 	onChange?: JSX.ChangeEventHandler<HTMLTextAreaElement, Event>;
+	onInput?: JSX.InputEventHandler<HTMLTextAreaElement, InputEvent>;
 	onKeyDown?: JSX.EventHandler<HTMLTextAreaElement, KeyboardEvent>;
 };
 
@@ -140,6 +141,13 @@ const InputCode: Component<CodeProps> = props => {
 		resizeTextarea(event.target as HTMLTextAreaElement);
 	};
 
+	const onInput: JSX.InputEventHandler<
+		HTMLTextAreaElement,
+		InputEvent
+	> = event => {
+		if (props.onInput) props.onInput(event);
+	};
+
 	const onChange: JSX.ChangeEventHandler<
 		HTMLTextAreaElement,
 		Event
@@ -157,6 +165,7 @@ const InputCode: Component<CodeProps> = props => {
 				placeholder={props.placeholder}
 				value={props.value}
 				onChange={onChange}
+				onInput={onInput}
 				onKeyDown={onKeyDown}
 			/>
 			<textarea

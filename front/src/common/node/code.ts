@@ -1,3 +1,4 @@
+import * as jasen from "@/jasen";
 import { NodeData, NodeType } from "./base";
 
 // Node editing helpers
@@ -39,7 +40,7 @@ export const detectCodeType = (s: string): CodeType => {
 	if (jsonStarts.has(first)) return CodeType.Literal;
 	// Otherwise, try to parse as json
 	try {
-		JSON.parse(s);
+		jasen.parse(s);
 		return CodeType.Literal;
 	} catch (e) {
 		// Ignore
@@ -82,7 +83,7 @@ export const parseNodeData = (s: string): NodeData => {
 	try {
 		return {
 			type: NodeType.Alpha,
-			val: JSON.parse(trimmed),
+			val: jasen.parse(trimmed),
 		};
 	} catch (e) {
 		// Ignore
