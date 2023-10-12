@@ -71,7 +71,6 @@ const InputCode: Component<CodeProps> = props => {
 			hiddenRef.value = textarea.value;
 			hiddenRef.style.width = textarea.style.width;
 			textarea.style.height = hiddenRef.scrollHeight + "px";
-			console.log(textarea.style.height);
 		}
 	};
 

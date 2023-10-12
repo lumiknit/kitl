@@ -98,7 +98,6 @@ const HrmPane: Component<HrmPaneProps> = props => {
 			<TbZoomInArea />,
 			() => {
 				const rect = props.g.usedRect();
-				console.log(rect);
 				const paneSize = props.g.size();
 				if (!rect || !paneSize) return;
 				rect.w = Math.max(rect.w, 1);

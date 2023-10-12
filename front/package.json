@@ -26,20 +26,25 @@
 		"size-report": "npx vite-bundle-visualizer",
 		"format": "npx prettier --write .",
 		"lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+		"test": "vitest",
+		"coverage": "vitest run --coverage",
 		"preview": "vite preview"
 	},
 	"devDependencies": {
 		"@types/node": "^20.8.4",
 		"@typescript-eslint/eslint-plugin": "^6.7.5",
 		"@typescript-eslint/parser": "^6.7.5",
+		"@vitest/coverage-v8": "^0.34.6",
 		"eslint": "^8.51.0",
 		"eslint-plugin-solid": "^0.13.0",
+		"jsdom": "^22.1.0",
 		"sass": "^1.69.1",
 		"solid-devtools": "^0.27.7",
 		"typescript": "^5.2.2",
 		"vite": "^4.4.11",
 		"vite-plugin-solid": "^2.7.0",
-		"vite-tsconfig-paths": "^4.2.1"
+		"vite-tsconfig-paths": "^4.2.1",
+		"vitest": "^0.34.6"
 	},
 	"dependencies": {
 		"solid-icons": "^1.0.12",

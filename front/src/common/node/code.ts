@@ -66,7 +66,6 @@ export const stringifyNodeData = (x: NodeData): string => {
 			const lhs = x.lhs;
 			let rhs = x.args.length - lhs;
 			if (rhs < 0) rhs = 0;
-			console.log(x.args.length);
 			return `${name.name}${ns},${lhs},${rhs}`;
 		}
 		case NodeType.Pi: {

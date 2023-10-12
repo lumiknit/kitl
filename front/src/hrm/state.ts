@@ -298,7 +298,6 @@ export class State {
 	}
 
 	deleteEdge(id: NodeID, handle: HandleID) {
-		console.log("deleteEdge", id, handle);
 		const node = this.nodes().get(id);
 		if (!node) return;
 		const [n] = node,
@@ -456,7 +455,6 @@ export class State {
 			const oldHandles = oldNode ? oldNode[0]().handles : [];
 			const newHandles = thawed[0]().handles;
 			for (let i = 0; i < newHandles.length; i++) {
-				console.log("Update", i, newHandles[i]);
 				const oldHandle = oldHandles[i];
 				newHandles[i][1](h => {
 					if (h.data.type !== HandleType.Sink) return h;

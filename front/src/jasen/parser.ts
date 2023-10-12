@@ -35,15 +35,14 @@ const c = (s: string) => s.charCodeAt(0),
 		["true", true],
 		["null", null],
 	]),
-	reTaste = /\s*([[{'"]|[+-]?\.?\d)/y,
+	reTaste = /\s*([[{'"]|[-+]?\.?\d)/y,
 	reWhite = /\s*/y,
 	reWhiteComma = /[\s,]*/y,
 	reWhiteColon = /[\s:]*/y;
 
 export const taste = (input: string) => {
 	reTaste.lastIndex = 0;
-	const match = reTaste.exec(input);
-	return !!match;
+	return !!reTaste.exec(input);
 };
 
 type State = {
