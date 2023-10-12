@@ -71,6 +71,7 @@ const InputCode: Component<CodeProps> = props => {
 			hiddenRef.value = textarea.value;
 			hiddenRef.style.width = textarea.style.width;
 			textarea.style.height = hiddenRef.scrollHeight + "px";
+			console.log(textarea.style.height);
 		}
 	};
 
@@ -155,6 +156,10 @@ const InputCode: Component<CodeProps> = props => {
 		if (props.onChange) props.onChange(event);
 	};
 
+	const onFocus: JSX.EventHandler<HTMLTextAreaElement, Event> = event => {
+		resizeTextarea(event.currentTarget as HTMLTextAreaElement);
+	};
+
 	return (
 		<div class="code-area">
 			<textarea
@@ -164,6 +169,7 @@ const InputCode: Component<CodeProps> = props => {
 				class={`form-control ${props.class ?? ""}`}
 				placeholder={props.placeholder}
 				value={props.value}
+				onFocus={onFocus}
 				onChange={onChange}
 				onInput={onInput}
 				onKeyDown={onKeyDown}

@@ -82,6 +82,9 @@ const HrmEditOverlayInner: Component<InnerProps> = props => {
 				class="shadow-1"
 				placeholder="[NODE DATA]"
 				value={stringifyNodeData(props.node.x)}
+				onInput={e => {
+					console.log(jasen.parse(e.currentTarget.value));
+				}}
 			/>
 			<Suggests
 				items={[

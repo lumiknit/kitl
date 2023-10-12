@@ -8,27 +8,18 @@ const c = (s: string) => s.charCodeAt(0),
 		}
 		return set;
 	},
-	isWhite = (code: number) => code <= 32;
-
-const CODE_NEWLINE = c("\n"), // 10
+	CODE_NEWLINE = c("\n"), // 10
 	CODE_OPEN_BRACKET = c("["), // 91 [
 	CODE_CLOSE_BRACKET = c("]"), // 93 ]
 	CODE_OPEN_BRACE = c("{"), // 123 {
 	CODE_CLOSE_BRACE = c("}"), // 125 }
 	CODE_QUOTE = c('"'), // 34 "
 	CODE_APOSTROPHE = c("'"), // 39 '
-	CODE_COMMA = c(","), // 44 ,
-	CODE_COLON = c(":"), // 58 :
 	CODE_BACKSLASH = c("\\"), // 92 \
 	CODE_u = c("u"), // 117 u
 	CODE_x = c("x"), // 120 x
 	reservedSet = stringToCodeSet("[]{},\"':\n"),
-	jsonSet = stringToCodeSet("[{\"'0123456789"),
-	digit = stringToCodeSet("0123456789"),
-	sign = stringToCodeSet("+-"),
 	signdigitdot = stringToCodeSet("+-0123456789."),
-	digitdot = stringToCodeSet("0123456789."),
-	hexdigit = stringToCodeSet("0123456789abcdefABCDEF"),
 	quotes = stringToCodeSet("\"'"),
 	ESCAPE_MAP: Map<number, string> = new Map([
 		[c("b"), "\b"],
@@ -36,21 +27,23 @@ const CODE_NEWLINE = c("\n"), // 10
 		[c("n"), "\n"],
 		[c("r"), "\r"],
 		[c("t"), "\t"],
-	]);
-
-const firstNonWhite = (input: string) => {
-	let pos = 0;
-	while (isWhite(input.charCodeAt(pos))) {
-		pos++;
-	}
-	return pos;
-};
+	]),
+	reNumber = /[-+]?((0x[0-9a-fA-F]+)|([0-9]+(\.[0-9]+)?))([eE][-+]?[0-9]+)?/y,
+	reKeyword = /(false|true|null)\b/iy,
+	mapKeyword = new Map([
+		["false", false],
+		["true", true],
+		["null", null],
+	]),
+	reTaste = /\s*([[{'"]|[+-]?\.?\d)/y,
+	reWhite = /\s*/y,
+	reWhiteComma = /[\s,]*/y,
+	reWhiteColon = /[\s:]*/y;
 
 export const taste = (input: string) => {
-	const p = firstNonWhite(input),
-		c = input.charCodeAt(p),
-		n = input.charCodeAt(p + 1);
-	return jsonSet.has(c) || (sign.has(c) && digit.has(n));
+	reTaste.lastIndex = 0;
+	const match = reTaste.exec(input);
+	return !!match;
 };
 
 type State = {
@@ -88,22 +81,25 @@ class ParseError extends Error {
 	}
 }
 
-const skipWhite = (state: State, code: number) => {
-	let c;
-	state.p--;
-	do {
-		state.p++;
-		c = v(state);
-	} while (isWhite(c) || c === code);
+const execRE = (state: State, re: RegExp) => {
+	re.lastIndex = state.p;
+	return re.exec(state.s);
+};
+
+const skipRE = (state: State, re: RegExp) => {
+	const match = execRE(state, re);
+	if (match) {
+		state.p += match[0].length;
+	}
 };
 
 const parseArray = (state: State): JArray => {
 	state.p++;
-	skipWhite(state, CODE_COMMA);
+	skipRE(state, reWhiteComma);
 	const arr: JArray = [];
 	while (state.p < state.l && v(state) !== CODE_CLOSE_BRACKET) {
 		arr.push(parseValue(state));
-		skipWhite(state, CODE_COMMA);
+		skipRE(state, reWhiteComma);
 	}
 	state.p++;
 	return arr;
@@ -111,7 +107,7 @@ const parseArray = (state: State): JArray => {
 
 const parseObject = (state: State): JObject => {
 	state.p++;
-	skipWhite(state, CODE_COMMA);
+	skipRE(state, reWhiteComma);
 	const obj: JObject = {};
 	while (state.p < state.l && v(state) !== CODE_CLOSE_BRACE) {
 		let key;
@@ -120,21 +116,22 @@ const parseObject = (state: State): JObject => {
 		} else {
 			// Try to find colon
 			const s = state.p;
-			while (state.p < state.l && v(state) !== CODE_COLON) {
-				state.p++;
-			}
+			state.p = state.s.indexOf(":", state.p);
+			if (state.p === -1) state.p = state.l;
 			key = state.s.slice(s, state.p).trim();
 		}
-		skipWhite(state, CODE_COLON);
+		skipRE(state, reWhiteColon);
 		obj[key] = parseValue(state);
-		skipWhite(state, CODE_COMMA);
+		skipRE(state, reWhiteComma);
 	}
 	state.p++;
 	return obj;
 };
 
-const parseHexEscape = (state: State, s: string) => {
+const parseHexEscape = (state: State, l: number) => {
+	const s = state.s.slice(state.p + 1, state.p + l + 1);
 	const code = parseInt(s, 16);
+	state.p += l;
 	if (isNaN(code)) {
 		throw new ParseError(state, `Invalid unicode escape '${s}'`);
 	}
@@ -145,29 +142,22 @@ const parseString = (state: State): string => {
 	const open = v(state);
 	state.p++;
 	let s = "";
-	while (state.p < state.l) {
+	for (; state.p < state.l; state.p++) {
 		const c = v(state);
 		if (c === open) {
 			state.p++;
 			return s;
-		} else if (c === CODE_BACKSLASH) {
+		}
+		if (c === CODE_BACKSLASH) {
 			// \
 			state.p++;
 			const c2 = v(state);
 			switch (c2) {
 				case CODE_u: // u
-					s += parseHexEscape(
-						state,
-						state.s.slice(state.p + 1, state.p + 5),
-					);
-					state.p += 5;
+					s += parseHexEscape(state, 4);
 					break;
 				case CODE_x: // x
-					s += parseHexEscape(
-						state,
-						state.s.slice(state.p + 1, state.p + 3),
-					);
-					state.p += 3;
+					s += parseHexEscape(state, 2);
 					break;
 				default:
 					s += ESCAPE_MAP.get(c2) || String.fromCharCode(c2);
@@ -175,47 +165,28 @@ const parseString = (state: State): string => {
 		} else {
 			s += String.fromCharCode(c);
 		}
-		state.p++;
 	}
 	return s;
 };
 
+// Regexp number including base
+
 const parseNumber = (state: State): number => {
-	const s = state.p;
-	if (sign.has(v(state))) {
-		state.p++;
-	}
-	let set = digitdot;
-	if ("0x" === state.s.slice(state.p, state.p + 2).toLowerCase()) {
-		state.p += 2;
-		set = hexdigit;
-	}
-	while (set.has(v(state))) {
-		state.p++;
-	}
-	const n = Number(state.s.slice(s, state.p));
+	const match = execRE(state, reNumber),
+		s = match ? match[0] : "",
+		n = s ? Number(s) : NaN;
+	state.p += s.length;
 	if (isNaN(n)) {
-		throw new ParseError(
-			state,
-			`Invalid number '${state.s.slice(s, state.p)}'`,
-		);
+		throw new ParseError(state, `Invalid number '${s}'`);
 	}
 	return n;
 };
 
 const parseKeyword = (state: State, isRoot?: boolean): Value => {
-	const slice5 = state.s.slice(state.p, state.p + 5).toLowerCase();
-	if (slice5 === "false") {
-		state.p += 5;
-		return false;
-	}
-	const slice4 = slice5.slice(0, 4);
-	if (slice4 === "true") {
-		state.p += 4;
-		return true;
-	} else if (slice4 === "null") {
-		state.p += 4;
-		return null;
+	const match = execRE(state, reKeyword);
+	if (match !== null) {
+		state.p += match[0].length;
+		return mapKeyword.get(match[0].toLowerCase()) as Value;
 	}
 	if (isRoot) {
 		throw new ParseError(
@@ -232,7 +203,7 @@ const parseKeyword = (state: State, isRoot?: boolean): Value => {
 };
 
 const parseValue = (state: State, isRoot?: boolean): Value => {
-	skipWhite(state, 0);
+	skipRE(state, reWhite);
 	const c = v(state);
 	switch (c) {
 		case CODE_QUOTE: // "
@@ -261,7 +232,7 @@ export const parse = (input: string) => {
 			l: input.length,
 		},
 		result = parseValue(state, true);
-	skipWhite(state, 0);
+	skipRE(state, reWhite);
 	if (state.p < state.l) {
 		throw new ParseError(
 			state,
