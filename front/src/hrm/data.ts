@@ -12,24 +12,13 @@ import {
 	clamp,
 } from "@/common";
 
-import { createSignal } from "solid-js";
+import { JSX, createSignal } from "solid-js";
 
 /* Const */
 
-export const nodeColors = () =>
-	Number(
-		window
-			.getComputedStyle(document.body)
-			.getPropertyValue("--hrm-node-colors-num"),
-	);
-export const randomColor = () => Math.floor(Math.random() * nodeColors());
-export type NodeColor = number;
-export const cBg = (color?: NodeColor) =>
-	color! >= 0 ? `hrm-c-bg-${color}` : "";
-export const cBd = (color?: NodeColor) =>
-	color! >= 0 ? `hrm-c-bd-${color}` : "";
-export const cStr = (color?: NodeColor) =>
-	color! >= 0 ? `hrm-c-stroke-${color}` : "";
+export type NodeColor = number; // Hue
+export const randomColor = () => 360 * Math.random();
+
 export const cBdEmpty = "hrm-c-bd-empty";
 
 /* Symbols */
@@ -71,7 +60,7 @@ export type Handle = {
 	data: HandleData;
 	selected?: boolean;
 	color?: NodeColor;
-	colorClass?: string;
+	style?: JSX.CSSProperties;
 };
 
 export type Handles = VWrap<Handle>[] & {

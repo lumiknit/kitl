@@ -18,6 +18,8 @@ div.hrm-container {
 	border: 2px solid var(--hrm-c-empty);
 	border-radius: 9999rem;
 	box-shadow: 0 0.125rem 0.25rem #0002;
+	background-color: var(--hrm-c-bg);
+	color: var(--hrm-c-fg);
 }
 
 .hrm-node.selected {

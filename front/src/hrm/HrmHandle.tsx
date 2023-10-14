@@ -1,6 +1,6 @@
 import { Component, createEffect } from "solid-js";
 
-import { Handle, HandleType, Node, cBd, cBdEmpty, cBg } from "./data";
+import { Handle, HandleType, Node, cBdEmpty } from "./data";
 import { State } from "./state";
 import { VWrap } from "@/common/types";
 import { addEventListeners } from "@/common/pointer-helper";
@@ -35,24 +35,26 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 		if (!handleRef) return;
 		h();
 		update(h => {
-			let color, colorClass;
+			let color, style;
 			if (h.data.type === HandleType.Source) {
 				color = h.data.color;
-				colorClass = cBd(color);
+				style = props.g.nodeColorBd(color);
 			} else if (h.data.sourceID) {
 				const nodeV = props.g.nodes().get(h.data.sourceID);
 				if (nodeV) {
 					const node = nodeV[0]();
 					color = node.color;
 					if (h.data.sourceHandle !== undefined) {
-						color = node.handles[h.data.sourceHandle][0]().color;
+						color =
+							node.handles[h.data.sourceHandle][0]().color ??
+							color;
 					}
-					colorClass = cBg(color);
+					style = props.g.nodeColorBg(color);
 				}
 			}
 			return color === h.color && h.ref === handleRef
 				? h
-				: { ...h, ref: handleRef, color, colorClass };
+				: { ...h, ref: handleRef, color, style };
 		});
 		for (const [k, v] of Object.entries(handleEvents)) {
 			handleRef.addEventListener(k, v);
@@ -88,9 +90,8 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 		<>
 			<div
 				ref={handleRef}
-				class={`hrm-node-item hrm-handle ${
-					h().colorClass ?? cBdEmpty
-				}`}>
+				class={`hrm-node-item hrm-handle ${h().style ? "" : cBdEmpty}`}
+				style={h().style}>
 				{h().name}
 			</div>
 		</>

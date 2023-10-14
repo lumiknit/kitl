@@ -1,6 +1,6 @@
 import { Component, Show, createEffect, createMemo } from "solid-js";
 
-import { Handle, HandleType, Node, SinkHandleData, cStr } from "./data";
+import { Handle, HandleType, Node, SinkHandleData } from "./data";
 import { State } from "./state";
 import { HandleID, NodeID, VWrap, pathBetweenPills, pathSelf } from "@/common";
 import { addEventListeners } from "@/common/pointer-helper";
@@ -54,8 +54,8 @@ const HrmEdgeSub = (props: HrmEdgeProps) => {
 			<path
 				classList={{
 					"hrm-edge-path": true,
-					[cStr(h().color)]: true,
 				}}
+				style={props.g.nodeColorStroke(h().color)}
 				stroke-width="4px"
 				fill="transparent"
 				d={path()}

@@ -26,6 +26,7 @@ import {
 	thawNode,
 	thawNodes,
 } from "./data";
+import { HSL, HSL2RGB, RGB2GRAY } from "@/common/color";
 
 /* State */
 
@@ -54,6 +55,9 @@ export class State {
 	// Mode
 	selectMode: boolean = false;
 
+	// Color state
+	nodeColor: VWrap<HSL>;
+
 	constructor(initialNodes?: CNodes) {
 		if (!initialNodes) initialNodes = [];
 		const [nodes, setNodes] = createSignal<Nodes>(thawNodes(initialNodes), {
@@ -67,6 +71,8 @@ export class State {
 		// History
 		this.history = [initialNodes];
 		this.historyIndex = 0;
+		// Color
+		this.nodeColor = createSignal({ h: 0, s: 0.52, l: 0.7 });
 	}
 
 	// Graph save/load
@@ -79,6 +85,35 @@ export class State {
 
 	freeze(): CNodes {
 		return freezeNodes(this.nodes());
+	}
+
+	// Color theme
+
+	nodeColorBg(hue: number) {
+		const c = this.nodeColor[0](),
+			fg = RGB2GRAY(...HSL2RGB(hue, c.s, c.l)) > 192 ? "#000" : "#fff",
+			bg = `hsl(${hue}, ${c.s * 100}%, ${c.l * 100}%)`;
+		return {
+			color: fg,
+			"background-color": bg,
+			"border-color": bg,
+		};
+	}
+
+	nodeColorBd(hue: number) {
+		const c = this.nodeColor[0](),
+			bg = `hsl(${hue}, ${c.s * 100}%, ${c.l * 100}%)`;
+		return {
+			"border-color": bg,
+		};
+	}
+
+	nodeColorStroke(hue: number) {
+		const c = this.nodeColor[0](),
+			bg = `hsl(${hue}, ${c.s * 100}%, ${c.l * 100}%)`;
+		return {
+			stroke: bg,
+		};
 	}
 
 	// History

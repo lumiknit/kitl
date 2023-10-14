@@ -1,6 +1,6 @@
 import { For, Show, createEffect } from "solid-js";
 import { Getter, NodeID, ROOT_NODES } from "@/common";
-import { Handle, Node, cBd } from "./data";
+import { Handle, Node } from "./data";
 
 import { addEventListeners } from "@/common/pointer-helper";
 import { VWrap } from "@/common";
@@ -117,13 +117,12 @@ const HrmNode = (props: HrmNodeProps) => {
 	const position = () => n().position;
 	return (
 		<div
-			class={`hrm-node abs-lt ${n().selected ? "selected" : ""} ${cBd(
-				n().color,
-			)}`}
+			class={`hrm-node abs-lt ${n().selected ? "selected" : ""}`}
 			ref={nodeRef}
 			style={{
 				left: `${position().x}px`,
 				top: `${position().y}px`,
+				...props.g.nodeColorBd(n().color),
 			}}>
 			<div class="hrm-node-row no-user-select">
 				<For each={n().handles.slice(0, n().handles.lhs)}>
