@@ -17,6 +17,7 @@ import {
 	ClickEvent,
 	addEventListeners,
 } from "@/common/pointer-helper";
+import { toast } from "@/block/ToastContainer";
 
 const transformToStyle = (t: Transform) =>
 	`translate(${t.x}px, ${t.y}px) scale(${t.z})`;
@@ -45,6 +46,9 @@ const HrmPane: Component<HrmPaneProps> = props => {
 		if (!paneRef) return;
 		addEventListeners(
 			{
+				onPress: () => {
+					toast("Press");
+				},
 				onClick: props.onClick,
 				onDoubleClick: props.onDoubleClick,
 				onLongPress: props.onLongPress,

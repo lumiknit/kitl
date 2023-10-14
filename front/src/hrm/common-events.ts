@@ -11,9 +11,11 @@ export const addConnectionPointerEvents = (
 	nodeID: NodeID,
 	handleID?: HandleID,
 ) => {
-	ref.addEventListener("pointerenter", () =>
-		g.setTempConnectingEnd(nodeID, ref, handleID),
-	);
+	ref.addEventListener("pointerenter", () => {
+		const e = g.connectingEdge[0]();
+		if (handleID === undefined && !e.isSource) return;
+		g.setTempConnectingEnd(nodeID, ref, handleID);
+	});
 	ref.addEventListener("pointerdown", releasePointerCapture);
 	ref.addEventListener("pointerleave", () => g.unsetTempConnectingEnd(ref));
 	ref.addEventListener("pointerup", (e: any) => {

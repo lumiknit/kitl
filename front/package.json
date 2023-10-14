@@ -21,7 +21,7 @@
 		"email": "aasr4r4@gmail.com"
 	},
 	"scripts": {
-		"dev": "vite",
+		"dev": "vite --host",
 		"build": "tsc && vite build",
 		"size-report": "npx vite-bundle-visualizer",
 		"format": "npx prettier --write .",

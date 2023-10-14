@@ -29,6 +29,8 @@ div.hrm-container {
 	box-shadow: 0 0.125rem 0.25rem #0002;
 	background-color: var(--hrm-c-bg);
 	color: var(--hrm-c-fg);
+
+	white-space: nowrap;
 }
 
 .hrm-node.selected {

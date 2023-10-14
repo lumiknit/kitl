@@ -515,7 +515,7 @@ export class State {
 	editNode(id: NodeID) {
 		// Find node
 		const node = this.nodes().get(id);
-		if (node) {
+		if (node && !ROOT_NODES.has(node[0]().data.type)) {
 			this.editingNode[1](freezeNode(id, node[0]()));
 		}
 	}
