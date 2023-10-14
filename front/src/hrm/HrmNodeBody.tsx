@@ -1,4 +1,4 @@
-import { Match, Show, Switch } from "solid-js";
+import { Show } from "solid-js";
 import {
 	AlphaNodeData,
 	DeltaNodeData,
@@ -8,6 +8,7 @@ import {
 } from "@/common";
 import { SYM_BETA, SYM_DELTA, SYM_LAMBDA, SYM_PI } from "./data";
 import { compactify } from "@/jasen";
+import { Dynamic } from "solid-js/web";
 
 type HrmNodeBodyProps = {
 	data: NodeData;
@@ -27,36 +28,35 @@ const Mark = (props: { mark: string }) => (
 );
 
 const HrmNodeBody = (props: HrmNodeBodyProps) => {
+	const options = {
+		[NodeType.Alpha]: () => (
+			<div class="hrm-node-json">
+				{compactify((props.data as AlphaNodeData).val)}
+			</div>
+		),
+		[NodeType.Beta]: () => <Mark mark={SYM_BETA} />,
+		[NodeType.Delta]: () => (
+			<>
+				<Mark mark={SYM_DELTA} />
+				<Show when={(props.data as DeltaNodeData).comment}>
+					<pre class="hrm-node-comment no-user-select no-pointer-events">
+						{(props.data as DeltaNodeData).comment}
+					</pre>
+				</Show>
+			</>
+		),
+		[NodeType.Lambda]: () => <Mark mark={SYM_LAMBDA} />,
+		[NodeType.Nu]: () => <HrmName name={(props.data as any).name} />,
+		[NodeType.Pi]: () => (
+			<>
+				<Mark mark={SYM_PI} />
+				<HrmName name={(props.data as any).name} />
+			</>
+		),
+	};
 	return (
 		<div class="hrm-node-item hrm-node-body">
-			<Switch>
-				<Match when={props.data.type === NodeType.Alpha}>
-					<div class="hrm-node-json">
-						{compactify((props.data as AlphaNodeData).val)}
-					</div>
-				</Match>
-				<Match when={props.data.type === NodeType.Beta}>
-					<Mark mark={SYM_BETA} />
-				</Match>
-				<Match when={props.data.type === NodeType.Delta}>
-					<Mark mark={SYM_DELTA} />
-					<Show when={(props.data as DeltaNodeData).comment}>
-						<pre class="hrm-node-comment no-user-select no-pointer-events">
-							{(props.data as DeltaNodeData).comment}
-						</pre>
-					</Show>
-				</Match>
-				<Match when={props.data.type === NodeType.Lambda}>
-					<Mark mark={SYM_LAMBDA} />
-				</Match>
-				<Match when={props.data.type === NodeType.Nu}>
-					<HrmName name={(props.data as any).name} />
-				</Match>
-				<Match when={props.data.type === NodeType.Pi}>
-					<Mark mark={SYM_PI} />
-					<HrmName name={(props.data as any).name} />
-				</Match>
-			</Switch>
+			<Dynamic component={options[props.data.type]} />
 		</div>
 	);
 };

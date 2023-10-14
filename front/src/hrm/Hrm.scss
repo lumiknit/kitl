@@ -6,6 +6,16 @@ div.hrm-container {
 	overflow: hidden;
 }
 
+// Common
+
+.hrm-rect {
+	border-radius: 0.25rem;
+}
+
+.hrm-pill {
+	border-radius: 9999rem;
+}
+
 // Node
 
 .hrm-node {
@@ -16,7 +26,6 @@ div.hrm-container {
 	padding: 0.3rem;
 
 	border: 2px solid var(--hrm-c-empty);
-	border-radius: 9999rem;
 	box-shadow: 0 0.125rem 0.25rem #0002;
 	background-color: var(--hrm-c-bg);
 	color: var(--hrm-c-fg);
@@ -67,7 +76,6 @@ div.hrm-container {
 .hrm-node-json {
 	// Pre
 	font-family: monospace;
-	font-size: 0.8rem;
 	white-space: pre-wrap;
 }
 
@@ -122,6 +130,23 @@ div.hrm-container {
 	border-radius: 999rem;
 }
 
+.hrm-handle-new {
+	position: absolute;
+	padding: 0;
+	width: 1rem;
+	height: 100%;
+	top: 0;
+	//background-color: #ff000080;
+}
+
+.hrm-handle-new.lhs {
+	left: -0.8rem;
+}
+
+.hrm-handle-new.rhs {
+	right: -0.8rem;
+}
+
 // Edge
 
 .hrm-edges {
@@ -140,7 +165,6 @@ div.hrm-container {
 	visibility: hidden;
 	outline: 2px dashed var(--hrm-c-connect);
 	outline-offset: 2px;
-	border-radius: 9999rem;
 }
 
 // Node Editor

@@ -11,7 +11,7 @@ import { State } from "./state";
 
 import "./Hrm.scss";
 import "./HrmColors.scss";
-import HrmEditingEdge from "./HrmEditingEdge";
+import HrmConnectingEdge from "./HrmConnectingEdge";
 import HrmEditOverlay from "./HrmEditOverlay";
 
 export type HrmProps = {
@@ -35,13 +35,14 @@ const Hrm: Component<HrmProps> = props => {
 				onClick={() => g.deselectAll()}
 				onDoubleClick={e => {
 					const p = g.viewPos(e.x, e.y);
-					g.addEmptyNode(p);
+					const id = g.addEmptyNode(p);
+					g.editNode(id);
 				}}
 				onLongPress={() => {
 					toast("[Hrm] Long press");
 				}}>
 				<HrmNodes g={g} />
-				<HrmEditingEdge g={g} />
+				<HrmConnectingEdge g={g} />
 				<HrmEditOverlay g={g} />
 			</HrmPane>
 		</div>

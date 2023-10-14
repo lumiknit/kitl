@@ -1,5 +1,11 @@
 import { For, Show, createEffect } from "solid-js";
-import { Getter, NodeID, ROOT_NODES } from "@/common";
+import {
+	Getter,
+	LEFT_EXPANDABLE_NODES,
+	NodeID,
+	RIGHT_EXPANDABLE_NODES,
+	ROOT_NODES,
+} from "@/common";
 import { Handle, Node } from "./data";
 
 import { addEventListeners } from "@/common/pointer-helper";
@@ -7,6 +13,8 @@ import { VWrap } from "@/common";
 import HrmHandle from "./HrmHandle";
 import { State } from "./state";
 import HrmNodeBody from "./HrmNodeBody";
+import HrmNewHandle from "./HrmNewHandle";
+import { addConnectionPointerEvents } from "./common-events";
 
 type HrmNodeProps = {
 	g: State;
@@ -19,25 +27,6 @@ const HrmNode = (props: HrmNodeProps) => {
 	console.log("[HrmNode] render");
 	let nodeRef: HTMLDivElement | undefined,
 		handleRef: HTMLDivElement | undefined;
-
-	const nodeEvents: { [key: string]: (e: any) => void } = {
-		pointerenter: () => {
-			if (ROOT_NODES.has(n().data.type)) return;
-			props.g.enterEditingEnd(props.id, nodeRef);
-		},
-		pointerdown: e => {
-			e.target?.releasePointerCapture(e.pointerId);
-		},
-		pointerleave: () => {
-			if (ROOT_NODES.has(n().data.type)) return;
-			props.g.leaveEditingEnd(nodeRef);
-		},
-		pointerup: e => {
-			if (ROOT_NODES.has(n().data.type)) return;
-			props.g.pickEditingEnd(props.id);
-			e.stopPropagation();
-		},
-	};
 
 	createEffect(() => {
 		if (!nodeRef) return;
@@ -66,7 +55,7 @@ const HrmNode = (props: HrmNodeProps) => {
 					);
 				},
 				onRelease: () => {
-					props.g.resetEditingEdge();
+					props.g.resetConnectingState();
 				},
 				onDoubleClick: () => {
 					props.g.editNode(props.id);
@@ -74,9 +63,7 @@ const HrmNode = (props: HrmNodeProps) => {
 			},
 			nodeRef,
 		);
-		for (const [k, v] of Object.entries(nodeEvents)) {
-			nodeRef.addEventListener(k, v, { passive: true });
-		}
+		addConnectionPointerEvents(props.g, nodeRef, props.id);
 	});
 
 	createEffect(() => {
@@ -84,7 +71,7 @@ const HrmNode = (props: HrmNodeProps) => {
 		addEventListeners(
 			{
 				onPress: e => {
-					props.g.editEdge(
+					props.g.addConnectingEnd(
 						props.id,
 						undefined,
 						props.g.viewPos(e.x, e.y),
@@ -92,10 +79,10 @@ const HrmNode = (props: HrmNodeProps) => {
 				},
 				onDrag: e => {
 					const p = props.g.viewPos(e.x, e.y);
-					if (p) props.g.updateEdgeEnd(p);
+					if (p) props.g.updateConnectingEnd(p);
 				},
 				onRelease: () => {
-					props.g.resetEditingEdge();
+					props.g.resetConnectingState();
 				},
 			},
 			handleRef,
@@ -114,16 +101,29 @@ const HrmNode = (props: HrmNodeProps) => {
 		hrmHandleRHS = (handle: VWrap<Handle>, index: Getter<number>) =>
 			hrmHandle(handle, () => index() + n().handles.lhs);
 
-	const position = () => n().position;
 	return (
 		<div
-			class={`hrm-node abs-lt ${n().selected ? "selected" : ""}`}
+			classList={{
+				"hrm-node": true,
+				"abs-lt": true,
+				selected: n().selected,
+				"hrm-rect": n().angular,
+				"hrm-pill": !n().angular,
+			}}
 			ref={nodeRef}
 			style={{
-				left: `${position().x}px`,
-				top: `${position().y}px`,
+				left: `${n().position.x}px`,
+				top: `${n().position.y}px`,
 				...props.g.nodeColorBd(n().color),
 			}}>
+			<Show when={LEFT_EXPANDABLE_NODES.has(n().data.type)}>
+				<HrmNewHandle
+					g={props.g}
+					nodeID={props.id}
+					handleID={-Infinity}
+					node={n()}
+				/>
+			</Show>
 			<div class="hrm-node-row no-user-select">
 				<For each={n().handles.slice(0, n().handles.lhs)}>
 					{hrmHandle}
@@ -133,6 +133,14 @@ const HrmNode = (props: HrmNodeProps) => {
 					{hrmHandleRHS}
 				</For>
 			</div>
+			<Show when={RIGHT_EXPANDABLE_NODES.has(n().data.type)}>
+				<HrmNewHandle
+					g={props.g}
+					nodeID={props.id}
+					handleID={Infinity}
+					node={n()}
+				/>
+			</Show>
 			<Show when={!ROOT_NODES.has(n().data.type)}>
 				<div ref={handleRef} class="hrm-node-handle" />
 			</Show>

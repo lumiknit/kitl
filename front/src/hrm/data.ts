@@ -17,7 +17,12 @@ import { JSX, createSignal } from "solid-js";
 /* Const */
 
 export type NodeColor = number; // Hue
-export const randomColor = () => 360 * Math.random();
+let lastColor = 0;
+export const resetColor = () => {
+	lastColor = 0;
+};
+export const randomColor = (): NodeColor =>
+	(lastColor = (lastColor + 57.295779513) % 360);
 
 export const cBdEmpty = "hrm-c-bd-empty";
 
@@ -74,6 +79,7 @@ export type Handles = VWrap<Handle>[] & {
 export type Node = {
 	ref?: HTMLElement;
 	color: NodeColor;
+	angular?: boolean;
 	data: NodeData;
 	handles: Handles;
 	position: Position;
@@ -93,7 +99,10 @@ const sourceHandle = (name: string): VWrap<Handle> =>
 		},
 	});
 
-const sourceToSinkHandle = (name: string, source?: Source): VWrap<Handle> =>
+export const sourceToSinkHandle = (
+	name: string,
+	source?: Source,
+): VWrap<Handle> =>
 	createSignal({
 		name: name,
 		data: {
@@ -152,6 +161,7 @@ const thawHandles = (node: CNode): Handles => {
 export const thawNode = (node: CNode): VWrap<Node> =>
 	createSignal({
 		color: randomColor(),
+		angular: node.x.type === NodeType.Alpha,
 		data: node.x,
 		handles: thawHandles(node),
 		position: node.pos,
@@ -163,6 +173,7 @@ export const thawNode = (node: CNode): VWrap<Node> =>
 	});
 
 export const thawNodes = (nodes: CNodes): Nodes => {
+	resetColor();
 	const result: Nodes = new Map();
 	for (const node of nodes) {
 		result.set(node.id, thawNode(node));
@@ -211,7 +222,7 @@ const freezeNodeData = (node: Node): NodeData => {
 			return {
 				type: NodeType.Nu,
 				name: node.data.name,
-				lhs: node.data.lhs,
+				lhs: node.handles.lhs,
 				args: node.handles.reduce<Source[]>((acc, h) => {
 					const frozen = freezeSource(h[0]().data);
 					if (frozen) acc.push(frozen);
@@ -244,6 +255,27 @@ export const freezeNodes = (nodes: Nodes): CNodes => {
 	return result;
 };
 
+/* Rename handles */
+
+export const renameHandles = (node: Node) => {
+	switch (node.data.type) {
+		case NodeType.Beta:
+			node.handles[0][1](h => ({ ...h, name: SYM_FN }));
+			node.handles[0][0]().name = SYM_FN;
+			for (let i = 1; i < node.handles.length; i++) {
+				node.handles[i][1](h => ({ ...h, name: String(i - 1) }));
+			}
+			break;
+		case NodeType.Nu:
+			for (let i = 0; i < node.handles.length; i++) {
+				node.handles[i][1](h => ({ ...h, name: String(i) }));
+			}
+			break;
+		default:
+			throw "Unimplemented";
+	}
+};
+
 /* Transform */
 export type Transform = {
 	x: number; // x offset
@@ -256,6 +288,9 @@ export type EditingEdge = {
 	isSource?: boolean;
 	nodeID?: NodeID;
 	handleID?: HandleID;
-	end: Position;
-	endRef?: HTMLDivElement;
+};
+
+export type EditingEdgeEnd = {
+	pos: Position;
+	ref?: HTMLDivElement;
 };

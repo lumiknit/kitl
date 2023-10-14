@@ -2,7 +2,7 @@ import { Component, Show, createEffect, createMemo } from "solid-js";
 
 import { Handle, HandleType, Node, SinkHandleData } from "./data";
 import { State } from "./state";
-import { HandleID, NodeID, VWrap, pathBetweenPills, pathSelf } from "@/common";
+import { HandleID, NodeID, VWrap, pathBetweenRects, pathSelf } from "@/common";
 import { addEventListeners } from "@/common/pointer-helper";
 
 type HrmEdgeProps = {
@@ -34,7 +34,7 @@ const HrmEdgeSub = (props: HrmEdgeProps) => {
 		if (!srcRect || !handleRect) return "";
 		return props.nodeID === sourceID
 			? pathSelf(srcRect, handleRect)
-			: pathBetweenPills(srcRect, handleRect);
+			: pathBetweenRects(srcRect, handleRect);
 	});
 
 	createEffect(() => {
@@ -49,13 +49,18 @@ const HrmEdgeSub = (props: HrmEdgeProps) => {
 		);
 	});
 
+	const style = () => {
+		const c = h().color;
+		return c ? props.g.nodeColorStroke(c) : {};
+	};
+
 	return (
 		<>
 			<path
 				classList={{
 					"hrm-edge-path": true,
 				}}
-				style={props.g.nodeColorStroke(h().color)}
+				style={style()}
 				stroke-width="4px"
 				fill="transparent"
 				d={path()}

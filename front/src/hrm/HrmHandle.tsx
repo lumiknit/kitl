@@ -5,6 +5,7 @@ import { State } from "./state";
 import { VWrap } from "@/common/types";
 import { addEventListeners } from "@/common/pointer-helper";
 import { HandleID, NodeID } from "@/common";
+import { addConnectionPointerEvents } from "./common-events";
 
 type HrmHandleProps = {
 	g: State;
@@ -17,19 +18,6 @@ type HrmHandleProps = {
 const HrmHandle: Component<HrmHandleProps> = props => {
 	const [h, update] = props.handleW;
 	let handleRef: HTMLDivElement | undefined;
-
-	const handleEvents: { [key: string]: (e: any) => void } = {
-		pointerenter: () =>
-			props.g.enterEditingEnd(props.nodeID, handleRef, props.handleID),
-		pointerdown: e => {
-			e.target?.releasePointerCapture(e.pointerId);
-		},
-		pointerleave: () => props.g.leaveEditingEnd(handleRef),
-		pointerup: e => {
-			props.g.pickEditingEnd(props.nodeID, props.handleID);
-			e.stopPropagation();
-		},
-	};
 
 	createEffect(() => {
 		if (!handleRef) return;
@@ -56,9 +44,12 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 				? h
 				: { ...h, ref: handleRef, color, style };
 		});
-		for (const [k, v] of Object.entries(handleEvents)) {
-			handleRef.addEventListener(k, v);
-		}
+		addConnectionPointerEvents(
+			props.g,
+			handleRef,
+			props.nodeID,
+			props.handleID,
+		);
 	});
 
 	createEffect(() => {
@@ -66,17 +57,17 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 		addEventListeners(
 			{
 				onPress: e => {
-					props.g.editEdge(
+					props.g.addConnectingEnd(
 						props.nodeID,
 						props.handleID,
 						props.g.viewPos(e.x, e.y),
 					);
 				},
 				onDrag: e => {
-					props.g.updateEdgeEnd(props.g.viewPos(e.x, e.y)!);
+					props.g.updateConnectingEnd(props.g.viewPos(e.x, e.y)!);
 				},
 				onRelease: () => {
-					props.g.resetEditingEdge();
+					props.g.resetConnectingState();
 				},
 				onDoubleClick: () => {
 					props.g.deleteEdge(props.nodeID, props.handleID);

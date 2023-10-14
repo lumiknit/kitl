@@ -68,3 +68,6 @@ export const RGB2HSL = (
 	}
 	return [h, s, sm / 2];
 };
+
+export const hslCss = (h: number, s: number, l: number): string =>
+	`hsl(${h}, ${s * 100}%, ${l * 100}%)`;

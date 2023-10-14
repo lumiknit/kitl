@@ -44,9 +44,8 @@ const HrmEditOverlayInner: Component<InnerProps> = props => {
 	createEffect(() => {
 		if (ref) {
 			const events = ["mousedown", "touchstart", "pointerdown", "wheel"];
-			const stopPropagation = (e: Event) => e.stopPropagation();
 			for (const e of events) {
-				ref.addEventListener(e, stopPropagation);
+				ref.addEventListener(e, (e: Event) => e.stopPropagation());
 			}
 		}
 	});
