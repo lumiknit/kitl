@@ -55,23 +55,25 @@ export const stringifyNodeData = (x: NodeData): string => {
 		case NodeType.Alpha:
 			return JSON.stringify(x.val, null, 2);
 		case NodeType.Beta:
-			return `,${x.args.length}`;
+			return x.args.length <= 0 ? "" : `,${x.args.length}`;
 		case NodeType.Delta:
 			return `${x.comment}`;
 		case NodeType.Lambda:
 			return `λ`;
 		case NodeType.Nu: {
-			const name = x.name;
-			const ns = name.module ? `@${name.module}` : "";
-			const lhs = x.lhs;
-			let rhs = x.args.length - lhs;
-			if (rhs < 0) rhs = 0;
-			return `${name.name}${ns},${lhs},${rhs}`;
+			const name = x.name,
+				ns = name.module ? `@${name.module}` : "",
+				argc =
+					x.args.length <= 0
+						? ""
+						: `,${x.lhs},${Math.max(0, x.args.length - x.lhs)}`;
+			return `${name.name}${ns}${argc}`;
 		}
 		case NodeType.Pi: {
-			const name = x.name;
-			const args = x.elems;
-			return `λ ${name.name}@${name.module},${args}`;
+			const name = x.name,
+				ns = name.module ? `@${name.module}` : "",
+				argc = x.elems <= 0 ? "" : `,${x.elems}`;
+			return `λ ${name.name}${ns}${argc}`;
 		}
 	}
 };

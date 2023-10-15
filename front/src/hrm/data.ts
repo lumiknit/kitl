@@ -11,6 +11,7 @@ import {
 	Source,
 	clamp,
 } from "@/common";
+import { PointerID } from "@/common/pointer-helper";
 
 import { JSX, createSignal } from "solid-js";
 
@@ -285,8 +286,9 @@ export type Transform = {
 
 /* Editing Edges */
 export type EditingEdge = {
-	isSource?: boolean;
-	nodeID?: NodeID;
+	pointerID: PointerID;
+	isSource: boolean;
+	nodeID: NodeID;
 	handleID?: HandleID;
 };
 

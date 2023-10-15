@@ -31,6 +31,7 @@ import {
 	thawNodes,
 } from "./data";
 import { HSL, HSL2RGB, RGB2GRAY, hslCss } from "@/common/color";
+import { PointerID } from "@/common/pointer-helper";
 
 /* State */
 
@@ -53,7 +54,7 @@ export class State {
 	editingNode: VWrap<CNode | undefined>;
 
 	// Connecting Edge
-	connectingEdge: VWrap<ConnectingEdge>;
+	connectingEdge: VWrap<ConnectingEdge | undefined>;
 	connectingEnd: VWrap<ConnectingEnd>;
 
 	// Undo/redo history
@@ -71,7 +72,7 @@ export class State {
 		this.nodes = nodes;
 		this.setNodes = setNodes;
 		this.editingNode = createSignal();
-		this.connectingEdge = createSignal({});
+		this.connectingEdge = createSignal();
 		this.connectingEnd = createSignal({ pos: origin });
 		this.transform = [() => ({ x: 0, y: 0, z: 1 }), () => {}];
 		// History
@@ -203,7 +204,7 @@ export class State {
 		const node = this.nodes().get(id);
 		if (!node) return;
 		const n = node[0]();
-		if (!handle) {
+		if (handle === undefined) {
 			const r = this.viewRect(n.ref);
 			if (!r) return;
 			return {
@@ -358,7 +359,7 @@ export class State {
 
 	resetConnectingState() {
 		batch(() => {
-			this.connectingEdge[1]({});
+			this.connectingEdge[1](undefined);
 			this.connectingEnd[1]({ pos: origin });
 		});
 	}
@@ -366,7 +367,7 @@ export class State {
 	setTempConnectingEnd(id: NodeID, ref?: HTMLDivElement, handle?: HandleID) {
 		batch(() => {
 			const e = this.connectingEdge[0]();
-			if (e.nodeID && (e.nodeID !== id || e.handleID !== handle)) {
+			if (e && (e.nodeID !== id || e.handleID !== handle)) {
 				this.connectingEnd[1](ee => ({
 					...ee,
 					ref,
@@ -378,7 +379,7 @@ export class State {
 	unsetTempConnectingEnd(ref?: HTMLDivElement) {
 		batch(() => {
 			const e = this.connectingEdge[0]();
-			if (e.nodeID) {
+			if (e) {
 				this.connectingEnd[1](ee =>
 					ee.ref === ref ? { ...ee, ref: undefined } : ee,
 				);
@@ -389,7 +390,7 @@ export class State {
 	finConnecting(id: NodeID, handle?: HandleID) {
 		// If editing edge from other exists, connect.
 		const e = this.connectingEdge[0]();
-		if (e.nodeID && (e.nodeID !== id || e.handleID !== handle)) {
+		if (e && (e.nodeID !== id || e.handleID !== handle)) {
 			if (e.isSource && handle !== undefined) {
 				this.connectEdge(id, handle, e.nodeID, e.handleID);
 			} else if (!e.isSource && e.handleID !== undefined) {
@@ -475,7 +476,12 @@ export class State {
 		}));
 	}
 
-	addConnectingEnd(id: NodeID, handle?: HandleID, pos?: Position) {
+	addConnectingEnd(
+		pointerID: PointerID,
+		id: NodeID,
+		handle?: HandleID,
+		pos?: Position,
+	) {
 		// Add to editing edge, and add edge when it completed
 		// Find the node
 		const node = this.nodes().get(id);
@@ -489,17 +495,18 @@ export class State {
 		}
 		// Check if it is a source
 		const e = this.connectingEdge[0]();
-		if (e.nodeID === id && e.handleID === handle) {
+		if (e && e.nodeID === id && e.handleID === handle) {
 			this.resetConnectingState();
 			return;
 		}
-		if (!isSource === e.isSource) {
+		if (e && !isSource === e.isSource) {
 			return isSource
 				? this.connectEdge(e.nodeID!, e.handleID!, id, handle)
 				: this.connectEdge(id, handle!, e.nodeID!, e.handleID);
 		} else {
 			batch(() => {
 				this.connectingEdge[1]({
+					pointerID: pointerID,
 					isSource,
 					nodeID: id,
 					handleID: handle,

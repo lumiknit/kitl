@@ -14,7 +14,6 @@ import HrmHandle from "./HrmHandle";
 import { State } from "./state";
 import HrmNodeBody from "./HrmNodeBody";
 import HrmNewHandle from "./HrmNewHandle";
-import { addConnectionPointerEvents } from "./common-events";
 
 type HrmNodeProps = {
 	g: State;
@@ -43,6 +42,34 @@ const HrmNode = (props: HrmNodeProps) => {
 		// DO NOT touch handles
 		addEventListeners(
 			{
+				capture: true,
+				onEnter: pointerID => {
+					const e = props.g.connectingEdge[0]();
+					if (e && e.pointerID === pointerID) {
+						props.g.setTempConnectingEnd(
+							props.id,
+							nodeRef,
+							undefined,
+						);
+					}
+				},
+				onLeave: () => {
+					const cee = props.g.connectingEnd[0]();
+					if (cee.ref === handleRef) {
+						props.g.unsetTempConnectingEnd(handleRef);
+					}
+				},
+				onUp: e => {
+					const ce = props.g.connectingEdge[0]();
+					if (ce) {
+						props.g.addConnectingEnd(
+							e.id,
+							props.id,
+							undefined,
+							props.g.viewPos(e.x, e.y),
+						);
+					}
+				},
 				onClick: () => {
 					props.g.selectOneNode(props.id);
 				},
@@ -54,35 +81,25 @@ const HrmNode = (props: HrmNodeProps) => {
 						props.g.transform[0]().z,
 					);
 				},
-				onRelease: () => {
-					props.g.resetConnectingState();
-				},
 				onDoubleClick: () => {
 					props.g.editNode(props.id);
 				},
 			},
 			nodeRef,
 		);
-		addConnectionPointerEvents(props.g, nodeRef, props.id);
 	});
 
 	createEffect(() => {
 		if (!handleRef) return;
 		addEventListeners(
 			{
-				onPress: e => {
+				onDown: e => {
 					props.g.addConnectingEnd(
+						e.id,
 						props.id,
 						undefined,
 						props.g.viewPos(e.x, e.y),
 					);
-				},
-				onDrag: e => {
-					const p = props.g.viewPos(e.x, e.y);
-					if (p) props.g.updateConnectingEnd(p);
-				},
-				onRelease: () => {
-					props.g.resetConnectingState();
 				},
 			},
 			handleRef,

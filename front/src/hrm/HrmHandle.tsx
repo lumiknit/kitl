@@ -5,7 +5,6 @@ import { State } from "./state";
 import { VWrap } from "@/common/types";
 import { addEventListeners } from "@/common/pointer-helper";
 import { HandleID, NodeID } from "@/common";
-import { addConnectionPointerEvents } from "./common-events";
 
 type HrmHandleProps = {
 	g: State;
@@ -44,30 +43,39 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 				? h
 				: { ...h, ref: handleRef, color, style };
 		});
-		addConnectionPointerEvents(
-			props.g,
-			handleRef,
-			props.nodeID,
-			props.handleID,
-		);
 	});
 
 	createEffect(() => {
 		if (!handleRef) return;
 		addEventListeners(
 			{
-				onPress: e => {
+				releaseOnLeave: true,
+				onEnter: pointerID => {
+					const e = props.g.connectingEdge[0]();
+					if (e && e.pointerID === pointerID) {
+						props.g.setTempConnectingEnd(
+							props.nodeID,
+							handleRef,
+							props.handleID,
+						);
+					}
+				},
+				onLeave: () => {
+					const cee = props.g.connectingEnd[0]();
+					if (cee.ref === handleRef) {
+						props.g.unsetTempConnectingEnd(handleRef);
+					}
+				},
+				onDown: e => {
 					props.g.addConnectingEnd(
+						e.id,
 						props.nodeID,
 						props.handleID,
 						props.g.viewPos(e.x, e.y),
 					);
 				},
-				onDrag: e => {
-					props.g.updateConnectingEnd(props.g.viewPos(e.x, e.y)!);
-				},
-				onRelease: () => {
-					props.g.resetConnectingState();
+				onUp: () => {
+					props.g.finConnecting(props.nodeID, props.handleID);
 				},
 				onDoubleClick: () => {
 					props.g.deleteEdge(props.nodeID, props.handleID);
