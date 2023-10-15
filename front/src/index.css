@@ -5,6 +5,7 @@ body {
 	overflow: hidden;
 	overscroll-behavior: contain;
 	background-color: #f00;
+	touch-action: none;
 }
 
 svg.icon {

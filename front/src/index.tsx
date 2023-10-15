@@ -14,19 +14,5 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 }
 
 // Disable double tap zoom or pinch zoom
-document.addEventListener(
-	"touchstart",
-	event => {
-		event.preventDefault();
-	},
-	{ passive: false },
-);
-document.addEventListener(
-	"touchmove",
-	function (event) {
-		event.preventDefault();
-	},
-	{ passive: false },
-);
 
 render(() => <App />, root!);

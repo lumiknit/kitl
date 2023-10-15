@@ -232,10 +232,9 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 			const now = Date.now();
 			if (!pointer.moved && s.pointers.size === 0) {
 				// Click
+				handlers.onClick?.(event);
 				if (now - s.lastClicked < DOUBLE_CLICK_TIME) {
 					handlers.onDoubleClick?.(event);
-				} else {
-					handlers.onClick?.(event);
 				}
 				s.lastClicked = now;
 				s.maxPointers = 0;
@@ -244,6 +243,6 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 	};
 
 	for (const [k, v] of Object.entries(events)) {
-		el.addEventListener(k, v as any);
+		el.addEventListener(k, v as any, { passive: false });
 	}
 };

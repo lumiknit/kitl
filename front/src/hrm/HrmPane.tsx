@@ -135,24 +135,20 @@ const HrmPane: Component<HrmPaneProps> = props => {
 			},
 			{ passive: false },
 		);
-		for (const [, , ref] of controls) {
-			ref?.addEventListener("mousedown", e => {
-				e.stopPropagation();
-			});
+		for (const [, onClick, ref] of controls) {
+			if (!ref) continue;
+			addEventListeners(
+				{
+					capture: true,
+					onClick: onClick,
+				},
+				ref,
+			);
 		}
 	});
 
 	return (
 		<div ref={paneRef} class="hrm-pane w-100 h-100">
-			<div class="hrm-pane-controls">
-				<For each={controls}>
-					{c => (
-						<button ref={c[2]} onPointerDown={c[1]}>
-							{c[0]}
-						</button>
-					)}
-				</For>
-			</div>
 			<div
 				class="hrm-view"
 				ref={props.g.viewRef}
@@ -160,6 +156,11 @@ const HrmPane: Component<HrmPaneProps> = props => {
 					transform: transformToStyle(t()),
 				}}>
 				{props.children}
+			</div>
+			<div class="hrm-pane-controls">
+				<For each={controls}>
+					{c => <button ref={c[2]}>{c[0]}</button>}
+				</For>
 			</div>
 		</div>
 	);
