@@ -17,8 +17,9 @@ import {
 	ShapedRect,
 } from "@/common";
 import {
-	EditingEdge as ConnectingEdge,
-	EditingEdgeEnd as ConnectingEnd,
+	ConnectingEdge as ConnectingEdge,
+	ConnectingEdgeEnd as ConnectingEnd,
+	EditingNode,
 	HandleType,
 	Nodes,
 	SinkHandleData,
@@ -51,7 +52,7 @@ export class State {
 	viewRef?: HTMLDivElement;
 
 	// Editing Node
-	editingNode: VWrap<CNode | undefined>;
+	editingNode: VWrap<EditingNode | undefined>;
 
 	// Connecting Edge
 	connectingEdge: VWrap<ConnectingEdge | undefined>;
@@ -523,7 +524,10 @@ export class State {
 		// Find node
 		const node = this.nodes().get(id);
 		if (node && !ROOT_NODES.has(node[0]().data.type)) {
-			this.editingNode[1](freezeNode(id, node[0]()));
+			this.editingNode[1]({
+				node: freezeNode(id, node[0]()),
+				color: node[0]().color,
+			});
 		}
 	}
 
@@ -532,15 +536,20 @@ export class State {
 			// Convert string to node
 			const editing = this.editingNode[0]();
 			if (!editing) return;
-			const id = editing?.id;
+			const id = editing.node.id;
 			const data = parseNodeData(s);
 			const newNode: CNode = {
-				...editing,
+				...editing.node,
 				x: data,
 			};
 			const thawed = thawNode(newNode);
 			// Get original node
 			const oldNode = this.nodes().get(id);
+			if (!oldNode) return;
+			thawed[1](n => ({
+				...n,
+				color: oldNode[0]().color,
+			}));
 			// Transfer original edges
 			const oldHandles = oldNode ? oldNode[0]().handles : [];
 			const newHandles = thawed[0]().handles;

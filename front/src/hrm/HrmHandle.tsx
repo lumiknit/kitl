@@ -49,7 +49,7 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 		if (!handleRef) return;
 		addEventListeners(
 			{
-				releaseOnLeave: true,
+				capture: false,
 				onEnter: pointerID => {
 					const e = props.g.connectingEdge[0]();
 					if (e && e.pointerID === pointerID) {

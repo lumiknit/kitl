@@ -71,7 +71,11 @@ export const nearestPointInRect = (
 	return [cx + ox, cy + oy, vx, vy];
 };
 
-export const pathBetweenRects = (srcRect: ShapedRect, sinkRect: ShapedRect) => {
+export const pathBetweenRects = (
+	srcRect: ShapedRect,
+	sinkRect: ShapedRect,
+	off: number,
+) => {
 	const [x2, y2, vx2, vy2] = nearestPointInRect(
 			sinkRect.x + sinkRect.w / 2,
 			sinkRect.y + sinkRect.h / 2,
@@ -79,9 +83,9 @@ export const pathBetweenRects = (srcRect: ShapedRect, sinkRect: ShapedRect) => {
 		),
 		[x1, y1, vx1, vy1] = nearestPointInRect(x2, y2, sinkRect),
 		d = 0.2 * dist(x2 - x1, y2 - y1);
-	return `M ${x1 - vx1 / 2} ${y1 - vy1 / 2} C ${x1 + vx1 * d} ${
+	return `M ${x1 - off * vx1} ${y1 - off * vy1} C ${x1 + vx1 * d} ${
 		y1 + vy1 * d
-	}, ${x2 + vx2 * d} ${y2 + vy2 * d}, ${x2 - vx2 / 2} ${y2 - vy2 / 2}`;
+	}, ${x2 + vx2 * d} ${y2 + vy2 * d}, ${x2 - off * vx2} ${y2 - off * vy2}`;
 };
 
 export const pathSelf = (srcRect: Rect, sinkRect: Rect) => {

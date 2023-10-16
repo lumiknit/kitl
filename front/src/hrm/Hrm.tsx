@@ -36,7 +36,9 @@ const Hrm: Component<HrmProps> = props => {
 				onDoubleClick={e => {
 					const p = g.viewPos(e.x, e.y);
 					const id = g.addEmptyNode(p);
-					g.editNode(id);
+					setTimeout(() => {
+						g.editNode(id);
+					}, 30);
 				}}
 				onLongPress={() => {
 					toast("[Hrm] Long press");

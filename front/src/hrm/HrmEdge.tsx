@@ -33,8 +33,11 @@ const HrmEdgeSub = (props: HrmEdgeProps) => {
 			handleRect = props.g.viewRect(handle.ref);
 		if (!srcRect || !handleRect) return "";
 		return props.nodeID === sourceID
-			? pathSelf(srcRect, handleRect)
-			: pathBetweenRects(srcRect, handleRect);
+			? [pathSelf(srcRect, handleRect), pathSelf(srcRect, handleRect)]
+			: [
+					pathBetweenRects(srcRect, handleRect, 0.5),
+					pathBetweenRects(srcRect, handleRect, -0.5),
+			  ];
 	});
 
 	createEffect(() => {
@@ -60,10 +63,21 @@ const HrmEdgeSub = (props: HrmEdgeProps) => {
 				classList={{
 					"hrm-edge-path": true,
 				}}
+				style={{
+					stroke: "#fff",
+				}}
+				stroke-width="8px"
+				fill="transparent"
+				d={path()[1]}
+			/>
+			<path
+				classList={{
+					"hrm-edge-path": true,
+				}}
 				style={style()}
 				stroke-width="4px"
 				fill="transparent"
-				d={path()}
+				d={path()[0]}
 			/>
 			<path
 				class="cursor-pointer"
@@ -71,7 +85,7 @@ const HrmEdgeSub = (props: HrmEdgeProps) => {
 				//stroke="#f004"
 				stroke-width="1rem"
 				fill="transparent"
-				d={path()}
+				d={path()[0]}
 			/>
 		</>
 	);

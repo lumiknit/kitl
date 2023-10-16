@@ -285,14 +285,19 @@ export type Transform = {
 };
 
 /* Editing Edges */
-export type EditingEdge = {
+export type ConnectingEdge = {
 	pointerID: PointerID;
 	isSource: boolean;
 	nodeID: NodeID;
 	handleID?: HandleID;
 };
 
-export type EditingEdgeEnd = {
+export type ConnectingEdgeEnd = {
 	pos: Position;
 	ref?: HTMLDivElement;
+};
+
+export type EditingNode = {
+	node: CNode;
+	color: NodeColor;
 };

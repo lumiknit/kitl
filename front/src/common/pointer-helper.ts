@@ -65,7 +65,6 @@ export type DragEvent = BaseEvent & {
 
 export type Props = {
 	capture?: boolean;
-	releaseOnLeave?: boolean;
 	// Enter events
 	onEnter?: (id: PointerID) => void;
 	onLeave?: (id: PointerID) => void;
@@ -114,11 +113,7 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 				ct(s.longPress.u);
 				s.longPress = undefined;
 			}
-			s.pointers.delete(e.pointerId);
 			handlers.onLeave?.(e.pointerId);
-			if (handlers.releaseOnLeave) {
-				(e.target as any).releasePointerCapture(e.pointerId);
-			}
 		},
 		pointerdown: (e: PointerEvent) => {
 			e.preventDefault();
@@ -131,11 +126,14 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 				pointers: s.pointers.size,
 				modifiers: modifiersFromHTMLEvent(e),
 			});
-			if (!handlers.capture) {
-				(e.target as any).releasePointerCapture(id);
-				return;
+			(e.target as any).releasePointerCapture(id);
+			if (handlers.capture) {
+				console.log("CAPTURE");
+				(e.currentTarget as any).setPointerCapture(id);
+			} else {
+				console.log("RELEASE");
+				(e.currentTarget as any).releasePointerCapture(id);
 			}
-			(e.target as any).setPointerCapture(id);
 			const p: Pointer = {
 				id,
 				x: e.clientX,
@@ -144,7 +142,6 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 				timestamp: Date.now(),
 			};
 			s.pointers.set(id, p);
-
 			if (s.longPress) {
 				// Cancel long press
 				ct(s.longPress.u);

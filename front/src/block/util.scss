@@ -24,7 +24,7 @@
 }
 
 /* Margin */
-$spacer: 1rem;
+$spacer: 0.25rem;
 
 @for $i from 0 through 2 {
 	.m-#{$i} {

@@ -6,6 +6,8 @@ import InputCode from "@/block/InputCode";
 import { TbSquareCheck, TbTrash } from "solid-icons/tb";
 
 import * as jasen from "@/jasen";
+import { addEventListeners } from "@/common/pointer-helper";
+import { NodeColor } from "./data";
 
 type SuggestProps = {
 	label: string;
@@ -35,6 +37,7 @@ const Suggests: Component<SuggestsProps> = props => {
 
 type InnerProps = {
 	g: State;
+	color: NodeColor;
 	node: Node;
 };
 
@@ -43,10 +46,7 @@ const HrmEditOverlayInner: Component<InnerProps> = props => {
 	let taRef: HTMLTextAreaElement | undefined;
 	createEffect(() => {
 		if (ref) {
-			const events = ["mousedown", "touchstart", "pointerdown", "wheel"];
-			for (const e of events) {
-				ref.addEventListener(e, (e: Event) => e.stopPropagation());
-			}
+			addEventListeners({}, ref);
 		}
 	});
 	return (
@@ -54,9 +54,12 @@ const HrmEditOverlayInner: Component<InnerProps> = props => {
 			ref={ref}
 			class="hrm-edit-overlay"
 			style={{
-				transform: `translate(${props.node.pos.x}px, ${props.node.pos.y}px)`,
+				...props.g.nodeColorBd(props.color),
+				transform: `translate(${props.node.pos.x - 16}px, ${
+					props.node.pos.y - 16
+				}px)`,
 			}}>
-			<InputGroup class="shadow-1 w-fit">
+			<InputGroup class="shadow-1 w-fit mb-1">
 				<Button
 					color={Color.danger}
 					onClick={() => props.g.cancelEditNode()}>
@@ -111,7 +114,11 @@ type HrmEditOverlayProps = {
 const HrmEditOverlay: Component<HrmEditOverlayProps> = props => {
 	return (
 		<Show when={props.g.editingNode[0]()}>
-			<HrmEditOverlayInner g={props.g} node={props.g.editingNode[0]()!} />
+			<HrmEditOverlayInner
+				g={props.g}
+				color={props.g.editingNode[0]()!.color}
+				node={props.g.editingNode[0]()!.node}
+			/>
 		</Show>
 	);
 };

@@ -82,7 +82,9 @@ const HrmNode = (props: HrmNodeProps) => {
 					);
 				},
 				onDoubleClick: () => {
-					props.g.editNode(props.id);
+					setTimeout(() => {
+						props.g.editNode(props.id);
+					}, 100);
 				},
 			},
 			nodeRef,
