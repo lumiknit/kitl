@@ -31,15 +31,12 @@ import {
 	thawNode,
 	thawNodes,
 } from "./data";
-import { HSL, HSL2RGB, RGB2GRAY, hslCss } from "@/common/color";
+import { HSL2RGB, RGB2GRAY, hslCss } from "@/common/color";
 import { PointerID } from "@/common/pointer-helper";
 
 /* State */
 
 export class State {
-	// Configuration
-	nodeColor: VWrap<HSL>; // Color of nodes
-
 	// Graph data
 	nodes: () => Nodes;
 	setNodes: (a: Nodes | ((ns: Nodes) => Nodes)) => void;
@@ -79,8 +76,6 @@ export class State {
 		// History
 		this.history = [initialNodes];
 		this.historyIndex = 0;
-		// Color
-		this.nodeColor = createSignal({ h: 0, s: 0.52, l: 0.7 });
 	}
 
 	// Graph save/load
@@ -97,10 +92,17 @@ export class State {
 
 	// Color theme
 
+	getSL() {
+		const computed = getComputedStyle(document.documentElement),
+			s = Number(computed.getPropertyValue("--hrm-node-saturate")),
+			l = Number(computed.getPropertyValue("--hrm-node-lightness"));
+		return [s, l];
+	}
+
 	nodeColorBg(hue: number) {
-		const c = this.nodeColor[0](),
-			fg = RGB2GRAY(...HSL2RGB(hue, c.s, c.l)) > 192 ? "#000" : "#fff",
-			bg = hslCss(hue, c.s, c.l);
+		const [s, l] = this.getSL(),
+			fg = RGB2GRAY(...HSL2RGB(hue, s, l)) > 192 ? "#000" : "#fff",
+			bg = hslCss(hue, s, l);
 		return {
 			color: fg,
 			"background-color": bg,
@@ -109,16 +111,16 @@ export class State {
 	}
 
 	nodeColorBd(hue: number) {
-		const c = this.nodeColor[0]();
+		const [s, l] = this.getSL();
 		return {
-			"border-color": hslCss(hue, c.s, c.l),
+			"border-color": hslCss(hue, s, l),
 		};
 	}
 
 	nodeColorStroke(hue: number) {
-		const c = this.nodeColor[0]();
+		const [s, l] = this.getSL();
 		return {
-			stroke: hslCss(hue, c.s, c.l),
+			stroke: hslCss(hue, s, l),
 		};
 	}
 

@@ -1,91 +1,52 @@
-:root {
-	--rgb-black: 0, 0, 0;
-	--rgb-white: 255, 255, 255;
-
-	--rgb-fg: 20, 20, 20;
-	--rgb-fg-light: 40, 40, 40;
-	--rgb-fg-dark: 0, 0, 0;
-	--rgb-fg-soft: 40, 40, 40;
-	--rgb-fg-hard: 0, 0, 0;
-	--rgb-fg-text: var(--rgb-white);
-	--rgb-bg: 235, 235, 235;
-	--rgb-bg-light: 255, 255, 255;
-	--rgb-bg-dark: 215, 215, 215;
-	--rgb-bg-soft: 215, 215, 215;
-	--rgb-bg-hard: 255, 255, 255;
-	--rgb-bg-text: var(--rgb-black);
-
-	--rgb-primary: 39, 123, 233;
-	--rgb-primary-light: 93, 156, 236;
-	--rgb-primary-dark: 40, 103, 184;
-	--rgb-primary-text: var(--rgb-white);
-	--rgb-secondary: 140, 148, 156;
-	--rgb-secondary-light: 173, 180, 187;
-	--rgb-secondary-dark: 99, 109, 120;
-	--rgb-secondary-text: var(--rgb-white);
-	--rgb-success: 140, 193, 82;
-	--rgb-success-light: 160, 212, 104;
-	--rgb-success-dark: 107, 164, 46;
-	--rgb-success-text: var(--rgb-white);
-	--rgb-danger: 218, 68, 83;
-	--rgb-danger-light: 237, 85, 101;
-	--rgb-danger-dark: 179, 30, 45;
-	--rgb-danger-text: var(--rgb-white);
-	--rgb-warning: 255, 206, 84;
-	--rgb-warning-light: 247, 219, 150;
-	--rgb-warning-dark: 246, 187, 66;
-	--rgb-warning-text: var(--rgb-black);
-}
-
 $color-names: (fg, bg, primary, secondary, success, danger, warning);
 
 // bg colors
 
 @each $color in $color-names {
 	.bg-#{$color} {
-		background-color: rgba(var(--rgb-#{$color}), 1);
+		background-color: rgba(var(--b-rgb-#{$color}), 1);
 	}
 
 	.fg-#{$color} {
-		color: rgba(var(--rgb-#{$color}), 1);
+		color: rgba(var(--b-rgb-#{$color}), 1);
 	}
 
 	/* Buttons */
 
 	.btn-#{$color} {
-		color: rgba(var(--rgb-#{$color}-text), 1);
-		background-color: rgba(var(--rgb-#{$color}), 1);
-		border-color: rgba(var(--rgb-#{$color}), 1);
+		color: rgba(var(--b-rgb-#{$color}-text), 1);
+		background-color: rgba(var(--b-rgb-#{$color}), 1);
+		border-color: rgba(var(--b-rgb-#{$color}), 1);
 	}
 
 	.btn-ol-#{$color} {
-		color: rgba(var(--rgb-#{$color}), 1);
+		color: rgba(var(--b-rgb-#{$color}), 1);
 		background-color: transparent;
-		border-color: rgba(var(--rgb-#{$color}), 1);
+		border-color: rgba(var(--b-rgb-#{$color}), 1);
 	}
 
 	.btn.btn-#{$color}:hover,
 	.btn.btn-ol-#{$color}:hover {
-		color: rgba(var(--rgb-#{$color}-text), 1);
-		background-color: rgba(var(--rgb-#{$color}-light), 1);
-		border-color: rgba(var(--rgb-#{$color}-light), 1);
+		color: rgba(var(--b-rgb-#{$color}-text), 1);
+		background-color: rgba(var(--b-rgb-#{$color}-light), 1);
+		border-color: rgba(var(--b-rgb-#{$color}-light), 1);
 	}
 
 	.btn.btn-#{$color}:active,
 	.btn.btn-ol-#{$color}:active {
-		color: rgba(var(--rgb-#{$color}-text), 1);
-		background-color: rgba(var(--rgb-#{$color}-dark), 1);
-		border-color: rgba(var(--rgb-#{$color}-dark), 1);
+		color: rgba(var(--b-rgb-#{$color}-text), 1);
+		background-color: rgba(var(--b-rgb-#{$color}-dark), 1);
+		border-color: rgba(var(--b-rgb-#{$color}-dark), 1);
 	}
 }
 
 // Hard colors
 @each $i in (bg, fg) {
 	.bg-#{$i}-hard {
-		background-color: rgba(var(--rgb-#{$i}-hard), 1);
+		background-color: rgba(var(--b-rgb-#{$i}-hard), 1);
 	}
 
 	.fg-#{$i}-hard {
-		color: rgba(var(--rgb-#{$i}-hard), 1);
+		color: rgba(var(--b-rgb-#{$i}-hard), 1);
 	}
 }

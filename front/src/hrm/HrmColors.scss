@@ -1,26 +1,10 @@
-$node-color-fg: #000;
-$node-color-bg: #fff;
-$node-color-empty: #bbb;
-$node-color-comment: #548154;
-$node-color-select: #0095ff;
-$node-color-connect: #c21717;
-
 .hrm-c-bd-empty {
 	border-style: dotted;
-	border-color: $node-color-empty;
-	color: $node-color-empty;
-	background-color: $node-color-bg;
+	border-color: var(--hrm-c-empty);
+	color: var(--hrm-c-empty);
+	background-color: var(--hrm-c-bg);
 }
 
 .hrm-c-stroke-empty {
-	stroke: $node-color-empty;
-}
-
-:root {
-	--hrm-c-fg: #{$node-color-fg};
-	--hrm-c-bg: #{$node-color-bg};
-	--hrm-c-empty: #{$node-color-empty};
-	--hrm-c-comment: #{$node-color-comment};
-	--hrm-c-select: #{$node-color-select};
-	--hrm-c-connect: #{$node-color-connect};
+	stroke: var(--hrm-c-empty);
 }

@@ -62,11 +62,9 @@ const HrmEdgeSub = (props: HrmEdgeProps) => {
 			<path
 				classList={{
 					"hrm-edge-path": true,
+					"hrm-edge-path-bd": true,
 				}}
-				style={{
-					stroke: "#fff",
-				}}
-				stroke-width="5px"
+				stroke-width="6px"
 				fill="transparent"
 				d={path()[1]}
 			/>

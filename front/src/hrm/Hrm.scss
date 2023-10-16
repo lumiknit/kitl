@@ -1,6 +1,6 @@
 div.hrm-container {
 	display: block;
-	background-color: #ffff;
+	background-color: var(--hrm-c-bg);
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
@@ -114,7 +114,6 @@ div.hrm-container {
 }
 
 .hrm-node-handle {
-	//background-color: #f004;
 	cursor: pointer;
 	position: absolute;
 	width: 100%;
@@ -137,7 +136,6 @@ div.hrm-container {
 	width: 1rem;
 	height: 100%;
 	top: 0;
-	//background-color: #ff000080;
 }
 
 .hrm-handle-new.lhs {
@@ -161,6 +159,10 @@ div.hrm-container {
 	pointer-events: stroke;
 }
 
+.hrm-edge-path-bd {
+	stroke: var(--hrm-c-bg);
+}
+
 .hrm-editing-edge-handle {
 	position: absolute;
 	visibility: hidden;
@@ -181,7 +183,7 @@ div.hrm-container {
 	box-shadow: 0 0.25rem 0.5rem #0002;
 
 	// Blur
-	background-color: #fff2;
+	background-color: rgba(var(--hrm-rgb-bg), 0.25);
 	backdrop-filter: blur(0.25rem);
 	-webkit-backdrop-filter: blur(0.25rem);
 	border: 2px solid #0004;

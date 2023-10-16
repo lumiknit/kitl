@@ -58,7 +58,9 @@ const HrmEditOverlayInner: Component<InnerProps> = props => {
 			class="hrm-edit-overlay"
 			style={{
 				...props.g.nodeColorBd(props.color),
-				transform: `translate(${props.node.pos.x- 16}px, ${props.node.pos.y - 16}px)`,
+				transform: `translate(${props.node.pos.x - 16}px, ${
+					props.node.pos.y - 16
+				}px)`,
 			}}>
 			<InputGroup class="shadow-1 w-fit mb-1">
 				<Button

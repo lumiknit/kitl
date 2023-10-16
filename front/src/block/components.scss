@@ -30,13 +30,13 @@ $ui-border-radius: 0.25rem;
 	min-width: 10rem;
 	z-index: 10;
 	padding: 0.25rem;
-	background-color: rgba(var(--rgb-bg-hard), 1);
+	background-color: rgba(var(--b-rgb-bg-hard), 1);
 	border-radius: $ui-border-radius;
-	box-shadow: 0 0.25rem 0.5rem rgba(var(--rgb-black), 0.25);
+	box-shadow: 0 0.25rem 0.5rem rgba(var(--b-rgb-black), 0.25);
 }
 
 .dropdown-menu > a {
-	color: rgba(var(--rgb-fg), 1);
+	color: rgba(var(--b-rgb-fg), 1);
 	padding: 0.5rem;
 	text-decoration: none;
 	display: block;
@@ -47,15 +47,15 @@ $ui-border-radius: 0.25rem;
 }
 
 .dropdown-menu > a:hover {
-	background-color: rgba(var(--rgb-primary), 0.25);
+	background-color: rgba(var(--b-rgb-primary), 0.25);
 }
 
 .dropdown-menu > a:active {
-	background-color: rgba(var(--rgb-fg), 0.25);
+	background-color: rgba(var(--b-rgb-fg), 0.25);
 }
 
 .dropdown-menu > hr {
-	border-color: rgba(var(--rgb-fg), 0.125);
+	border-color: rgba(var(--b-rgb-fg), 0.125);
 	margin: 1px 0;
 }
 
@@ -67,13 +67,15 @@ $ui-border-radius: 0.25rem;
 	border-radius: $ui-border-radius;
 	font-size: 1rem;
 	padding: 0.5rem;
+	color: rgb(var(--b-rgb-fg));
+	background-color: rgb(var(--b-rgb-bg));
 }
 
 .code-area > textarea.form-control,
 .form-control[type="text"],
 .form-control[type="password"],
 .form-control[type="number"] {
-	border: 1px solid rgba(var(--rgb-secondary), 0.5);
+	border: 1px solid rgba(var(--b-rgb-secondary), 0.5);
 	border-radius: $ui-border-radius;
 	padding: 0.5rem;
 }
@@ -82,13 +84,13 @@ $ui-border-radius: 0.25rem;
 .form-control[type="text"]:focus,
 .form-control[type="password"]:focus,
 .form-control[type="number"]:focus {
-	outline: 0.125rem solid rgba(var(--rgb-primary), 0.5);
+	outline: 0.125rem solid rgba(var(--b-rgb-primary), 0.5);
 }
 
 .code-area > textarea.form-control:disabled,
 input.form-control[type="text"]:disabled {
-	color: rgba(var(--rgb-fg), 1);
-	background-color: rgba(var(--rgb-bg), 1);
+	color: rgba(var(--b-rgb-fg), 1);
+	background-color: rgba(var(--b-rgb-bg), 1);
 }
 
 .code-area > textarea {
@@ -182,9 +184,9 @@ input.form-control[type="text"]:disabled {
 }
 
 .toast {
-	color: rgba(var(--rgb-fg), 1);
-	background-color: rgba(var(--rgb-bg-hard), 1);
-	box-shadow: 0 0.25rem 0.5rem rgba(var(--rgb-black), 0.25);
+	color: rgba(var(--b-rgb-fg), 1);
+	background-color: rgba(var(--b-rgb-bg-hard), 1);
+	box-shadow: 0 0.25rem 0.5rem rgba(var(--b-rgb-black), 0.25);
 	border-radius: $ui-border-radius;
 	padding: 0.5rem;
 	margin: 0.25rem;

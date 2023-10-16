@@ -1,0 +1,13 @@
+:root {
+	--kitl-c-bg: rgb(var(--kitl-rgb-bg));
+	--kitl-c-fg: rgb(var(--kitl-rgb-fg));
+}
+
+:root {
+	--hrm-c-fg: rgb(var(--hrm-rgb-fg));
+	--hrm-c-bg: rgb(var(--hrm-rgb-bg));
+	--hrm-c-empty: rgb(var(--hrm-rgb-empty));
+	--hrm-c-comment: rgb(var(--hrm-rgb-comment));
+	--hrm-c-select: rgb(var(--hrm-rgb-select));
+	--hrm-c-connect: rgb(var(--hrm-rgb-connect));
+}
