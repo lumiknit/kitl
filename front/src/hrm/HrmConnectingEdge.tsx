@@ -20,7 +20,7 @@ const HrmConnectingEdge: Component<HrmConnectingEdgeProps> = props => {
 		if (!node || !rect) return;
 		const endRefRect = props.g.viewRect(ee.ref);
 		if (!endRefRect) return;
-		return pathBetweenRects(rect, endRefRect);
+		return pathBetweenRects(rect, endRefRect, 0);
 	};
 	const handleClass = (): string =>
 		nodeRect()?.angular ? `hrm-rect` : `hrm-pill`;
@@ -41,7 +41,7 @@ const HrmConnectingEdge: Component<HrmConnectingEdgeProps> = props => {
 			<svg class="hrm-edges no-user-select no-pointer-events">
 				<path
 					class={`hrm-edge-path hrm-c-stroke-empty`}
-					stroke-width="3px"
+					stroke-width="2px"
 					fill="transparent"
 					d={path()}
 				/>

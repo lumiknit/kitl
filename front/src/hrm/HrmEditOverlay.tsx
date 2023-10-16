@@ -3,10 +3,9 @@ import { State } from "./state";
 import { Node, stringifyNodeData } from "@/common";
 import { Button, Color, InputGroup } from "@/block";
 import InputCode from "@/block/InputCode";
-import { TbSquareCheck, TbTrash } from "solid-icons/tb";
+import { TbBackspace, TbSquareCheck, TbSquareX } from "solid-icons/tb";
 
 import * as jasen from "@/jasen";
-import { addEventListeners } from "@/common/pointer-helper";
 import { NodeColor } from "./data";
 
 type SuggestProps = {
@@ -46,7 +45,11 @@ const HrmEditOverlayInner: Component<InnerProps> = props => {
 	let taRef: HTMLTextAreaElement | undefined;
 	createEffect(() => {
 		if (ref) {
-			addEventListeners({}, ref);
+			const events = ["mousedown", "touchstart", "pointerdown", "wheel"];
+			const stopPropagation = (e: Event) => e.stopPropagation();
+			for (const e of events) {
+				ref.addEventListener(e, stopPropagation);
+			}
 		}
 	});
 	return (
@@ -55,24 +58,28 @@ const HrmEditOverlayInner: Component<InnerProps> = props => {
 			class="hrm-edit-overlay"
 			style={{
 				...props.g.nodeColorBd(props.color),
-				transform: `translate(${props.node.pos.x - 16}px, ${
-					props.node.pos.y - 16
-				}px)`,
+				transform: `translate(${props.node.pos.x- 16}px, ${props.node.pos.y - 16}px)`,
 			}}>
 			<InputGroup class="shadow-1 w-fit mb-1">
-				<Button
-					color={Color.danger}
-					onClick={() => props.g.cancelEditNode()}>
-					{" "}
-					<TbTrash />{" "}
-				</Button>
 				<Button
 					color={Color.success}
 					onClick={() =>
 						props.g.applyEditNode(taRef ? taRef.value : "")
 					}>
-					{" "}
-					<TbSquareCheck />{" "}
+					<TbSquareCheck />
+				</Button>
+				<Button
+					color={Color.warning}
+					onClick={() => {
+						taRef!.value = "";
+						taRef!.focus();
+					}}>
+					<TbBackspace />
+				</Button>
+				<Button
+					color={Color.danger}
+					onClick={() => props.g.cancelEditNode()}>
+					<TbSquareX />
 				</Button>
 			</InputGroup>
 			<InputCode

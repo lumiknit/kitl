@@ -66,7 +66,7 @@ const HrmEdgeSub = (props: HrmEdgeProps) => {
 				style={{
 					stroke: "#fff",
 				}}
-				stroke-width="8px"
+				stroke-width="5px"
 				fill="transparent"
 				d={path()[1]}
 			/>
@@ -75,7 +75,7 @@ const HrmEdgeSub = (props: HrmEdgeProps) => {
 					"hrm-edge-path": true,
 				}}
 				style={style()}
-				stroke-width="4px"
+				stroke-width="3px"
 				fill="transparent"
 				d={path()[0]}
 			/>
