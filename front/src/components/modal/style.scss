@@ -21,7 +21,8 @@ div.m-modal-content {
 	overflow-y: auto;
 	padding: 0.5rem;
 
-	background-color: #fff;
+	color: var(--kitl-c-fg);
+	background-color: var(--kitl-c-bg);
 	border-radius: 0.5rem;
 	box-shadow: 0 0 1rem #00000080;
 }

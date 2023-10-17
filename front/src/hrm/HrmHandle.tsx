@@ -52,7 +52,11 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 				capture: false,
 				onEnter: pointerID => {
 					const e = props.g.connectingEdge[0]();
-					if (e && e.pointerID === pointerID) {
+					if (
+						e &&
+						e.pointerID === pointerID &&
+						(h().data.type === HandleType.Source) !== e.isSource
+					) {
 						props.g.setTempConnectingEnd(
 							props.nodeID,
 							handleRef,

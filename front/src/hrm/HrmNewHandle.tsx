@@ -21,7 +21,7 @@ const HrmNewHandle: Component<HrmNewHandleProps> = props => {
 			{
 				onEnter: pointerID => {
 					const e = props.g.connectingEdge[0]();
-					if (e && e.pointerID === pointerID) {
+					if (e && e.pointerID === pointerID && e.isSource) {
 						props.g.setTempConnectingEnd(
 							props.nodeID,
 							handleRef,

@@ -16,6 +16,13 @@
 // Header
 
 .editor-root-hrm-header {
+	position: absolute;
+	width: 100%;
+	max-width: 20rem;
+	top: 0;
+	// center align
+	left: 50%;
+	transform: translateX(-50%);
 	margin: 0.5rem;
 	z-index: 9;
 }

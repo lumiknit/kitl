@@ -13,12 +13,10 @@ const MainEditor: Component = () => {
 	return (
 		<div class="editor-root">
 			<HrmEditor stateBox={state} />
-			<div class="w-100 abs-lt">
-				<EditorHrmHeader
-					stateBox={state}
-					modalActionsBox={modalActionsBox}
-				/>
-			</div>
+			<EditorHrmHeader
+				stateBox={state}
+				modalActionsBox={modalActionsBox}
+			/>
 			<Modals actionsBox={modalActionsBox} stateBox={state} />
 		</div>
 	);
