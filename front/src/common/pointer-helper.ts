@@ -2,7 +2,7 @@
 
 import { distSquare } from "./geometry";
 
-const MOVE_THRESHOLD = 4,
+const MOVE_THRESHOLD = 8,
 	DOUBLE_CLICK_TIME = 300,
 	LONG_PRESS_TIME = 750;
 
@@ -96,23 +96,23 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 		maxPointers: 0,
 		lastClicked: 0,
 	};
+	const cancelPointer = (id: PointerID) => {
+		if (s.longPress && s.longPress.id === id) {
+			ct(s.longPress.u);
+			s.longPress = undefined;
+		}
+		s.pointers.delete(id);
+	};
 	const events = {
 		pointerenter: (e: PointerEvent) => {
 			handlers.onEnter?.(e.pointerId);
 		},
 		pointercancel: (e: PointerEvent) => {
-			if (s.longPress && s.longPress.id === e.pointerId) {
-				ct(s.longPress.u);
-				s.longPress = undefined;
-			}
-			s.pointers.delete(e.pointerId);
+			cancelPointer(e.pointerId);
 			handlers.onCancel?.(e.pointerId);
 		},
 		pointerleave: (e: PointerEvent) => {
-			if (s.longPress && s.longPress.id === e.pointerId) {
-				ct(s.longPress.u);
-				s.longPress = undefined;
-			}
+			cancelPointer(e.pointerId);
 			handlers.onLeave?.(e.pointerId);
 		},
 		pointerdown: (e: PointerEvent) => {
@@ -141,12 +141,8 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 				moved: false,
 				timestamp: Date.now(),
 			};
+			cancelPointer(e.pointerId);
 			s.pointers.set(id, p);
-			if (s.longPress) {
-				// Cancel long press
-				ct(s.longPress.u);
-				s.longPress = undefined;
-			}
 			s.maxPointers = Math.max(s.maxPointers, s.pointers.size);
 			if (s.pointers.size === 1) {
 				// Start long press
@@ -221,13 +217,9 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 			handlers.onUp?.(event);
 			const pointer = s.pointers.get(id);
 			if (!pointer) return;
-			s.pointers.delete(id);
-			if (s.longPress && s.longPress.id === id) {
-				ct(s.longPress.u);
-				s.longPress = undefined;
-			}
+			cancelPointer(e.pointerId);
 			const now = Date.now();
-			if (!pointer.moved && s.pointers.size === 0) {
+			if (s.pointers.size === 0) {
 				// Click
 				handlers.onClick?.(event);
 				if (now - s.lastClicked < DOUBLE_CLICK_TIME) {
