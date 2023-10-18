@@ -30,6 +30,8 @@ const Hrm: Component<HrmProps> = props => {
 	}
 	const handleScroll = () => {
 		// Reset scroll position.
+		// When transform & input is used, focus or typing will cause scroll position to the change.
+		// Then, pane position move incorrectly and touch is disabled.
 		if (g.rootRef) {
 			if (g.rootRef.scrollLeft != 0 || g.rootRef.scrollTop != 0) {
 				g.rootRef.scrollTo(0, 0);
