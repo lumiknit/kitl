@@ -144,7 +144,10 @@ const EditorHrmHeader: Component<EditorHrmHeaderProps> = props => {
 		return [
 			toolSetMenus(props.stateBox, setState),
 			[
-				<a onClick={() => props.modalActionsBox?.[0]?.open(ModalType.Browser)}>
+				<a
+					onClick={() =>
+						props.modalActionsBox?.[0]?.open(ModalType.Browser)
+					}>
 					<TbFolderSearch /> {s("mainEditor.menu.browser")}
 				</a>,
 				<a>

@@ -1,15 +1,14 @@
-import {IClient} from './i-client';
-import { FileMeta } from './i-file';
+import { IClient } from "./i-client";
 
 export default class LocalClient implements IClient {
 	ping(): number {
 		return 1;
 	}
-	
+
 	execute(path: string): string {
 		return "";
 	}
-	
+
 	getExecutionState(id: string): any {
 		return {};
 	}
@@ -21,31 +20,26 @@ export default class LocalClient implements IClient {
 			lastModified: new Date(),
 		};
 	}
-	
-	mkdir(path: string): void {
-	}
-	
+
+	mkdir(path: string): void {}
+
 	list(path: string): string[] {
 		return [];
 	}
-	
+
 	getMeta(path: string): any {
 		return {};
 	}
-	
+
 	read(path: string): Uint8Array {
 		return new Uint8Array();
 	}
-	
-	write(path: string, data: Uint8Array): void {
-	}
-	
-	remove(path: string): void {
-	}
-	
-	move(from: string, to: string): void {
-	}
-	
-	copy(from: string, to: string): void {
-	}
+
+	write(path: string, data: Uint8Array): void {}
+
+	remove(path: string): void {}
+
+	move(from: string, to: string): void {}
+
+	copy(from: string, to: string): void {}
 }

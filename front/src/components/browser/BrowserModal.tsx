@@ -17,7 +17,11 @@ const BrowserModal: Component<BrowserModalProps> = props => {
 				<InputLabel color={Color.primary}>
 					<TbFolderSearch />
 				</InputLabel>
-				<InputText class="flex-1" disabled={true} value="Browser Tools" />
+				<InputText
+					class="flex-1"
+					disabled={true}
+					value="Browser Tools"
+				/>
 				<Button color={Color.danger} onClick={props.onClose}>
 					<TbX />
 				</Button>

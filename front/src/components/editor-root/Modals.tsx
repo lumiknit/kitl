@@ -70,9 +70,7 @@ const Modals: Component<ModalsProps> = props => {
 				/>
 			</Match>
 			<Match when={actions.state().type === ModalType.Browser}>
-				<BrowserModal
-					onClose={() => actions.close()}
-				/>
+				<BrowserModal onClose={() => actions.close()} />
 			</Match>
 		</Switch>
 	);

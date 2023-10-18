@@ -1,4 +1,4 @@
-import { IFileSystem } from "./i-file";
+import { IStorageClient } from "./storage";
 
 export interface IConnection {
 	// ping: return the ping time in milliseconds. If not connected, return undefined.
@@ -13,7 +13,4 @@ export interface ILaunch {
 	getExecutionState(id: ExecutionID): any;
 }
 
-
-
-export interface IClient extends IConnection, ILaunch, IFileSystem {
-}
+export interface IClient extends IConnection, ILaunch, IStorageClient {}
