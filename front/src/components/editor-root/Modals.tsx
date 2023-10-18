@@ -2,8 +2,9 @@ import { Component, Match, Switch, createSignal } from "solid-js";
 import { Box, Getter, Updater } from "@/common";
 import GraphToolsModal from "./GraphToolsModal";
 import { State } from "@/hrm";
+import BrowserModal from "../browser/BrowserModal";
 
-enum ModalType {
+export enum ModalType {
 	None,
 	Browser,
 	Launch,
@@ -34,6 +35,13 @@ export class ModalActions {
 		}));
 	}
 
+	open(type: ModalType) {
+		this.setState(s => ({
+			...s,
+			type: type,
+		}));
+	}
+
 	openGraphTools() {
 		this.setState(s => ({
 			...s,
@@ -59,6 +67,11 @@ const Modals: Component<ModalsProps> = props => {
 				<GraphToolsModal
 					onClose={() => actions.close()}
 					stateBox={props.stateBox}
+				/>
+			</Match>
+			<Match when={actions.state().type === ModalType.Browser}>
+				<BrowserModal
+					onClose={() => actions.close()}
 				/>
 			</Match>
 		</Switch>

@@ -18,7 +18,7 @@ import {
 } from "solid-icons/tb";
 import { Component, createSignal } from "solid-js";
 import { s } from "@/locales";
-import { ModalActions } from "./Modals";
+import { ModalActions, ModalType } from "./Modals";
 
 enum ToolSet {
 	Add,
@@ -144,7 +144,7 @@ const EditorHrmHeader: Component<EditorHrmHeaderProps> = props => {
 		return [
 			toolSetMenus(props.stateBox, setState),
 			[
-				<a>
+				<a onClick={() => props.modalActionsBox?.[0]?.open(ModalType.Browser)}>
 					<TbFolderSearch /> {s("mainEditor.menu.browser")}
 				</a>,
 				<a>

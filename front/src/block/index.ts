@@ -1,6 +1,6 @@
-import "./colors.scss";
 import "./util.scss";
 import "./components.scss";
+import "./colors.scss";
 
 export { Color } from "./colors";
 
