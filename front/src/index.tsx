@@ -19,6 +19,4 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 	);
 }
 
-// Disable double tap zoom or pinch zoom
-
 render(() => <App />, root!);

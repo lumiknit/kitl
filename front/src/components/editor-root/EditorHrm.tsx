@@ -10,7 +10,7 @@ type HrmEditorProps = {
 
 const HrmEditor: Component<HrmEditorProps> = props => {
 	return (
-		<div class="editor-root-hrm">
+		<div class="editor-root-hrm abs-parent">
 			<Hrm initialNodes={emptyGraph()} stateBox={props.stateBox} />
 		</div>
 	);

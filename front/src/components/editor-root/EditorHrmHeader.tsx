@@ -157,12 +157,14 @@ const EditorHrmHeader: Component<EditorHrmHeaderProps> = props => {
 		];
 	};
 	return (
-		<InputGroup class="editor-root-hrm-header shadow-2">
-			<DropdownButton color={Color.primary} list={dropdownList()}>
-				{toolSetIcon(state().toolSet)}
-			</DropdownButton>
-			{toolSet(state().toolSet, props.stateBox)}
-		</InputGroup>
+		<div class="editor-root-hrm-header-container">
+			<InputGroup class="editor-root-hrm-header shadow-2">
+				<DropdownButton color={Color.primary} list={dropdownList()}>
+					{toolSetIcon(state().toolSet)}
+				</DropdownButton>
+				{toolSet(state().toolSet, props.stateBox)}
+			</InputGroup>
+		</div>
 	);
 };
 

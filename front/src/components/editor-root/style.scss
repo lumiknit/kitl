@@ -2,27 +2,23 @@
 	position: absolute;
 	top: 0;
 	left: 0;
-	width: 100svw;
-	height: 100svh;
-}
-
-.editor-root-hrm {
-	top: 0;
-	left: 0;
-	width: 100svw;
-	height: 100svh;
+	width: 100dvw;
+	height: 100dvh;
 }
 
 // Header
 
-.editor-root-hrm-header {
+.editor-root-hrm-header-container {
 	position: absolute;
 	width: 100%;
-	max-width: 20rem;
+	max-width: 25rem;
 	top: 0;
 	// center align
 	left: 50%;
 	transform: translateX(-50%);
-	margin: 0.5rem;
 	z-index: 9;
+}
+
+.editor-root-hrm-header {
+	margin: 0.5rem;
 }

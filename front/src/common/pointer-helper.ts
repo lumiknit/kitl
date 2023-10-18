@@ -170,7 +170,6 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 			}
 		},
 		pointermove: (e: PointerEvent) => {
-			e.preventDefault();
 			e.stopPropagation();
 			const id = e.pointerId;
 			handlers.onMove?.({
@@ -185,23 +184,25 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 			if (!p.moved && distSquare(dx, dy) < MOVE_THRESHOLD) {
 				return;
 			}
-			const event: DragEvent = {
-					id,
-					x: e.clientX,
-					y: e.clientY,
-					ox: p.x,
-					oy: p.y,
-					dx,
-					dy,
-				},
-				[a, b] = s.pointers.keys();
-			if (b) {
-				event.pivot = s.pointers.get(a === id ? b : a);
+			if (handlers.onDrag) {
+				const event: DragEvent = {
+						id,
+						x: e.clientX,
+						y: e.clientY,
+						ox: p.x,
+						oy: p.y,
+						dx,
+						dy,
+					},
+					[a, b] = s.pointers.keys();
+				if (b) {
+					event.pivot = s.pointers.get(a === id ? b : a);
+				}
+				handlers.onDrag(event);
 			}
 			p.moved = true;
 			p.x = e.clientX;
 			p.y = e.clientY;
-			handlers.onDrag?.(event);
 		},
 		pointerup: (e: PointerEvent) => {
 			e.preventDefault();

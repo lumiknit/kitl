@@ -28,8 +28,19 @@ const Hrm: Component<HrmProps> = props => {
 	if (props.stateBox) {
 		props.stateBox[0] = g;
 	}
+	const handleScroll = () => {
+		// Reset scroll position.
+		if (g.rootRef) {
+			if (g.rootRef.scrollLeft != 0 || g.rootRef.scrollTop != 0) {
+				g.rootRef.scrollTo(0, 0);
+			}
+		}
+	};
 	return (
-		<div ref={g.rootRef} class="hrm-container w-100 h-100">
+		<div
+			ref={g.rootRef}
+			class="hrm-container abs-parent"
+			onScroll={handleScroll}>
 			<HrmPane
 				g={g}
 				onClick={() => g.deselectAll()}
@@ -38,7 +49,7 @@ const Hrm: Component<HrmProps> = props => {
 					const id = g.addEmptyNode(p);
 					setTimeout(() => {
 						g.editNode(id);
-					}, 30);
+					}, 100);
 				}}
 				onLongPress={() => {
 					toast("[Hrm] Long press");

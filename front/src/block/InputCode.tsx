@@ -1,4 +1,4 @@
-import { Component, Ref, type JSX } from "solid-js";
+import { Component, Ref, type JSX, createEffect } from "solid-js";
 
 const C_NEWLINE = 10; // \n
 

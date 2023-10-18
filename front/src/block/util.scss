@@ -1,3 +1,15 @@
+/* Fill parent */
+
+.abs-parent {
+	position: absolute;
+	inset: 0;
+}
+
+.rel-parent {
+	position: relative;
+	inset: 0;
+}
+
 /* Size */
 
 .w-50 {
