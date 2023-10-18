@@ -6,6 +6,10 @@ div.hrm-container {
 	overflow: hidden;
 }
 
+div.hrm-container:focus {
+	outline: none;
+}
+
 // Common
 
 .hrm-rect {

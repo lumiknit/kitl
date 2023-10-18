@@ -36,6 +36,17 @@ import { PointerID } from "@/common/pointer-helper";
 
 /* State */
 
+const defaultKeymap = (): Map<string, string> =>
+	new Map([
+		["C-a", "selectAll"],
+		["M-a", "selectAll"],
+		["Backspace", "deleteSelectedNodes"],
+		["Delete", "deleteSelectedNodes"],
+		["a", "addEmptyNode"],
+		["C-=", "zoomIn"],
+		["C--", "zoomOut"],
+	]);
+
 export class State {
 	// Graph data
 	nodes: () => Nodes;
@@ -62,6 +73,9 @@ export class State {
 	// Mode
 	selectMode: boolean = false;
 
+	// Keymap
+	keymap: Map<string, string> = new Map();
+
 	constructor(initialNodes?: CNodes) {
 		if (!initialNodes) initialNodes = [];
 		const [nodes, setNodes] = createSignal<Nodes>(thawNodes(initialNodes), {
@@ -76,6 +90,8 @@ export class State {
 		// History
 		this.history = [initialNodes];
 		this.historyIndex = 0;
+		// Keymap
+		this.keymap = defaultKeymap();
 	}
 
 	// Graph save/load
@@ -237,12 +253,38 @@ export class State {
 				};
 			}
 		}
+		const id = genID();
+		let fn;
+		// If connecting edge exists, connect to it
+		const ce = this.connectingEdge[0]();
+		if (ce) {
+			if (ce.isSource) {
+				fn = {
+					id: ce.nodeID,
+					handle: ce.handleID,
+				};
+			} else {
+				const n = this.nodes().get(ce.nodeID);
+				if (n) {
+					const h = n[0]().handles[ce.handleID!];
+					h[1](h => ({
+						...h,
+						data: {
+							type: HandleType.Sink,
+							sourceID: id,
+						},
+					}));
+				}
+			}
+		}
+		this.connectingEdge[1](undefined);
 		const x: BetaNodeData = {
 			type: NodeType.Beta,
+			fn,
 			args: [],
 		};
 		const emptyNode: CNode = {
-			id: genID(),
+			id,
 			pos,
 			x,
 		};
@@ -283,7 +325,8 @@ export class State {
 		}
 	}
 
-	selectOneNode(id: NodeID) {
+	selectOneNode(id: NodeID, keep?: boolean) {
+		this.connectingEdge[1](undefined);
 		// Check is selected
 		for (const [nid, node] of this.nodes()) {
 			if (nid === id) {
@@ -291,7 +334,7 @@ export class State {
 					...n,
 					selected: !n.selected,
 				}));
-			} else if (!this.selectMode) {
+			} else if (!keep && !this.selectMode) {
 				node[1](n =>
 					n.selected
 						? {
@@ -485,6 +528,8 @@ export class State {
 		handle?: HandleID,
 		pos?: Position,
 	) {
+		// Unselect all nodes
+		this.deselectAll();
 		// Add to editing edge, and add edge when it completed
 		// Find the node
 		const node = this.nodes().get(id);
@@ -539,10 +584,9 @@ export class State {
 			const editing = this.editingNode[0]();
 			if (!editing) return;
 			const id = editing.node.id;
-			const data = parseNodeData(s);
 			const newNode: CNode = {
 				...editing.node,
-				x: data,
+				x: parseNodeData(s),
 			};
 			const thawed = thawNode(newNode);
 			// Get original node
@@ -553,20 +597,24 @@ export class State {
 				color: oldNode[0]().color,
 			}));
 			// Transfer original edges
-			const oldHandles = oldNode ? oldNode[0]().handles : [];
+			const oldSinkHandles: SinkHandleData[] = [];
+			for (const handle of oldNode ? oldNode[0]().handles : []) {
+				const h = handle[0]();
+				if (h.data.type === HandleType.Sink && h.data.sourceID) {
+					oldSinkHandles.push(h.data);
+				}
+			}
+			console.log(oldSinkHandles);
 			const newHandles = thawed[0]().handles;
 			for (let i = 0; i < newHandles.length; i++) {
-				const oldHandle = oldHandles[i];
 				newHandles[i][1](h => {
 					if (h.data.type !== HandleType.Sink) return h;
 					const data: SinkHandleData = { type: HandleType.Sink };
-					if (oldHandle) {
+					const oldHandleData = oldSinkHandles[i];
+					if (oldHandleData) {
 						// Try to get original edge
-						const oldEdge = oldHandle[0]().data;
-						if (oldEdge.type === HandleType.Sink) {
-							data.sourceID = oldEdge.sourceID;
-							data.sourceHandle = oldEdge.sourceHandle;
-						}
+						data.sourceID = oldHandleData.sourceID;
+						data.sourceHandle = oldHandleData.sourceHandle;
 					}
 					// Otherwise, remove edge
 					return {
@@ -585,5 +633,36 @@ export class State {
 
 	cancelEditNode() {
 		this.editingNode[1](undefined);
+	}
+
+	// Keymap & Commands
+
+	handleKey(key: string) {
+		const commandName = this.keymap.get(key);
+		if (commandName && commandName in this) {
+			(this as any)[commandName]();
+		}
+	}
+
+	zoomIn() {
+		this.transform[1](t => ({
+			...t,
+			z: t.z * 1.1,
+		}));
+	}
+
+	zoomOut() {
+		this.transform[1](t => ({
+			...t,
+			z: t.z / 1.1,
+		}));
+	}
+
+	resetZoom() {
+		this.transform[1](() => ({
+			x: 0,
+			y: 0,
+			z: 1,
+		}));
 	}
 }

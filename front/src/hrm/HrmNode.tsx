@@ -70,8 +70,9 @@ const HrmNode = (props: HrmNodeProps) => {
 						);
 					}
 				},
-				onClick: () => {
-					props.g.selectOneNode(props.id);
+				onClick: e => {
+					const keep = e.modifiers.shift || e.modifiers.ctrl;
+					props.g.selectOneNode(props.id, keep);
 				},
 				onDrag: e => {
 					props.g.translateSelectedNodes(

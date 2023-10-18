@@ -4,6 +4,7 @@ import { distSquare } from "./geometry";
 
 const MOVE_THRESHOLD = 8,
 	DOUBLE_CLICK_TIME = 300,
+	DOUBLE_CLICK_THRESHOLD = 32,
 	LONG_PRESS_TIME = 750;
 
 const st = window.setTimeout,
@@ -81,11 +82,17 @@ export type Props = {
 	onDrag?: (e: DragEvent) => void;
 };
 
+type LastClick = {
+	x: number;
+	y: number;
+	timestamp: number;
+};
+
 type State = {
 	pointers: Map<PointerID, Pointer>;
 	longPress?: LongPress;
 	maxPointers: number;
-	lastClicked: number;
+	lastClick: LastClick;
 };
 
 /* Functions */
@@ -94,7 +101,11 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 	const s: State = {
 		pointers: new Map(),
 		maxPointers: 0,
-		lastClicked: 0,
+		lastClick: {
+			x: 0,
+			y: 0,
+			timestamp: 0,
+		},
 	};
 	const cancelPointer = (id: PointerID) => {
 		if (s.longPress && s.longPress.id === id) {
@@ -170,6 +181,7 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 			}
 		},
 		pointermove: (e: PointerEvent) => {
+			e.preventDefault();
 			e.stopPropagation();
 			const id = e.pointerId;
 			handlers.onMove?.({
@@ -223,10 +235,21 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 			if (s.pointers.size === 0) {
 				// Click
 				handlers.onClick?.(event);
-				if (now - s.lastClicked < DOUBLE_CLICK_TIME) {
+				if (
+					now - s.lastClick.timestamp < DOUBLE_CLICK_TIME &&
+					distSquare(
+						event.x - s.lastClick.x,
+						event.y - s.lastClick.y,
+					) <
+						DOUBLE_CLICK_THRESHOLD ** 2
+				) {
 					handlers.onDoubleClick?.(event);
 				}
-				s.lastClicked = now;
+				s.lastClick = {
+					x: e.clientX,
+					y: e.clientY,
+					timestamp: now,
+				};
 				s.maxPointers = 0;
 			}
 		},

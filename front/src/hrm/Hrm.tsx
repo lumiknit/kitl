@@ -13,6 +13,7 @@ import "./Hrm.scss";
 import "./HrmColors.scss";
 import HrmConnectingEdge from "./HrmConnectingEdge";
 import HrmEditOverlay from "./HrmEditOverlay";
+import { parseKeyEvent } from "@/common/event";
 
 export type HrmProps = {
 	initialNodes?: CNodes;
@@ -38,11 +39,22 @@ const Hrm: Component<HrmProps> = props => {
 			}
 		}
 	};
+	const handleKeyDown = (e: KeyboardEvent) => {
+		const key = parseKeyEvent(e);
+		console.log(key);
+		g.handleKey(key);
+	};
+	const handlePointerEnter = (e: any) => {
+		e.currentTarget.focus();
+	};
 	return (
 		<div
 			ref={g.rootRef}
 			class="hrm-container abs-parent"
-			onScroll={handleScroll}>
+			onScroll={handleScroll}
+			onKeyDown={handleKeyDown}
+			onPointerEnter={handlePointerEnter}
+			tabIndex={0}>
 			<HrmPane
 				g={g}
 				onClick={() => g.deselectAll()}
