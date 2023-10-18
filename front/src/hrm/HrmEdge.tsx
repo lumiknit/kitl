@@ -1,8 +1,8 @@
 import { Component, Show, createEffect, createMemo } from "solid-js";
 
-import { Handle, HandleType, Node, SinkHandleData, cStr } from "./data";
+import { Handle, HandleType, Node, SinkHandleData } from "./data";
 import { State } from "./state";
-import { HandleID, NodeID, VWrap, pathBetweenPills, pathSelf } from "@/common";
+import { HandleID, NodeID, VWrap, pathBetweenRects, pathSelf } from "@/common";
 import { addEventListeners } from "@/common/pointer-helper";
 
 type HrmEdgeProps = {
@@ -33,8 +33,11 @@ const HrmEdgeSub = (props: HrmEdgeProps) => {
 			handleRect = props.g.viewRect(handle.ref);
 		if (!srcRect || !handleRect) return "";
 		return props.nodeID === sourceID
-			? pathSelf(srcRect, handleRect)
-			: pathBetweenPills(srcRect, handleRect);
+			? [pathSelf(srcRect, handleRect), pathSelf(srcRect, handleRect)]
+			: [
+					pathBetweenRects(srcRect, handleRect, 0.5),
+					pathBetweenRects(srcRect, handleRect, -0.5),
+			  ];
 	});
 
 	createEffect(() => {
@@ -49,16 +52,30 @@ const HrmEdgeSub = (props: HrmEdgeProps) => {
 		);
 	});
 
+	const style = () => {
+		const c = h().color;
+		return c ? props.g.nodeColorStroke(c) : {};
+	};
+
 	return (
 		<>
 			<path
 				classList={{
 					"hrm-edge-path": true,
-					[cStr(h().color)]: true,
+					"hrm-edge-path-bd": true,
 				}}
-				stroke-width="4px"
+				stroke-width="6px"
 				fill="transparent"
-				d={path()}
+				d={path()[1]}
+			/>
+			<path
+				classList={{
+					"hrm-edge-path": true,
+				}}
+				style={style()}
+				stroke-width="3px"
+				fill="transparent"
+				d={path()[0]}
 			/>
 			<path
 				class="cursor-pointer"
@@ -66,7 +83,7 @@ const HrmEdgeSub = (props: HrmEdgeProps) => {
 				//stroke="#f004"
 				stroke-width="1rem"
 				fill="transparent"
-				d={path()}
+				d={path()[0]}
 			/>
 		</>
 	);

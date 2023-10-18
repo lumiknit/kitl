@@ -1,0 +1,39 @@
+:root[color-theme="dark"] {
+	/* Global colors */
+	--kitl-rgb-bg: 32, 32, 32;
+	--kitl-rgb-fg: 244, 244, 244;
+}
+
+:root[color-theme="dark"] {
+	--b-rgb-fg: 235, 235, 235;
+	--b-rgb-fg-light: 255, 255, 255;
+	--b-rgb-fg-dark: 215, 215, 215;
+	--b-rgb-fg-soft: 215, 215, 215;
+	--b-rgb-fg-hard: 255, 255, 255;
+	--b-rgb-fg-text: var(--b-rgb-black);
+	--b-rgb-bg: 20, 20, 20;
+	--b-rgb-bg-light: 40, 40, 40;
+	--b-rgb-bg-dark: 0, 0, 0;
+	--b-rgb-bg-soft: 40, 40, 40;
+	--b-rgb-bg-hard: 0, 0, 0;
+	--b-rgb-bg-text: var(--b-rgb-white);
+}
+
+/* Hrm colors */
+:root[color-theme="dark"] {
+	--hrm-rgb-fg: 244, 244, 244;
+	--hrm-rgb-bg: 32, 32, 32;
+	--hrm-rgb-empty: 128, 128, 128;
+	--hrm-rgb-comment: 84, 129, 84;
+	--hrm-rgb-select: 75, 180, 255;
+	--hrm-rgb-connect: 250, 119, 119;
+
+	--hrm-c-pane-btn-fg: #ddd;
+	--hrm-c-pane-btn-border: #444;
+	--hrm-c-pane-btn-bg: #555;
+	--hrm-c-pane-btn-hover-bg: #666;
+	--hrm-c-pane-btn-active-bg: #444;
+
+	--hrm-node-saturate: 0.52;
+	--hrm-node-lightness: 0.7;
+}

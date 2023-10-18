@@ -39,7 +39,6 @@ export const loadStrings = async (l?: string) => {
 					locale: lang,
 					strings: map,
 				});
-				console.log(map);
 				return true;
 			} catch (e) {
 				continue;

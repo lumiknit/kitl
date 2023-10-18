@@ -1,6 +1,6 @@
 import { Component, createEffect } from "solid-js";
 
-import { Handle, HandleType, Node, cBd, cBdEmpty, cBg } from "./data";
+import { Handle, HandleType, Node, cBdEmpty } from "./data";
 import { State } from "./state";
 import { VWrap } from "@/common/types";
 import { addEventListeners } from "@/common/pointer-helper";
@@ -18,63 +18,68 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 	const [h, update] = props.handleW;
 	let handleRef: HTMLDivElement | undefined;
 
-	const handleEvents: { [key: string]: (e: any) => void } = {
-		pointerenter: () =>
-			props.g.enterEditingEnd(props.nodeID, handleRef, props.handleID),
-		pointerdown: e => {
-			e.target?.releasePointerCapture(e.pointerId);
-		},
-		pointerleave: () => props.g.leaveEditingEnd(handleRef),
-		pointerup: e => {
-			props.g.pickEditingEnd(props.nodeID, props.handleID);
-			e.stopPropagation();
-		},
-	};
-
 	createEffect(() => {
 		if (!handleRef) return;
 		h();
 		update(h => {
-			let color, colorClass;
+			let color, style;
 			if (h.data.type === HandleType.Source) {
 				color = h.data.color;
-				colorClass = cBd(color);
+				style = props.g.nodeColorBd(color);
 			} else if (h.data.sourceID) {
 				const nodeV = props.g.nodes().get(h.data.sourceID);
 				if (nodeV) {
 					const node = nodeV[0]();
 					color = node.color;
 					if (h.data.sourceHandle !== undefined) {
-						color = node.handles[h.data.sourceHandle][0]().color;
+						color =
+							node.handles[h.data.sourceHandle][0]().color ??
+							color;
 					}
-					colorClass = cBg(color);
+					style = props.g.nodeColorBg(color);
 				}
 			}
 			return color === h.color && h.ref === handleRef
 				? h
-				: { ...h, ref: handleRef, color, colorClass };
+				: { ...h, ref: handleRef, color, style };
 		});
-		for (const [k, v] of Object.entries(handleEvents)) {
-			handleRef.addEventListener(k, v);
-		}
 	});
 
 	createEffect(() => {
 		if (!handleRef) return;
 		addEventListeners(
 			{
-				onPress: e => {
-					props.g.editEdge(
+				capture: false,
+				onEnter: pointerID => {
+					const e = props.g.connectingEdge[0]();
+					if (
+						e &&
+						e.pointerID === pointerID &&
+						(h().data.type === HandleType.Source) !== e.isSource
+					) {
+						props.g.setTempConnectingEnd(
+							props.nodeID,
+							handleRef,
+							props.handleID,
+						);
+					}
+				},
+				onLeave: () => {
+					const cee = props.g.connectingEnd[0]();
+					if (cee.ref === handleRef) {
+						props.g.unsetTempConnectingEnd(handleRef);
+					}
+				},
+				onDown: e => {
+					props.g.addConnectingEnd(
+						e.id,
 						props.nodeID,
 						props.handleID,
 						props.g.viewPos(e.x, e.y),
 					);
 				},
-				onDrag: e => {
-					props.g.updateEdgeEnd(props.g.viewPos(e.x, e.y)!);
-				},
-				onRelease: () => {
-					props.g.resetEditingEdge();
+				onUp: () => {
+					props.g.finConnecting(props.nodeID, props.handleID);
 				},
 				onDoubleClick: () => {
 					props.g.deleteEdge(props.nodeID, props.handleID);
@@ -88,9 +93,8 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 		<>
 			<div
 				ref={handleRef}
-				class={`hrm-node-item hrm-handle ${
-					h().colorClass ?? cBdEmpty
-				}`}>
+				class={`hrm-node-item hrm-handle ${h().style ? "" : cBdEmpty}`}
+				style={h().style}>
 				{h().name}
 			</div>
 		</>

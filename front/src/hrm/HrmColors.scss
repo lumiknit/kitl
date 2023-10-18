@@ -1,59 +1,10 @@
-$node-color-fg: #000;
-$node-color-bg: #fff;
-$node-color-empty: #bbb;
-$node-color-comment: #548154;
-$node-color-select: #0095ff;
-$node-color-connect: #c21717;
-$node-colors: (
-	(#f38fb4, #fff),
-	(#f89ba1, #fff),
-	(#ffc598, #fff),
-	(#d3e17d, #fff),
-	(#90c47c, #fff),
-	(#b6d0c8, #fff),
-	(#8dc9d3, #fff),
-	(#96b0f8, #fff),
-	(#88a6fa, #fff),
-	(#a290e8, #fff),
-	(#ddaec9, #fff),
-	(#b199c1, #fff)
-);
-
-:root {
-	--hrm-node-colors-num: #{length($node-colors)};
-}
-
-@for $i from 1 through length($node-colors) {
-	.hrm-c-bg-#{$i - 1} {
-		color: nth(nth($node-colors, $i), 2);
-		background-color: nth(nth($node-colors, $i), 1);
-		border-color: nth(nth($node-colors, $i), 1);
-	}
-
-	.hrm-c-bd-#{$i - 1} {
-		border-color: nth(nth($node-colors, $i), 1);
-		background-color: $node-color-bg;
-	}
-
-	.hrm-c-stroke-#{$i - 1} {
-		stroke: nth(nth($node-colors, $i), 1);
-	}
-}
-
 .hrm-c-bd-empty {
 	border-style: dotted;
-	border-color: $node-color-empty;
-	color: $node-color-empty;
-	background-color: $node-color-bg;
+	border-color: var(--hrm-c-empty);
+	color: var(--hrm-c-empty);
+	background-color: var(--hrm-c-bg);
 }
 
 .hrm-c-stroke-empty {
-	stroke: $node-color-empty;
-}
-
-:root {
-	--hrm-c-empty: #{$node-color-empty};
-	--hrm-c-comment: #{$node-color-comment};
-	--hrm-c-select: #{$node-color-select};
-	--hrm-c-connect: #{$node-color-connect};
+	stroke: var(--hrm-c-empty);
 }

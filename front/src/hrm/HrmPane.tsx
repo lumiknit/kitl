@@ -1,10 +1,4 @@
-import {
-	Component,
-	For,
-	JSXElement,
-	createEffect,
-	createSignal,
-} from "solid-js";
+import { Component, For, JSXElement, createEffect } from "solid-js";
 
 import { TbZoomIn, TbZoomInArea, TbZoomOut, TbZoomReset } from "solid-icons/tb";
 
@@ -17,6 +11,7 @@ import {
 	ClickEvent,
 	addEventListeners,
 } from "@/common/pointer-helper";
+import { createDelayedSignal } from "@/solid-utils/indes";
 
 const transformToStyle = (t: Transform) =>
 	`translate(${t.x}px, ${t.y}px) scale(${t.z})`;
@@ -31,7 +26,7 @@ type HrmPaneProps = {
 
 const HrmPane: Component<HrmPaneProps> = props => {
 	let paneRef: HTMLDivElement | undefined;
-	const [t, setT] = createSignal<Transform>({ x: 0, y: 0, z: 1 }),
+	const [t, setT] = createDelayedSignal<Transform>(10, { x: 0, y: 0, z: 1 }),
 		tr = (dx: number, dy: number, dz: number) =>
 			setT(s => ({
 				x: s.x * dz + dx,
@@ -40,35 +35,6 @@ const HrmPane: Component<HrmPaneProps> = props => {
 			}));
 	props.g.transform[0] = t;
 	props.g.transform[1] = setT;
-
-	createEffect(() => {
-		if (!paneRef) return;
-		addEventListeners(
-			{
-				onClick: props.onClick,
-				onDoubleClick: props.onDoubleClick,
-				onLongPress: props.onLongPress,
-				onDrag: e => {
-					const pivot = e.pivot;
-					if (pivot) {
-						const newZ = Math.sqrt(
-								distSquare(pivot.x - e.x, pivot.y - e.y) /
-									distSquare(pivot.x - e.ox, pivot.y - e.oy),
-							),
-							mZ = newZ - 1;
-						tr(
-							(e.dx - (pivot.x + e.ox) * mZ) / 2,
-							(e.dy - (pivot.y + e.oy) * mZ) / 2,
-							newZ,
-						);
-					} else {
-						tr(e.dx, e.dy, 1);
-					}
-				},
-			},
-			paneRef,
-		);
-	});
 
 	type Control =
 		| [JSXElement, () => any]
@@ -98,7 +64,6 @@ const HrmPane: Component<HrmPaneProps> = props => {
 			<TbZoomInArea />,
 			() => {
 				const rect = props.g.usedRect();
-				console.log(rect);
 				const paneSize = props.g.size();
 				if (!rect || !paneSize) return;
 				rect.w = Math.max(rect.w, 1);
@@ -115,6 +80,32 @@ const HrmPane: Component<HrmPaneProps> = props => {
 
 	createEffect(() => {
 		if (!paneRef) return;
+		addEventListeners(
+			{
+				capture: true,
+				onClick: props.onClick,
+				onDoubleClick: props.onDoubleClick,
+				onLongPress: props.onLongPress,
+				onDrag: e => {
+					const pivot = e.pivot;
+					if (pivot) {
+						const newZ = Math.sqrt(
+								distSquare(pivot.x - e.x, pivot.y - e.y) /
+									distSquare(pivot.x - e.ox, pivot.y - e.oy),
+							),
+							mZ = newZ - 1;
+						tr(
+							(e.dx - (pivot.x + e.ox) * mZ) / 2,
+							(e.dy - (pivot.y + e.oy) * mZ) / 2,
+							newZ,
+						);
+					} else {
+						tr(e.dx, e.dy, 1);
+					}
+				},
+			},
+			paneRef,
+		);
 		paneRef.addEventListener(
 			"wheel",
 			e => {
@@ -135,24 +126,20 @@ const HrmPane: Component<HrmPaneProps> = props => {
 			},
 			{ passive: false },
 		);
-		for (const [, , ref] of controls) {
-			ref?.addEventListener("mousedown", e => {
-				e.stopPropagation();
-			});
+		for (const [, onClick, ref] of controls) {
+			if (!ref) continue;
+			addEventListeners(
+				{
+					capture: true,
+					onClick: onClick,
+				},
+				ref,
+			);
 		}
 	});
 
 	return (
-		<div ref={paneRef} class="hrm-pane w-100 h-100">
-			<div class="hrm-pane-controls">
-				<For each={controls}>
-					{c => (
-						<button ref={c[2]} onPointerDown={c[1]}>
-							{c[0]}
-						</button>
-					)}
-				</For>
-			</div>
+		<div ref={paneRef} class="hrm-pane abs-parent">
 			<div
 				class="hrm-view"
 				ref={props.g.viewRef}
@@ -160,6 +147,11 @@ const HrmPane: Component<HrmPaneProps> = props => {
 					transform: transformToStyle(t()),
 				}}>
 				{props.children}
+			</div>
+			<div class="hrm-pane-controls">
+				<For each={controls}>
+					{c => <button ref={c[2]}>{c[0]}</button>}
+				</For>
 			</div>
 		</div>
 	);

@@ -3,7 +3,10 @@ import { State } from "./state";
 import { Node, stringifyNodeData } from "@/common";
 import { Button, Color, InputGroup } from "@/block";
 import InputCode from "@/block/InputCode";
-import { TbSquareCheck, TbTrash } from "solid-icons/tb";
+import { TbBackspace, TbSquareCheck, TbSquareX } from "solid-icons/tb";
+
+import * as jasen from "@/jasen";
+import { NodeColor } from "./data";
 
 type SuggestProps = {
 	label: string;
@@ -33,6 +36,7 @@ const Suggests: Component<SuggestsProps> = props => {
 
 type InnerProps = {
 	g: State;
+	color: NodeColor;
 	node: Node;
 };
 
@@ -53,22 +57,31 @@ const HrmEditOverlayInner: Component<InnerProps> = props => {
 			ref={ref}
 			class="hrm-edit-overlay"
 			style={{
-				transform: `translate(${props.node.pos.x}px, ${props.node.pos.y}px)`,
+				...props.g.nodeColorBd(props.color),
+				transform: `translate(${props.node.pos.x - 16}px, ${
+					props.node.pos.y - 16
+				}px)`,
 			}}>
-			<InputGroup class="shadow-1 w-fit">
-				<Button
-					color={Color.danger}
-					onClick={() => props.g.cancelEditNode()}>
-					{" "}
-					<TbTrash />{" "}
-				</Button>
+			<InputGroup class="shadow-1 w-fit mb-1">
 				<Button
 					color={Color.success}
 					onClick={() =>
 						props.g.applyEditNode(taRef ? taRef.value : "")
 					}>
-					{" "}
-					<TbSquareCheck />{" "}
+					<TbSquareCheck />
+				</Button>
+				<Button
+					color={Color.warning}
+					onClick={() => {
+						taRef!.value = "";
+						taRef!.focus();
+					}}>
+					<TbBackspace />
+				</Button>
+				<Button
+					color={Color.danger}
+					onClick={() => props.g.cancelEditNode()}>
+					<TbSquareX />
 				</Button>
 			</InputGroup>
 			<InputCode
@@ -78,6 +91,9 @@ const HrmEditOverlayInner: Component<InnerProps> = props => {
 				class="shadow-1"
 				placeholder="[NODE DATA]"
 				value={stringifyNodeData(props.node.x)}
+				onInput={e => {
+					console.log(jasen.parse(e.currentTarget.value));
+				}}
 			/>
 			<Suggests
 				items={[
@@ -107,7 +123,11 @@ type HrmEditOverlayProps = {
 const HrmEditOverlay: Component<HrmEditOverlayProps> = props => {
 	return (
 		<Show when={props.g.editingNode[0]()}>
-			<HrmEditOverlayInner g={props.g} node={props.g.editingNode[0]()!} />
+			<HrmEditOverlayInner
+				g={props.g}
+				color={props.g.editingNode[0]()!.color}
+				node={props.g.editingNode[0]()!.node}
+			/>
 		</Show>
 	);
 };

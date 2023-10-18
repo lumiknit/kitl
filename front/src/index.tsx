@@ -3,6 +3,12 @@ import { render } from "solid-js/web";
 import "solid-devtools";
 
 import "./index.css";
+
+import "./themes/common.css";
+import "./themes/light.css";
+import "./themes/dark.css";
+
+import "./dark-mode-detect";
 import App from "./App";
 
 const root = document.getElementById("root");

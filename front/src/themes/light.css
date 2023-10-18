@@ -1,0 +1,64 @@
+/* Global colors */
+:root {
+	--kitl-rgb-bg: 255, 255, 255;
+	--kitl-rgb-fg: 0, 0, 0;
+}
+
+/* Block components */
+:root {
+	--b-rgb-black: 0, 0, 0;
+	--b-rgb-white: 255, 255, 255;
+
+	--b-rgb-fg: 20, 20, 20;
+	--b-rgb-fg-light: 40, 40, 40;
+	--b-rgb-fg-dark: 0, 0, 0;
+	--b-rgb-fg-soft: 40, 40, 40;
+	--b-rgb-fg-hard: 0, 0, 0;
+	--b-rgb-fg-text: var(--b-rgb-white);
+	--b-rgb-bg: 235, 235, 235;
+	--b-rgb-bg-light: 255, 255, 255;
+	--b-rgb-bg-dark: 215, 215, 215;
+	--b-rgb-bg-soft: 215, 215, 215;
+	--b-rgb-bg-hard: 255, 255, 255;
+	--b-rgb-bg-text: var(--b-rgb-black);
+
+	--b-rgb-primary: 39, 123, 233;
+	--b-rgb-primary-light: 93, 156, 236;
+	--b-rgb-primary-dark: 40, 103, 184;
+	--b-rgb-primary-text: var(--b-rgb-white);
+	--b-rgb-secondary: 140, 148, 156;
+	--b-rgb-secondary-light: 173, 180, 187;
+	--b-rgb-secondary-dark: 99, 109, 120;
+	--b-rgb-secondary-text: var(--b-rgb-white);
+	--b-rgb-success: 140, 193, 82;
+	--b-rgb-success-light: 160, 212, 104;
+	--b-rgb-success-dark: 107, 164, 46;
+	--b-rgb-success-text: var(--b-rgb-white);
+	--b-rgb-danger: 218, 68, 83;
+	--b-rgb-danger-light: 237, 85, 101;
+	--b-rgb-danger-dark: 179, 30, 45;
+	--b-rgb-danger-text: var(--b-rgb-white);
+	--b-rgb-warning: 255, 206, 84;
+	--b-rgb-warning-light: 247, 219, 150;
+	--b-rgb-warning-dark: 246, 187, 66;
+	--b-rgb-warning-text: var(--b-rgb-black);
+}
+
+/* Hrm colors */
+:root {
+	--hrm-rgb-fg: 0, 0, 0;
+	--hrm-rgb-bg: 255, 255, 255;
+	--hrm-rgb-empty: 187, 187, 187;
+	--hrm-rgb-comment: 84, 129, 84;
+	--hrm-rgb-select: 0, 149, 255;
+	--hrm-rgb-connect: 194, 23, 23;
+
+	--hrm-c-pane-btn-fg: #000;
+	--hrm-c-pane-btn-border: #ccc;
+	--hrm-c-pane-btn-bg: #ddd;
+	--hrm-c-pane-btn-hover-bg: #eee;
+	--hrm-c-pane-btn-active-bg: #ccc;
+
+	--hrm-node-saturate: 0.52;
+	--hrm-node-lightness: 0.7;
+}

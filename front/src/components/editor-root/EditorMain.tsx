@@ -10,16 +10,13 @@ import Modals, { ModalActions } from "./Modals";
 const MainEditor: Component = () => {
 	const state: Box<State> = emptyBox();
 	const modalActionsBox: Box<ModalActions> = emptyBox();
-
 	return (
 		<div class="editor-root">
 			<HrmEditor stateBox={state} />
-			<div class="w-100 abs-lt">
-				<EditorHrmHeader
-					stateBox={state}
-					modalActionsBox={modalActionsBox}
-				/>
-			</div>
+			<EditorHrmHeader
+				stateBox={state}
+				modalActionsBox={modalActionsBox}
+			/>
 			<Modals actionsBox={modalActionsBox} stateBox={state} />
 		</div>
 	);

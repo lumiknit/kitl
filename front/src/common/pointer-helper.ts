@@ -2,39 +2,23 @@
 
 import { distSquare } from "./geometry";
 
-const MOVE_THRESHOLD = 4,
+const MOVE_THRESHOLD = 8,
 	DOUBLE_CLICK_TIME = 300,
-	MULTI_TAP_TIME = 100,
+	DOUBLE_CLICK_THRESHOLD = 32,
 	LONG_PRESS_TIME = 750;
 
 const st = window.setTimeout,
 	ct = window.clearTimeout;
 
-type ButtonState = number;
-const BSReleased = 0,
-	BSPressed = 1,
-	BSMoved = 2;
-
-type PointerID = number;
+export type PointerID = number;
 
 type Pointer = {
 	id: PointerID;
 	// Current position
 	x: number;
 	y: number;
-	b: ButtonState;
-	// Click count
-	c: number;
-	// Timestamp
-	t: number;
-};
-
-type DelayedTap = {
-	x: number;
-	y: number;
-	c: number; // Count
-	t: number; // Timestamp
-	u: number; // Timeout
+	moved: boolean;
+	timestamp: number;
 };
 
 type LongPress = {
@@ -45,6 +29,7 @@ type LongPress = {
 };
 
 export type BaseEvent = {
+	id: PointerID;
 	x: number;
 	y: number;
 };
@@ -79,258 +64,198 @@ export type DragEvent = BaseEvent & {
 	};
 };
 
-export type Handlers = {
-	onPress?: (e: ClickEvent) => void;
+export type Props = {
+	capture?: boolean;
+	// Enter events
+	onEnter?: (id: PointerID) => void;
+	onLeave?: (id: PointerID) => void;
+	onCancel?: (id: PointerID) => void;
+	// Down/move/up events
+	onDown?: (e: ClickEvent) => void;
+	onMove?: (e: BaseEvent) => void;
+	onUp?: (e: ClickEvent) => void;
+	// Click events
 	onClick?: (e: ClickEvent) => void;
 	onDoubleClick?: (e: ClickEvent) => void;
 	onLongPress?: (e: BaseEvent) => void;
+	// Drag events
 	onDrag?: (e: DragEvent) => void;
-	onRelease?: (e: BaseEvent) => void;
+};
+
+type LastClick = {
+	x: number;
+	y: number;
+	timestamp: number;
 };
 
 type State = {
-	t: Map<PointerID, PointerID>; // Touches
-	c: Map<PointerID, Pointer>; // Current
-	o: Map<PointerID, Pointer>; // Old
-	d?: DelayedTap; // Delayed tap
-	l?: LongPress; // Long press timeout
-	k?: number; // Clean Function Timeout
-	handlers: Handlers;
+	pointers: Map<PointerID, Pointer>;
+	longPress?: LongPress;
+	maxPointers: number;
+	lastClick: LastClick;
 };
 
 /* Functions */
 
-const mapID = (s: State, id: PointerID): PointerID => {
-	const v = s.t.get(id);
-	if (v !== undefined) return v;
-	// From 0 find smallest unused number
-	const ids = new Set(s.t.values());
-	for (let i = 0; ; i++) {
-		if (!ids.has(i)) {
-			s.t.set(id, i);
-			return i;
-		}
-	}
-};
-
-export const addEventListeners = (handles: Handlers, el: Element) => {
+export const addEventListeners = (handlers: Props, el: Element) => {
 	const s: State = {
-		t: new Map(),
-		c: new Map(),
-		o: new Map(),
-		handlers: handles,
-	};
-
-	const updatePointer = (id: PointerID, x: number, y: number): boolean => {
-		// Move event
-		const p = s.c.get(id);
-		if (!p) return false;
-		const dx = x - p.x,
-			dy = y - p.y;
-		if (p.b !== BSMoved && distSquare(dx, dy) < MOVE_THRESHOLD) {
-			return false;
-		}
-		// Update view
-		const event: DragEvent = {
-				x,
-				y,
-				ox: p.x,
-				oy: p.y,
-				dx,
-				dy,
-			},
-			[a, b] = s.c.keys();
-		if (b) {
-			event.pivot = s.c.get(a === id ? b : a);
-		}
-		p.b = BSMoved;
-		p.x = x;
-		p.y = y;
-		s.handlers.onDrag?.(event);
-		return true;
-	};
-
-	const deactivatePointer = (id: PointerID, ce: ClickEvent): void => {
-		// Button Up / Touch End event
-		const p = s.c.get(id);
-		s.c.delete(id);
-		if (!p) return;
-		s.o.set(id, p);
-		const oldB = p.b;
-		p.b = BSReleased;
-		if (oldB === BSMoved) {
-			p.c = 0;
-			s.handlers.onRelease?.(ce);
-			return;
-		}
-		if (p.c === 2) {
-			// Double Click
-			s.handlers.onDoubleClick?.(ce);
-		} else if (s.d || s.c.size > 0) {
-			let cnt = 1;
-			if (s.d) {
-				ct(s.d.u);
-				cnt = s.d.c + 1;
-			}
-			s.d = {
-				x: p.x,
-				y: p.y,
-				c: cnt,
-				t: Date.now(),
-				u: st(() => {
-					const p = s.d;
-					if (!p) return;
-					s.d = undefined;
-					s.handlers.onClick?.({
-						...ce,
-						pointers: cnt,
-					});
-				}, MULTI_TAP_TIME),
-			};
-		} else {
-			s.handlers.onClick?.({
-				...ce,
-				pointers: 1,
-			});
-		}
-		if (s.k) ct(s.k);
-		s.k = st(() => {
-			s.k = undefined;
-			s.d = undefined;
-			s.o.clear();
-		}, DOUBLE_CLICK_TIME);
-		ct(s.l?.u);
-		s.l = undefined;
-		if (s.c.size === 0) {
-			for (const k in HANDLERS) {
-				window.removeEventListener(k, HANDLERS[k]);
-			}
-		}
-	};
-
-	const HANDLERS: { [k: string]: any } = {
-		mousemove: (e: MouseEvent) => {
-			if (e.buttons & 1) {
-				updatePointer(-1, e.clientX, e.clientY);
-			}
-		},
-		mouseup: (e: MouseEvent) => {
-			if (e.button === 0) {
-				deactivatePointer(-1, {
-					pointers: 1,
-					x: e.clientX,
-					y: e.clientY,
-					modifiers: modifiersFromHTMLEvent(e),
-				});
-			}
-		},
-		mouseleave: () => {
-			s.c.delete(-1);
-		},
-		touchmove: (e: TouchEvent) => {
-			for (const t of e.changedTouches) {
-				updatePointer(mapID(s, t.identifier), t.clientX, t.clientY);
-			}
-		},
-		touchend: (e: TouchEvent) => {
-			for (const t of e.changedTouches) {
-				deactivatePointer(mapID(s, t.identifier), {
-					pointers: e.touches.length,
-					x: t.clientX,
-					y: t.clientY,
-					modifiers: modifiersFromHTMLEvent(e),
-				});
-				s.t.delete(t.identifier);
-			}
-		},
-		touchcancel: (e: TouchEvent) => {
-			for (const t of e.changedTouches) {
-				s.t.delete(t.identifier);
-			}
+		pointers: new Map(),
+		maxPointers: 0,
+		lastClick: {
+			x: 0,
+			y: 0,
+			timestamp: 0,
 		},
 	};
-
-	const activatePointer = (id: PointerID, ce: ClickEvent): void => {
-		// Button Down / Touch Start event
-		// Try to get old state
-		const now = Date.now(),
-			p = s.o.get(id),
-			cnt =
-				p && // Pointer still exists
-				p.c === 1 && // Already clicked once
-				now - p.t <= DOUBLE_CLICK_TIME // Within double click time
-					? 2
-					: 1;
-		s.o.delete(id);
-		s.c.set(id, {
-			id,
-			x: ce.x,
-			y: ce.y,
-			b: BSPressed,
-			c: cnt,
-			t: now,
-		});
-		if (s.l) {
-			ct(s.l.u);
+	const cancelPointer = (id: PointerID) => {
+		if (s.longPress && s.longPress.id === id) {
+			ct(s.longPress.u);
+			s.longPress = undefined;
 		}
-		s.l = {
-			id,
-			x: ce.x,
-			y: ce.y,
-			u: st(() => {
-				const p = s.c.get(id);
-				if (
-					p && // Pointer still exists
-					s.l && // Long press still exists
-					p.id === s.l.id && // Pointer is the same
-					p.b === BSPressed && // Pointer is not moved
-					s.c.size === 1 // Only one pointer
-				) {
-					s.handlers.onLongPress?.({ x: ce.x, y: ce.y });
-					s.c.delete(id);
-				}
-				s.l = undefined;
-			}, LONG_PRESS_TIME),
-		};
-		if (s.c.size === 1) {
-			for (const k in HANDLERS) {
-				window.addEventListener(k, HANDLERS[k]);
-			}
-		}
-		ce.pointers = s.c.size;
-		s.handlers.onPress?.(ce);
+		s.pointers.delete(id);
 	};
-
-	const START_HANDLERS: { [k: string]: any } = {
-		mousedown: (e: MouseEvent) => {
-			if (e.button !== 0) return;
-			activatePointer(-1, {
-				pointers: 1,
-				x: e.clientX,
-				y: e.clientY,
-				modifiers: modifiersFromHTMLEvent(e),
-			});
-			e.stopPropagation();
+	const events = {
+		pointerenter: (e: PointerEvent) => {
+			handlers.onEnter?.(e.pointerId);
 		},
-		touchstart: (e: TouchEvent) => {
-			for (const t of e.changedTouches) {
-				activatePointer(mapID(s, t.identifier), {
-					pointers: 1,
-					x: t.clientX,
-					y: t.clientY,
-					modifiers: modifiersFromHTMLEvent(e),
-				});
-			}
+		pointercancel: (e: PointerEvent) => {
+			cancelPointer(e.pointerId);
+			handlers.onCancel?.(e.pointerId);
+		},
+		pointerleave: (e: PointerEvent) => {
+			cancelPointer(e.pointerId);
+			handlers.onLeave?.(e.pointerId);
+		},
+		pointerdown: (e: PointerEvent) => {
 			e.preventDefault();
 			e.stopPropagation();
+			const id = e.pointerId;
+			handlers.onDown?.({
+				id,
+				x: e.clientX,
+				y: e.clientY,
+				pointers: s.pointers.size,
+				modifiers: modifiersFromHTMLEvent(e),
+			});
+			(e.target as any).releasePointerCapture(id);
+			if (handlers.capture) {
+				console.log("CAPTURE");
+				(e.currentTarget as any).setPointerCapture(id);
+			} else {
+				console.log("RELEASE");
+				(e.currentTarget as any).releasePointerCapture(id);
+			}
+			const p: Pointer = {
+				id,
+				x: e.clientX,
+				y: e.clientY,
+				moved: false,
+				timestamp: Date.now(),
+			};
+			cancelPointer(e.pointerId);
+			s.pointers.set(id, p);
+			s.maxPointers = Math.max(s.maxPointers, s.pointers.size);
+			if (s.pointers.size === 1) {
+				// Start long press
+				s.longPress = {
+					id,
+					x: e.clientX,
+					y: e.clientY,
+					u: st(() => {
+						if (
+							s.longPress &&
+							s.pointers.size === 1 &&
+							s.pointers.has(id) &&
+							!s.pointers.get(id)!.moved
+						) {
+							s.longPress = undefined;
+							handlers.onLongPress?.({
+								id,
+								x: e.clientX,
+								y: e.clientY,
+							});
+							s.pointers.delete(id);
+						}
+					}, LONG_PRESS_TIME),
+				};
+			}
+		},
+		pointermove: (e: PointerEvent) => {
+			e.preventDefault();
+			e.stopPropagation();
+			const id = e.pointerId;
+			handlers.onMove?.({
+				id,
+				x: e.clientX,
+				y: e.clientY,
+			});
+			const p = s.pointers.get(id);
+			if (!p) return;
+			const dx = e.clientX - p.x,
+				dy = e.clientY - p.y;
+			if (!p.moved && distSquare(dx, dy) < MOVE_THRESHOLD) {
+				return;
+			}
+			if (handlers.onDrag) {
+				const event: DragEvent = {
+						id,
+						x: e.clientX,
+						y: e.clientY,
+						ox: p.x,
+						oy: p.y,
+						dx,
+						dy,
+					},
+					[a, b] = s.pointers.keys();
+				if (b) {
+					event.pivot = s.pointers.get(a === id ? b : a);
+				}
+				handlers.onDrag(event);
+			}
+			p.moved = true;
+			p.x = e.clientX;
+			p.y = e.clientY;
+		},
+		pointerup: (e: PointerEvent) => {
+			e.preventDefault();
+			e.stopPropagation();
+			const id = e.pointerId;
+			const event: ClickEvent = {
+				id,
+				x: e.clientX,
+				y: e.clientY,
+				pointers: s.maxPointers,
+				modifiers: modifiersFromHTMLEvent(e),
+			};
+			handlers.onUp?.(event);
+			const pointer = s.pointers.get(id);
+			if (!pointer) return;
+			cancelPointer(e.pointerId);
+			const now = Date.now();
+			if (s.pointers.size === 0) {
+				// Click
+				handlers.onClick?.(event);
+				if (
+					now - s.lastClick.timestamp < DOUBLE_CLICK_TIME &&
+					distSquare(
+						event.x - s.lastClick.x,
+						event.y - s.lastClick.y,
+					) <
+						DOUBLE_CLICK_THRESHOLD ** 2
+				) {
+					handlers.onDoubleClick?.(event);
+				}
+				s.lastClick = {
+					x: e.clientX,
+					y: e.clientY,
+					timestamp: now,
+				};
+				s.maxPointers = 0;
+			}
 		},
 	};
-	for (const k in START_HANDLERS) {
-		el.addEventListener(k, START_HANDLERS[k]);
+
+	for (const [k, v] of Object.entries(events)) {
+		el.addEventListener(k, v as any, { passive: false });
 	}
-	return () => {
-		for (const k in START_HANDLERS) {
-			el.removeEventListener(k, START_HANDLERS[k]);
-		}
-	};
 };

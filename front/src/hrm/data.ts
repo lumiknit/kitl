@@ -11,25 +11,20 @@ import {
 	Source,
 	clamp,
 } from "@/common";
+import { PointerID } from "@/common/pointer-helper";
 
-import { createSignal } from "solid-js";
+import { JSX, createSignal } from "solid-js";
 
 /* Const */
 
-export const nodeColors = () =>
-	Number(
-		window
-			.getComputedStyle(document.body)
-			.getPropertyValue("--hrm-node-colors-num"),
-	);
-export const randomColor = () => Math.floor(Math.random() * nodeColors());
-export type NodeColor = number;
-export const cBg = (color?: NodeColor) =>
-	color! >= 0 ? `hrm-c-bg-${color}` : "";
-export const cBd = (color?: NodeColor) =>
-	color! >= 0 ? `hrm-c-bd-${color}` : "";
-export const cStr = (color?: NodeColor) =>
-	color! >= 0 ? `hrm-c-stroke-${color}` : "";
+export type NodeColor = number; // Hue
+let lastColor = 0;
+export const resetColor = () => {
+	lastColor = 0;
+};
+export const randomColor = (): NodeColor =>
+	(lastColor = (lastColor + 57.295779513) % 360);
+
 export const cBdEmpty = "hrm-c-bd-empty";
 
 /* Symbols */
@@ -71,7 +66,7 @@ export type Handle = {
 	data: HandleData;
 	selected?: boolean;
 	color?: NodeColor;
-	colorClass?: string;
+	style?: JSX.CSSProperties;
 };
 
 export type Handles = VWrap<Handle>[] & {
@@ -85,6 +80,7 @@ export type Handles = VWrap<Handle>[] & {
 export type Node = {
 	ref?: HTMLElement;
 	color: NodeColor;
+	angular?: boolean;
 	data: NodeData;
 	handles: Handles;
 	position: Position;
@@ -104,7 +100,10 @@ const sourceHandle = (name: string): VWrap<Handle> =>
 		},
 	});
 
-const sourceToSinkHandle = (name: string, source?: Source): VWrap<Handle> =>
+export const sourceToSinkHandle = (
+	name: string,
+	source?: Source,
+): VWrap<Handle> =>
 	createSignal({
 		name: name,
 		data: {
@@ -163,6 +162,7 @@ const thawHandles = (node: CNode): Handles => {
 export const thawNode = (node: CNode): VWrap<Node> =>
 	createSignal({
 		color: randomColor(),
+		angular: node.x.type === NodeType.Alpha,
 		data: node.x,
 		handles: thawHandles(node),
 		position: node.pos,
@@ -174,6 +174,7 @@ export const thawNode = (node: CNode): VWrap<Node> =>
 	});
 
 export const thawNodes = (nodes: CNodes): Nodes => {
+	resetColor();
 	const result: Nodes = new Map();
 	for (const node of nodes) {
 		result.set(node.id, thawNode(node));
@@ -222,7 +223,7 @@ const freezeNodeData = (node: Node): NodeData => {
 			return {
 				type: NodeType.Nu,
 				name: node.data.name,
-				lhs: node.data.lhs,
+				lhs: node.handles.lhs,
 				args: node.handles.reduce<Source[]>((acc, h) => {
 					const frozen = freezeSource(h[0]().data);
 					if (frozen) acc.push(frozen);
@@ -255,6 +256,27 @@ export const freezeNodes = (nodes: Nodes): CNodes => {
 	return result;
 };
 
+/* Rename handles */
+
+export const renameHandles = (node: Node) => {
+	switch (node.data.type) {
+		case NodeType.Beta:
+			node.handles[0][1](h => ({ ...h, name: SYM_FN }));
+			node.handles[0][0]().name = SYM_FN;
+			for (let i = 1; i < node.handles.length; i++) {
+				node.handles[i][1](h => ({ ...h, name: String(i - 1) }));
+			}
+			break;
+		case NodeType.Nu:
+			for (let i = 0; i < node.handles.length; i++) {
+				node.handles[i][1](h => ({ ...h, name: String(i) }));
+			}
+			break;
+		default:
+			throw "Unimplemented";
+	}
+};
+
 /* Transform */
 export type Transform = {
 	x: number; // x offset
@@ -263,10 +285,19 @@ export type Transform = {
 };
 
 /* Editing Edges */
-export type EditingEdge = {
-	isSource?: boolean;
-	nodeID?: NodeID;
+export type ConnectingEdge = {
+	pointerID: PointerID;
+	isSource: boolean;
+	nodeID: NodeID;
 	handleID?: HandleID;
-	end: Position;
-	endRef?: HTMLDivElement;
+};
+
+export type ConnectingEdgeEnd = {
+	pos: Position;
+	ref?: HTMLDivElement;
+};
+
+export type EditingNode = {
+	node: CNode;
+	color: NodeColor;
 };

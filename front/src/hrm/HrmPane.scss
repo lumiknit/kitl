@@ -13,21 +13,22 @@ div.hrm-view {
 div.hrm-pane-controls {
 	position: absolute;
 	left: 0.5rem;
-	bottom: 0.5rem;
+	bottom: 2rem;
 	display: flex;
 	flex-direction: column;
 	align-items: stretch;
 	justify-content: center;
-	border: 1px solid #ccc;
+	border: 1px solid var(--hrm-c-pane-btn-border);
 	z-index: 10;
 }
 
 div.hrm-pane-controls > button {
 	display: inline-block;
-	background-color: #ddd;
+	color: var(--hrm-c-pane-btn-fg);
+	background-color: var(--hrm-c-pane-btn-bg);
 	padding: 0.3rem;
 	border: 0;
-	border-bottom: 1px solid #ccc;
+	border-bottom: 1px solid var(--hrm-c-pane-btn-border);
 }
 
 div.hrm-pane-controls > button:last-child {
@@ -35,11 +36,11 @@ div.hrm-pane-controls > button:last-child {
 }
 
 div.hrm-pane-controls > button:hover {
-	background-color: #ccc;
+	background-color: var(--hrm-c-pane-btn-hover-bg);
 }
 
 div.hrm-pane-controls > button:active {
-	background-color: #bbb;
+	background-color: var(--hrm-c-pane-btn-active-bg);
 }
 
 div.hrm-pane-controls > button:disabled {

@@ -1,9 +1,23 @@
 div.hrm-container {
 	display: block;
-	background-color: #ffff;
+	background-color: var(--hrm-c-bg);
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
+}
+
+div.hrm-container:focus {
+	outline: none;
+}
+
+// Common
+
+.hrm-rect {
+	border-radius: 0.25rem;
+}
+
+.hrm-pill {
+	border-radius: 9999rem;
 }
 
 // Node
@@ -16,8 +30,10 @@ div.hrm-container {
 	padding: 0.3rem;
 
 	border: 2px solid var(--hrm-c-empty);
-	border-radius: 999rem;
-	box-shadow: 0 0.125rem 0.25rem #0002;
+	background-color: var(--hrm-c-bg);
+	color: var(--hrm-c-fg);
+
+	white-space: nowrap;
 }
 
 .hrm-node.selected {
@@ -65,7 +81,6 @@ div.hrm-container {
 .hrm-node-json {
 	// Pre
 	font-family: monospace;
-	font-size: 0.8rem;
 	white-space: pre-wrap;
 }
 
@@ -103,13 +118,12 @@ div.hrm-container {
 }
 
 .hrm-node-handle {
-	//background-color: #f004;
 	cursor: pointer;
 	position: absolute;
 	width: 100%;
-	height: 0.6rem;
+	height: 1.2rem;
 	left: 0;
-	bottom: -0.3rem;
+	bottom: -0.8rem;
 }
 
 // Handle
@@ -118,6 +132,22 @@ div.hrm-container {
 	display: inline-block;
 	border: 2px solid var(--hrm-c-empty);
 	border-radius: 999rem;
+}
+
+.hrm-handle-new {
+	position: absolute;
+	padding: 0;
+	width: 1.2rem;
+	height: 100%;
+	top: 0;
+}
+
+.hrm-handle-new.lhs {
+	left: -0.6rem;
+}
+
+.hrm-handle-new.rhs {
+	right: -0.6rem;
 }
 
 // Edge
@@ -133,12 +163,15 @@ div.hrm-container {
 	pointer-events: stroke;
 }
 
+.hrm-edge-path-bd {
+	stroke: var(--hrm-c-bg);
+}
+
 .hrm-editing-edge-handle {
 	position: absolute;
 	visibility: hidden;
 	outline: 2px dashed var(--hrm-c-connect);
 	outline-offset: 2px;
-	border-radius: 9999rem;
 }
 
 // Node Editor
@@ -148,6 +181,16 @@ div.hrm-container {
 	z-index: 1;
 	top: 0;
 	left: 0;
+
+	border-radius: 1rem;
+	padding: 0.5rem;
+	box-shadow: 0 0.25rem 0.5rem #0002;
+
+	// Blur
+	background-color: rgba(var(--hrm-rgb-bg), 0.25);
+	backdrop-filter: blur(0.25rem);
+	-webkit-backdrop-filter: blur(0.25rem);
+	border: 2px solid #0004;
 }
 
 .hrm-edit-overlay .edit {

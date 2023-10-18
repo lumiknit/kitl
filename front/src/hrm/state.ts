@@ -14,20 +14,38 @@ import {
 	BetaNodeData,
 	Size,
 	parseNodeData,
+	ShapedRect,
 } from "@/common";
 import {
-	EditingEdge,
+	ConnectingEdge as ConnectingEdge,
+	ConnectingEdgeEnd as ConnectingEnd,
+	EditingNode,
 	HandleType,
 	Nodes,
 	SinkHandleData,
 	Transform,
 	freezeNode,
 	freezeNodes,
+	renameHandles,
+	sourceToSinkHandle,
 	thawNode,
 	thawNodes,
 } from "./data";
+import { HSL2RGB, RGB2GRAY, hslCss } from "@/common/color";
+import { PointerID } from "@/common/pointer-helper";
 
 /* State */
+
+const defaultKeymap = (): Map<string, string> =>
+	new Map([
+		["C-a", "selectAll"],
+		["M-a", "selectAll"],
+		["Backspace", "deleteSelectedNodes"],
+		["Delete", "deleteSelectedNodes"],
+		["a", "addEmptyNode"],
+		["C-=", "zoomIn"],
+		["C--", "zoomOut"],
+	]);
 
 export class State {
 	// Graph data
@@ -42,10 +60,11 @@ export class State {
 	viewRef?: HTMLDivElement;
 
 	// Editing Node
-	editingNode: VWrap<CNode | undefined>;
+	editingNode: VWrap<EditingNode | undefined>;
 
-	// Editing Edge
-	editingEdge: VWrap<EditingEdge>;
+	// Connecting Edge
+	connectingEdge: VWrap<ConnectingEdge | undefined>;
+	connectingEnd: VWrap<ConnectingEnd>;
 
 	// Undo/redo history
 	history: CNodes[];
@@ -53,6 +72,9 @@ export class State {
 
 	// Mode
 	selectMode: boolean = false;
+
+	// Keymap
+	keymap: Map<string, string> = new Map();
 
 	constructor(initialNodes?: CNodes) {
 		if (!initialNodes) initialNodes = [];
@@ -62,11 +84,14 @@ export class State {
 		this.nodes = nodes;
 		this.setNodes = setNodes;
 		this.editingNode = createSignal();
-		this.editingEdge = createSignal({ end: origin });
+		this.connectingEdge = createSignal();
+		this.connectingEnd = createSignal({ pos: origin });
 		this.transform = [() => ({ x: 0, y: 0, z: 1 }), () => {}];
 		// History
 		this.history = [initialNodes];
 		this.historyIndex = 0;
+		// Keymap
+		this.keymap = defaultKeymap();
 	}
 
 	// Graph save/load
@@ -79,6 +104,40 @@ export class State {
 
 	freeze(): CNodes {
 		return freezeNodes(this.nodes());
+	}
+
+	// Color theme
+
+	getSL() {
+		const computed = getComputedStyle(document.documentElement),
+			s = Number(computed.getPropertyValue("--hrm-node-saturate")),
+			l = Number(computed.getPropertyValue("--hrm-node-lightness"));
+		return [s, l];
+	}
+
+	nodeColorBg(hue: number) {
+		const [s, l] = this.getSL(),
+			fg = RGB2GRAY(...HSL2RGB(hue, s, l)) > 192 ? "#000" : "#fff",
+			bg = hslCss(hue, s, l);
+		return {
+			color: fg,
+			"background-color": bg,
+			"border-color": bg,
+		};
+	}
+
+	nodeColorBd(hue: number) {
+		const [s, l] = this.getSL();
+		return {
+			"border-color": hslCss(hue, s, l),
+		};
+	}
+
+	nodeColorStroke(hue: number) {
+		const [s, l] = this.getSL();
+		return {
+			stroke: hslCss(hue, s, l),
+		};
 	}
 
 	// History
@@ -160,23 +219,26 @@ export class State {
 
 	// Node / Handle Getter
 
-	ref(id: NodeID, handle?: HandleID) {
+	viewRectOf(id: NodeID, handle?: HandleID): ShapedRect | undefined {
 		const node = this.nodes().get(id);
 		if (!node) return;
 		const n = node[0]();
-		if (handle === undefined) return n.ref;
-		const h = n.handles[handle];
-		if (!h) return;
-		return h[0]().ref;
-	}
-
-	viewRectOf(id: NodeID, handle?: HandleID): Rect | undefined {
-		return this.viewRect(this.ref(id, handle));
+		if (handle === undefined) {
+			const r = this.viewRect(n.ref);
+			if (!r) return;
+			return {
+				...r,
+				angular: n.angular,
+			};
+		}
+		const ref = n.handles[handle][0]().ref;
+		if (!ref) return;
+		return this.viewRect(ref);
 	}
 
 	// Add
 
-	addEmptyNode(pos?: Position) {
+	addEmptyNode(pos?: Position): NodeID {
 		if (!pos) {
 			const t = this.transform[0]();
 			const rootRef = this.rootRef;
@@ -191,12 +253,38 @@ export class State {
 				};
 			}
 		}
+		const id = genID();
+		let fn;
+		// If connecting edge exists, connect to it
+		const ce = this.connectingEdge[0]();
+		if (ce) {
+			if (ce.isSource) {
+				fn = {
+					id: ce.nodeID,
+					handle: ce.handleID,
+				};
+			} else {
+				const n = this.nodes().get(ce.nodeID);
+				if (n) {
+					const h = n[0]().handles[ce.handleID!];
+					h[1](h => ({
+						...h,
+						data: {
+							type: HandleType.Sink,
+							sourceID: id,
+						},
+					}));
+				}
+			}
+		}
+		this.connectingEdge[1](undefined);
 		const x: BetaNodeData = {
 			type: NodeType.Beta,
+			fn,
 			args: [],
 		};
 		const emptyNode: CNode = {
-			id: genID(),
+			id,
 			pos,
 			x,
 		};
@@ -205,6 +293,7 @@ export class State {
 			return ns;
 		});
 		this.saveHistory();
+		return emptyNode.id;
 	}
 
 	// Selected Nodes
@@ -236,7 +325,8 @@ export class State {
 		}
 	}
 
-	selectOneNode(id: NodeID) {
+	selectOneNode(id: NodeID, keep?: boolean) {
+		this.connectingEdge[1](undefined);
 		// Check is selected
 		for (const [nid, node] of this.nodes()) {
 			if (nid === id) {
@@ -244,7 +334,7 @@ export class State {
 					...n,
 					selected: !n.selected,
 				}));
-			} else if (!this.selectMode) {
+			} else if (!keep && !this.selectMode) {
 				node[1](n =>
 					n.selected
 						? {
@@ -298,106 +388,148 @@ export class State {
 	}
 
 	deleteEdge(id: NodeID, handle: HandleID) {
-		console.log("deleteEdge", id, handle);
 		const node = this.nodes().get(id);
-		if (!node) return;
-		const [n] = node,
-			h = n().handles[handle];
-		h[1](h =>
-			h.data.type !== HandleType.Sink
-				? h
-				: {
-						...h,
-						data: { type: HandleType.Sink },
-				  },
-		);
+		if (node) {
+			node[0]().handles[handle][1](h =>
+				h.data.type !== HandleType.Sink
+					? h
+					: {
+							...h,
+							data: { type: HandleType.Sink },
+					  },
+			);
+		}
 	}
 
-	// Editing Edge
+	// Connecting Edge
 
-	resetEditingEdge() {
-		this.editingEdge[1]({
-			end: origin,
+	resetConnectingState() {
+		batch(() => {
+			this.connectingEdge[1](undefined);
+			this.connectingEnd[1]({ pos: origin });
 		});
 	}
 
-	enterEditingEnd(id: NodeID, ref?: HTMLDivElement, handle?: HandleID) {
-		this.editingEdge[1](e =>
-			e.nodeID && (e.nodeID !== id || e.handleID !== handle)
-				? {
-						...e,
-						endRef: ref,
-				  }
-				: e,
-		);
+	setTempConnectingEnd(id: NodeID, ref?: HTMLDivElement, handle?: HandleID) {
+		batch(() => {
+			const e = this.connectingEdge[0]();
+			if (e && (e.nodeID !== id || e.handleID !== handle)) {
+				this.connectingEnd[1](ee => ({
+					...ee,
+					ref,
+				}));
+			}
+		});
 	}
 
-	leaveEditingEnd(ref?: HTMLDivElement) {
-		this.editingEdge[1](e =>
-			e.nodeID && e.endRef === ref
-				? {
-						...e,
-						endRef: undefined,
-				  }
-				: e,
-		);
+	unsetTempConnectingEnd(ref?: HTMLDivElement) {
+		batch(() => {
+			const e = this.connectingEdge[0]();
+			if (e) {
+				this.connectingEnd[1](ee =>
+					ee.ref === ref ? { ...ee, ref: undefined } : ee,
+				);
+			}
+		});
 	}
 
-	pickEditingEnd(id: NodeID, handle?: HandleID) {
+	finConnecting(id: NodeID, handle?: HandleID) {
 		// If editing edge from other exists, connect.
-		const e = this.editingEdge[0]();
-		if (e.nodeID && (e.nodeID !== id || e.handleID !== handle)) {
+		const e = this.connectingEdge[0]();
+		if (e && (e.nodeID !== id || e.handleID !== handle)) {
 			if (e.isSource && handle !== undefined) {
-				return this.setEdge(id, handle, e.nodeID, e.handleID);
+				this.connectEdge(id, handle, e.nodeID, e.handleID);
 			} else if (!e.isSource && e.handleID !== undefined) {
-				return this.setEdge(e.nodeID, e.handleID, id, handle);
+				this.connectEdge(e.nodeID, e.handleID, id, handle);
 			}
 		}
 	}
 
-	setEdge(
+	makeLeftHandle(id: NodeID) {
+		const node = this.nodes().get(id);
+		if (!node) return 0;
+		node[1](n => {
+			n.handles.unshift(sourceToSinkHandle(""));
+			n.handles.lhs++;
+			return { ...n };
+		});
+		renameHandles(node[0]());
+		return 0;
+	}
+
+	makeRightHandle(id: NodeID) {
+		const node = this.nodes().get(id);
+		if (!node) return 0;
+		const n = node[0](),
+			idx = n.handles.length;
+		node[1](n => {
+			n.handles.push(sourceToSinkHandle(""));
+			return { ...n };
+		});
+		renameHandles(n);
+		return idx;
+	}
+
+	connectEdge(
 		sinkID: NodeID,
 		sinkHandle: HandleID,
 		srcID: NodeID,
 		srcHandle?: HandleID,
 	) {
-		// Check source
-		const nodes = this.nodes(),
-			sinkNode = nodes.get(sinkID),
-			srcNode = nodes.get(srcID);
-		if (!sinkNode || !srcNode) return;
-		if (srcHandle === undefined) {
-			if (ROOT_NODES.has(srcNode[0]().data.type)) return;
-		} else {
-			const h = srcNode[0]().handles[srcHandle];
-			if (!h || h[0]().data.type !== HandleType.Source) return;
-		}
+		batch(() => {
+			if (sinkHandle === -Infinity) {
+				// Shift all handles to right
+				sinkHandle = this.makeLeftHandle(sinkID);
+			}
+			if (sinkHandle === Infinity) {
+				// Shift all handles to left
+				sinkHandle = this.makeRightHandle(sinkID);
+			}
+			// Check source
+			const nodes = this.nodes(),
+				sinkNode = nodes.get(sinkID),
+				srcNode = nodes.get(srcID);
+			if (!sinkNode || !srcNode) return;
+			if (srcHandle === undefined) {
+				if (ROOT_NODES.has(srcNode[0]().data.type)) return;
+			} else {
+				const h = srcNode[0]().handles[srcHandle];
+				if (!h || h[0]().data.type !== HandleType.Source) return;
+			}
 
-		const h = sinkNode[0]().handles[sinkHandle];
-		h[1](h =>
-			h.data.type !== HandleType.Sink
-				? h
-				: {
-						...h,
-						data: {
-							type: HandleType.Sink,
-							sourceID: srcID,
-							sourceHandle: srcHandle,
-						},
-				  },
-		);
-		this.resetEditingEdge();
-		this.saveHistory();
+			const h = sinkNode[0]().handles[sinkHandle];
+			h[1](h =>
+				h.data.type !== HandleType.Sink
+					? h
+					: {
+							...h,
+							data: {
+								type: HandleType.Sink,
+								sourceID: srcID,
+								sourceHandle: srcHandle,
+							},
+					  },
+			);
+			this.resetConnectingState();
+			this.saveHistory();
+		});
 	}
 
-	updateEdgeEnd(end: Position) {
-		this.editingEdge[1](e => ({
+	updateConnectingEnd(end: Position) {
+		this.connectingEnd[1](e => ({
 			...e,
-			end,
+			pos: end,
 		}));
 	}
 
-	editEdge(id: NodeID, handle?: HandleID, pos?: Position) {
+	addConnectingEnd(
+		pointerID: PointerID,
+		id: NodeID,
+		handle?: HandleID,
+		pos?: Position,
+	) {
+		// Unselect all nodes
+		this.deselectAll();
 		// Add to editing edge, and add edge when it completed
 		// Find the node
 		const node = this.nodes().get(id);
@@ -410,21 +542,26 @@ export class State {
 			isSource = h[0]().data.type === HandleType.Source;
 		}
 		// Check if it is a source
-		const e = this.editingEdge[0]();
-		if (e.nodeID === id && e.handleID === handle) {
-			this.resetEditingEdge();
+		const e = this.connectingEdge[0]();
+		if (e && e.nodeID === id && e.handleID === handle) {
+			this.resetConnectingState();
 			return;
 		}
-		if (!isSource === e.isSource) {
+		if (e && !isSource === e.isSource) {
 			return isSource
-				? this.setEdge(e.nodeID!, e.handleID!, id, handle)
-				: this.setEdge(id, handle!, e.nodeID!, e.handleID);
+				? this.connectEdge(e.nodeID!, e.handleID!, id, handle)
+				: this.connectEdge(id, handle!, e.nodeID!, e.handleID);
 		} else {
-			this.editingEdge[1]({
-				isSource,
-				nodeID: id,
-				handleID: handle,
-				end: pos ?? origin,
+			batch(() => {
+				this.connectingEdge[1]({
+					pointerID: pointerID,
+					isSource,
+					nodeID: id,
+					handleID: handle,
+				});
+				if (pos) {
+					this.connectingEnd[1](ee => ({ ...ee, pos }));
+				}
 			});
 		}
 	}
@@ -433,8 +570,11 @@ export class State {
 	editNode(id: NodeID) {
 		// Find node
 		const node = this.nodes().get(id);
-		if (node) {
-			this.editingNode[1](freezeNode(id, node[0]()));
+		if (node && !ROOT_NODES.has(node[0]().data.type)) {
+			this.editingNode[1]({
+				node: freezeNode(id, node[0]()),
+				color: node[0]().color,
+			});
 		}
 	}
 
@@ -443,31 +583,38 @@ export class State {
 			// Convert string to node
 			const editing = this.editingNode[0]();
 			if (!editing) return;
-			const id = editing?.id;
-			const data = parseNodeData(s);
+			const id = editing.node.id;
 			const newNode: CNode = {
-				...editing,
-				x: data,
+				...editing.node,
+				x: parseNodeData(s),
 			};
 			const thawed = thawNode(newNode);
 			// Get original node
 			const oldNode = this.nodes().get(id);
+			if (!oldNode) return;
+			thawed[1](n => ({
+				...n,
+				color: oldNode[0]().color,
+			}));
 			// Transfer original edges
-			const oldHandles = oldNode ? oldNode[0]().handles : [];
+			const oldSinkHandles: SinkHandleData[] = [];
+			for (const handle of oldNode ? oldNode[0]().handles : []) {
+				const h = handle[0]();
+				if (h.data.type === HandleType.Sink && h.data.sourceID) {
+					oldSinkHandles.push(h.data);
+				}
+			}
+			console.log(oldSinkHandles);
 			const newHandles = thawed[0]().handles;
 			for (let i = 0; i < newHandles.length; i++) {
-				console.log("Update", i, newHandles[i]);
-				const oldHandle = oldHandles[i];
 				newHandles[i][1](h => {
 					if (h.data.type !== HandleType.Sink) return h;
 					const data: SinkHandleData = { type: HandleType.Sink };
-					if (oldHandle) {
+					const oldHandleData = oldSinkHandles[i];
+					if (oldHandleData) {
 						// Try to get original edge
-						const oldEdge = oldHandle[0]().data;
-						if (oldEdge.type === HandleType.Sink) {
-							data.sourceID = oldEdge.sourceID;
-							data.sourceHandle = oldEdge.sourceHandle;
-						}
+						data.sourceID = oldHandleData.sourceID;
+						data.sourceHandle = oldHandleData.sourceHandle;
 					}
 					// Otherwise, remove edge
 					return {
@@ -486,5 +633,36 @@ export class State {
 
 	cancelEditNode() {
 		this.editingNode[1](undefined);
+	}
+
+	// Keymap & Commands
+
+	handleKey(key: string) {
+		const commandName = this.keymap.get(key);
+		if (commandName && commandName in this) {
+			(this as any)[commandName]();
+		}
+	}
+
+	zoomIn() {
+		this.transform[1](t => ({
+			...t,
+			z: t.z * 1.1,
+		}));
+	}
+
+	zoomOut() {
+		this.transform[1](t => ({
+			...t,
+			z: t.z / 1.1,
+		}));
+	}
+
+	resetZoom() {
+		this.transform[1](() => ({
+			x: 0,
+			y: 0,
+			z: 1,
+		}));
 	}
 }
