@@ -1,3 +1,4 @@
+import { joinPath, refinePath } from "@/common";
 import { StorageItemType, StorageItem } from "./storage";
 
 /* Indexed DB based file system */
@@ -25,36 +26,6 @@ const ab2str = (buf: ArrayBuffer) => {
 	return td.decode(buf);
 };
 
-const splitPath = (path: string) => {
-	if (path[0] !== "/") {
-		throw new Error("Invalid path: path must start with /");
-	}
-	const chunks = path.split("/");
-	const paths = [];
-	for (const c of chunks) {
-		switch (c) {
-			case "":
-			case ".":
-				break;
-			case "..":
-				paths.pop();
-				break;
-			default:
-				paths.push(c);
-		}
-	}
-	return paths;
-};
-
-const joinPath = (paths: string[]) => {
-	return "/" + paths.join("/");
-};
-
-const refinePath = (path: string): [string, string[]] => {
-	const chunks = splitPath(path);
-	return [joinPath(chunks), chunks];
-};
-
 /* Types */
 
 type StorageItemMeta = {
@@ -69,27 +40,7 @@ type StorageItemData = {
 	data: ArrayBuffer;
 };
 
-const openDB = () => {
-	return new Promise<IDBDatabase>((resolve, reject) => {
-		const req = indexedDB.open(dbName, dbVersion);
-		req.onsuccess = () => {
-			resolve(req.result);
-		};
-		req.onerror = () => {
-			reject(req.error);
-		};
-		req.onupgradeneeded = event => {
-			const db = req.result;
-			if (event.oldVersion === 0) {
-				db.createObjectStore(dbStoreMeta, { keyPath: "path" });
-				db.createObjectStore(dbStoreData, { keyPath: "path" });
-				resolve(db);
-			} else {
-				reject(req.error);
-			}
-		};
-	});
-};
+// Async wrapper
 
 class StoreW<T> {
 	transaction: IDBTransaction;
@@ -102,7 +53,6 @@ class StoreW<T> {
 
 	async get(key: string): Promise<T> {
 		return new Promise<T>((resolve, reject) => {
-			const req = this.store.get(key);
 			req.onsuccess = () => {
 				resolve(req.result);
 			};
@@ -149,6 +99,29 @@ class StoreW<T> {
 	}
 }
 
+
+const openDB = () => {
+	return new Promise<IDBDatabase>((resolve, reject) => {
+		const req = indexedDB.open(dbName, dbVersion);
+		req.onsuccess = () => {
+			resolve(req.result);
+		};
+		req.onerror = () => {
+			reject(req.error);
+		};
+		req.onupgradeneeded = event => {
+			const db = req.result;
+			if (event.oldVersion === 0) {
+				db.createObjectStore(dbStoreMeta, { keyPath: "path" });
+				db.createObjectStore(dbStoreData, { keyPath: "path" });
+				resolve(db);
+			} else {
+				reject(req.error);
+			}
+		};
+	});
+};
+
 const openStores = async (
 	mode: IDBTransactionMode,
 ): Promise<{
@@ -168,8 +141,7 @@ export class IDBFS {
 
 	async getMeta(path: string) {
 		const s = await openStores("readonly");
-		const r = await s.meta.get(path);
-		return r;
+		return await s.meta.get(path);
 	}
 
 	/* File type */
@@ -260,6 +232,7 @@ export class IDBFS {
 				type: meta.type,
 				name,
 				size: meta.size,
+				lastModified: new Date(meta.lastModified),
 			});
 		}
 		return lst;
