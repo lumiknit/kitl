@@ -17,7 +17,7 @@ export enum NodeType {
 	Delta = "d", // Definition
 	Lambda = "l", // Unpatterned Lambda
 	Nu = "n", // Named app
-	Pi = "p", // Patterned Lambda
+	Pi = "p", // Pattern
 }
 
 // Node properties
@@ -38,6 +38,7 @@ export type AlphaNodeData = {
 	// Literal / Leaf node
 	type: NodeType.Alpha;
 	val: j.Json;
+	pat?: Source;
 };
 
 export type BetaNodeData = {
@@ -57,6 +58,7 @@ export type DeltaNodeData = {
 export type LambdaNodeData = {
 	// Lambda node
 	type: NodeType.Lambda;
+	fallback?: Source;
 	ret?: Source;
 };
 
@@ -72,9 +74,8 @@ export type PiNodeData = {
 	// Patterned Lambda
 	type: NodeType.Pi;
 	name: Name;
+	pat?: Source;
 	elems: number;
-	fallback?: Source;
-	ret?: Source;
 };
 
 export type NodeData =

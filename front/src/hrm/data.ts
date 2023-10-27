@@ -118,7 +118,10 @@ const thawHandles = (node: CNode): Handles => {
 		result: any;
 	switch (node.x.type) {
 		case NodeType.Alpha:
-			result = [];
+			result = [
+				sourceToSinkHandle(SYM_ALPHA, node.x.pat),
+			];
+			lhs = 1;
 			break; // No Handles
 		case NodeType.Beta:
 			lhs = 1;
@@ -132,7 +135,9 @@ const thawHandles = (node: CNode): Handles => {
 			result = [sourceToSinkHandle(SYM_RET, node.x.ret)];
 			break;
 		case NodeType.Lambda:
+			lhs = 2;
 			result = [
+				sourceToSinkHandle(SYM_FALLBACK, node.x.fallback),
 				sourceHandle(SYM_ARG),
 				sourceToSinkHandle(SYM_RET, node.x.ret),
 			];
@@ -145,13 +150,11 @@ const thawHandles = (node: CNode): Handles => {
 			break;
 		case NodeType.Pi:
 			result = [
-				sourceToSinkHandle(SYM_FALLBACK, node.x.fallback),
-				sourceHandle(SYM_ARG),
+				sourceToSinkHandle(SYM_ARG, node.x.pat),
 			];
 			for (let i = 0; i < node.x.elems; i++) {
 				result.push(sourceHandle(String(i + 1)));
 			}
-			result.push(sourceToSinkHandle(SYM_RET, node.x.ret));
 			lhs = 1;
 			break;
 	}
@@ -195,7 +198,11 @@ const freezeNodeData = (node: Node): NodeData => {
 	const f = (index: number) => freezeSource(node.handles[index][0]().data);
 	switch (node.data.type) {
 		case NodeType.Alpha:
-			return node.data;
+			return {
+				type: NodeType.Alpha,
+				pat: f(0),
+				val: node.data.val,
+			};
 		case NodeType.Beta: {
 			const args: Source[] = [];
 			for (let i = 1; i < node.handles.length; i++) {
@@ -217,7 +224,8 @@ const freezeNodeData = (node: Node): NodeData => {
 		case NodeType.Lambda:
 			return {
 				type: NodeType.Lambda,
-				ret: f(1),
+				fallback: f(0),
+				ret: f(2),
 			};
 		case NodeType.Nu: {
 			return {
@@ -234,10 +242,9 @@ const freezeNodeData = (node: Node): NodeData => {
 		case NodeType.Pi:
 			return {
 				type: NodeType.Pi,
+				pat: f(0),
 				name: node.data.name,
 				elems: node.data.elems,
-				fallback: f(0),
-				ret: f(node.handles.length - 1),
 			};
 	}
 };
