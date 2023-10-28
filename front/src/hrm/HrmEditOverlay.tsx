@@ -1,4 +1,4 @@
-import { Component, For, Show, createEffect } from "solid-js";
+import { Component, For, Show, onMount } from "solid-js";
 import { State } from "./state";
 import { Node, stringifyNodeData } from "@/common";
 import { Button, Color, InputGroup } from "@/block";
@@ -43,13 +43,24 @@ type InnerProps = {
 const HrmEditOverlayInner: Component<InnerProps> = props => {
 	let ref: HTMLDivElement | undefined;
 	let taRef: HTMLTextAreaElement | undefined;
-	createEffect(() => {
+	const handleKeydown = (e: KeyboardEvent) => {
+		if (!taRef) return;
+		if (e.key === "Enter") {
+			let shouldApply = e.ctrlKey || e.metaKey;
+			shouldApply ||= !jasen.tasteLong(taRef.value);
+			if (shouldApply) {
+				props.g.applyEditNode(taRef ? taRef.value : "");
+			}
+		}
+	};
+	onMount(() => {
 		if (ref) {
 			const events = ["mousedown", "touchstart", "pointerdown", "wheel"];
 			const stopPropagation = (e: Event) => e.stopPropagation();
 			for (const e of events) {
 				ref.addEventListener(e, stopPropagation);
 			}
+			taRef?.click();
 		}
 	});
 	return (
@@ -94,16 +105,10 @@ const HrmEditOverlayInner: Component<InnerProps> = props => {
 				onInput={e => {
 					console.log(jasen.parse(e.currentTarget.value));
 				}}
+				onKeyDown={handleKeydown}
 			/>
 			<Suggests
 				items={[
-					{ label: "beta", text: "beta" },
-					{ label: "gamma", text: "gamma" },
-					{ label: "delta", text: "delta" },
-					{ label: "epsilon", text: "epsilon" },
-					{ label: "omega", text: "omega" },
-					{ label: "alpha", text: "alpha" },
-					{ label: "{", text: "{" },
 					{ label: "beta", text: "beta" },
 					{ label: "gamma", text: "gamma" },
 					{ label: "delta", text: "delta" },

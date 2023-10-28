@@ -1,7 +1,13 @@
 import { test, expect } from "vitest";
-import { PathString, isAbsolutePath, joinPath, refinePath, splitPath } from "./path";
+import {
+	PathString,
+	isAbsolutePath,
+	joinPath,
+	refinePath,
+	splitPath,
+} from "./path";
 
-test('splitTest', () => {
+test("splitTest", () => {
 	expect(splitPath("")).toEqual([]);
 	expect(splitPath("a/b")).toEqual(["a", "b"]);
 	expect(splitPath("a/b/")).toEqual(["a", "b"]);
@@ -13,7 +19,7 @@ test('splitTest', () => {
 	expect(splitPath("/./test/../../../boom")).toEqual(["", "boom"]);
 });
 
-test('joinTest', () => {
+test("joinTest", () => {
 	expect(joinPath([])).toEqual(".");
 	expect(joinPath([""])).toEqual("/");
 	expect(joinPath(["a", "b"])).toEqual("a/b");
@@ -26,16 +32,16 @@ test('joinTest', () => {
 const testRefine = (path: PathString, expected: PathString) => {
 	const [p, chunks] = refinePath(path);
 	expect(p).toEqual(expected);
-	expect(chunks).toEqual(splitPath(expected));	
+	expect(chunks).toEqual(splitPath(expected));
 };
 
-test('refineTest', () => {
+test("refineTest", () => {
 	testRefine("", ".");
 	testRefine("a/b", "a/b");
 	testRefine("/a\\bcd/../test", "/a/test");
 });
 
-test('isAbsolutePathTest', () => {
+test("isAbsolutePathTest", () => {
 	expect(isAbsolutePath([])).toEqual(false);
 	expect(isAbsolutePath([""])).toEqual(true);
 	expect(isAbsolutePath(["a"])).toEqual(false);

@@ -10,6 +10,7 @@ import {
 	NodeType,
 	Source,
 	clamp,
+	makePositionInt,
 } from "@/common";
 import { PointerID } from "@/common/pointer-helper";
 
@@ -35,10 +36,11 @@ export const SYM_FALLBACK = "⎇",
 	SYM_RET = "𝑦",
 	SYM_ALPHA = "𝛂",
 	SYM_BETA = "𝛃",
-	SYM_DELTA = "𝚫",
-	SYM_LAMBDA = "𝛌",
+	SYM_DELTA = "≝",
+	SYM_LAMBDA = "⟾",
 	SYM_NU = "𝛎",
-	SYM_PI = "𝛑";
+	SYM_PI = "↯",
+	SYM_PAT = "⧉";
 
 /* Handle */
 
@@ -118,10 +120,7 @@ const thawHandles = (node: CNode): Handles => {
 		result: any;
 	switch (node.x.type) {
 		case NodeType.Alpha:
-			result = [
-				sourceToSinkHandle(SYM_ALPHA, node.x.pat),
-			];
-			lhs = 1;
+			result = [];
 			break; // No Handles
 		case NodeType.Beta:
 			lhs = 1;
@@ -149,9 +148,7 @@ const thawHandles = (node: CNode): Handles => {
 			lhs = clamp(node.x.lhs, 0, node.x.args.length);
 			break;
 		case NodeType.Pi:
-			result = [
-				sourceToSinkHandle(SYM_ARG, node.x.pat),
-			];
+			result = [sourceToSinkHandle(SYM_PAT, node.x.pat)];
 			for (let i = 0; i < node.x.elems; i++) {
 				result.push(sourceHandle(String(i + 1)));
 			}
@@ -200,7 +197,6 @@ const freezeNodeData = (node: Node): NodeData => {
 		case NodeType.Alpha:
 			return {
 				type: NodeType.Alpha,
-				pat: f(0),
 				val: node.data.val,
 			};
 		case NodeType.Beta: {
@@ -251,7 +247,7 @@ const freezeNodeData = (node: Node): NodeData => {
 
 export const freezeNode = (id: NodeID, node: Node): CNode => ({
 	id,
-	pos: node.position,
+	pos: makePositionInt(node.position),
 	x: freezeNodeData(node),
 });
 

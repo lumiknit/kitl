@@ -1,4 +1,4 @@
-import { Component, JSX } from "solid-js";
+import { Component, JSX, createEffect } from "solid-js";
 import { State } from "./state";
 import { pathBetweenRects } from "@/common";
 
@@ -36,6 +36,9 @@ const HrmConnectingEdge: Component<HrmConnectingEdgeProps> = props => {
 				height: `${rect.h}px`,
 			};
 	};
+	createEffect(() => {
+		console.log(nodeRect());
+	});
 	return (
 		<>
 			<svg class="hrm-edges no-user-select no-pointer-events">

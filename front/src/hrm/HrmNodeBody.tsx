@@ -9,6 +9,7 @@ import {
 import { SYM_BETA, SYM_DELTA, SYM_LAMBDA, SYM_PI } from "./data";
 import { compactify } from "@/jasen";
 import { Dynamic } from "solid-js/web";
+import { renameSymbol } from "@/common/name-symbols";
 
 type HrmNodeBodyProps = {
 	data: NodeData;
@@ -16,7 +17,7 @@ type HrmNodeBodyProps = {
 
 const HrmName = (props: { name: Name }) => (
 	<div class="hrm-node-name">
-		<div class="hrm-node-name-name">{props.name.name}</div>
+		<div class="hrm-node-name-name">{renameSymbol(props.name.name)}</div>
 		<Show when={props.name.module}>
 			<div class="hrm-node-name-module">{"@" + props.name.module}</div>
 		</Show>

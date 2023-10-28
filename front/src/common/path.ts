@@ -26,9 +26,11 @@ export const splitPath = (path: PathString): Path => {
 };
 
 export const joinPath = (paths: Path): PathString =>
-	(paths.length <= 0) ? '.' :
-	(paths.length <= 1 && paths[0].length <= 0) ? '/' :
-	paths.join("/");
+	paths.length <= 0
+		? "."
+		: paths.length <= 1 && paths[0].length <= 0
+		? "/"
+		: paths.join("/");
 
 export const isAbsolutePath = (path: Path): boolean =>
 	path.length > 0 && path[0].length <= 0;

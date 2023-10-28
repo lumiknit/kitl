@@ -40,6 +40,7 @@ const Hrm: Component<HrmProps> = props => {
 		}
 	};
 	const handleKeyDown = (e: KeyboardEvent) => {
+		if (e.target !== g.rootRef) return;
 		const key = parseKeyEvent(e);
 		console.log(key);
 		g.handleKey(key);

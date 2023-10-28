@@ -22,6 +22,11 @@ export const origin: Position = { x: 0, y: 0 };
 
 /* Helpers */
 
+export const makePositionInt = (p: Position): Position => ({
+	x: Math.round(p.x),
+	y: Math.round(p.y),
+});
+
 export const distSquare = (dx: number, dy: number) => dx * dx + dy * dy;
 export const dist = (dx: number, dy: number) => Math.sqrt(distSquare(dx, dy));
 
@@ -33,6 +38,7 @@ export const nearestPointInRect = (
 	py: number,
 	rect: ShapedRect,
 ): [number, number, number, number] => {
+	console.log(rect.angular);
 	/* Find nearest point in the rectanble */
 	const hw = rect.w / 2,
 		hh = rect.h / 2,

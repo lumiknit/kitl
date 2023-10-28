@@ -1,4 +1,9 @@
-import { Component, Ref, type JSX, createEffect } from "solid-js";
+import { Component, Ref, type JSX } from "solid-js";
+
+type TATarget = {
+	target: Element;
+	currentTarget: HTMLTextAreaElement;
+};
 
 const C_NEWLINE = 10; // \n
 
@@ -60,9 +65,9 @@ export type CodeProps = {
 	value?: string;
 	ref?: Ref<HTMLTextAreaElement>;
 
-	onChange?: JSX.ChangeEventHandler<HTMLTextAreaElement, Event>;
-	onInput?: JSX.InputEventHandler<HTMLTextAreaElement, InputEvent>;
-	onKeyDown?: JSX.EventHandler<HTMLTextAreaElement, KeyboardEvent>;
+	onChange?: (e: TATarget & Event) => boolean | undefined;
+	onInput?: (e: TATarget & InputEvent) => boolean | undefined;
+	onKeyDown?: (e: TATarget & KeyboardEvent) => boolean | undefined;
 };
 
 const InputCode: Component<CodeProps> = props => {
@@ -81,7 +86,7 @@ const InputCode: Component<CodeProps> = props => {
 		HTMLTextAreaElement,
 		KeyboardEvent
 	> = event => {
-		if (props.onKeyDown) props.onKeyDown(event);
+		if (props.onKeyDown && props.onKeyDown(event)) return;
 		switch (event.key) {
 			// Tab key
 			case "Tab":

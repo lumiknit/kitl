@@ -181,16 +181,18 @@ export class State {
 		};
 	}
 
-	viewRect(elem?: HTMLElement): Rect | undefined {
+	viewRect(elem?: HTMLElement): ShapedRect | undefined {
 		if (!elem || !this.viewRef) return;
 		const rootRect = this.viewRef!.getBoundingClientRect();
 		const rect = elem.getBoundingClientRect();
+		const angular = !elem.classList.contains("hrm-pill");
 		const t = untrack(this.transform[0]);
 		return {
 			x: (rect.left - rootRect.left) / t.z,
 			y: (rect.top - rootRect.top) / t.z,
 			w: rect.width / t.z,
 			h: rect.height / t.z,
+			angular,
 		};
 	}
 
@@ -222,16 +224,8 @@ export class State {
 	viewRectOf(id: NodeID, handle?: HandleID): ShapedRect | undefined {
 		const node = this.nodes().get(id);
 		if (!node) return;
-		const n = node[0]();
-		if (handle === undefined) {
-			const r = this.viewRect(n.ref);
-			if (!r) return;
-			return {
-				...r,
-				angular: n.angular,
-			};
-		}
-		const ref = n.handles[handle][0]().ref;
+		const n = node[0](),
+			ref = handle === undefined ? n.ref : n.handles[handle][0]().ref;
 		if (!ref) return;
 		return this.viewRect(ref);
 	}
@@ -298,10 +292,22 @@ export class State {
 
 	// Selected Nodes
 
-	translateSelectedNodes(id: NodeID, dx: number, dy: number, zoom: number) {
-		for (const [nid, node] of this.nodes()) {
+	translateOneNode(id: NodeID, dx: number, dy: number, zoom: number) {
+		const node = this.nodes().get(id);
+		if (!node) return;
+		node[1](n => ({
+			...n,
+			position: {
+				x: n.position.x + dx / zoom,
+				y: n.position.y + dy / zoom,
+			},
+		}));
+	}
+
+	translateSelectedNodes(dx: number, dy: number, zoom: number) {
+		for (const [, node] of this.nodes()) {
 			node[1](n => {
-				if (nid !== id && !n.selected) return n;
+				if (!n.selected) return n;
 				return {
 					...n,
 					position: {

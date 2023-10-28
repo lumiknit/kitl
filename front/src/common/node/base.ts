@@ -38,7 +38,6 @@ export type AlphaNodeData = {
 	// Literal / Leaf node
 	type: NodeType.Alpha;
 	val: j.Json;
-	pat?: Source;
 };
 
 export type BetaNodeData = {

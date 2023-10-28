@@ -99,7 +99,6 @@ class StoreW<T> {
 	}
 }
 
-
 const openDB = () => {
 	return new Promise<IDBDatabase>((resolve, reject) => {
 		const req = indexedDB.open(dbName, dbVersion);

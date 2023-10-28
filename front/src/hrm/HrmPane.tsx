@@ -139,7 +139,7 @@ const HrmPane: Component<HrmPaneProps> = props => {
 	});
 
 	return (
-		<div ref={paneRef} class="hrm-pane abs-parent">
+		<div ref={paneRef} class="no-user-select hrm-pane abs-parent">
 			<div
 				class="hrm-view"
 				ref={props.g.viewRef}

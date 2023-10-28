@@ -93,7 +93,9 @@ const HrmHandle: Component<HrmHandleProps> = props => {
 		<>
 			<div
 				ref={handleRef}
-				class={`hrm-node-item hrm-handle ${h().style ? "" : cBdEmpty}`}
+				class={`hrm-node-item hrm-handle hrm-pill ${
+					h().style ? "" : cBdEmpty
+				}`}
 				style={h().style}>
 				{h().name}
 			</div>

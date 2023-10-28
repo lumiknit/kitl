@@ -159,13 +159,13 @@ $spacer: 0.25rem;
 
 /* Opacity */
 .opacity-0 {
-	opacity: 0;
+	opacity: 0 !important;
 }
 .opacity-50 {
-	opacity: 0.5;
+	opacity: 0.5 !important;
 }
-.opactiy-100 {
-	opacity: 1;
+.opacity-100 {
+	opacity: 1 !important;
 }
 
 /* Shadow */

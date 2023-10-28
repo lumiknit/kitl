@@ -36,6 +36,7 @@ const c = (s: string) => s.charCodeAt(0),
 		["null", null],
 	]),
 	reTaste = /\s*([[{'"]|[-+]?\.?\d)/y,
+	reTasteLong = /\s*([[{'"])/y,
 	reWhite = /\s*/y,
 	reWhiteComma = /[\s,]*/y,
 	reWhiteColon = /[\s:]*/y;
@@ -43,6 +44,12 @@ const c = (s: string) => s.charCodeAt(0),
 export const taste = (input: string) => {
 	reTaste.lastIndex = 0;
 	return !!reTaste.exec(input);
+};
+
+export const tasteLong = (input: string) => {
+	/* If the input is some long JSON (string, array, object), return true */
+	reTasteLong.lastIndex = 0;
+	return !!reTasteLong.exec(input);
 };
 
 type State = {
