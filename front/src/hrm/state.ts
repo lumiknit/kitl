@@ -196,6 +196,36 @@ export class State {
 		};
 	}
 
+	fitTransformFor(elem?: HTMLElement) {
+		// If elem is out of view, move transform to show it
+		if (!elem) return;
+		const rect = elem.getBoundingClientRect();
+		const rootRect = this.rootRef!.getBoundingClientRect();
+		console.log(rect, rootRect);
+		let dx = 0,
+			dy = 0;
+		if (rect.right + dx > rootRect.right) {
+			dx = rootRect.right - rect.right;
+		}
+		if (rect.left + dx < rootRect.left) {
+			dx = rootRect.left - rect.left;
+		}
+		if (rect.bottom + dy > rootRect.bottom) {
+			dy = rootRect.bottom - rect.bottom;
+		}
+		if (rect.top + dy < rootRect.top) {
+			dy = rootRect.top - rect.top;
+		}
+		console.log(dx, dy);
+		this.transform[1](t => {
+			return {
+				...t,
+				x: t.x + dx,
+				y: t.y + dy,
+			};
+		});
+	}
+
 	// Range
 
 	usedRect(): Rect {

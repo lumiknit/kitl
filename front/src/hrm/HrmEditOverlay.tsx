@@ -50,8 +50,10 @@ const HrmEditOverlayInner: Component<InnerProps> = props => {
 			shouldApply ||= !jasen.tasteLong(taRef.value);
 			if (shouldApply) {
 				props.g.applyEditNode(taRef ? taRef.value : "");
+				return true;
 			}
 		}
+		return false;
 	};
 	onMount(() => {
 		if (ref) {
@@ -61,6 +63,7 @@ const HrmEditOverlayInner: Component<InnerProps> = props => {
 				ref.addEventListener(e, stopPropagation);
 			}
 			taRef?.click();
+			props.g.fitTransformFor(ref);
 		}
 	});
 	return (
@@ -102,9 +105,6 @@ const HrmEditOverlayInner: Component<InnerProps> = props => {
 				class="shadow-1"
 				placeholder="[NODE DATA]"
 				value={stringifyNodeData(props.node.x)}
-				onInput={e => {
-					console.log(jasen.parse(e.currentTarget.value));
-				}}
 				onKeyDown={handleKeydown}
 			/>
 			<Suggests

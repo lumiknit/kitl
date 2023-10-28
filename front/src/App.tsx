@@ -1,6 +1,7 @@
 import { type Component } from "solid-js";
 
 import { Localed } from "./locales";
+import "@/client";
 
 import "./block";
 import { default as ToastContainer } from "./block/ToastContainer";

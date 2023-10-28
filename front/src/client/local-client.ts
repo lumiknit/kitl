@@ -1,4 +1,6 @@
 import { IClient } from "./i-client";
+import * as idbfs from "./idbfs";
+import { StorageItem } from "./storage";
 
 export default class LocalClient implements IClient {
 	ping(): number {
@@ -6,40 +8,61 @@ export default class LocalClient implements IClient {
 	}
 
 	execute(path: string): string {
+		path;
 		return "";
 	}
 
 	getExecutionState(id: string): any {
+		id;
 		return {};
 	}
 
-	stat(path: string): FileMeta {
+	async stat(path: string): Promise<StorageItem> {
+		path;
+		idbfs;
 		return {
 			type: 0,
-			name: "",
+			path: "",
+			size: 0,
 			lastModified: new Date(),
 		};
 	}
 
-	mkdir(path: string): void {}
+	async mkdir(path: string): Promise<void> {
+		path;
+	}
 
-	list(path: string): string[] {
+	async list(path: string): Promise<StorageItem[]> {
+		path;
 		return [];
 	}
 
-	getMeta(path: string): any {
+	async getMeta(path: string): Promise<any> {
+		path;
 		return {};
 	}
 
-	read(path: string): Uint8Array {
+	async read(path: string): Promise<Uint8Array> {
+		path;
 		return new Uint8Array();
 	}
 
-	write(path: string, data: Uint8Array): void {}
+	async write(path: string, data: Uint8Array): Promise<void> {
+		path;
+		data;
+	}
 
-	remove(path: string): void {}
+	async remove(path: string): Promise<void> {
+		path;
+	}
 
-	move(from: string, to: string): void {}
+	async move(from: string, to: string): Promise<void> {
+		from;
+		to;
+	}
 
-	copy(from: string, to: string): void {}
+	async copy(from: string, to: string): Promise<void> {
+		from;
+		to;
+	}
 }
