@@ -168,16 +168,7 @@ export class IDBFS {
 			const path = chunks.slice(0, i).join("/");
 			const data =
 				i < chunks.length ? str2ab(chunks[i]) : new ArrayBuffer(0);
-			await this.meta.put({
-				path,
-				type: StorageItemType.Directory,
-				size: data.byteLength,
-				lastModified: Date.now(),
-			});
-			await this.data.put({
-				path,
-				data: data,
-			});
+			await this.rawWrite(StorageItemType.Directory, path, data);
 		}
 	}
 
@@ -204,9 +195,7 @@ export class IDBFS {
 			const p = joinPath([path, name]);
 			const meta = await this.meta.get(p);
 			lst.push({
-				type: meta.type,
-				path: p,
-				size: meta.size,
+				...meta,
 				lastModified: new Date(meta.lastModified),
 			});
 		}
@@ -229,10 +218,11 @@ export class IDBFS {
 			}
 			const children = await this.getChildrenNames(parent);
 			children.push(chunks[chunks.length - 1]);
-			await this.data.put({
-				path: parent,
-				data: str2ab(children.join("\n")),
-			});
+			await this.rawWrite(
+				StorageItemType.Directory,
+				parent,
+				str2ab(children.join("\n")),
+			);
 		} else if (t !== StorageItemType.File) {
 			throw new Error("Cannot create a file: directory exists");
 		}
@@ -304,16 +294,8 @@ export class IDBFS {
 			const src = op + p;
 			const dst = np + p;
 			const r = await this.meta.get(src);
-			await this.meta.put({
-				...r,
-				path: dst,
-				lastModified: Date.now(),
-			});
 			const d = await this.data.get(src);
-			await this.data.put({
-				...d,
-				path: dst,
-			});
+			await this.rawWrite(r.type, dst, d.data);
 		}
 	}
 
