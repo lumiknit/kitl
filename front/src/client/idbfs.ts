@@ -4,6 +4,8 @@ import {
 	isAbsolutePath,
 	joinPath,
 	refinePath,
+	str2ab,
+	ab2str,
 } from "@/common";
 import { StorageItemType, StorageItem } from "./storage";
 
@@ -13,24 +15,6 @@ const dbName = "kitl-idbfs";
 const dbVersion = 1;
 const dbStoreMeta = "meta";
 const dbStoreData = "data";
-
-/* Helpers */
-
-const str2ab = (str: string) => {
-	const te = new TextEncoder();
-	const encoded = te.encode(str);
-	const buf = new ArrayBuffer(encoded.length);
-	const bufView = new Uint8Array(buf);
-	for (let i = 0; i < encoded.length; ++i) {
-		bufView[i] = encoded[i];
-	}
-	return buf;
-};
-
-const ab2str = (buf: ArrayBuffer) => {
-	const td = new TextDecoder();
-	return td.decode(buf);
-};
 
 /* Types */
 
@@ -80,6 +64,10 @@ class StoreW<T> {
 	delete(key: string): Promise<void> {
 		return this.r(() => this.store.delete(key));
 	}
+
+	clear(): Promise<void> {
+		return this.r(() => this.store.clear());
+	}
 }
 
 const pPath = (path: string): [PathString, Path] => {
@@ -106,12 +94,6 @@ export class IDBFS {
 		this.data = data;
 	}
 
-	/* Initialize */
-
-	public async format() {
-		throw new Error("Unimplemented");
-	}
-
 	/* Helper */
 
 	shouldWritable() {
@@ -124,6 +106,34 @@ export class IDBFS {
 
 	async getMeta(path: string): Promise<StorageItemMeta> {
 		return await this.meta.get(path);
+	}
+
+	public async rawWrite(
+		type: StorageItemType,
+		path: string,
+		data: ArrayBuffer,
+	): Promise<void> {
+		await this.meta.put({
+			path,
+			type: type,
+			size: data.byteLength,
+			lastModified: Date.now(),
+		});
+		// Write a file data
+		await this.data.put({
+			path,
+			data: data,
+		});
+	}
+
+	/* Initialize */
+
+	public async format() {
+		// Clear all data
+		await this.meta.clear();
+		await this.data.clear();
+		// Write root directory
+		await this.rawWrite(StorageItemType.Directory, "/", str2ab(""));
 	}
 
 	/* File type */
@@ -201,26 +211,6 @@ export class IDBFS {
 			});
 		}
 		return lst;
-	}
-
-	/* Raw IO */
-
-	public async rawWrite(
-		type: StorageItemType,
-		path: string,
-		data: ArrayBuffer,
-	): Promise<void> {
-		await this.meta.put({
-			path,
-			type: type,
-			size: data.byteLength,
-			lastModified: Date.now(),
-		});
-		// Write a file data
-		await this.data.put({
-			path,
-			data: data,
-		});
 	}
 
 	/* File */
