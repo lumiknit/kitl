@@ -38,7 +38,6 @@ export const nearestPointInRect = (
 	py: number,
 	rect: ShapedRect,
 ): [number, number, number, number] => {
-	console.log(rect.angular);
 	/* Find nearest point in the rectanble */
 	const hw = rect.w / 2,
 		hh = rect.h / 2,

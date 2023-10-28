@@ -1,20 +1,14 @@
-export const shortRandom = () => {
-	return Math.random().toString(36).substring(7);
-};
+const randStr = (cutLen: number) => Math.random().toString(36).slice(cutLen);
 
-export const longRandom = () => {
-	// Generate long random string
-	const a = Math.random().toString(36).slice(2);
-	const b = Math.random().toString(36).slice(2);
-	return `${a}${b}`;
-};
+export const shortRandom = () => randStr(7);
+
+export const longRandom = () => randStr(2) + randStr(2);
 
 export const timeString = () => {
 	const now = new Date();
-	const offset = now.getTimezoneOffset() * 60 * 1000;
-	const utcMS = now.getTime() + offset;
-	const utcSec = Math.round(utcMS / 1000);
-	return utcSec.toString(36);
+	return Math.round(
+		now.getTime() / 1000 + now.getTimezoneOffset() * 60,
+	).toString(36);
 };
 
 export const genID = () => {

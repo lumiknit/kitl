@@ -98,6 +98,11 @@ type State = {
 
 /* Functions */
 
+const pdsp = (e: any) => {
+	e.preventDefault();
+	e.stopPropagation();
+};
+
 export const addEventListeners = (handlers: Props, el: Element) => {
 	const s: State = {
 		pointers: new Map(),
@@ -128,8 +133,7 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 			handlers.onLeave?.(e.pointerId);
 		},
 		pointerdown: (e: PointerEvent) => {
-			e.preventDefault();
-			e.stopPropagation();
+			pdsp(e);
 			const id = e.pointerId;
 			handlers.onDown?.({
 				id,
@@ -140,10 +144,8 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 			});
 			(e.target as any).releasePointerCapture(id);
 			if (handlers.capture) {
-				console.log("CAPTURE");
 				(e.currentTarget as any).setPointerCapture(id);
 			} else {
-				console.log("RELEASE");
 				(e.currentTarget as any).releasePointerCapture(id);
 			}
 			const p: Pointer = {
@@ -182,8 +184,7 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 			}
 		},
 		pointermove: (e: PointerEvent) => {
-			e.preventDefault();
-			e.stopPropagation();
+			pdsp(e);
 			const id = e.pointerId;
 			handlers.onMove?.({
 				id,
@@ -218,8 +219,7 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 			p.y = e.clientY;
 		},
 		pointerup: (e: PointerEvent) => {
-			e.preventDefault();
-			e.stopPropagation();
+			pdsp(e);
 			const id = e.pointerId;
 			const pointer = s.pointers.get(id);
 			const event: ClickEvent = {

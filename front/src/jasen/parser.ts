@@ -208,17 +208,18 @@ const parseKeyword = (state: State, isRoot?: boolean): Value => {
 	return state.s.slice(s, state.p).trim();
 };
 
+const parses = {
+	[CODE_QUOTE]: parseString,
+	[CODE_APOSTROPHE]: parseString,
+	[CODE_OPEN_BRACKET]: parseArray,
+	[CODE_OPEN_BRACE]: parseObject,
+};
+
 const parseValue = (state: State, isRoot?: boolean): Value => {
 	skipRE(state, reWhite);
 	const c = v(state);
-	switch (c) {
-		case CODE_QUOTE: // "
-		case CODE_APOSTROPHE: // '
-			return parseString(state);
-		case CODE_OPEN_BRACKET: // [
-			return parseArray(state);
-		case CODE_OPEN_BRACE: // {
-			return parseObject(state);
+	if (c in parses) {
+		return parses[c](state);
 	}
 	if (reservedSet.has(c)) {
 		throw new ParseError(
