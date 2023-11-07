@@ -12,6 +12,13 @@ export type StorageItem = {
 	lastModified: Date;
 };
 
+export const StorageItemNotFound: StorageItem = {
+	type: StorageItemType.NotFound,
+	path: "",
+	size: 0,
+	lastModified: new Date(),
+};
+
 export interface IStorageClient {
 	/* Query */
 	stat(path: string): Promise<StorageItem>;

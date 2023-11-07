@@ -19,7 +19,7 @@ export const splitPath = (path: PathString): Path => {
 				paths.push(c);
 		}
 	}
-	if (isRoot && paths.length > 0 && paths[0].length > 0) {
+	if (isRoot) {
 		paths.unshift("");
 	}
 	return paths;

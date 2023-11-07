@@ -1,13 +1,16 @@
-import { Component, type JSX } from "solid-js";
+import { Component, Ref, type JSX } from "solid-js";
 
 export type TextProps = {
 	class?: string;
 	disabled?: boolean;
 	placeholder?: string;
 	value?: string;
+	ref?: Ref<HTMLInputElement>;
 
+	onClick?: JSX.EventHandlerUnion<HTMLInputElement, MouseEvent>;
 	onChange?: JSX.ChangeEventHandler<HTMLInputElement, Event>;
 	onKeyDown?: JSX.EventHandlerUnion<HTMLInputElement, KeyboardEvent>;
+	onBlur?: JSX.EventHandlerUnion<HTMLInputElement, FocusEvent>;
 };
 
 const InputText: Component<TextProps> = props => {
@@ -16,10 +19,13 @@ const InputText: Component<TextProps> = props => {
 			type="text"
 			disabled={props.disabled}
 			class={`form-control ${props.class ?? ""}`}
+			ref={props.ref}
 			placeholder={props.placeholder}
 			value={props.value}
+			onClick={props.onClick}
 			onChange={props.onChange}
 			onKeyDown={props.onKeyDown}
+			onBlur={props.onBlur}
 		/>
 	);
 };

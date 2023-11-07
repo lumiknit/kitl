@@ -4,7 +4,7 @@ import {
 	isAbsolutePath,
 	joinPath,
 	refinePath,
-	str2ab,
+	str2arr,
 	ab2str,
 } from "@/common";
 import { StorageItemType, StorageItem } from "./storage";
@@ -25,9 +25,16 @@ type StorageItemMeta = {
 	lastModified: number;
 };
 
+const notFound: StorageItemMeta = {
+	path: "",
+	type: StorageItemType.NotFound,
+	size: 0,
+	lastModified: 0,
+};
+
 type StorageItemData = {
 	path: string;
-	data: ArrayBuffer;
+	data: Uint8Array;
 };
 
 // Async wrapper
@@ -45,7 +52,10 @@ class StoreW<T> {
 		return new Promise<T>((resolve, reject) => {
 			const req = f();
 			req.onsuccess = () => resolve(req.result);
-			req.onerror = () => reject(req.error);
+			req.onerror = () => {
+				console.error(req.error);
+				reject(req.error);
+			};
 		});
 	}
 
@@ -105,14 +115,19 @@ export class IDBFS {
 	}
 
 	async getMeta(path: string): Promise<StorageItemMeta> {
-		return await this.meta.get(path);
+		try {
+			return await this.meta.get(path);
+		} catch {
+			return notFound;
+		}
 	}
 
 	public async rawWrite(
 		type: StorageItemType,
 		path: string,
-		data: ArrayBuffer,
+		data: Uint8Array,
 	): Promise<void> {
+		console.log("rawWrite", path, type, data.byteLength);
 		await this.meta.put({
 			path,
 			type: type,
@@ -133,7 +148,7 @@ export class IDBFS {
 		await this.meta.clear();
 		await this.data.clear();
 		// Write root directory
-		await this.rawWrite(StorageItemType.Directory, "/", str2ab(""));
+		await this.rawWrite(StorageItemType.Directory, "/", str2arr(""));
 	}
 
 	/* File type */
@@ -141,6 +156,7 @@ export class IDBFS {
 		const [p] = pPath(path);
 		try {
 			const r = await this.meta.get(p);
+			console.log(r);
 			return r.type;
 		} catch {
 			return StorageItemType.NotFound;
@@ -154,8 +170,8 @@ export class IDBFS {
 		// Find the first existing parent directory
 		const [, chunks] = pPath(path);
 		let i = chunks.length;
-		for (; i >= 0; --i) {
-			const p = chunks.slice(0, i).join("/");
+		for (; i >= 1; --i) {
+			const p = joinPath(chunks.slice(0, i));
 			const t = await this.getFileType(p);
 			if (t === StorageItemType.Directory) {
 				break;
@@ -163,11 +179,23 @@ export class IDBFS {
 				throw new Error("File exists");
 			}
 		}
+		// Read the parent directory
+		const parent = joinPath(chunks.slice(0, i));
+		const children = await this.getChildrenNames(parent);
+		console.log("mkdir - Write", parent, children);
+		children.push(chunks[i]);
+		await this.rawWrite(
+			StorageItemType.Directory,
+			parent,
+			str2arr(children.join("\n")),
+		);
 		// Create directories
-		for (++i; i < chunks.length; ++i) {
-			const path = chunks.slice(0, i).join("/");
+		for (++i; i <= chunks.length; ++i) {
+			const path = joinPath(chunks.slice(0, i));
+			console.log("Create", path, chunks[i]);
+			// Write a directory meta
 			const data =
-				i < chunks.length ? str2ab(chunks[i]) : new ArrayBuffer(0);
+				i < chunks.length ? str2arr(chunks[i]) : new Uint8Array(0);
 			await this.rawWrite(StorageItemType.Directory, path, data);
 		}
 	}
@@ -192,8 +220,9 @@ export class IDBFS {
 		const fileNames = await this.getChildrenNames(path);
 		const lst: StorageItem[] = [];
 		for (const name of fileNames) {
-			const p = joinPath([path, name]);
+			const [p] = refinePath(`${path}/${name}`);
 			const meta = await this.meta.get(p);
+			console.log(p, meta);
 			lst.push({
 				...meta,
 				lastModified: new Date(meta.lastModified),
@@ -204,9 +233,9 @@ export class IDBFS {
 
 	/* File */
 
-	public async write(path: string, content: string): Promise<void> {
+	public async write(path: string, content: Uint8Array): Promise<void> {
 		// Find the first existing parent directory
-		const [, chunks] = pPath(path);
+		const [refinedPath, chunks] = pPath(path);
 		// Check file exists
 		const t = await this.getFileType(path);
 		if (t === StorageItemType.NotFound) {
@@ -221,16 +250,16 @@ export class IDBFS {
 			await this.rawWrite(
 				StorageItemType.Directory,
 				parent,
-				str2ab(children.join("\n")),
+				str2arr(children.join("\n")),
 			);
 		} else if (t !== StorageItemType.File) {
 			throw new Error("Cannot create a file: directory exists");
 		}
 		// Write a file meta
-		await this.rawWrite(StorageItemType.File, path, str2ab(content));
+		await this.rawWrite(StorageItemType.File, refinedPath, content);
 	}
 
-	public async read(path: string): Promise<string> {
+	public async read(path: string): Promise<Uint8Array> {
 		const [p] = pPath(path);
 		// Check if the path is a file
 		const t = await this.getFileType(p);
@@ -239,7 +268,7 @@ export class IDBFS {
 		}
 		// Read a file data
 		const data = await this.data.get(p);
-		return ab2str(data.data);
+		return data.data;
 	}
 
 	/* Remove */
@@ -275,7 +304,7 @@ export class IDBFS {
 		await this.rawWrite(
 			StorageItemType.Directory,
 			parentPath,
-			str2ab(filtered.join("\n")),
+			str2arr(filtered.join("\n")),
 		);
 	}
 
@@ -334,4 +363,18 @@ export const openfs = async (readwrite?: boolean) => {
 		new StoreW<StorageItemMeta>(transaction, dbStoreMeta),
 		new StoreW<StorageItemData>(transaction, dbStoreData),
 	);
+};
+
+export const checkfs = async () => {
+	// Open fs and if it fails, format it
+	const fs = await openfs(true);
+	try {
+		const type = await fs.getFileType("/");
+		if (type !== StorageItemType.Directory) {
+			throw new Error("Not a directory");
+		}
+	} catch {
+		console.warn("IDBFS is broken. Format it.");
+		await fs.format();
+	}
 };

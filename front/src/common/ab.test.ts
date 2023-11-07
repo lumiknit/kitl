@@ -1,10 +1,10 @@
 import { test, expect } from "vitest";
-import { str2ab, ab2str } from "./ab";
+import { str2arr, ab2str } from "./ab";
 
 const str2ab2str2ab = (str: string) => {
-	const ab = str2ab(str);
+	const ab = str2arr(str);
 	const str2 = ab2str(ab);
-	const ab2 = str2ab(str2);
+	const ab2 = str2arr(str2);
 	expect(ab2).toEqual(ab);
 	expect(str2).toEqual(str);
 };

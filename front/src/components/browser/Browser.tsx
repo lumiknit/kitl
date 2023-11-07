@@ -1,7 +1,7 @@
 import { Component } from "solid-js";
 import BrowserHeader from "./BrowserHeader";
-import { newState } from "./state";
-import BrowserBodyDirectory from "./BrowserBodyDirectory";
+import { loadMeta, newState } from "./state";
+import BrowserBody from "./BrowserBody";
 
 type BrowserProps = {
 	onClose: () => void;
@@ -10,10 +10,11 @@ type BrowserProps = {
 const Browser: Component<BrowserProps> = props => {
 	const state = newState("local:/");
 	state.onClose = props.onClose;
+	loadMeta(state);
 	return (
 		<>
 			<BrowserHeader state={state} />
-			<BrowserBodyDirectory state={state} />
+			<BrowserBody state={state} />
 		</>
 	);
 };
