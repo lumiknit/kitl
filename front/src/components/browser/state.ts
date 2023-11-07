@@ -1,6 +1,6 @@
 import { clients } from "@/client/clients";
 import { StorageItem, StorageItemNotFound } from "@/client/storage";
-import { VWrap } from "@/common";
+import { VWrap, refineHostPath } from "@/common";
 import { batch, createSignal } from "solid-js";
 
 const LARGE_SIZE = 1024 * 128;
@@ -21,7 +21,7 @@ export const newState = (path: string): State => ({
 	path: createSignal<string>(path),
 	storageItem: createSignal<StorageItem>(),
 	data: createSignal<ArrayBuffer>(),
-	uploads: createSignal(new Set<string>(), { equals: false }),
+	uploads: createSignal(new Set<string>(["Hello"]), { equals: false }),
 });
 
 export const loadMeta = async (state: State) => {
@@ -37,9 +37,12 @@ export const loadData = async (state: State) => {
 };
 
 export const cd = (state: State, path: string) => {
+	const [host, refinedPath] = refineHostPath(path);
+	path = `${host}:${refinedPath}`;
 	batch(() => {
 		state.path[1](path);
 		state.storageItem[1](undefined);
+		state.data[1](undefined);
 	});
 	console.log("cd", path);
 	// Run load in the background
@@ -47,6 +50,11 @@ export const cd = (state: State, path: string) => {
 		console.warn("Failed to load meta ", path);
 		state.storageItem[1](StorageItemNotFound);
 	});
+};
+
+export const cdParent = (state: State) => {
+	const path = state.path[0]();
+	cd(state, path + "/..");
 };
 
 export const isFileLarge = (state: State) => {

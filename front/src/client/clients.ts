@@ -1,3 +1,4 @@
+import { splitHostPath } from "@/common";
 import { IClient } from "./i-client";
 import LocalClient from "./local-client";
 import { StorageItem } from "./storage";
@@ -17,13 +18,8 @@ export default class Clients {
 
 	parsePath(path: string): [IClient, string] {
 		// Take path and return client and path
-		const sep = path.indexOf(":");
-		if (sep === -1) {
-			return [this.clients.get("local")!, path];
-		} else {
-			const client = this.clients.get(path.slice(0, sep))!;
-			return [client, path.slice(sep + 1)];
-		}
+		const [host, path2] = splitHostPath(path);
+		return [this.clients.get(host)!, path2];
 	}
 
 	// Files

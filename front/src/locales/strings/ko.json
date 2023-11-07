@@ -97,5 +97,18 @@
 			"nothingToCut": "선택된 내용이 없어요",
 			"nothingToPaste": "붙여넣을 내용이 없어요"
 		}
+	},
+	"fileBrowser": {
+		"folder": "폴더",
+		"file": "파일",
+		"name": "이름",
+		"size": "용량",
+		"modified": "수정된 시각",
+		"menu": {
+			"formatLocalStorage": "로컬 저장소 초기화"
+		},
+		"title": {
+			"uploading": "업로드 중..."
+		}
 	}
 }

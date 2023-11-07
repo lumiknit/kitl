@@ -29,7 +29,11 @@ const objToFlatMap = (
 };
 
 export const loadStrings = async (l?: string) => {
-	for (const lang of [l, ...navigator.languages, "en"]) {
+	const languages = navigator.languages.map(s => {
+		const sep = s.indexOf("-");
+		return sep === -1 ? s : s.slice(0, sep);
+	});
+	for (const lang of [l, ...languages, "en"]) {
 		if (lang) {
 			try {
 				const data = await import(`./strings/${lang}.json`);

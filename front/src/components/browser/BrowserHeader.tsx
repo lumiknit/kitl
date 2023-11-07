@@ -1,9 +1,10 @@
 import { Button, Color, InputGroup, InputText } from "@/block";
-import { TbFolderSearch, TbTrashOff, TbX } from "solid-icons/tb";
+import { TbArrowBackUp, TbFolderSearch, TbTrashOff, TbX } from "solid-icons/tb";
 import { Component } from "solid-js";
-import { State, cd } from "./state";
+import { State, cd, cdParent } from "./state";
 import DropdownButton from "@/block/DropdownButton";
 import { clients } from "@/client";
+import { s } from "@/locales";
 
 type BrowserHeaderProps = {
 	state: State;
@@ -19,7 +20,7 @@ const BrowserHeader: Component<BrowserHeaderProps> = props => {
 				}}>
 				{" "}
 				<TbTrashOff />
-				&nbsp; Format Local Storage{" "}
+				&nbsp; {s("fileBrowser.menu.formatLocalStorage")}
 			</a>,
 		],
 	];
@@ -32,6 +33,11 @@ const BrowserHeader: Component<BrowserHeaderProps> = props => {
 			<DropdownButton color={Color.primary} list={list()}>
 				<TbFolderSearch />
 			</DropdownButton>
+			<Button
+				color={Color.secondary}
+				onClick={() => cdParent(props.state)}>
+				<TbArrowBackUp />
+			</Button>
 			<InputText
 				ref={pathRef}
 				class="flex-1"

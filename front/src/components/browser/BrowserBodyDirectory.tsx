@@ -1,5 +1,5 @@
 import { Component, For, Show, createEffect, createSignal } from "solid-js";
-import { State, newFile, newFolder, uploadFile } from "./state";
+import { State, cd, newFile, newFolder, uploadFile } from "./state";
 import { clients } from "@/client";
 import { StorageItem, StorageItemType } from "@/client/storage";
 import { Button, Color, InputGroup } from "@/block";
@@ -13,11 +13,11 @@ import {
 	TbFolderPlus,
 	TbQuestionMark,
 	TbTrash,
-	TbUpload,
 } from "solid-icons/tb";
-import { splitPath } from "@/common";
+import { splitHostPath, splitPath } from "@/common";
 import { bytesToString } from "@/common/size";
 import InputFile from "@/block/InputFile";
+import { s } from "@/locales";
 
 type BrowserBodyDirectoryProps = {
 	state: State;
@@ -72,7 +72,7 @@ const Footer: Component<BrowserBodyDirectoryFooterProps> = props => {
 					}}
 					class="flex-1">
 					<TbFolderPlus />
-					&nbsp; Folder
+					&nbsp; {s("fileBrowser.folder")}
 				</Button>
 				<Button
 					color={Color.secondary}
@@ -82,7 +82,7 @@ const Footer: Component<BrowserBodyDirectoryFooterProps> = props => {
 					}}
 					class="flex-1">
 					<TbFilePlus />
-					&nbsp; File
+					&nbsp; {s("fileBrowser.file")}
 				</Button>
 			</InputGroup>
 			<InputFile
@@ -117,6 +117,8 @@ const newName = (ls: StorageItem[], d?: string) => {
 };
 
 type ItemProps = {
+	state: State;
+	host: string;
 	meta: StorageItem;
 };
 
@@ -137,18 +139,33 @@ const Item = (props: ItemProps) => {
 	};
 	const dateToString = (d: Date) => {
 		const now = new Date();
-		if(now.getFullYear() !== d.getFullYear()) {
+		if (now.getFullYear() !== d.getFullYear()) {
 			return d.getFullYear().toString();
-		} else if(now.getMonth() !== d.getMonth() || now.getDate() !== d.getDate()) {
+		} else if (
+			now.getMonth() !== d.getMonth() ||
+			now.getDate() !== d.getDate()
+		) {
 			return `${d.getMonth()}-${d.getDate()}`;
 		} else {
-			return `${("00" + d.getHours()).slice(-2)}:${("00" + d.getMinutes()).slice(-2)}:${("00" + d.getSeconds()).slice(-2)}`;
+			return `${("00" + d.getHours()).slice(-2)}:${(
+				"00" + d.getMinutes()
+			).slice(-2)}:${("00" + d.getSeconds()).slice(-2)}`;
 		}
 	};
 	return (
 		<tr>
-			<td><input type="checkbox"/></td>
-			<td>{icon()}&nbsp;{name()}</td>
+			<td>
+				<input type="checkbox" />
+			</td>
+			<td>
+				<a
+					href="#"
+					onClick={() => {
+						cd(props.state, `${props.host}:${props.meta.path}`);
+					}}>
+					{icon()}&nbsp;{name()}
+				</a>
+			</td>
 			<td>{bytesToString(props.meta.size)}</td>
 			<td>{dateToString(props.meta.lastModified)}</td>
 		</tr>
@@ -162,6 +179,10 @@ const BrowserBodyDirectory: Component<BrowserBodyDirectoryProps> = props => {
 		const loaded = await clients.list(props.state.path[0]());
 		setLs(loaded);
 	};
+	const host = () => {
+		const [h] = splitHostPath(props.state.path[0]());
+		return h;
+	};
 	createEffect(loadList);
 	return (
 		<>
@@ -171,13 +192,21 @@ const BrowserBodyDirectory: Component<BrowserBodyDirectoryProps> = props => {
 					<thead>
 						<tr>
 							<th>v</th>
-							<th>Name</th>
-							<th>Size</th>
-							<th>Modified</th>
+							<th>{s("fileBrowser.name")}</th>
+							<th>{s("fileBrowser.size")}</th>
+							<th>{s("fileBrowser.modified")}</th>
 						</tr>
 					</thead>
 					<tbody>
-						<For each={ls()}>{item => <Item meta={item} />}</For>
+						<For each={ls()}>
+							{item => (
+								<Item
+									state={props.state}
+									host={host()}
+									meta={item}
+								/>
+							)}
+						</For>
 					</tbody>
 				</table>
 			</Show>

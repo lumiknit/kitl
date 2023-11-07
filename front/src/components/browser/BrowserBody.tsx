@@ -11,6 +11,7 @@ import { Button, Color } from "@/block";
 import { StorageItemType } from "@/client/storage";
 import BrowserBodyDirectory from "./BrowserBodyDirectory";
 import { Dynamic } from "solid-js/web";
+import BrowserBodyFile from "./BrowserBodyFile";
 
 type BrowserBodyProps = {
 	state: State;
@@ -30,7 +31,7 @@ const BrowserBody: Component<BrowserBodyProps> = props => {
 			return <BrowserBodyDirectory state={props.state} />;
 		},
 		[StorageItemType.File]: () => {
-			return <div> File </div>;
+			return <BrowserBodyFile state={props.state} />;
 		},
 	};
 	const fallback = () => (

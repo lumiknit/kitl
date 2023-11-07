@@ -97,5 +97,18 @@
 			"nothingToCut": "Nothing to cut",
 			"nothingToPaste": "Nothing to paste"
 		}
+	},
+	"fileBrowser": {
+		"folder": "Folder",
+		"file": "File",
+		"name": "Name",
+		"size": "Size",
+		"modified": "Modified",
+		"menu": {
+			"formatLocalStorage": "Format Local Storage"
+		},
+		"title": {
+			"uploading": "Uploading..."
+		}
 	}
 }
