@@ -99,16 +99,23 @@
 		}
 	},
 	"fileBrowser": {
+		"warningLocal": "주의: Local 데이터는 브라우저에만 저장되며, 브라우저 데이터 삭제 시 유실될 수 있습니다.",
 		"folder": "폴더",
 		"file": "파일",
 		"name": "이름",
 		"size": "용량",
 		"modified": "수정된 시각",
-		"upload": "업로드",
+		"uploadPlaceholder": "업로드 (클릭 또는 드래그&드롭)",
 		"fileTooLarge": {
 			"message": "파일이 너무 큽니다!",
 			"show": "열기",
 			"download": "다운로드"
+		},
+		"resetLocal": {
+			"confirm": "정말로 로컬 저장소를 초기화할까요?"
+		},
+		"directory": {
+			"empty": "디렉토리가 비어있습니다."
 		},
 		"menu": {
 			"formatLocalStorage": "로컬 저장소 초기화"

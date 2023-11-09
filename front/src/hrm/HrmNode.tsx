@@ -2,9 +2,9 @@ import { For, Show, createEffect, createSignal } from "solid-js";
 import {
 	Getter,
 	LEFT_EXPANDABLE_NODES,
+	NON_SOURCE_NODES,
 	NodeID,
 	RIGHT_EXPANDABLE_NODES,
-	ROOT_NODES,
 } from "@/common";
 import { Handle, Node } from "./data";
 
@@ -142,6 +142,7 @@ const HrmNode = (props: HrmNodeProps) => {
 		<div
 			classList={{
 				"hrm-node": true,
+				"hrm-node-root": NON_SOURCE_NODES.has(n().data.type),
 				"abs-lt": true,
 				selected: n().selected,
 				"hrm-rect": n().angular,
@@ -179,7 +180,7 @@ const HrmNode = (props: HrmNodeProps) => {
 					node={n()}
 				/>
 			</Show>
-			<Show when={!ROOT_NODES.has(n().data.type)}>
+			<Show when={!NON_SOURCE_NODES.has(n().data.type)}>
 				<div
 					ref={handleRef}
 					class={`hrm-node-handle hrm-pill ${

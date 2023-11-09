@@ -9,7 +9,7 @@ type InputFileProps = {
 	ref?: Ref<HTMLInputElement>;
 	placeholder?: string;
 
-	onChange?: JSX.ChangeEventHandler<HTMLInputElement, Event>;
+	onFiles?: (files: FileList) => void;
 };
 
 const InputFile: Component<InputFileProps> = props => {
@@ -20,11 +20,16 @@ const InputFile: Component<InputFileProps> = props => {
 		if (typeof props.ref === "function") props.ref(ref);
 	};
 	const handleChange: JSX.ChangeEventHandler<HTMLInputElement, Event> = e => {
-		if (props.onChange) props.onChange(e);
+		if (props.onFiles) props.onFiles(e.target.files!);
 		textRef!.value = fileRef!.value;
 	};
+	const handleDrop: JSX.EventHandlerUnion<HTMLDivElement, DragEvent> = e => {
+		e.preventDefault();
+		e.stopPropagation();
+		if (props.onFiles) props.onFiles(e.dataTransfer!.files);
+	};
 	return (
-		<InputGroup class={props.class}>
+		<InputGroup class={props.class} onDrop={handleDrop}>
 			<InputText
 				class={`flex-1`}
 				ref={textRef}

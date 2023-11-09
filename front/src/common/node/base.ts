@@ -26,6 +26,8 @@ export const ROOT_NODES = new Set([NodeType.Delta]);
 // Expandable: Able to add handle/edge on the left/right most.
 export const LEFT_EXPANDABLE_NODES = new Set([NodeType.Nu]);
 export const RIGHT_EXPANDABLE_NODES = new Set([NodeType.Beta, NodeType.Nu]);
+// Non-source: Node itself is not a source.
+export const NON_SOURCE_NODES = new Set([NodeType.Delta, NodeType.Pi]);
 
 export type Source = {
 	id: NodeID;

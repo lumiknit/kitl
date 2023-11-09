@@ -81,7 +81,7 @@ const InputCode: Component<CodeProps> = props => {
 	const resizeTextarea = (textarea: HTMLTextAreaElement) => {
 		if (!props.autoresize || !hiddenRef) return;
 		hiddenRef.value = textarea.value;
-		hiddenRef.style.width = textarea.style.width;
+		hiddenRef.style.width = `${textarea.clientWidth}px`;
 		textarea.style.height = hiddenRef.scrollHeight + "px";
 	};
 

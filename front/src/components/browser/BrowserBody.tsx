@@ -1,16 +1,12 @@
 import { Component, Show } from "solid-js";
-import { State } from "./state";
+import { StateWrap } from "./state";
 import { StorageItemType } from "@/client/storage";
 import BrowserBodyDirectory from "./BrowserBodyDirectory";
 import { Dynamic } from "solid-js/web";
 import BrowserBodyFile from "./BrowserBodyFile";
 import Loading from "./Loading";
 
-type BrowserBodyProps = {
-	state: State;
-};
-
-const options: Map<StorageItemType, Component<BrowserBodyProps>> = new Map([
+const options: Map<StorageItemType, Component<StateWrap>> = new Map([
 	[
 		StorageItemType.NotFound,
 		() => {
@@ -21,7 +17,7 @@ const options: Map<StorageItemType, Component<BrowserBodyProps>> = new Map([
 	[StorageItemType.File, BrowserBodyFile],
 ]);
 
-const BrowserBody: Component<BrowserBodyProps> = props => {
+const BrowserBody: Component<StateWrap> = props => {
 	return (
 		<Show
 			when={props.state.storageItem[0]() !== undefined}

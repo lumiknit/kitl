@@ -74,21 +74,26 @@ export const splitFilenameExt = (filename: string): [string, string] => {
 	return [filename.slice(0, sep), filename.slice(sep + 1)];
 };
 
+export const addIndexToFilename = (filename: string, index: number): string => {
+	if (index <= 0) return filename;
+	const idx = filename.indexOf(".");
+	if (idx === -1) {
+		return `${filename}-${index}`;
+	}
+	return `${filename.slice(0, idx)}-${index}${filename.slice(idx)}`;
+};
+
 // Extensions
 
 export enum FileType {
 	Unknown,
 	Kitl,
 	Image,
-	Audio,
-	Video,
 }
 
 const FILE_TYPE_LIST = new Map([
 	[FileType.Kitl, ["kitl"]],
 	[FileType.Image, ["png", "jpg", "jpeg", "gif", "svg", "webp"]],
-	[FileType.Audio, ["mp3", "wav", "ogg"]],
-	[FileType.Video, ["mp4", "webm"]],
 ]);
 
 export const FILE_TYPE_MAP: { [ext: string]: FileType } = {};

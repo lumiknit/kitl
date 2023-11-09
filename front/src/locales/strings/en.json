@@ -99,16 +99,23 @@
 		}
 	},
 	"fileBrowser": {
+		"warningLocal": "Warning: Local data are saved in your browser, and will be lost if you clear your browser data.",
 		"folder": "Folder",
 		"file": "File",
 		"name": "Name",
 		"size": "Size",
 		"modified": "Modified",
-		"upload": "Upload",
+		"uploadPlaceholder": "Upload (Click or Drag&Drop)",
 		"fileTooLarge": {
 			"message": "File is too large!",
 			"show": "Show",
 			"download": "Download"
+		},
+		"resetLocal": {
+			"confirm": "Are you sure to reset local data?"
+		},
+		"directory": {
+			"empty": "The directy is empty."
 		},
 		"menu": {
 			"formatLocalStorage": "Format Local Storage"

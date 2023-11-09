@@ -1,6 +1,14 @@
-import { Component, For, Show, createEffect, createSignal } from "solid-js";
-import { State, cd, newFile, newFolder, uploadFile } from "./state";
-import { clients } from "@/client";
+import { Component, For, Show, createEffect } from "solid-js";
+import {
+	State,
+	StateWrap,
+	cd,
+	loadData,
+	newFile,
+	newFolder,
+	reload,
+	uploadFile,
+} from "./state";
 import { StorageItem, StorageItemType } from "@/client/storage";
 import { Button, Color, InputGroup } from "@/block";
 import {
@@ -14,17 +22,18 @@ import {
 	TbQuestionMark,
 	TbTrash,
 } from "solid-icons/tb";
-import { dateToShortString, splitHostPath, splitPath } from "@/common";
+import {
+	addIndexToFilename,
+	dateToShortString,
+	splitHostPath,
+	splitPath,
+} from "@/common";
 import { bytesToString } from "@/common/size";
 import InputFile from "@/block/InputFile";
 import { s } from "@/locales";
 import Checkbox from "@/block/Checkbox";
 
-type BrowserBodyDirectoryProps = {
-	state: State;
-};
-
-const Header: Component<BrowserBodyDirectoryProps> = props => {
+const Header: Component<StateWrap> = props => {
 	return (
 		<InputGroup class="my-1">
 			<Button
@@ -58,7 +67,6 @@ const Header: Component<BrowserBodyDirectoryProps> = props => {
 type BrowserBodyDirectoryFooterProps = {
 	state: State;
 	newName: (d?: string) => string;
-	reload: () => void;
 };
 
 const Footer: Component<BrowserBodyDirectoryFooterProps> = props => {
@@ -69,7 +77,7 @@ const Footer: Component<BrowserBodyDirectoryFooterProps> = props => {
 					color={Color.primary}
 					onClick={() => {
 						newFolder(props.state, props.newName());
-						props.reload();
+						reload(props.state);
 					}}
 					class="flex-1">
 					<TbFolderPlus />
@@ -79,7 +87,7 @@ const Footer: Component<BrowserBodyDirectoryFooterProps> = props => {
 					color={Color.secondary}
 					onClick={() => {
 						newFile(props.state, props.newName());
-						props.reload();
+						reload(props.state);
 					}}
 					class="flex-1">
 					<TbFilePlus />
@@ -87,14 +95,14 @@ const Footer: Component<BrowserBodyDirectoryFooterProps> = props => {
 				</Button>
 			</InputGroup>
 			<InputFile
-				placeholder={s("fileBrowser.upload")}
-				onChange={e => {
-					if (e.target.files === null) return;
-					const file = e.target.files[0];
-					if (file === undefined) return;
-					const name = props.newName(file.name);
-					const newPath = `${props.state.path[0]()}/${name}`;
-					uploadFile(props.state, newPath, file);
+				placeholder={s("fileBrowser.uploadPlaceholder")}
+				onFiles={files => {
+					for (const file of files) {
+						if (file === undefined) return;
+						const name = props.newName(file.name);
+						const newPath = `${props.state.path[0]()}/${name}`;
+						uploadFile(props.state, newPath, file);
+					}
 				}}
 			/>
 		</>
@@ -113,7 +121,7 @@ const newName = (ls: StorageItem[], d?: string) => {
 	let name = d,
 		i = 0;
 	while (names.has(name)) {
-		name = `${d}-${++i}`;
+		name = addIndexToFilename(d, i++);
 	}
 	return name;
 };
@@ -161,30 +169,24 @@ const Item = (props: ItemProps) => {
 	);
 };
 
-const BrowserBodyDirectory: Component<BrowserBodyDirectoryProps> = props => {
-	const [ls, setLs] = createSignal<StorageItem[]>([]);
-	const loadList = async () => {
-		if (props.state.storageItem[0]() === undefined) return;
-		const loaded = await clients.list(props.state.path[0]());
-		// Sort directories first, then by name
-		loaded.sort((a, b) => {
-			if (a.type === b.type) {
-				return a.path.localeCompare(b.path);
-			} else {
-				return a.type === StorageItemType.Directory ? -1 : 1;
-			}
-		});
-		setLs(loaded);
-	};
+const BrowserBodyDirectory: Component<StateWrap> = props => {
 	const host = () => {
 		const [h] = splitHostPath(props.state.path[0]());
 		return h;
 	};
-	createEffect(loadList);
+	const isEmpty = () => {
+		const l = props.state.ls[0]();
+		return l === undefined || l.length === 0;
+	};
+	createEffect(() => {
+		loadData(props.state);
+	});
 	return (
 		<>
 			<Header {...props} />
-			<Show when={ls().length > 0} fallback={<div> Empty </div>}>
+			<Show
+				when={!isEmpty()}
+				fallback={<div>{s("fileBrowser.directory.empty")}</div>}>
 				<table class="w-100">
 					<thead>
 						<tr>
@@ -197,7 +199,7 @@ const BrowserBodyDirectory: Component<BrowserBodyDirectoryProps> = props => {
 						</tr>
 					</thead>
 					<tbody>
-						<For each={ls()}>
+						<For each={props.state.ls[0]()}>
 							{item => (
 								<Item
 									state={props.state}
@@ -211,8 +213,7 @@ const BrowserBodyDirectory: Component<BrowserBodyDirectoryProps> = props => {
 			</Show>
 			<Footer
 				state={props.state}
-				newName={d => newName(ls(), d)}
-				reload={loadList}
+				newName={d => newName(props.state.ls[0]()!, d)}
 			/>
 		</>
 	);

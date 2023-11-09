@@ -1,13 +1,9 @@
 import { Component, For, Show } from "solid-js";
-import { State } from "./state";
+import { StateWrap } from "./state";
 import { s } from "@/locales";
 import { Spinner } from "@/block";
 
-type BrowserUploadingProps = {
-	state: State;
-};
-
-const BrowserUploading: Component<BrowserUploadingProps> = props => {
+const BrowserUploading: Component<StateWrap> = props => {
 	const uploads = () => props.state.uploads[0]();
 	return (
 		<Show when={uploads().size > 0}>

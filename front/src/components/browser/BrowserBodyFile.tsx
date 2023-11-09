@@ -1,5 +1,5 @@
 import { Component, Match, Switch, createEffect, createSignal } from "solid-js";
-import { State, isFileLarge, loadData } from "./state";
+import { StateWrap, isFileLarge, loadData } from "./state";
 import {
 	FileType,
 	bufferToBase64,
@@ -14,12 +14,9 @@ import { clients } from "@/client";
 import Loading from "./Loading";
 import InputCode from "@/block/InputCode";
 import { s } from "@/locales";
+import { TbDownload } from "solid-icons/tb";
 
-type BrowserFileProps = {
-	state: State;
-};
-
-const Image: Component<BrowserFileProps> = props => {
+const Image: Component<StateWrap> = props => {
 	const [b64, setB64] = createSignal("");
 	createEffect(() => {
 		const data = props.state.data[0]();
@@ -36,7 +33,7 @@ const Image: Component<BrowserFileProps> = props => {
 	return <img class="browser-image" src={src()} />;
 };
 
-const Text: Component<BrowserFileProps> = props => {
+const Text: Component<StateWrap> = props => {
 	const text = () => {
 		const arr = props.state.data[0]();
 		if (!arr) return "<NOT LOADED>";
@@ -46,15 +43,13 @@ const Text: Component<BrowserFileProps> = props => {
 	return <InputCode autoresize value={text()} />;
 };
 
-const components = new Map<FileType, Component<BrowserFileProps>>([
+const components = new Map<FileType, Component<StateWrap>>([
 	[FileType.Unknown, Text],
 	[FileType.Kitl, Text],
-	[FileType.Audio, Text],
-	[FileType.Video, Text],
 	[FileType.Image, Image],
 ]);
 
-export const BrowserBodyFile: Component<BrowserFileProps> = props => {
+export const BrowserBodyFile: Component<StateWrap> = props => {
 	const isLarge = isFileLarge(props.state);
 	const [show, setShow] = createSignal(!isLarge);
 	if (!isLarge) {
@@ -85,6 +80,8 @@ export const BrowserBodyFile: Component<BrowserFileProps> = props => {
 							const array = await clients.read(path);
 							downloadArray(name, array);
 						}}>
+						<TbDownload />
+						&nbsp;
 						{s("fileBrowser.fileTooLarge.download")}
 					</Button>
 				</div>

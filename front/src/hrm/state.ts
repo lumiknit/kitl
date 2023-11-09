@@ -15,6 +15,7 @@ import {
 	Size,
 	parseNodeData,
 	ShapedRect,
+	NON_SOURCE_NODES,
 } from "@/common";
 import {
 	ConnectingEdge as ConnectingEdge,
@@ -527,7 +528,7 @@ export class State {
 				srcNode = nodes.get(srcID);
 			if (!sinkNode || !srcNode) return;
 			if (srcHandle === undefined) {
-				if (ROOT_NODES.has(srcNode[0]().data.type)) return;
+				if (NON_SOURCE_NODES.has(srcNode[0]().data.type)) return;
 			} else {
 				const h = srcNode[0]().handles[srcHandle];
 				if (!h || h[0]().data.type !== HandleType.Source) return;
