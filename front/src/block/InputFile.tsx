@@ -7,6 +7,7 @@ import { Color } from "./colors";
 type InputFileProps = {
 	class?: string;
 	ref?: Ref<HTMLInputElement>;
+	placeholder?: string;
 
 	onChange?: JSX.ChangeEventHandler<HTMLInputElement, Event>;
 };
@@ -25,10 +26,10 @@ const InputFile: Component<InputFileProps> = props => {
 	return (
 		<InputGroup class={props.class}>
 			<InputText
-				disabled
 				class={`flex-1`}
 				ref={textRef}
-				value="FILE"
+				value=""
+				placeholder={props.placeholder}
 				onClick={() => {
 					fileRef?.click();
 				}}

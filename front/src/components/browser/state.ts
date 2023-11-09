@@ -21,7 +21,7 @@ export const newState = (path: string): State => ({
 	path: createSignal<string>(path),
 	storageItem: createSignal<StorageItem>(),
 	data: createSignal<ArrayBuffer>(),
-	uploads: createSignal(new Set<string>(["Hello"]), { equals: false }),
+	uploads: createSignal(new Set<string>(), { equals: false }),
 });
 
 export const loadMeta = async (state: State) => {
@@ -44,7 +44,6 @@ export const cd = (state: State, path: string) => {
 		state.storageItem[1](undefined);
 		state.data[1](undefined);
 	});
-	console.log("cd", path);
 	// Run load in the background
 	loadMeta(state).catch(() => {
 		console.warn("Failed to load meta ", path);
@@ -64,7 +63,6 @@ export const isFileLarge = (state: State) => {
 
 export const newFolder = async (state: State, name: string) => {
 	const path = state.path[0];
-	console.log("newFolder", path(), name);
 	await clients.mkdir(path() + "/" + name);
 };
 
@@ -82,6 +80,7 @@ export const uploadFile = (state: State, path: string, file: File) => {
 			.then(() => {
 				state.uploads[1](s => {
 					s.delete(path);
+					cd(state, state.path[0]());
 					return s;
 				});
 			})

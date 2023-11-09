@@ -1,12 +1,7 @@
 // Array buffer helpers
 
 export const str2arr = (str: string): Uint8Array => {
-	const encoded = new TextEncoder().encode(str),
-		arr = new Uint8Array(encoded.length);
-	for (let i = 0; i < encoded.length; ++i) {
-		arr[i] = encoded[i];
-	}
-	return arr;
+	return new TextEncoder().encode(str);
 };
 
 export const ab2str = (buf: ArrayBuffer) => new TextDecoder().decode(buf);
@@ -20,4 +15,14 @@ export const bufferToBase64 = async (buffer: ArrayBuffer) => {
 		reader.readAsDataURL(new Blob([buffer]));
 	});
 	return base64url.slice(base64url.indexOf(",") + 1);
+};
+
+export const downloadArray = (filename: string, arr: Uint8Array) => {
+	const blob = new Blob([arr], { type: "application/octet-stream" });
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement("a");
+	a.href = url;
+	a.download = filename;
+	a.click();
+	URL.revokeObjectURL(url);
 };

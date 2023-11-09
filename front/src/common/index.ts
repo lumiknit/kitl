@@ -7,3 +7,4 @@ export * from "./math";
 export * from "./node";
 export * from "./path";
 export * from "./types";
+export * from "./time";

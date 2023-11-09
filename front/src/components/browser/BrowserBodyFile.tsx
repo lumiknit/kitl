@@ -1,73 +1,104 @@
-import { Component, Show, createEffect, createSignal } from "solid-js";
-import { State, loadData } from "./state";
-import { bufferToBase64, filename, splitFilenameExt } from "@/common";
+import { Component, Match, Switch, createEffect, createSignal } from "solid-js";
+import { State, isFileLarge, loadData } from "./state";
+import {
+	FileType,
+	bufferToBase64,
+	downloadArray,
+	filename,
+	getFileType,
+	splitFilenameExt,
+} from "@/common";
 import { Dynamic } from "solid-js/web";
+import { Button, Color } from "@/block";
+import { clients } from "@/client";
+import Loading from "./Loading";
+import InputCode from "@/block/InputCode";
+import { s } from "@/locales";
 
 type BrowserFileProps = {
 	state: State;
 };
 
-enum BrowserFileTypes {
-	IMAGE,
-	TEXT,
-}
+const Image: Component<BrowserFileProps> = props => {
+	const [b64, setB64] = createSignal("");
+	createEffect(() => {
+		const data = props.state.data[0]();
+		if (data !== undefined) {
+			bufferToBase64(data).then(setB64);
+		}
+	});
+	// Convert src to base64
+	const src = () => {
+		const data = props.state.data[0]();
+		if (data === undefined) return "";
+		return `data:image;base64,${b64()}`;
+	};
+	return <img class="browser-image" src={src()} />;
+};
 
-const IMAGE_EXTENSIONS = new Set([
-	"apng",
-	"gif",
-	"jpg",
-	"jpeg",
-	"jfif",
-	"pjpeg",
-	"pjp",
-	"png",
-	"svg",
-	"webp",
+const Text: Component<BrowserFileProps> = props => {
+	const text = () => {
+		const arr = props.state.data[0]();
+		if (!arr) return "<NOT LOADED>";
+		const decoder = new TextDecoder("utf-8");
+		return decoder.decode(arr);
+	};
+	return <InputCode autoresize value={text()} />;
+};
+
+const components = new Map<FileType, Component<BrowserFileProps>>([
+	[FileType.Unknown, Text],
+	[FileType.Kitl, Text],
+	[FileType.Audio, Text],
+	[FileType.Video, Text],
+	[FileType.Image, Image],
 ]);
 
 export const BrowserBodyFile: Component<BrowserFileProps> = props => {
-	createEffect(() => {
+	const isLarge = isFileLarge(props.state);
+	const [show, setShow] = createSignal(!isLarge);
+	if (!isLarge) {
 		loadData(props.state);
-	});
-	const splitted = () => splitFilenameExt(filename(props.state.path[0]()));
-	const Image: Component<any> = () => {
-		const [b64, setB64] = createSignal("");
-		createEffect(() => {
-			const data = props.state.data[0]();
-			if (data !== undefined) {
-				bufferToBase64(data).then(setB64);
-			}
-		});
-		// Convert src to base64
-		const src = () => {
-			const data = props.state.data[0]();
-			if (data === undefined) return "";
-			return `data:image/${splitted()[1]};base64,${b64()}`;
-		};
-		return <img class="browser-image" src={src()} />;
+	}
+	const loadAndShow = async () => {
+		setShow(true);
+		loadData(props.state);
 	};
-
-	const Text: Component<any> = () => {
-		return <pre>{props.state.path[0]()}</pre>;
-	};
-
-	const Fallback: Component<any> = () => {
-		return <pre>Failed to load file.</pre>;
-	};
-
-	const type = () => {
-		if (IMAGE_EXTENSIONS.has(splitted()[1])) return BrowserFileTypes.IMAGE;
-		return BrowserFileTypes.TEXT;
-	};
-
+	const extension = () =>
+		splitFilenameExt(filename(props.state.path[0]()))[1];
+	const type = () => getFileType(extension());
 	return (
-		<Show
-			when={props.state.data[0]() !== undefined}
-			fallback={<Fallback />}>
-			<Dynamic
-				component={type() === BrowserFileTypes.IMAGE ? Image : Text}
-			/>
-		</Show>
+		<Switch>
+			<Match when={!show()}>
+				<div class="w-100 text-center">
+					{s("fileBrowser.fileTooLarge.message")}
+					<br />({props.state.storageItem[0]()!.size} bytes).
+					<br />
+					<Button color={Color.primary} onClick={loadAndShow}>
+						{s("fileBrowser.fileTooLarge.show")}
+					</Button>
+					<Button
+						color={Color.secondary}
+						onClick={async () => {
+							const path = props.state.storageItem[0]()!.path;
+							const name = filename(path);
+							const array = await clients.read(path);
+							downloadArray(name, array);
+						}}>
+						{s("fileBrowser.fileTooLarge.download")}
+					</Button>
+				</div>
+			</Match>
+			<Match when={props.state.data[0]() === undefined}>
+				<Loading>Loading data...</Loading>
+			</Match>
+			<Match when={true}>
+				<Dynamic
+					component={components.get(type())}
+					state={props.state}
+				/>
+			</Match>
+		</Switch>
 	);
 };
 

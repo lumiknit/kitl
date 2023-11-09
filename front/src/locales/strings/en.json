@@ -104,6 +104,12 @@
 		"name": "Name",
 		"size": "Size",
 		"modified": "Modified",
+		"upload": "Upload",
+		"fileTooLarge": {
+			"message": "File is too large!",
+			"show": "Show",
+			"download": "Download"
+		},
 		"menu": {
 			"formatLocalStorage": "Format Local Storage"
 		},

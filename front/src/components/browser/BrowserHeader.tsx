@@ -29,7 +29,7 @@ const BrowserHeader: Component<BrowserHeaderProps> = props => {
 		cd(props.state, pathRef!.value);
 	};
 	return (
-		<InputGroup>
+		<InputGroup class="sticky-top shadow-1 mb-2">
 			<DropdownButton color={Color.primary} list={list()}>
 				<TbFolderSearch />
 			</DropdownButton>

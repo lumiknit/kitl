@@ -14,10 +14,11 @@ import {
 	TbQuestionMark,
 	TbTrash,
 } from "solid-icons/tb";
-import { splitHostPath, splitPath } from "@/common";
+import { dateToShortString, splitHostPath, splitPath } from "@/common";
 import { bytesToString } from "@/common/size";
 import InputFile from "@/block/InputFile";
 import { s } from "@/locales";
+import Checkbox from "@/block/Checkbox";
 
 type BrowserBodyDirectoryProps = {
 	state: State;
@@ -86,6 +87,7 @@ const Footer: Component<BrowserBodyDirectoryFooterProps> = props => {
 				</Button>
 			</InputGroup>
 			<InputFile
+				placeholder={s("fileBrowser.upload")}
 				onChange={e => {
 					if (e.target.files === null) return;
 					const file = e.target.files[0];
@@ -137,37 +139,24 @@ const Item = (props: ItemProps) => {
 				return <TbQuestionMark />;
 		}
 	};
-	const dateToString = (d: Date) => {
-		const now = new Date();
-		if (now.getFullYear() !== d.getFullYear()) {
-			return d.getFullYear().toString();
-		} else if (
-			now.getMonth() !== d.getMonth() ||
-			now.getDate() !== d.getDate()
-		) {
-			return `${d.getMonth()}-${d.getDate()}`;
-		} else {
-			return `${("00" + d.getHours()).slice(-2)}:${(
-				"00" + d.getMinutes()
-			).slice(-2)}:${("00" + d.getSeconds()).slice(-2)}`;
-		}
-	};
 	return (
 		<tr>
 			<td>
-				<input type="checkbox" />
+				<Checkbox />
 			</td>
-			<td>
+			<td class="word-break-all">
 				<a
-					href="#"
 					onClick={() => {
 						cd(props.state, `${props.host}:${props.meta.path}`);
 					}}>
 					{icon()}&nbsp;{name()}
 				</a>
 			</td>
-			<td>{bytesToString(props.meta.size)}</td>
-			<td>{dateToString(props.meta.lastModified)}</td>
+			<td class="text-right">
+				{bytesToString(props.meta.size)}
+				<br />
+				{dateToShortString(props.meta.lastModified)}
+			</td>
 		</tr>
 	);
 };
@@ -177,6 +166,14 @@ const BrowserBodyDirectory: Component<BrowserBodyDirectoryProps> = props => {
 	const loadList = async () => {
 		if (props.state.storageItem[0]() === undefined) return;
 		const loaded = await clients.list(props.state.path[0]());
+		// Sort directories first, then by name
+		loaded.sort((a, b) => {
+			if (a.type === b.type) {
+				return a.path.localeCompare(b.path);
+			} else {
+				return a.type === StorageItemType.Directory ? -1 : 1;
+			}
+		});
 		setLs(loaded);
 	};
 	const host = () => {
@@ -191,10 +188,12 @@ const BrowserBodyDirectory: Component<BrowserBodyDirectoryProps> = props => {
 				<table class="w-100">
 					<thead>
 						<tr>
-							<th>v</th>
+							<th></th>
 							<th>{s("fileBrowser.name")}</th>
-							<th>{s("fileBrowser.size")}</th>
-							<th>{s("fileBrowser.modified")}</th>
+							<th class="text-right">
+								{s("fileBrowser.size")}
+								<br /> {s("fileBrowser.modified")}
+							</th>
 						</tr>
 					</thead>
 					<tbody>

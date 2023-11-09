@@ -73,3 +73,30 @@ export const splitFilenameExt = (filename: string): [string, string] => {
 	}
 	return [filename.slice(0, sep), filename.slice(sep + 1)];
 };
+
+// Extensions
+
+export enum FileType {
+	Unknown,
+	Kitl,
+	Image,
+	Audio,
+	Video,
+}
+
+const FILE_TYPE_LIST = new Map([
+	[FileType.Kitl, ["kitl"]],
+	[FileType.Image, ["png", "jpg", "jpeg", "gif", "svg", "webp"]],
+	[FileType.Audio, ["mp3", "wav", "ogg"]],
+	[FileType.Video, ["mp4", "webm"]],
+]);
+
+export const FILE_TYPE_MAP: { [ext: string]: FileType } = {};
+FILE_TYPE_LIST.forEach((exts, type) => {
+	for (const ext of exts) {
+		FILE_TYPE_MAP[ext] = type;
+	}
+});
+
+export const getFileType = (ext: string): FileType =>
+	FILE_TYPE_MAP[ext] || FileType.Unknown;

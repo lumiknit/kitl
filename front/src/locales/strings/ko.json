@@ -104,6 +104,12 @@
 		"name": "이름",
 		"size": "용량",
 		"modified": "수정된 시각",
+		"upload": "업로드",
+		"fileTooLarge": {
+			"message": "파일이 너무 큽니다!",
+			"show": "열기",
+			"download": "다운로드"
+		},
 		"menu": {
 			"formatLocalStorage": "로컬 저장소 초기화"
 		},

@@ -1,4 +1,5 @@
-import { Component, Ref, type JSX } from "solid-js";
+import { create } from "domain";
+import { Component, Ref, type JSX, createEffect } from "solid-js";
 
 type TATarget = {
 	target: Element;
@@ -69,7 +70,13 @@ export type CodeProps = {
 };
 
 const InputCode: Component<CodeProps> = props => {
+	let taRef: HTMLTextAreaElement | undefined;
 	let hiddenRef: HTMLTextAreaElement | undefined;
+
+	const hackRef = (ref: HTMLTextAreaElement) => {
+		taRef = ref;
+		if (typeof props.ref === "function") props.ref(ref);
+	};
 
 	const resizeTextarea = (textarea: HTMLTextAreaElement) => {
 		if (!props.autoresize || !hiddenRef) return;
@@ -77,6 +84,12 @@ const InputCode: Component<CodeProps> = props => {
 		hiddenRef.style.width = textarea.style.width;
 		textarea.style.height = hiddenRef.scrollHeight + "px";
 	};
+
+	createEffect(() => {
+		if (props.autoresize) {
+			resizeTextarea(taRef!);
+		}
+	});
 
 	const onKeyDown: JSX.EventHandlerUnion<
 			HTMLTextAreaElement,
@@ -145,7 +158,7 @@ const InputCode: Component<CodeProps> = props => {
 	return (
 		<div class="code-area">
 			<textarea
-				ref={props.ref}
+				ref={hackRef}
 				autofocus={props.autofocus}
 				disabled={props.disabled}
 				class={`form-control ${props.class ?? ""}`}
