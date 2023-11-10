@@ -114,11 +114,23 @@
 		"resetLocal": {
 			"confirm": "Are you sure to reset local data?"
 		},
+		"deleteSelected": {
+			"confirm": "Delete selected files and folders?"
+		},
+		"renameSelected": {
+			"prompt": "Enter new name for the file"
+		},
 		"directory": {
 			"empty": "The directy is empty."
 		},
 		"menu": {
-			"formatLocalStorage": "Format Local Storage"
+			"refresh": "Refresh",
+			"formatLocalStorage": "Format Local Storage",
+			"rename": "Rename",
+			"copy": "Copy",
+			"cut": "Cut",
+			"paste": "Paste",
+			"delete": "Delete"
 		},
 		"toasts": {
 			"cutSuccess": "Cutted!",
@@ -136,7 +148,8 @@
 			"uploadingFiles": "Uploading files...",
 			"uploadSuccess": "Upload success!",
 			"uploadError": "Upload failed..",
-			"uploadReadError": "Failed to read file to upload.."
+			"uploadReadError": "Failed to read file to upload..",
+			"nothingSelected": "No file or folder selected.."
 		},
 		"title": {
 			"uploading": "Uploading..."

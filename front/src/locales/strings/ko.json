@@ -114,11 +114,23 @@
 		"resetLocal": {
 			"confirm": "정말로 로컬 저장소를 초기화할까요?"
 		},
+		"deleteSelected": {
+			"confirm": "선택한 파일을 삭제하겠습니다."
+		},
+		"renameSelected": {
+			"prompt": "Enter new name for the file"
+		},
 		"directory": {
 			"empty": "디렉토리가 비어있습니다."
 		},
 		"menu": {
-			"formatLocalStorage": "로컬 저장소 초기화"
+			"refresh": "새로고침",
+			"formatLocalStorage": "로컬 저장소 초기화",
+			"rename": "이름 바꾸기",
+			"copy": "복사",
+			"cut": "잘라내기",
+			"paste": "붙여넣기",
+			"delete": "삭제"
 		},
 		"toasts": {
 			"cutSuccess": "잘라냈어요!",
@@ -136,7 +148,8 @@
 			"uploadingFiles": "파일 업로드 중...",
 			"uploadSuccess": "업로드 되었어요!",
 			"uploadError": "업로드하지 못했어요..",
-			"uploadReadError": "업로드할 파일을 읽을 수 없어요.."
+			"uploadReadError": "업로드할 파일을 읽을 수 없어요..",
+			"nothingSelected": "선택된 파일이 없어요.."
 		},
 		"title": {
 			"uploading": "업로드 중..."

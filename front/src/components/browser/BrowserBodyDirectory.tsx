@@ -1,5 +1,6 @@
 import { Component, For, Show, createEffect } from "solid-js";
 import {
+	NothingSelectedError,
 	State,
 	StateWrap,
 	cd,
@@ -11,6 +12,7 @@ import {
 	newFolder,
 	pasteFiles,
 	reload,
+	renameSelectedFiles,
 	setFileSelected,
 	uploadFile,
 } from "./state";
@@ -20,10 +22,12 @@ import {
 	TbClipboard,
 	TbCopy,
 	TbCut,
+	TbEdit,
 	TbFile,
 	TbFilePlus,
 	TbFolder,
 	TbFolderPlus,
+	TbMenu,
 	TbQuestionMark,
 	TbTrash,
 } from "solid-icons/tb";
@@ -38,30 +42,44 @@ import InputFile from "@/block/InputFile";
 import { s } from "@/locales";
 import Checkbox from "@/block/Checkbox";
 import { ToastType, toast } from "@/block/ToastContainer";
+import DropdownButton from "@/block/DropdownButton";
 
 // Helpers
 
 const hCopyFiles = (state: State) => () => {
-	copySelectedFiles(state);
-	toast(s("fileBrowser.toasts.copySuccess"), { type: ToastType.Success });
-	reload(state);
+	try {
+		copySelectedFiles(state);
+		toast(s("fileBrowser.toasts.copySuccess"), { type: ToastType.Success });
+	} catch (e) {
+		if (!(e instanceof NothingSelectedError)) throw e;
+		toast(s("fileBrowser.toasts.nothingSelected"), {
+			type: ToastType.Error,
+		});
+	}
 };
 
 const hCutFiles = (state: State) => () => {
-	cutSelectedFiles(state);
-	toast(s("fileBrowser.toasts.cutSuccess"), { type: ToastType.Success });
-	reload(state);
+	try {
+		cutSelectedFiles(state);
+		toast(s("fileBrowser.toasts.cutSuccess"), { type: ToastType.Success });
+		reload(state);
+	} catch (e) {
+		if (!(e instanceof NothingSelectedError)) throw e;
+		toast(s("fileBrowser.toasts.nothingSelected"), {
+			type: ToastType.Error,
+		});
+	}
 };
 
 const hPasteFiles = (state: State) => async () => {
 	try {
-		throw "A";
 		await pasteFiles(state);
 		toast(s("fileBrowser.toasts.pasteSuccess"), {
 			type: ToastType.Success,
 		});
-	} catch {
+	} catch (e) {
 		toast(s("fileBrowser.toasts.pasteError"), { type: ToastType.Error });
+		console.warn("Failed to paste files", e);
 		return;
 	}
 	reload(state);
@@ -143,11 +161,43 @@ const hUploadFiles = (state: State) => async (files: FileList) => {
 const Header: Component<StateWrap> = props => {
 	return (
 		<InputGroup class="my-1">
+			<DropdownButton
+				color={Color.primary}
+				list={[
+					[
+						<a onClick={() => renameSelectedFiles(props.state)}>
+							<TbEdit />
+							&nbsp; {s("fileBrowser.menu.rename")}
+						</a>,
+					],
+					[
+						<a onClick={() => hCopyFiles(props.state)}>
+							<TbCopy />
+							&nbsp; {s("fileBrowser.menu.copy")}
+						</a>,
+						<a onClick={() => hCutFiles(props.state)}>
+							<TbCut />
+							&nbsp; {s("fileBrowser.menu.cut")}
+						</a>,
+						<a onClick={() => hCopyFiles(props.state)}>
+							<TbClipboard />
+							&nbsp; {s("fileBrowser.menu.paste")}
+						</a>,
+					],
+					[
+						<a onClick={() => hCopyFiles(props.state)}>
+							<TbTrash />
+							&nbsp; {s("fileBrowser.menu.delete")}
+						</a>,
+					],
+				]}>
+				<TbMenu />
+			</DropdownButton>
 			<Button
 				color={Color.secondary}
-				onClick={hCutFiles(props.state)}
+				onClick={hPasteFiles(props.state)}
 				class="flex-1">
-				<TbCut />
+				<TbClipboard />
 			</Button>
 			<Button
 				color={Color.secondary}
@@ -156,10 +206,10 @@ const Header: Component<StateWrap> = props => {
 				<TbCopy />
 			</Button>
 			<Button
-				color={Color.secondary}
-				onClick={hPasteFiles(props.state)}
+				color={Color.warning}
+				onClick={hCutFiles(props.state)}
 				class="flex-1">
-				<TbClipboard />
+				<TbCut />
 			</Button>
 			<Button
 				color={Color.danger}

@@ -191,14 +191,25 @@ export const setFileSelected = (
 };
 
 export const getSelectedFiles = (state: State): string[] => {
+	const host = state.path[0]().split(":")[0];
 	const ls = state.ls[0]();
 	if (!ls) return [];
-	return ls.filter(item => item.selected).map(item => item.path);
+	return ls.filter(item => item.selected).map(item => `${host}:${item.path}`);
 };
 
 // File operations
 
+export class NothingSelectedError extends Error {
+	constructor() {
+		super("Nothing selected");
+	}
+}
+
 export const copySelectedFiles = (state: State) => {
+	const selected = getSelectedFiles(state);
+	if (selected.length === 0) {
+		throw new NothingSelectedError();
+	}
 	state.copyState[1]({
 		items: getSelectedFiles(state),
 		isCutted: false,
@@ -206,6 +217,10 @@ export const copySelectedFiles = (state: State) => {
 };
 
 export const cutSelectedFiles = (state: State) => {
+	const selected = getSelectedFiles(state);
+	if (selected.length === 0) {
+		throw new NothingSelectedError();
+	}
 	state.copyState[1]({
 		items: getSelectedFiles(state),
 		isCutted: true,
@@ -222,6 +237,7 @@ export const pasteFiles = async (state: State) => {
 	const copyState = state.copyState[0]();
 	for (const src of copyState.items) {
 		const destPath = dest + "/" + src.split("/").pop();
+		console.log("Paste", src, destPath);
 		if (copyState.isCutted) {
 			await clients.move(src, destPath);
 		} else {
@@ -235,6 +251,7 @@ export const pasteFiles = async (state: State) => {
 };
 
 export const deleteSelectedFiles = async (state: State) => {
+	if (!confirm(s("fileBrowser.deleteSelected.confirm"))) return;
 	for (const path of getSelectedFiles(state)) {
 		await clients.remove(path);
 	}
@@ -242,11 +259,23 @@ export const deleteSelectedFiles = async (state: State) => {
 
 // Modify Files
 
-export const renameFile = async (
-	state: State,
-	path: string,
-	newName: string,
-) => {
+export const renameFile = async (path: string, newName: string) => {
 	// Use move to rename
 	await clients.move(path, path + "/../" + newName);
+};
+
+export const renameSelectedFiles = async (state: State) => {
+	const selected = getSelectedFiles(state);
+	if (selected.length < 1) {
+		throw new NothingSelectedError();
+	}
+	for (const path of selected) {
+		const name = path.split("/").pop();
+		if (!name) return;
+		const p = `${s("fileBrowser.renameSelected.prompt")}:\n${path}`;
+		const newName = prompt(p, name);
+		if (!newName) return;
+		await renameFile(path, newName);
+	}
+	reload(state);
 };

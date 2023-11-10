@@ -231,6 +231,26 @@ export const list = async (fs: IDBFS, path: string): Promise<StorageItem[]> => {
 
 /* File */
 
+const addChild = async (
+	fs: IDBFS,
+	path: string,
+	name: string,
+): Promise<void> => {
+	const [p] = pPath(path);
+	// Check if the path is a directory
+	const r = await getMeta(fs, p);
+	assertType(p, [StorageItemType.Directory], r.type);
+	// Read the parent directory
+	const children = new Set(await getChildrenNames(fs, p));
+	children.add(name);
+	await rawWrite(
+		fs,
+		StorageItemType.Directory,
+		p,
+		str2arr(Array.from(children).join("\n")),
+	);
+};
+
 export const write = async (
 	fs: IDBFS,
 	path: string,
@@ -243,14 +263,7 @@ export const write = async (
 	assertType(path, [StorageItemType.File, StorageItemType.NotFound], t);
 	if (t === StorageItemType.NotFound) {
 		// Create new one
-		const parent = joinPath(chunks.slice(0, chunks.length - 1));
-		const children = await getChildrenNames(fs, parent);
-		await rawWrite(
-			fs,
-			StorageItemType.Directory,
-			parent,
-			str2arr(`${children.join("\n")}\n${chunks[chunks.length - 1]}`),
-		);
+		await addChild(fs, path + "/..", chunks[chunks.length - 1]);
 	}
 	// Write a file meta
 	await rawWrite(fs, StorageItemType.File, refinedPath, content);
@@ -307,7 +320,7 @@ export const copy = async (
 ): Promise<void> => {
 	const [op] = pPath(oldPath);
 	const [np] = pPath(newPath);
-	if (np.startsWith(op)) {
+	if (np === op || np.startsWith(op + "/")) {
 		throw new Error("Cannot copy to a subdirectory");
 	}
 	// Get all paths to be moved
@@ -320,6 +333,9 @@ export const copy = async (
 		const d = await fs.data.get(src);
 		await rawWrite(fs, r.type, dst, d.data);
 	}
+	// Update parent directory
+	if (newPath === "/") return;
+	await addChild(fs, np + "/..", np.split("/").pop()!);
 };
 
 export const move = async (

@@ -59,29 +59,28 @@ export default class Clients {
 		const [newClient, newPath2] = this.parsePath(newPath);
 		if (client === newClient) {
 			return await client.copy(path2, newPath2);
-		} else {
-			// Recursively copy
-			// First get file type
-			const stat = await client.stat(path2);
-			switch (stat.type) {
-				case StorageItemType.Directory:
-					{
-						await newClient.mkdir(newPath2);
-						const list = await client.list(path2);
-						for (const item of list) {
-							const name = filename(item.path);
-							await this.copy(
-								`${path}/${name}`,
-								`${newPath}/${name}`,
-							);
-						}
+		}
+		// Recursively copy
+		// First get file type
+		const stat = await client.stat(path2);
+		switch (stat.type) {
+			case StorageItemType.Directory:
+				{
+					await newClient.mkdir(newPath2);
+					const list = await client.list(path2);
+					for (const item of list) {
+						const name = filename(item.path);
+						await this.copy(
+							`${path}/${name}`,
+							`${newPath}/${name}`,
+						);
 					}
-					break;
-				default: {
-					// Just read and write
-					const data = await client.read(path2);
-					await newClient.write(newPath2, data);
 				}
+				break;
+			default: {
+				// Just read and write
+				const data = await client.read(path2);
+				await newClient.write(newPath2, data);
 			}
 		}
 	}

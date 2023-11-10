@@ -1,12 +1,18 @@
 import { Button, Color, InputGroup, InputText } from "@/block";
-import { TbFolderUp, TbMenu, TbTrashOff, TbX } from "solid-icons/tb";
+import { TbFolderUp, TbMenu, TbRefresh, TbTrashOff, TbX } from "solid-icons/tb";
 import { Component } from "solid-js";
-import { StateWrap, cd, cdParent, resetLocal } from "./state";
+import { StateWrap, cd, cdParent, reload, resetLocal } from "./state";
 import DropdownButton from "@/block/DropdownButton";
 import { s } from "@/locales";
 
 const BrowserHeader: Component<StateWrap> = props => {
 	const list = () => [
+		[
+			<a onClick={() => reload(props.state)}>
+				<TbRefresh />
+				&nbsp; {s("fileBrowser.menu.refresh")}
+			</a>,
+		],
 		[
 			<a onClick={() => resetLocal(props.state)}>
 				<TbTrashOff />
