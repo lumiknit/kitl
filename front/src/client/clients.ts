@@ -44,7 +44,7 @@ export default class Clients {
 		return await client.read(path2);
 	}
 
-	async write(path: string, data: Uint8Array): Promise<void> {
+	async write(path: string, data: Uint8Array): Promise<StorageItem> {
 		const [client, path2] = this.parsePath(path);
 		return await client.write(path2, data);
 	}

@@ -34,7 +34,7 @@ export interface IStorageClient {
 	list(path: string): Promise<StorageItem[]>;
 
 	read(path: string): Promise<Uint8Array>;
-	write(path: string, content: Uint8Array): Promise<void>;
+	write(path: string, content: Uint8Array): Promise<StorageItem>;
 
 	remove(path: string): Promise<void>;
 	copy(path: string, newPath: string): Promise<void>;

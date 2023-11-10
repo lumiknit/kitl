@@ -20,7 +20,7 @@ const GraphToolsModal: Component<GraphToolsModalProps> = props => {
 				<InputLabel color={Color.primary}>
 					<TbBinaryTree />
 				</InputLabel>
-				<InputText class="flex-1" disabled={true} value="Graph Tools" />
+				<InputText class="flex-1" readonly={true} value="Graph Tools" />
 				<Button color={Color.danger} onClick={props.onClose}>
 					<TbX />
 				</Button>

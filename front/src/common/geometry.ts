@@ -1,9 +1,16 @@
 /* Types */
 
+import { fassertNumber } from "./assert";
+
 export type Position = {
 	x: number;
 	y: number;
 };
+
+export const loadPosition = (a: any): Position => ({
+	x: fassertNumber(a.x),
+	y: fassertNumber(a.y),
+});
 
 export type Size = {
 	w: number;

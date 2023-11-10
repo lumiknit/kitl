@@ -52,6 +52,9 @@ export const normalizeName = (name: string): string =>
 export const whitenNameString = (name: string): string =>
 	name.replace(/_/g, " ");
 
+export const normalizedWhitenName = (name: string): string =>
+	whitenNameString(normalizeName(name));
+
 export const newName = (name: string, module: string): Name => ({
 	module: normalizeName(module),
 	name: normalizeName(name),

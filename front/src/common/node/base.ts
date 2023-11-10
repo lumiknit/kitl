@@ -1,6 +1,12 @@
 import * as j from "../json";
 import * as name from "../name";
-import { Position } from "../geometry";
+import { Position, loadPosition } from "../geometry";
+import {
+	fassertArrayOf,
+	fassertNumber,
+	fassertOptional,
+	fassertString,
+} from "../assert";
 
 // -- Helper types
 
@@ -34,6 +40,11 @@ export type Source = {
 	handle?: HandleID;
 };
 
+const loadSource = (a: any): Source => ({
+	id: fassertString(a.id),
+	handle: fassertOptional(fassertString)(a.handle),
+});
+
 // -- Each node type
 
 export type AlphaNodeData = {
@@ -42,12 +53,23 @@ export type AlphaNodeData = {
 	val: j.Json;
 };
 
+const loadAlphaNodeData = (d: any): AlphaNodeData => ({
+	type: NodeType.Alpha,
+	val: d.val,
+});
+
 export type BetaNodeData = {
 	// Beta reduction node
 	type: NodeType.Beta;
 	fn?: Source;
 	args: Source[];
 };
+
+const loadBetaNodeData = (d: any): BetaNodeData => ({
+	type: NodeType.Beta,
+	fn: fassertOptional(loadSource)(d.fn),
+	args: fassertArrayOf(loadSource)(d.args),
+});
 
 export type DeltaNodeData = {
 	// Definition node
@@ -56,12 +78,24 @@ export type DeltaNodeData = {
 	ret?: Source;
 };
 
+const loadDeltaNodeData = (d: DeltaNodeData): DeltaNodeData => ({
+	type: NodeType.Delta,
+	comment: fassertString(d.comment),
+	ret: fassertOptional(loadSource)(d.ret),
+});
+
 export type LambdaNodeData = {
 	// Lambda node
 	type: NodeType.Lambda;
 	fallback?: Source;
 	ret?: Source;
 };
+
+const loadLambdaNodeData = (d: LambdaNodeData): LambdaNodeData => ({
+	type: NodeType.Lambda,
+	fallback: fassertOptional(loadSource)(d.fallback),
+	ret: fassertOptional(loadSource)(d.ret),
+});
 
 export type NuNodeData = {
 	// Named app node
@@ -71,6 +105,13 @@ export type NuNodeData = {
 	args: Source[];
 };
 
+const loadNuNodeData = (d: NuNodeData): NuNodeData => ({
+	type: NodeType.Nu,
+	name: fassertString(d.name),
+	lhs: fassertNumber(d.lhs),
+	args: fassertArrayOf(loadSource)(d.args),
+});
+
 export type PiNodeData = {
 	// Patterned Lambda
 	type: NodeType.Pi;
@@ -78,6 +119,13 @@ export type PiNodeData = {
 	pat?: Source;
 	elems: number;
 };
+
+const loadPiNodeData = (d: PiNodeData): PiNodeData => ({
+	type: NodeType.Pi,
+	name: fassertString(d.name),
+	pat: fassertOptional(loadSource)(d.pat),
+	elems: fassertNumber(d.elems),
+});
 
 export type NodeData =
 	| AlphaNodeData
@@ -87,11 +135,26 @@ export type NodeData =
 	| NuNodeData
 	| PiNodeData;
 
+const loadNodeDatas: any = {
+	[NodeType.Alpha]: loadAlphaNodeData,
+	[NodeType.Beta]: loadBetaNodeData,
+	[NodeType.Delta]: loadDeltaNodeData,
+	[NodeType.Lambda]: loadLambdaNodeData,
+	[NodeType.Nu]: loadNuNodeData,
+	[NodeType.Pi]: loadPiNodeData,
+};
+
 export type Node = {
 	id: NodeID;
 	pos: Position;
 	x: NodeData;
 };
+
+export const loadNode = (n: Node): Node => ({
+	id: fassertString(n.id),
+	pos: loadPosition(n.pos),
+	x: loadNodeDatas[n.x.type](n.x),
+});
 
 export type Nodes = Node[];
 

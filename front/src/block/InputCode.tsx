@@ -170,7 +170,7 @@ const InputCode: Component<CodeProps> = props => {
 			/>
 			<textarea
 				ref={hiddenRef}
-				disabled={true}
+				disabled
 				class={`form-control abs-lt ${
 					props.class ?? ""
 				} code-area-hidden no-pointer-events no-user-select`}

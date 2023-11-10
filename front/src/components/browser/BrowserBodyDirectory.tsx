@@ -49,10 +49,10 @@ import DropdownButton from "@/block/DropdownButton";
 const hCopyFiles = (state: State) => () => {
 	try {
 		copySelectedFiles(state);
-		toast(s("fileBrowser.toasts.copySuccess"), { type: ToastType.Success });
+		toast(s("fileBrowser.toast.copySuccess"), { type: ToastType.Success });
 	} catch (e) {
 		if (!(e instanceof NothingSelectedError)) throw e;
-		toast(s("fileBrowser.toasts.nothingSelected"), {
+		toast(s("fileBrowser.toast.nothingSelected"), {
 			type: ToastType.Error,
 		});
 	}
@@ -61,11 +61,11 @@ const hCopyFiles = (state: State) => () => {
 const hCutFiles = (state: State) => () => {
 	try {
 		cutSelectedFiles(state);
-		toast(s("fileBrowser.toasts.cutSuccess"), { type: ToastType.Success });
+		toast(s("fileBrowser.toast.cutSuccess"), { type: ToastType.Success });
 		reload(state);
 	} catch (e) {
 		if (!(e instanceof NothingSelectedError)) throw e;
-		toast(s("fileBrowser.toasts.nothingSelected"), {
+		toast(s("fileBrowser.toast.nothingSelected"), {
 			type: ToastType.Error,
 		});
 	}
@@ -74,11 +74,11 @@ const hCutFiles = (state: State) => () => {
 const hPasteFiles = (state: State) => async () => {
 	try {
 		await pasteFiles(state);
-		toast(s("fileBrowser.toasts.pasteSuccess"), {
+		toast(s("fileBrowser.toast.pasteSuccess"), {
 			type: ToastType.Success,
 		});
 	} catch (e) {
-		toast(s("fileBrowser.toasts.pasteError"), { type: ToastType.Error });
+		toast(s("fileBrowser.toast.pasteError"), { type: ToastType.Error });
 		console.warn("Failed to paste files", e);
 		return;
 	}
@@ -88,11 +88,11 @@ const hPasteFiles = (state: State) => async () => {
 const hDeleteFiles = (state: State) => async () => {
 	try {
 		await deleteSelectedFiles(state);
-		toast(s("fileBrowser.toasts.deleteSuccess"), {
+		toast(s("fileBrowser.toast.deleteSuccess"), {
 			type: ToastType.Success,
 		});
 	} catch {
-		toast(s("fileBrowser.toasts.deleteError"), { type: ToastType.Error });
+		toast(s("fileBrowser.toast.deleteError"), { type: ToastType.Error });
 	}
 	reload(state);
 };
@@ -119,11 +119,11 @@ const newName = (state: State, d?: string): string => {
 const hNewFile = (state: State) => async () => {
 	try {
 		await newFile(state, newName(state));
-		toast(s("fileBrowser.toasts.newFileSuccess"), {
+		toast(s("fileBrowser.toast.newFileSuccess"), {
 			type: ToastType.Success,
 		});
 	} catch (e) {
-		toast(s("fileBrowser.toasts.newFileError"), { type: ToastType.Error });
+		toast(s("fileBrowser.toast.newFileError"), { type: ToastType.Error });
 		console.warn("Failed to create new file", e);
 	}
 	reload(state);
@@ -132,11 +132,11 @@ const hNewFile = (state: State) => async () => {
 const hNewFolder = (state: State) => async () => {
 	try {
 		await newFolder(state, newName(state));
-		toast(s("fileBrowser.toasts.newFolderSuccess"), {
+		toast(s("fileBrowser.toast.newFolderSuccess"), {
 			type: ToastType.Success,
 		});
 	} catch (e) {
-		toast(s("fileBrowser.toasts.newFolderError"), {
+		toast(s("fileBrowser.toast.newFolderError"), {
 			type: ToastType.Error,
 		});
 		console.warn("Failed to create new file", e);
@@ -150,7 +150,7 @@ const hUploadFiles = (state: State) => async (files: FileList) => {
 		const name = newName(state, file.name);
 		const newPath = `${state.path[0]()}/${name}`;
 		uploadFile(state, newPath, file);
-		toast(s("fileBrowser.toasts.uploadingFiles"), {
+		toast(s("fileBrowser.toast.uploadingFiles"), {
 			type: ToastType.Progress,
 		});
 	}

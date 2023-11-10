@@ -24,6 +24,12 @@
 		"beta": "beta",
 		"comment": "comment"
 	},
+	"defType": {
+		"value": "Value",
+		"tag": "Tag",
+		"type": "Type",
+		"alias": "Alias"
+	},
 	"defFinder": {
 		"name": "Name",
 		"module": "Module"
@@ -130,9 +136,16 @@
 			"copy": "Copy",
 			"cut": "Cut",
 			"paste": "Paste",
-			"delete": "Delete"
+			"delete": "Delete",
+			"save": "Save"
 		},
-		"toasts": {
+		"prompt": {
+			"resetLocal": "Are you sure to reset local data?",
+			"deleteSelected": "Delete selected files and folders?",
+			"renameSelected": "Enter new name for the file",
+			"saveConflict": "The file was modified by another program. Overwrite it?"
+		},
+		"toast": {
 			"cutSuccess": "Cutted!",
 			"cutError": "Cut failed..",
 			"copySuccess": "Copied!",
@@ -149,10 +162,15 @@
 			"uploadSuccess": "Upload success!",
 			"uploadError": "Upload failed..",
 			"uploadReadError": "Failed to read file to upload..",
-			"nothingSelected": "No file or folder selected.."
+			"nothingSelected": "No file or folder selected..",
+			"saved": "Saved successfully!",
+			"invalidKitl": "Invalid KITL file!",
+			"invalidDefCreationName": "Invalid definition creation name!",
+			"defAlreadyExists": "Definition already exists!"
 		},
 		"title": {
-			"uploading": "Uploading..."
+			"uploading": "Uploading...",
+			"invalidKitl": "Invalid KITL file. You may rename to .json and open it as a text file."
 		}
 	}
 }

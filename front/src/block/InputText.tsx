@@ -2,7 +2,7 @@ import { Component, Ref, type JSX } from "solid-js";
 
 export type TextProps = {
 	class?: string;
-	disabled?: boolean;
+	readonly?: boolean;
 	placeholder?: string;
 	value?: string;
 	ref?: Ref<HTMLInputElement>;
@@ -17,7 +17,7 @@ const InputText: Component<TextProps> = props => {
 	return (
 		<input
 			type="text"
-			disabled={props.disabled}
+			readOnly={props.readonly}
 			class={`form-control ${props.class ?? ""}`}
 			ref={props.ref}
 			placeholder={props.placeholder}

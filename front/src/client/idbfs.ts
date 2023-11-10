@@ -48,7 +48,7 @@ const dbStoreData = "data";
 
 /* Types */
 
-type StorageItemMeta = {
+export type StorageItemMeta = {
 	path: string;
 	type: StorageItemType;
 	size: number;
@@ -62,10 +62,12 @@ const notFound: StorageItemMeta = {
 	lastModified: 0,
 };
 
+/*
 type StorageItemData = {
 	path: string;
 	data: Uint8Array;
 };
+*/
 
 // Async wrapper
 
@@ -255,7 +257,7 @@ export const write = async (
 	fs: IDBFS,
 	path: string,
 	content: Uint8Array,
-): Promise<void> => {
+): Promise<StorageItemMeta> => {
 	// Find the first existing parent directory
 	const [refinedPath, chunks] = pPath(path);
 	// Check file exists
@@ -267,6 +269,8 @@ export const write = async (
 	}
 	// Write a file meta
 	await rawWrite(fs, StorageItemType.File, refinedPath, content);
+	// Return new metadata
+	return await getMeta(fs, path);
 };
 
 export const read = async (fs: IDBFS, path: string): Promise<Uint8Array> => {

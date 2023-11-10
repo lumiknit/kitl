@@ -2,6 +2,11 @@ import { IClient } from "./i-client";
 import * as idbfs from "./idbfs";
 import { StorageItem } from "./storage";
 
+const metaToItem = (meta: idbfs.StorageItemMeta): StorageItem => ({
+	...meta,
+	lastModified: new Date(meta.lastModified),
+});
+
 export default class LocalClient implements IClient {
 	constructor() {
 		idbfs.checkfs();
@@ -28,11 +33,7 @@ export default class LocalClient implements IClient {
 
 	async stat(path: string): Promise<StorageItem> {
 		const fs = await idbfs.openfs(false);
-		const meta = await idbfs.getMeta(fs, path);
-		return {
-			...meta,
-			lastModified: new Date(meta.lastModified),
-		};
+		return metaToItem(await idbfs.getMeta(fs, path));
 	}
 
 	async mkdir(path: string): Promise<void> {
@@ -42,11 +43,7 @@ export default class LocalClient implements IClient {
 
 	async list(path: string): Promise<StorageItem[]> {
 		const fs = await idbfs.openfs(false);
-		const items = await idbfs.list(fs, path);
-		return items.map(item => ({
-			...item,
-			lastModified: new Date(item.lastModified),
-		}));
+		return await idbfs.list(fs, path);
 	}
 
 	async read(path: string): Promise<Uint8Array> {
@@ -54,9 +51,9 @@ export default class LocalClient implements IClient {
 		return await idbfs.read(fs, path);
 	}
 
-	async write(path: string, data: Uint8Array): Promise<void> {
+	async write(path: string, data: Uint8Array): Promise<StorageItem> {
 		const fs = await idbfs.openfs(true);
-		await idbfs.write(fs, path, data);
+		return metaToItem(await idbfs.write(fs, path, data));
 	}
 
 	async remove(path: string): Promise<void> {

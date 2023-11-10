@@ -24,6 +24,12 @@
 		"beta": "베타",
 		"comment": "주석"
 	},
+	"defType": {
+		"value": "값",
+		"tag": "꼬리표",
+		"type": "형",
+		"alias": "별칭"
+	},
 	"defFinder": {
 		"name": "이름",
 		"module": "모듈"
@@ -111,15 +117,6 @@
 			"show": "그래도 열기",
 			"download": "다운로드"
 		},
-		"resetLocal": {
-			"confirm": "정말로 로컬 저장소를 초기화할까요?"
-		},
-		"deleteSelected": {
-			"confirm": "선택한 파일을 삭제하겠습니다."
-		},
-		"renameSelected": {
-			"prompt": "Enter new name for the file"
-		},
 		"directory": {
 			"empty": "디렉토리가 비어있습니다."
 		},
@@ -130,9 +127,16 @@
 			"copy": "복사",
 			"cut": "잘라내기",
 			"paste": "붙여넣기",
-			"delete": "삭제"
+			"delete": "삭제",
+			"save": "저장"
 		},
-		"toasts": {
+		"prompt": {
+			"resetLocal": "정말로 로컬 저장소를 초기화할까요?",
+			"deleteSelected": "선택한 파일을 삭제하겠습니다.",
+			"renameSelected": "변경할 이름을 입력하세요",
+			"saveConflict": "파일이 외부에서 수정되었어요. 덮어쓸까요?"
+		},
+		"toast": {
 			"cutSuccess": "잘라냈어요!",
 			"cutError": "잘라내지 못했어요..",
 			"copySuccess": "복사했어요!",
@@ -149,10 +153,15 @@
 			"uploadSuccess": "업로드 되었어요!",
 			"uploadError": "업로드하지 못했어요..",
 			"uploadReadError": "업로드할 파일을 읽을 수 없어요..",
-			"nothingSelected": "선택된 파일이 없어요.."
+			"nothingSelected": "선택된 파일이 없어요..",
+			"saved": "저장되었어요!",
+			"invalidKitl": "올바르지 않은 KITL 파일입니다..",
+			"invalidDefCreationName": "올바르지 않은 정의 이름이에요.",
+			"defAlreadyExists": "같은 이름의 정의가 존재합니다!"
 		},
 		"title": {
-			"uploading": "업로드 중..."
+			"uploading": "업로드 중...",
+			"invalidKitl": "올바르지 않는 KITL 파일입니다. 확장자를 .json 으로 변경한 후 내용을 확인해주세요."
 		}
 	}
 }

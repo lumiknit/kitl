@@ -88,8 +88,8 @@ $ui-border-radius: 0.25rem;
 	outline: 0.125rem solid rgba(var(--b-rgb-primary), 0.5);
 }
 
-.code-area > textarea.form-control:disabled,
-input.form-control[type="text"]:disabled {
+.code-area > textarea.form-control:read-only,
+input.form-control[type="text"]:read-only {
 	color: rgba(var(--b-rgb-fg), 1);
 	background-color: rgba(var(--b-rgb-bg), 1);
 }
@@ -102,6 +102,7 @@ input.form-control[type="text"]:disabled {
 	font-family: monospace;
 	resize: both;
 	flex: 1;
+	tab-size: 2;
 }
 
 .code-area > textarea.code-area-hidden {

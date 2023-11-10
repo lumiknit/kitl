@@ -56,7 +56,7 @@ export const newState = (path: string): State => ({
 });
 
 export const resetLocal = (state: State) => {
-	if (confirm(s("fileBrowser.resetLocal.confirm"))) {
+	if (confirm(s("fileBrowser.prompt.resetLocal"))) {
 		clients.local.format();
 		cd(state, "local:/");
 	}
@@ -146,7 +146,7 @@ export const uploadFile = (state: State, path: string, file: File) => {
 				state.uploads[1](set => {
 					set.delete(path);
 					cd(state, state.path[0]());
-					toast(`${s("fileBrowser.toasts.uploadSuccess")}: ${path}`, {
+					toast(`${s("fileBrowser.toast.uploadSuccess")}: ${path}`, {
 						type: ToastType.Success,
 					});
 					return set;
@@ -157,7 +157,7 @@ export const uploadFile = (state: State, path: string, file: File) => {
 					set.delete(path);
 					return set;
 				});
-				toast(`${s("fileBrowser.toasts.uploadError")}: ${path}`, {
+				toast(`${s("fileBrowser.toast.uploadError")}: ${path}`, {
 					type: ToastType.Error,
 				});
 			});
@@ -167,7 +167,7 @@ export const uploadFile = (state: State, path: string, file: File) => {
 			s.delete(path);
 			return s;
 		});
-		alert(`${s("fileBrowser.toasts.uploadReadError")}: ${path}`);
+		alert(`${s("fileBrowser.toast.uploadReadError")}: ${path}`);
 	};
 	reader.readAsArrayBuffer(file);
 };
@@ -251,7 +251,7 @@ export const pasteFiles = async (state: State) => {
 };
 
 export const deleteSelectedFiles = async (state: State) => {
-	if (!confirm(s("fileBrowser.deleteSelected.confirm"))) return;
+	if (!confirm(s("fileBrowser.prompt.deleteSelected"))) return;
 	for (const path of getSelectedFiles(state)) {
 		await clients.remove(path);
 	}
@@ -272,10 +272,31 @@ export const renameSelectedFiles = async (state: State) => {
 	for (const path of selected) {
 		const name = path.split("/").pop();
 		if (!name) return;
-		const p = `${s("fileBrowser.renameSelected.prompt")}:\n${path}`;
+		const p = `${s("fileBrowser.prompt.renameSelected")}:\n${path}`;
 		const newName = prompt(p, name);
 		if (!newName) return;
 		await renameFile(path, newName);
 	}
 	reload(state);
+};
+
+export const saveFile = async (state: State, contents: string) => {
+	// Check stat
+	const path = state.path[0]();
+	const oldMeta = state.storageItem[0]();
+	if (!oldMeta) return;
+	const currentMeta = await clients.stat(path);
+	if (!currentMeta) return;
+	if (
+		oldMeta.lastModified < currentMeta.lastModified ||
+		oldMeta.lastModified > currentMeta.lastModified ||
+		oldMeta.size !== currentMeta.size
+	) {
+		if (!confirm(s("fileBrowser.prompt.saveConflict"))) return;
+	}
+	// Save
+	await clients.write(path, new TextEncoder().encode(contents));
+	// Update state
+	state.storageItem[1](await clients.stat(path));
+	toast(s("fileBrowser.toast.saved"), { type: ToastType.Success });
 };

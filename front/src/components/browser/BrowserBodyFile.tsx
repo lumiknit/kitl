@@ -1,8 +1,7 @@
-import { Component, Match, Switch, createEffect, createSignal } from "solid-js";
+import { Component, Match, Switch, createSignal } from "solid-js";
 import { StateWrap, isFileLarge, loadData } from "./state";
 import {
 	FileType,
-	bufferToBase64,
 	downloadArray,
 	filename,
 	getFileType,
@@ -12,41 +11,16 @@ import { Dynamic } from "solid-js/web";
 import { Button, Color } from "@/block";
 import { clients } from "@/client";
 import Loading from "./Loading";
-import InputCode from "@/block/InputCode";
 import { s } from "@/locales";
 import { TbDownload } from "solid-icons/tb";
-
-const Image: Component<StateWrap> = props => {
-	const [b64, setB64] = createSignal("");
-	createEffect(() => {
-		const data = props.state.data[0]();
-		if (data !== undefined) {
-			bufferToBase64(data).then(setB64);
-		}
-	});
-	// Convert src to base64
-	const src = () => {
-		const data = props.state.data[0]();
-		if (data === undefined) return "";
-		return `data:image;base64,${b64()}`;
-	};
-	return <img class="browser-image" src={src()} />;
-};
-
-const Text: Component<StateWrap> = props => {
-	const text = () => {
-		const arr = props.state.data[0]();
-		if (!arr) return "<NOT LOADED>";
-		const decoder = new TextDecoder("utf-8");
-		return decoder.decode(arr);
-	};
-	return <InputCode autoresize value={text()} />;
-};
+import BrowserBodyFileImage from "./BrowserBodyFileImage";
+import BrowserBodyFileText from "./BrowserBodyFileText";
+import BrowserBodyFileKitl from "./BrowserBodyFileKitl";
 
 const components = new Map<FileType, Component<StateWrap>>([
-	[FileType.Unknown, Text],
-	[FileType.Kitl, Text],
-	[FileType.Image, Image],
+	[FileType.Unknown, BrowserBodyFileText],
+	[FileType.Kitl, BrowserBodyFileKitl],
+	[FileType.Image, BrowserBodyFileImage],
 ]);
 
 export const BrowserBodyFile: Component<StateWrap> = props => {
