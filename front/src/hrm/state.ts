@@ -202,7 +202,6 @@ export class State {
 		if (!elem) return;
 		const rect = elem.getBoundingClientRect();
 		const rootRect = this.rootRef!.getBoundingClientRect();
-		console.log(rect, rootRect);
 		let dx = 0,
 			dy = 0;
 		if (rect.right + dx > rootRect.right) {
@@ -217,7 +216,6 @@ export class State {
 		if (rect.top + dy < rootRect.top) {
 			dy = rootRect.top - rect.top;
 		}
-		console.log(dx, dy);
 		this.transform[1](t => {
 			return {
 				...t,
@@ -641,7 +639,6 @@ export class State {
 					oldSinkHandles.push(h.data);
 				}
 			}
-			console.log(oldSinkHandles);
 			const newHandles = thawed[0]().handles;
 			for (let i = 0; i < newHandles.length; i++) {
 				newHandles[i][1](h => {

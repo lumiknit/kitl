@@ -3,9 +3,13 @@ import {
 	State,
 	StateWrap,
 	cd,
+	copySelectedFiles,
+	cutSelectedFiles,
+	deleteSelectedFiles,
 	loadData,
 	newFile,
 	newFolder,
+	pasteFiles,
 	reload,
 	setFileSelected,
 	uploadFile,
@@ -33,85 +37,52 @@ import { bytesToString } from "@/common/size";
 import InputFile from "@/block/InputFile";
 import { s } from "@/locales";
 import Checkbox from "@/block/Checkbox";
+import { ToastType, toast } from "@/block/ToastContainer";
 
-const Header: Component<StateWrap> = props => {
-	return (
-		<InputGroup class="my-1">
-			<Button
-				color={Color.secondary}
-				onClick={props.state.onClose}
-				class="flex-1">
-				<TbCut />
-			</Button>
-			<Button
-				color={Color.secondary}
-				onClick={props.state.onClose}
-				class="flex-1">
-				<TbCopy />
-			</Button>
-			<Button
-				color={Color.secondary}
-				onClick={props.state.onClose}
-				class="flex-1">
-				<TbClipboard />
-			</Button>
-			<Button
-				color={Color.danger}
-				onClick={props.state.onClose}
-				class="flex-1">
-				<TbTrash />
-			</Button>
-		</InputGroup>
-	);
+// Helpers
+
+const hCopyFiles = (state: State) => () => {
+	copySelectedFiles(state);
+	toast(s("fileBrowser.toasts.copySuccess"), { type: ToastType.Success });
+	reload(state);
 };
 
-type BrowserBodyDirectoryFooterProps = {
-	state: State;
-	newName: (d?: string) => string;
+const hCutFiles = (state: State) => () => {
+	cutSelectedFiles(state);
+	toast(s("fileBrowser.toasts.cutSuccess"), { type: ToastType.Success });
+	reload(state);
 };
 
-const Footer: Component<BrowserBodyDirectoryFooterProps> = props => {
-	return (
-		<>
-			<InputGroup class="my-1">
-				<Button
-					color={Color.primary}
-					onClick={() => {
-						newFolder(props.state, props.newName());
-						reload(props.state);
-					}}
-					class="flex-1">
-					<TbFolderPlus />
-					&nbsp; {s("fileBrowser.folder")}
-				</Button>
-				<Button
-					color={Color.secondary}
-					onClick={() => {
-						newFile(props.state, props.newName());
-						reload(props.state);
-					}}
-					class="flex-1">
-					<TbFilePlus />
-					&nbsp; {s("fileBrowser.file")}
-				</Button>
-			</InputGroup>
-			<InputFile
-				placeholder={s("fileBrowser.uploadPlaceholder")}
-				onFiles={files => {
-					for (const file of files) {
-						if (file === undefined) return;
-						const name = props.newName(file.name);
-						const newPath = `${props.state.path[0]()}/${name}`;
-						uploadFile(props.state, newPath, file);
-					}
-				}}
-			/>
-		</>
-	);
+const hPasteFiles = (state: State) => async () => {
+	try {
+		throw "A";
+		await pasteFiles(state);
+		toast(s("fileBrowser.toasts.pasteSuccess"), {
+			type: ToastType.Success,
+		});
+	} catch {
+		toast(s("fileBrowser.toasts.pasteError"), { type: ToastType.Error });
+		return;
+	}
+	reload(state);
 };
 
-const newName = (ls: StorageItem[], d?: string) => {
-	if (d === undefined) d = "new";
+const hDeleteFiles = (state: State) => async () => {
+	try {
+		await deleteSelectedFiles(state);
+		toast(s("fileBrowser.toasts.deleteSuccess"), {
+			type: ToastType.Success,
+		});
+	} catch {
+		toast(s("fileBrowser.toasts.deleteError"), { type: ToastType.Error });
+	}
+	reload(state);
+};
+
+const newName = (state: State, d?: string): string => {
+	d = d ?? "new";
+	const ls = state.ls[0]();
+	if (ls === undefined) return d;
 	// Generate a new name
 	const names = new Set(
 		ls.map(item => {
@@ -125,6 +96,110 @@ const newName = (ls: StorageItem[], d?: string) => {
 		name = addIndexToFilename(d, i++);
 	}
 	return name;
+};
+
+const hNewFile = (state: State) => async () => {
+	try {
+		await newFile(state, newName(state));
+		toast(s("fileBrowser.toasts.newFileSuccess"), {
+			type: ToastType.Success,
+		});
+	} catch (e) {
+		toast(s("fileBrowser.toasts.newFileError"), { type: ToastType.Error });
+		console.warn("Failed to create new file", e);
+	}
+	reload(state);
+};
+
+const hNewFolder = (state: State) => async () => {
+	try {
+		await newFolder(state, newName(state));
+		toast(s("fileBrowser.toasts.newFolderSuccess"), {
+			type: ToastType.Success,
+		});
+	} catch (e) {
+		toast(s("fileBrowser.toasts.newFolderError"), {
+			type: ToastType.Error,
+		});
+		console.warn("Failed to create new file", e);
+	}
+	reload(state);
+};
+
+const hUploadFiles = (state: State) => async (files: FileList) => {
+	for (const file of files) {
+		if (file === undefined) return;
+		const name = newName(state, file.name);
+		const newPath = `${state.path[0]()}/${name}`;
+		uploadFile(state, newPath, file);
+		toast(s("fileBrowser.toasts.uploadingFiles"), {
+			type: ToastType.Progress,
+		});
+	}
+};
+
+// Components
+
+const Header: Component<StateWrap> = props => {
+	return (
+		<InputGroup class="my-1">
+			<Button
+				color={Color.secondary}
+				onClick={hCutFiles(props.state)}
+				class="flex-1">
+				<TbCut />
+			</Button>
+			<Button
+				color={Color.secondary}
+				onClick={hCopyFiles(props.state)}
+				class="flex-1">
+				<TbCopy />
+			</Button>
+			<Button
+				color={Color.secondary}
+				onClick={hPasteFiles(props.state)}
+				class="flex-1">
+				<TbClipboard />
+			</Button>
+			<Button
+				color={Color.danger}
+				onClick={hDeleteFiles(props.state)}
+				class="flex-1">
+				<TbTrash />
+			</Button>
+		</InputGroup>
+	);
+};
+
+type BrowserBodyDirectoryFooterProps = {
+	state: State;
+};
+
+const Footer: Component<BrowserBodyDirectoryFooterProps> = props => {
+	return (
+		<>
+			<InputGroup class="my-1">
+				<Button
+					color={Color.primary}
+					onClick={hNewFolder(props.state)}
+					class="flex-1">
+					<TbFolderPlus />
+					&nbsp; {s("fileBrowser.folder")}
+				</Button>
+				<Button
+					color={Color.secondary}
+					onClick={hNewFile(props.state)}
+					class="flex-1">
+					<TbFilePlus />
+					&nbsp; {s("fileBrowser.file")}
+				</Button>
+			</InputGroup>
+			<InputFile
+				placeholder={s("fileBrowser.uploadPlaceholder")}
+				onFiles={hUploadFiles(props.state)}
+			/>
+		</>
+	);
 };
 
 type ItemProps = {
@@ -216,10 +291,7 @@ const BrowserBodyDirectory: Component<StateWrap> = props => {
 					</tbody>
 				</table>
 			</Show>
-			<Footer
-				state={props.state}
-				newName={d => newName(props.state.ls[0]()!, d)}
-			/>
+			<Footer state={props.state} />
 		</>
 	);
 };

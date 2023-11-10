@@ -22,12 +22,13 @@ export default class LocalClient implements IClient {
 	}
 
 	async format(): Promise<void> {
-		return await (await idbfs.openfs(true)).format();
+		const fs = await idbfs.openfs(true);
+		return await idbfs.format(fs);
 	}
 
 	async stat(path: string): Promise<StorageItem> {
 		const fs = await idbfs.openfs(false);
-		const meta = await fs.getMeta(path);
+		const meta = await idbfs.getMeta(fs, path);
 		return {
 			...meta,
 			lastModified: new Date(meta.lastModified),
@@ -36,12 +37,12 @@ export default class LocalClient implements IClient {
 
 	async mkdir(path: string): Promise<void> {
 		const fs = await idbfs.openfs(true);
-		await fs.mkdir(path);
+		await idbfs.mkdir(fs, path);
 	}
 
 	async list(path: string): Promise<StorageItem[]> {
 		const fs = await idbfs.openfs(false);
-		const items = await fs.list(path);
+		const items = await idbfs.list(fs, path);
 		return items.map(item => ({
 			...item,
 			lastModified: new Date(item.lastModified),
@@ -50,26 +51,26 @@ export default class LocalClient implements IClient {
 
 	async read(path: string): Promise<Uint8Array> {
 		const fs = await idbfs.openfs(false);
-		return await fs.read(path);
+		return await idbfs.read(fs, path);
 	}
 
 	async write(path: string, data: Uint8Array): Promise<void> {
 		const fs = await idbfs.openfs(true);
-		await fs.write(path, data);
+		await idbfs.write(fs, path, data);
 	}
 
 	async remove(path: string): Promise<void> {
 		const fs = await idbfs.openfs(true);
-		await fs.remove(path);
+		await idbfs.remove(fs, path);
 	}
 
 	async move(from: string, to: string): Promise<void> {
 		const fs = await idbfs.openfs(true);
-		await fs.move(from, to);
+		await idbfs.move(fs, from, to);
 	}
 
 	async copy(from: string, to: string): Promise<void> {
 		const fs = await idbfs.openfs(true);
-		await fs.copy(from, to);
+		await idbfs.copy(fs, from, to);
 	}
 }

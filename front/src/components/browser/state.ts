@@ -84,7 +84,6 @@ export const loadData = async (state: State) => {
 			state.ls[1](loaded);
 			state.data[1](new Uint8Array());
 		});
-		console.log("A");
 		return;
 	}
 	const data = await clients.read(path());
@@ -138,27 +137,29 @@ export const newFile = async (state: State, name: string) => {
 };
 
 export const uploadFile = (state: State, path: string, file: File) => {
-	toast("Uploading: " + path);
 	state.uploads[1](s => s.add(path));
 	const reader = new FileReader();
 	reader.onload = () => {
 		clients
 			.write(path, new Uint8Array(reader.result as ArrayBuffer))
 			.then(() => {
-				state.uploads[1](s => {
-					s.delete(path);
+				state.uploads[1](set => {
+					set.delete(path);
 					cd(state, state.path[0]());
-					toast("Uploaded!: " + path, { type: ToastType.Success });
-					return s;
+					toast(`${s("fileBrowser.toasts.uploadSuccess")}: ${path}`, {
+						type: ToastType.Success,
+					});
+					return set;
 				});
 			})
 			.catch(() => {
-				state.uploads[1](s => {
-					s.delete(path);
-
-					return s;
+				state.uploads[1](set => {
+					set.delete(path);
+					return set;
 				});
-				toast("Failed to upload: " + path, { type: ToastType.Error });
+				toast(`${s("fileBrowser.toasts.uploadError")}: ${path}`, {
+					type: ToastType.Error,
+				});
 			});
 	};
 	reader.onerror = () => {
@@ -166,7 +167,7 @@ export const uploadFile = (state: State, path: string, file: File) => {
 			s.delete(path);
 			return s;
 		});
-		alert("Failed to read file: " + path + "");
+		alert(`${s("fileBrowser.toasts.uploadReadError")}: ${path}`);
 	};
 	reader.readAsArrayBuffer(file);
 };
@@ -231,7 +232,6 @@ export const pasteFiles = async (state: State) => {
 		// Reset state
 		state.copyState[1](emptyCopyState());
 	}
-	reload(state);
 };
 
 export const deleteSelectedFiles = async (state: State) => {
@@ -249,5 +249,4 @@ export const renameFile = async (
 ) => {
 	// Use move to rename
 	await clients.move(path, path + "/../" + newName);
-	reload(state);
 };

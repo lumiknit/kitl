@@ -31,7 +31,6 @@ export default class Clients {
 
 	async list(path: string): Promise<StorageItem[]> {
 		const [client, path2] = this.parsePath(path);
-		console.log("list", path2);
 		return await client.list(path2);
 	}
 

@@ -5,7 +5,7 @@ export type Path = string[];
 
 export const splitPath = (path: PathString): Path => {
 	const splitted = path.split(/[\\/]+/),
-		isRoot = splitted[0].length <= 0,
+		isRoot = splitted[0].length < 1,
 		paths = [];
 	for (const c of splitted) {
 		switch (c) {
@@ -26,14 +26,14 @@ export const splitPath = (path: PathString): Path => {
 };
 
 export const joinPath = (paths: Path): PathString =>
-	paths.length <= 0
+	paths.length < 1
 		? "."
-		: paths.length <= 1 && paths[0].length <= 0
+		: paths.length <= 1 && paths[0].length < 1
 		? "/"
 		: paths.join("/");
 
 export const isAbsolutePath = (path: Path): boolean =>
-	path.length > 0 && path[0].length <= 0;
+	path.length > 0 && path[0].length < 1;
 
 export const refinePath = (path: PathString): [PathString, Path] => {
 	const chunks = splitPath(path);
@@ -44,11 +44,8 @@ export const refinePath = (path: PathString): [PathString, Path] => {
 
 export const splitHostPath = (hostPath: string): [string, PathString] => {
 	const sep = hostPath.indexOf(":");
-	if (sep === -1) {
-		return ["local", hostPath];
-	} else {
-		return [hostPath.slice(0, sep), hostPath.slice(sep + 1)];
-	}
+	if (sep < 0) return ["local", hostPath];
+	return [hostPath.slice(0, sep), hostPath.slice(sep + 1)];
 };
 
 export const refineHostPath = (
@@ -67,19 +64,15 @@ export const filename = (path: PathString): string => {
 };
 
 export const splitFilenameExt = (filename: string): [string, string] => {
-	const sep = filename.lastIndexOf(".");
-	if (sep === -1) {
-		return [filename, ""];
-	}
+	let sep = filename.lastIndexOf(".");
+	if (sep < 0) sep = filename.length;
 	return [filename.slice(0, sep), filename.slice(sep + 1)];
 };
 
 export const addIndexToFilename = (filename: string, index: number): string => {
-	if (index <= 0) return filename;
-	const idx = filename.indexOf(".");
-	if (idx === -1) {
-		return `${filename}-${index}`;
-	}
+	if (index < 1) return filename;
+	let idx = filename.indexOf(".");
+	if (idx < 0) idx = filename.length;
 	return `${filename.slice(0, idx)}-${index}${filename.slice(idx)}`;
 };
 

@@ -36,9 +36,6 @@ const HrmConnectingEdge: Component<HrmConnectingEdgeProps> = props => {
 				height: `${rect.h}px`,
 			};
 	};
-	createEffect(() => {
-		console.log(nodeRect());
-	});
 	return (
 		<>
 			<svg class="hrm-edges no-user-select no-pointer-events">

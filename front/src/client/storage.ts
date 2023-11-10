@@ -5,6 +5,12 @@ export enum StorageItemType {
 	Directory,
 }
 
+export const STORAGE_ITEM_TYPE_NAMES = {
+	[StorageItemType.NotFound]: "NotFound",
+	[StorageItemType.File]: "File",
+	[StorageItemType.Directory]: "Directory",
+};
+
 export type StorageItem = {
 	type: StorageItemType;
 	path: string;

@@ -6,9 +6,10 @@ export enum ToastType {
 	Success = 0,
 	Warning = 1,
 	Error = 2,
+	Progress = 3,
 }
 
-const toastIcons = ["✅", "⚠️", "🚫"];
+const toastIcons = ["✅", "⚠️", "🚫", "⏳"];
 
 export type ToastOptions = {
 	type?: ToastType;
@@ -86,7 +87,9 @@ const ToastContainer: Component<ToastContainerProps> = props => {
 			<For each={state().toasts}>
 				{item => (
 					<div class={`toast ${item.class}`}>
-						{item.type ? toastIcons[item.type] : ""}
+						{item.type !== undefined
+							? `${toastIcons[item.type]} `
+							: ""}
 						{item.message}
 					</div>
 				)}

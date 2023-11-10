@@ -108,7 +108,7 @@
 		"uploadPlaceholder": "Upload (Click or Drag&Drop)",
 		"fileTooLarge": {
 			"message": "File is too large!",
-			"show": "Show",
+			"show": "Show Anyway",
 			"download": "Download"
 		},
 		"resetLocal": {
@@ -119,6 +119,24 @@
 		},
 		"menu": {
 			"formatLocalStorage": "Format Local Storage"
+		},
+		"toasts": {
+			"cutSuccess": "Cutted!",
+			"cutError": "Cut failed..",
+			"copySuccess": "Copied!",
+			"copyError": "Copy failed..",
+			"pasteSuccess": "Pasted!",
+			"pasteError": "Paste failed..",
+			"deleteSuccess": "Deleted!",
+			"deleteError": "Delete failed..",
+			"newFileSuccess": "New file created",
+			"newFileError": "New file creation failed..",
+			"newFolder": "New folder created",
+			"newFolderError": "New folder creation failed..",
+			"uploadingFiles": "Uploading files...",
+			"uploadSuccess": "Upload success!",
+			"uploadError": "Upload failed..",
+			"uploadReadError": "Failed to read file to upload.."
 		},
 		"title": {
 			"uploading": "Uploading..."
