@@ -7,6 +7,7 @@ import {
 	newFile,
 	newFolder,
 	reload,
+	setFileSelected,
 	uploadFile,
 } from "./state";
 import { StorageItem, StorageItemType } from "@/client/storage";
@@ -150,7 +151,11 @@ const Item = (props: ItemProps) => {
 	return (
 		<tr>
 			<td>
-				<Checkbox />
+				<Checkbox
+					onChange={e => {
+						setFileSelected(props.state, props.meta.path, e);
+					}}
+				/>
 			</td>
 			<td class="word-break-all">
 				<a

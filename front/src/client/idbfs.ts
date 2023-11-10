@@ -312,6 +312,9 @@ export class IDBFS {
 	public async copy(oldPath: string, newPath: string): Promise<void> {
 		const [op] = pPath(oldPath);
 		const [np] = pPath(newPath);
+		if (np.startsWith(op)) {
+			throw new Error("Cannot copy to a subdirectory");
+		}
 		// Get all paths to be moved
 		const lst = await this.meta.getAll();
 		const paths = lst
