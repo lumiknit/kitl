@@ -1,5 +1,5 @@
 import { Component, Match, Switch, createSignal } from "solid-js";
-import { Box, Getter, Updater } from "@/common";
+import { Getter, Updater } from "@/common";
 import GraphToolsModal from "./GraphToolsModal";
 import { State } from "@/hrm";
 import BrowserModal from "../browser/BrowserModal";
@@ -51,26 +51,21 @@ export class ModalActions {
 }
 
 type ModalsProps = {
-	actionsBox: Box<ModalActions>;
-	stateBox: Box<State>;
+	actions: ModalActions;
+	state: State;
 };
 
 const Modals: Component<ModalsProps> = props => {
-	const actions = new ModalActions();
-	if (props.actionsBox) {
-		props.actionsBox[0] = actions;
-	}
-
 	return (
 		<Switch>
-			<Match when={actions.state().type === ModalType.GraphTools}>
+			<Match when={props.actions.state().type === ModalType.GraphTools}>
 				<GraphToolsModal
-					onClose={() => actions.close()}
-					stateBox={props.stateBox}
+					onClose={() => props.actions.close()}
+					state={props.state}
 				/>
 			</Match>
-			<Match when={actions.state().type === ModalType.Browser}>
-				<BrowserModal onClose={() => actions.close()} />
+			<Match when={props.actions.state().type === ModalType.Browser}>
+				<BrowserModal onClose={() => props.actions.close()} />
 			</Match>
 		</Switch>
 	);

@@ -21,7 +21,7 @@ const InputText: Component<TextProps> = props => {
 			class={`form-control ${props.class ?? ""}`}
 			ref={props.ref}
 			placeholder={props.placeholder}
-			value={props.value}
+			value={props.value ?? ""}
 			onClick={props.onClick}
 			onChange={props.onChange}
 			onKeyDown={props.onKeyDown}

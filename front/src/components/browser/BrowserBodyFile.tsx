@@ -3,7 +3,7 @@ import { StateWrap, isFileLarge, loadData } from "./state";
 import {
 	FileType,
 	downloadArray,
-	filename,
+	extractFilename,
 	getFileType,
 	splitFilenameExt,
 } from "@/common";
@@ -33,9 +33,10 @@ export const BrowserBodyFile: Component<StateWrap> = props => {
 		setShow(true);
 		loadData(props.state);
 	};
-	const extension = () =>
-		splitFilenameExt(filename(props.state.path[0]()))[1];
-	const type = () => getFileType(extension());
+	const path = () => props.state.path[0]();
+	const filename = () => extractFilename(path());
+	const extension = () => splitFilenameExt(filename())[1];
+	const component = () => components.get(getFileType(extension()))!;
 	return (
 		<Switch>
 			<Match when={!show()}>
@@ -49,10 +50,8 @@ export const BrowserBodyFile: Component<StateWrap> = props => {
 					<Button
 						color={Color.secondary}
 						onClick={async () => {
-							const path = props.state.storageItem[0]()!.path;
-							const name = filename(path);
-							const array = await clients.read(path);
-							downloadArray(name, array);
+							const array = await clients.read(path());
+							downloadArray(filename(), array);
 						}}>
 						<TbDownload />
 						&nbsp;
@@ -60,14 +59,11 @@ export const BrowserBodyFile: Component<StateWrap> = props => {
 					</Button>
 				</div>
 			</Match>
-			<Match when={props.state.data[0]() === undefined}>
+			<Match when={!props.state.data[0]()}>
 				<Loading>Loading data...</Loading>
 			</Match>
 			<Match when={true}>
-				<Dynamic
-					component={components.get(type())}
-					state={props.state}
-				/>
+				<Dynamic component={component()} state={props.state} />
 			</Match>
 		</Switch>
 	);

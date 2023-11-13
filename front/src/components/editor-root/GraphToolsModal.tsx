@@ -1,6 +1,5 @@
 import { Button, Color, InputGroup, InputText } from "@/block";
 import InputLabel from "@/block/InputLabel";
-import { Box } from "@/common";
 import Modal from "@/components/modal/Modal";
 import { State } from "@/hrm";
 import { s } from "@/locales";
@@ -9,7 +8,7 @@ import { Component } from "solid-js";
 
 type GraphToolsModalProps = {
 	onClose: () => void;
-	stateBox: Box<State>;
+	state: State;
 };
 
 const GraphToolsModal: Component<GraphToolsModalProps> = props => {

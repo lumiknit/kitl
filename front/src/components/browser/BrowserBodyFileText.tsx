@@ -1,11 +1,19 @@
 import InputCode from "@/block/InputCode";
-import { Component } from "solid-js";
+import { Component, createSignal } from "solid-js";
 import { StateWrap, saveFile } from "./state";
 import { Button, Color, InputGroup } from "@/block";
 import { TbUpload } from "solid-icons/tb";
 import { s } from "@/locales";
 
 const BrowserBodyFileText: Component<StateWrap> = props => {
+	const [modified, setModified] = createSignal<boolean>(false);
+	const markModified = () => setModified(true);
+	const save = () => {
+		if (modified()) {
+			saveFile(props.state, ref!.value);
+			setModified(false);
+		}
+	};
 	let ref: HTMLTextAreaElement | undefined;
 
 	const text = () => {
@@ -19,8 +27,9 @@ const BrowserBodyFileText: Component<StateWrap> = props => {
 		return (
 			<InputGroup class="my-1">
 				<Button
-					color={Color.primary}
-					onClick={() => saveFile(props.state, ref!.value)}
+					color={modified() ? Color.primary : Color.secondary}
+					onClick={save}
+					disabled={!modified()}
 					class="flex-1">
 					<TbUpload />
 					&nbsp;{s("fileBrowser.menu.save")}
@@ -32,7 +41,13 @@ const BrowserBodyFileText: Component<StateWrap> = props => {
 	return (
 		<>
 			<Header />
-			<InputCode ref={ref} autoresize value={text()} />
+			<InputCode
+				ref={ref}
+				autoresize
+				value={text()}
+				onChange={markModified}
+				onInput={markModified}
+			/>
 		</>
 	);
 };

@@ -22,6 +22,14 @@ const globalToastCreation: Wrap<ToastCreationFn> = [ef];
 export const toast = (message: string, options?: ToastOptions) => {
 	globalToastCreation[0](message, options);
 };
+export const toastSuccess = (message: string) =>
+	toast(message, { type: ToastType.Success });
+export const toastWarning = (message: string) =>
+	toast(message, { type: ToastType.Warning });
+export const toastError = (message: string) =>
+	toast(message, { type: ToastType.Error });
+export const toastProgress = (message: string) =>
+	toast(message, { type: ToastType.Progress });
 
 type ToastContainerProps = {
 	creation?: Wrap<ToastCreationFn>;

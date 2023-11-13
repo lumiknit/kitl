@@ -25,15 +25,15 @@ $color-names: (fg, bg, primary, secondary, success, danger, warning);
 		border-color: rgba(var(--b-rgb-#{$color}), 1);
 	}
 
-	.btn.btn-#{$color}:hover,
-	.btn.btn-ol-#{$color}:hover {
+	.btn.btn-#{$color}:not(:disabled):hover,
+	.btn.btn-ol-#{$color}:not(:disabled):hover {
 		color: rgba(var(--b-rgb-#{$color}-text), 1);
 		background-color: rgba(var(--b-rgb-#{$color}-light), 1);
 		border-color: rgba(var(--b-rgb-#{$color}-light), 1);
 	}
 
-	.btn.btn-#{$color}:active,
-	.btn.btn-ol-#{$color}:active {
+	.btn.btn-#{$color}:not(:disabled):active,
+	.btn.btn-ol-#{$color}:not(:disabled):active {
 		color: rgba(var(--b-rgb-#{$color}-text), 1);
 		background-color: rgba(var(--b-rgb-#{$color}-dark), 1);
 		border-color: rgba(var(--b-rgb-#{$color}-dark), 1);

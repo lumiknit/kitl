@@ -1,7 +1,7 @@
-import { Component, For, Show, createSignal } from "solid-js";
-import { State, StateWrap, saveFile } from "./state";
-import { s } from "@/locales";
-import { ToastType, toast } from "@/block/ToastContainer";
+import { Button, Color, InputGroup, InputText } from "@/block";
+import InputLabel from "@/block/InputLabel";
+import { toastError } from "@/block/ToastContainer";
+import { Update, Updater, VWrap } from "@/common";
 import {
 	DEF_TYPES,
 	DefAlias,
@@ -13,9 +13,8 @@ import {
 	loadRoot,
 	newRoot,
 } from "@/common/kitl";
-import { Dynamic } from "solid-js/web";
-import { VWrap } from "@/common";
-import { Button, Color, InputGroup, InputText } from "@/block";
+import { normalizedWhitenName } from "@/common/name";
+import { s } from "@/locales";
 import {
 	TbArrowRight,
 	TbCaretUp,
@@ -25,8 +24,9 @@ import {
 	TbSquarePlus,
 	TbTrash,
 } from "solid-icons/tb";
-import InputLabel from "@/block/InputLabel";
-import { normalizedWhitenName } from "@/common/name";
+import { Component, For, JSX, Show, batch, createSignal } from "solid-js";
+import { Dynamic } from "solid-js/web";
+import { State, StateWrap, saveFile } from "./state";
 
 const DEF_TYPE_COLORS: { [k: string]: Color } = {
 	value: Color.primary,
@@ -41,6 +41,40 @@ type KitlContents = {
 	root: VWrap<Root>;
 };
 
+const setDefFn = (name: string, def: Definition) => (root: Root) => ({
+	...root,
+	defs: {
+		...root.defs,
+		[name]: def,
+	},
+});
+const removeDefFn = (name: string) => (root: Root) => {
+	const newDefs = { ...root.defs };
+	delete newDefs[name];
+	return {
+		...root,
+		defs: newDefs,
+	};
+};
+const updateDef = (contents: KitlContents, fns: Update<Root>[]) =>
+	batch(() => {
+		fns.forEach(fn => contents.root[1](fn));
+		contents.modified[1](true);
+	});
+
+const verifyDefName = (contents: KitlContents, name: string): string => {
+	name = normalizedWhitenName(name);
+	if (!name) {
+		toastError(s("fileBrowser.toast.invalidDefCreationName"));
+		throw new Error("Invalid name");
+	}
+	if (contents.root[0]().defs[name]) {
+		toastError(s("fileBrowser.toast.defAlreadyExists"));
+		throw new Error("Already exists");
+	}
+	return name;
+};
+
 const loadKitlContents = (state: State): KitlContents => {
 	let errorMessage = "";
 	let root = newRoot({});
@@ -50,9 +84,7 @@ const loadKitlContents = (state: State): KitlContents => {
 			const j = JSON.parse(new TextDecoder("utf-8").decode(data));
 			root = loadRoot(j);
 		} catch {
-			toast(s("fileBrowser.toast.invalidKitl"), {
-				type: ToastType.Error,
-			});
+			toastError(s("fileBrowser.toast.invalidKitl"));
 			errorMessage = s("fileBrowser.toast.invalidKitl");
 		}
 	}
@@ -69,10 +101,6 @@ const loadKitlContents = (state: State): KitlContents => {
 	};
 };
 
-const Warning: Component<KitlContents> = props => {
-	return <Show when={props.errorMessage}>{props.errorMessage[0]()}</Show>;
-};
-
 type ItemProps = {
 	state: State;
 	contents: KitlContents;
@@ -84,260 +112,183 @@ const DefItemLine: Component<{
 	type: string;
 	name: string;
 	contents: KitlContents;
-	openState: () => boolean;
-	toggle: () => void;
 	label?: string;
+	children?: JSX.Element;
 }> = props => {
+	const [open, setOpen] = createSignal(false);
 	let inputRef: HTMLInputElement | undefined;
-	const editingName = createSignal(false);
-	const remove = () => {
-		props.contents.root[1]((root: Root) => {
-			const newDefs = { ...root.defs };
-			delete newDefs[props.name];
-			return {
-				...root,
-				defs: newDefs,
-			};
-		});
-	};
+	const [editingName, setEditingName] = createSignal(false);
+	const remove = () => updateDef(props.contents, [removeDefFn(props.name)]);
 	const applyRename = () => {
-		const newName = normalizedWhitenName(inputRef?.value ?? "");
-		console.log(newName);
-		if (newName === props.name) {
-			editingName[1](false);
-			return;
+		const newName = verifyDefName(props.contents, inputRef?.value ?? "");
+		if (newName !== props.name) {
+			updateDef(props.contents, [
+				setDefFn(newName, props.contents.root[0]().defs[props.name]),
+				removeDefFn(props.name),
+			]);
 		}
-		if (!newName) {
-			toast(s("fileBrowser.toast.invalidDefCreationName"), {
-				type: ToastType.Error,
-			});
-			return;
-		}
-		if (props.contents.root[0]().defs[newName]) {
-			toast(s("fileBrowser.toast.defAlreadyExists"), {
-				type: ToastType.Error,
-			});
-			return;
-		}
-		props.contents.root[1]((root: Root) => {
-			const newDefs = { ...root.defs };
-			newDefs[newName] = newDefs[props.name];
-			delete newDefs[props.name];
-			return {
-				...root,
-				defs: newDefs,
-			};
-		});
-		editingName[1](false);
+		setEditingName(false);
 	};
 
 	return (
-		<InputGroup class="my-1">
-			<InputLabel color={DEF_TYPE_COLORS[props.type]}>
-				{s(`defType.${props.type}`)}
-			</InputLabel>
-			<InputText
-				class="flex-1"
-				value={props.name}
-				readonly={!editingName[0]()}
-				ref={inputRef}
-				onKeyDown={e => {
-					if (e.key === "Enter") {
-						applyRename();
-					}
-				}}
-				onClick={() => {
-					editingName[1](true);
-				}}
-			/>
-			<Show when={props.label !== undefined}>
-				<InputLabel color={Color.secondary}>{props.label}</InputLabel>
-			</Show>
-			<Show
-				when={editingName[0]()}
-				fallback={
-					<Button color={Color.danger} onClick={remove}>
-						<TbTrash />
-					</Button>
-				}>
-				<Button color={Color.primary} onClick={applyRename}>
-					<TbCheckbox />
-				</Button>
-			</Show>
-			<Button color={Color.secondary} onClick={props.toggle}>
-				<Show when={props.openState()} fallback={<TbEdit />}>
-					<TbCaretUp />
+		<>
+			<InputGroup class="my-1">
+				<InputLabel color={DEF_TYPE_COLORS[props.type]}>
+					{s(`defType.${props.type}`)}
+				</InputLabel>
+				<InputText
+					class="flex-1"
+					value={props.name}
+					readonly={!editingName()}
+					ref={inputRef}
+					onKeyDown={e => {
+						if (e.key === "Enter") {
+							applyRename();
+						}
+					}}
+					onClick={() => {
+						setEditingName(true);
+					}}
+				/>
+				<Show when={props.label !== undefined}>
+					<InputLabel color={Color.secondary}>
+						{props.label}
+					</InputLabel>
 				</Show>
-			</Button>
-		</InputGroup>
+				<Show
+					when={editingName()}
+					fallback={
+						<Button color={Color.danger} onClick={remove}>
+							<TbTrash />
+						</Button>
+					}>
+					<Button color={Color.primary} onClick={applyRename}>
+						<TbCheckbox />
+					</Button>
+				</Show>
+				<Button
+					color={Color.secondary}
+					onClick={() => setOpen(b => !b)}>
+					<Show when={open()} fallback={<TbEdit />}>
+						<TbCaretUp />
+					</Show>
+				</Button>
+			</InputGroup>
+			<Show when={open()}>{props.children}</Show>
+		</>
 	);
 };
 
 const DefValueItem: Component<ItemProps> = props => {
 	return (
-		<>
-			<DefItemLine
-				type="value"
-				name={props.name}
-				contents={props.contents}
-				openState={() => false}
-				toggle={() => {}}
-			/>
-		</>
+		<DefItemLine type="value" name={props.name} contents={props.contents} />
 	);
 };
+
+const splitInputValues = (inputRef: HTMLInputElement | undefined): string[] =>
+	(inputRef?.value ?? "")
+		.split(",")
+		.map(normalizedWhitenName)
+		.filter(x => x);
 
 const DefTagItem: Component<ItemProps> = props => {
 	const def = (): DefTag => props.def as any;
 	let inputRef: HTMLInputElement | undefined;
-	const [open, setOpen] = createSignal(false);
 	const apply = () => {
-		const v = inputRef?.value ?? "";
-		const newElems = v
-			.split(",")
-			.map(normalizedWhitenName)
-			.filter(x => x);
-		props.contents.root[1]((root: Root) => {
-			const newDefs = { ...root.defs };
-			newDefs[props.name] = {
+		const newElems = splitInputValues(inputRef);
+		updateDef(props.contents, [
+			setDefFn(props.name, {
 				type: "tag",
 				elems: newElems,
-			};
-			return {
-				...root,
-				defs: newDefs,
-			};
-		});
+			}),
+		]);
 	};
 	return (
-		<>
-			<DefItemLine
-				type="tag"
-				name={props.name}
-				contents={props.contents}
-				openState={open}
-				toggle={() => setOpen(o => !o)}
-				label={"" + def().elems.length}
-			/>
-			<Show when={open()}>
-				<InputGroup class="ml-3 my-1">
-					<InputLabel color={DEF_TYPE_COLORS[props.def.type]}>
-						<TbArrowRight />
-					</InputLabel>
-					<InputText
-						class="flex-1"
-						value={def().elems.join(",")}
-						ref={inputRef}
-					/>
-					<Button color={Color.primary} onClick={apply}>
-						<TbCheckbox />
-					</Button>
-				</InputGroup>
-			</Show>
-		</>
+		<DefItemLine
+			type="tag"
+			name={props.name}
+			contents={props.contents}
+			label={"" + def().elems.length}>
+			<InputGroup class="ml-3 my-1">
+				<InputLabel color={DEF_TYPE_COLORS[props.def.type]}>
+					<TbArrowRight />
+				</InputLabel>
+				<InputText
+					class="flex-1"
+					value={def().elems.join(",")}
+					ref={inputRef}
+				/>
+				<Button color={Color.primary} onClick={apply}>
+					<TbCheckbox />
+				</Button>
+			</InputGroup>
+		</DefItemLine>
 	);
 };
 
 const DefTypeItem: Component<ItemProps> = props => {
 	const def = (): DefType => props.def as any;
 	let inputRef: HTMLInputElement | undefined;
-	const [open, setOpen] = createSignal(false);
 	const apply = () => {
-		const v = inputRef?.value ?? "";
-		const newUnions = v
-			.split(",")
-			.map(normalizedWhitenName)
-			.filter(x => x);
-		props.contents.root[1]((root: Root) => {
-			const newDefs = { ...root.defs };
-			newDefs[props.name] = {
+		const newUnions = splitInputValues(inputRef);
+		updateDef(props.contents, [
+			setDefFn(props.name, {
 				type: "type",
 				unions: newUnions,
-			};
-			return {
-				...root,
-				defs: newDefs,
-			};
-		});
+			}),
+		]);
 	};
 	return (
-		<>
-			<DefItemLine
-				type="type"
-				name={props.name}
-				contents={props.contents}
-				openState={open}
-				toggle={() => setOpen(o => !o)}
-				label={"" + def().unions.length}
-			/>
-			<Show when={open()}>
-				<InputGroup class="ml-3 my-1">
-					<InputLabel color={DEF_TYPE_COLORS[props.def.type]}>
-						<TbArrowRight />
-					</InputLabel>
-					<InputText
-						class="flex-1"
-						value={def().unions.join(",")}
-						ref={inputRef}
-					/>
-					<Button color={Color.primary} onClick={apply}>
-						<TbCheckbox />
-					</Button>
-				</InputGroup>
-			</Show>
-		</>
+		<DefItemLine
+			type="type"
+			name={props.name}
+			contents={props.contents}
+			label={"" + def().unions.length}>
+			<InputGroup class="ml-3 my-1">
+				<InputLabel color={DEF_TYPE_COLORS[props.def.type]}>
+					<TbArrowRight />
+				</InputLabel>
+				<InputText
+					class="flex-1"
+					value={def().unions.join(",")}
+					ref={inputRef}
+				/>
+				<Button color={Color.primary} onClick={apply}>
+					<TbCheckbox />
+				</Button>
+			</InputGroup>
+		</DefItemLine>
 	);
 };
 
 const DefAliasItem: Component<ItemProps> = props => {
 	const def = (): DefAlias => props.def as any;
 	let inputRef: HTMLInputElement | undefined;
-	const [open, setOpen] = createSignal(false);
 	const apply = () => {
 		const newOrigin = inputRef?.value;
 		if (!newOrigin) {
-			toast(s("fileBrowser.toast.invalidDefCreationName"), {
-				type: ToastType.Error,
-			});
+			toastError(s("fileBrowser.toast.invalidDefCreationName"));
 			return;
 		}
-		props.contents.root[1]((root: Root) => {
-			const newDefs = { ...root.defs };
-			newDefs[props.name] = {
+		updateDef(props.contents, [
+			setDefFn(props.name, {
 				type: "alias",
 				origin: newOrigin,
-			};
-			return {
-				...root,
-				defs: newDefs,
-			};
-		});
+			}),
+		]);
 	};
 	return (
-		<>
-			<DefItemLine
-				type="alias"
-				name={props.name}
-				contents={props.contents}
-				openState={open}
-				toggle={() => setOpen(o => !o)}
-			/>
-			<Show when={open()}>
-				<InputGroup class="ml-3 my-1">
-					<InputLabel color={DEF_TYPE_COLORS[props.def.type]}>
-						<TbArrowRight />
-					</InputLabel>
-					<InputText
-						class="flex-1"
-						value={def().origin}
-						ref={inputRef}
-					/>
-					<Button color={Color.primary} onClick={apply}>
-						<TbCheckbox />
-					</Button>
-				</InputGroup>
-			</Show>
-		</>
+		<DefItemLine type="alias" name={props.name} contents={props.contents}>
+			<InputGroup class="ml-3 my-1">
+				<InputLabel color={DEF_TYPE_COLORS[props.def.type]}>
+					<TbArrowRight />
+				</InputLabel>
+				<InputText class="flex-1" value={def().origin} ref={inputRef} />
+				<Button color={Color.primary} onClick={apply}>
+					<TbCheckbox />
+				</Button>
+			</InputGroup>
+		</DefItemLine>
 	);
 };
 
@@ -350,16 +301,10 @@ const DefItemComponents = {
 
 const BrowserBodyFileKitl: Component<StateWrap> = props => {
 	const contents = loadKitlContents(props.state);
-	const defs = () => {
-		const entries = Object.entries(contents.root[0]().defs);
-		// Sort
-		entries.sort((a, b) => {
-			const [nameA] = a;
-			const [nameB] = b;
-			return nameA.localeCompare(nameB);
-		});
-		return entries;
-	};
+	const defs = () =>
+		Object.entries(contents.root[0]().defs).sort((a, b) =>
+			a[0].localeCompare(b[0]),
+		);
 
 	const Header: Component<any> = () => {
 		const save = async () => {
@@ -391,76 +336,58 @@ const BrowserBodyFileKitl: Component<StateWrap> = props => {
 			setTypeIndex((typeIndex() + 1) % DEF_TYPES.length);
 		};
 		const add = () => {
-			const def: Definition = (emptyDefFns as any)[
-				DEF_TYPES[typeIndex()]
-			]();
-			const name = normalizedWhitenName(inputRef?.value ?? "");
-			if (!name) {
-				toast(s("fileBrowser.toast.invalidDefCreationName"), {
-					type: ToastType.Error,
-				});
-				return;
-			}
-			if (contents.root[0]().defs[name]) {
-				toast(s("fileBrowser.toast.defAlreadyExists"), {
-					type: ToastType.Error,
-				});
-				return;
-			}
-			contents.root[1]((root: Root) => ({
-				...root,
-				defs: {
-					...root.defs,
-					[name]: def,
-				},
-			}));
+			const name = verifyDefName(contents, inputRef?.value ?? "");
+			updateDef(contents, [
+				setDefFn(name, (emptyDefFns as any)[DEF_TYPES[typeIndex()]]()),
+			]);
 			inputRef!.value = "";
 		};
 		return (
-			<InputGroup class="my-1">
-				<Button
-					color={DEF_TYPE_COLORS[DEF_TYPES[typeIndex()]]}
-					onClick={nextType}>
-					{s(`defType.${DEF_TYPES[typeIndex()]}`)}
-				</Button>
-				<InputText
-					class="flex-1"
-					placeholder="Name"
-					ref={inputRef}
-					onKeyDown={e => {
-						if (e.key === "Enter") {
-							add();
-						}
-					}}
-					value=""
-				/>
-				<Button color={Color.primary} onClick={add}>
-					<TbSquarePlus />
-				</Button>
-			</InputGroup>
+			<>
+				Creation
+				<InputGroup class="my-1">
+					<Button
+						color={DEF_TYPE_COLORS[DEF_TYPES[typeIndex()]]}
+						onClick={nextType}>
+						{s(`defType.${DEF_TYPES[typeIndex()]}`)}
+					</Button>
+					<InputText
+						class="flex-1"
+						placeholder="Name"
+						ref={inputRef}
+						onKeyDown={e => {
+							if (e.key === "Enter") {
+								add();
+							}
+						}}
+					/>
+					<Button color={Color.primary} onClick={add}>
+						<TbSquarePlus />
+					</Button>
+				</InputGroup>
+			</>
 		);
 	};
 
 	return (
 		<>
-			<Warning {...contents} />
+			<Show when={contents.errorMessage[0]()}>
+				{contents.errorMessage[0]()}
+			</Show>
 			<Header />
 			<DefCreation content={contents} />
 			<hr />
 			<div>
 				<For each={defs()}>
-					{x => {
-						const [name, def] = x;
-						return (
-							<Dynamic
-								component={DefItemComponents[def.type]}
-								state={props.state}
-								contents={contents}
-								name={name}
-								def={def}
-							/>
-						);
-					}}
+					{nameDefPair => (
+						<Dynamic
+							component={DefItemComponents[nameDefPair[1].type]}
+							state={props.state}
+							contents={contents}
+							name={nameDefPair[0]}
+							def={nameDefPair[1]}
+						/>
+					)}
 				</For>
 			</div>
 		</>

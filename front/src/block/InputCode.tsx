@@ -5,12 +5,11 @@ type TATarget = {
 	currentTarget: HTMLTextAreaElement;
 };
 
-const C_NEWLINE = 10; // \n
+const lineStart = (content: string, p: number) =>
+	content.lastIndexOf("\n", p) + 1;
 
-const lineStart = (content: string, p: number) => {
-	while (p > 0 && content.charCodeAt(p - 1) !== C_NEWLINE) p--;
-	return p;
-};
+const interleave = (str: string, s: number, e: number, ins: string) =>
+	str.slice(0, s) + ins + str.slice(e);
 
 const indentTextareaContent = (
 	content: string,
@@ -21,7 +20,7 @@ const indentTextareaContent = (
 	const s = lineStart(content, start),
 		lines = content.slice(s, end).split("\n");
 	return [
-		content.slice(0, s) + "  " + lines.join("\n  ") + content.slice(end),
+		interleave(content, s, end, "  " + lines.join("\n  ")),
 		start + 2,
 		end + 2 * lines.length,
 	];
@@ -34,24 +33,18 @@ const outdentTextareaContent = (
 ): [string, number, number] => {
 	// Outdent selection and return new value and start and end
 	const s = lineStart(content, originalStart);
-	const lines = content.slice(s, originalEnd).split("\n");
 	let start = originalStart,
 		end = originalEnd;
-	for (let i = 0; i < lines.length; i++) {
-		const c = lines[i].startsWith("  ")
-			? 2
-			: lines[i].startsWith("\t")
-			? 1
-			: 0;
-		if (i === 0) start -= c;
-		end -= c;
-		lines[i] = lines[i].slice(c);
-	}
-	return [
-		content.slice(0, s) + lines.join("\n") + content.slice(originalEnd),
-		start,
-		end,
-	];
+	const lines = content
+		.slice(s, originalEnd)
+		.split("\n")
+		.map((s, i) => {
+			const c = s.startsWith("  ") ? 2 : s.startsWith("\t") ? 1 : 0;
+			if (i === 0) start -= c;
+			end -= c;
+			return s.slice(c);
+		});
+	return [interleave(content, s, originalEnd, lines.join("\n")), start, end];
 };
 
 export type CodeProps = {
@@ -95,21 +88,21 @@ const InputCode: Component<CodeProps> = props => {
 			KeyboardEvent
 		> = event => {
 			if (props.onKeyDown && props.onKeyDown(event)) return;
+			const target = event.currentTarget;
 			switch (event.key) {
 				// Tab key
 				case "Tab":
 					{
 						event.preventDefault();
-						const target = event.currentTarget,
-							indentResult = (
-								event.shiftKey
-									? outdentTextareaContent
-									: indentTextareaContent
-							)(
-								target.value,
-								target.selectionStart,
-								target.selectionEnd,
-							);
+						const indentResult = (
+							event.shiftKey
+								? outdentTextareaContent
+								: indentTextareaContent
+						)(
+							target.value,
+							target.selectionStart,
+							target.selectionEnd,
+						);
 						target.value = indentResult[0];
 						target.selectionStart = indentResult[1];
 						target.selectionEnd = indentResult[2];
@@ -119,36 +112,25 @@ const InputCode: Component<CodeProps> = props => {
 					{
 						// Enter key
 						event.preventDefault();
-						const target = event.currentTarget;
-						const start = target.selectionStart;
-						const value = target.value;
+						const target = event.currentTarget,
+							start = target.selectionStart,
+							value = target.value;
 						// Get previous line indent
 						const re = /[ \t]*/y;
 						re.lastIndex = lineStart(value, start - 1);
 						const indent = re.exec(value)?.[0] ?? "";
-						target.value =
-							value.slice(0, start) +
-							"\n" +
-							indent +
-							value.slice(target.selectionEnd);
+						target.value = interleave(
+							value,
+							start,
+							target.selectionEnd,
+							"\n" + indent,
+						);
 						target.selectionStart = target.selectionEnd =
 							start + 1 + indent.length;
 					}
 					break;
 			}
 			resizeTextarea(event.target as HTMLTextAreaElement);
-		},
-		onInput: JSX.InputEventHandler<
-			HTMLTextAreaElement,
-			InputEvent
-		> = event => {
-			if (props.onInput) props.onInput(event);
-		},
-		onChange: JSX.ChangeEventHandler<
-			HTMLTextAreaElement,
-			Event
-		> = event => {
-			if (props.onChange) props.onChange(event);
 		},
 		onFocus: JSX.EventHandler<HTMLTextAreaElement, Event> = event => {
 			resizeTextarea(event.currentTarget as HTMLTextAreaElement);
@@ -160,20 +142,18 @@ const InputCode: Component<CodeProps> = props => {
 				ref={hackRef}
 				autofocus={props.autofocus}
 				disabled={props.disabled}
-				class={`form-control ${props.class ?? ""}`}
+				class={`form-control ${props.class}`}
 				placeholder={props.placeholder}
 				value={props.value}
 				onFocus={onFocus}
-				onChange={onChange}
-				onInput={onInput}
+				onChange={props.onChange}
+				onInput={props.onInput}
 				onKeyDown={onKeyDown}
 			/>
 			<textarea
 				ref={hiddenRef}
 				disabled
-				class={`form-control abs-lt ${
-					props.class ?? ""
-				} code-area-hidden no-pointer-events no-user-select`}
+				class={`form-control abs-lt ${props.class} code-area-hidden no-pointer-events no-user-select`}
 			/>
 		</div>
 	);

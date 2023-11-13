@@ -1,4 +1,4 @@
-import { ToastType, toast } from "@/block/ToastContainer";
+import { toastError, toastSuccess } from "@/block/ToastContainer";
 import { clients } from "@/client/clients";
 import {
 	StorageItem,
@@ -146,9 +146,9 @@ export const uploadFile = (state: State, path: string, file: File) => {
 				state.uploads[1](set => {
 					set.delete(path);
 					cd(state, state.path[0]());
-					toast(`${s("fileBrowser.toast.uploadSuccess")}: ${path}`, {
-						type: ToastType.Success,
-					});
+					toastSuccess(
+						`${s("fileBrowser.toast.uploadSuccess")}: ${path}`,
+					);
 					return set;
 				});
 			})
@@ -157,9 +157,7 @@ export const uploadFile = (state: State, path: string, file: File) => {
 					set.delete(path);
 					return set;
 				});
-				toast(`${s("fileBrowser.toast.uploadError")}: ${path}`, {
-					type: ToastType.Error,
-				});
+				toastError(`${s("fileBrowser.toast.uploadError")}: ${path}`);
 			});
 	};
 	reader.onerror = () => {
@@ -298,5 +296,5 @@ export const saveFile = async (state: State, contents: string) => {
 	await clients.write(path, new TextEncoder().encode(contents));
 	// Update state
 	state.storageItem[1](await clients.stat(path));
-	toast(s("fileBrowser.toast.saved"), { type: ToastType.Success });
+	toastSuccess(s("fileBrowser.toast.saved"));
 };

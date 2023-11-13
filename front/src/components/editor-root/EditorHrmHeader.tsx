@@ -1,7 +1,7 @@
 import { Button, Color, InputGroup } from "@/block";
 import DropdownButton from "@/block/DropdownButton";
-import { Box, Updater } from "@/common";
-import { State } from "@/hrm";
+import { Updater } from "@/common";
+import { State as HrmState } from "@/hrm";
 import {
 	TbArrowBackUp,
 	TbArrowForwardUp,
@@ -18,7 +18,8 @@ import {
 } from "solid-icons/tb";
 import { Component, createSignal } from "solid-js";
 import { s } from "@/locales";
-import { ModalActions, ModalType } from "./Modals";
+import { ModalType } from "./Modals";
+import { State } from "./state";
 
 enum ToolSet {
 	Add,
@@ -41,39 +42,34 @@ type EditorHrmHeaderState = {
 };
 
 type EditorHrmHeaderProps = {
-	stateBox: Box<State>;
-	modalActionsBox: Box<ModalActions>;
+	state: State;
 };
 
 const toolSetIcon = (toolSet: ToolSet) => {
 	return TOOL_SET_INFO()[toolSet].icon;
 };
 
-const toolSet = (toolSet: ToolSet, stateBox: Box<State>) => {
+const toolSet = (toolSet: ToolSet, g: HrmState) => {
 	switch (toolSet) {
 		case ToolSet.Add:
 			return (
 				<>
-					<Button
-						color={Color.warning}
-						onClick={() => stateBox[0]?.undo()}>
+					<Button color={Color.warning} onClick={() => g.undo()}>
 						<TbArrowBackUp />
 					</Button>
-					<Button
-						color={Color.warning}
-						onClick={() => stateBox[0]?.redo()}>
+					<Button color={Color.warning} onClick={() => g.redo()}>
 						<TbArrowForwardUp />
 					</Button>
 					<Button
 						color={Color.secondary}
 						class="flex-1"
-						onClick={() => stateBox[0]?.addEmptyNode()}>
+						onClick={() => g.addEmptyNode()}>
 						<TbSquarePlus />
 					</Button>
 					<Button
 						color={Color.danger}
 						class="flex-1"
-						onClick={() => stateBox[0]?.deleteSelectedNodes()}>
+						onClick={() => g.deleteSelectedNodes()}>
 						<TbBackspace />
 					</Button>
 				</>
@@ -84,7 +80,7 @@ const toolSet = (toolSet: ToolSet, stateBox: Box<State>) => {
 					<Button
 						color={Color.warning}
 						class="flex-1"
-						onClick={() => stateBox[0]?.deselectAll()}>
+						onClick={() => g.deselectAll()}>
 						<TbDeselect />
 					</Button>
 					<Button
@@ -108,7 +104,7 @@ const toolSet = (toolSet: ToolSet, stateBox: Box<State>) => {
 					<Button
 						color={Color.danger}
 						class="flex-1"
-						onClick={() => stateBox[0]?.deleteSelectedNodes()}>
+						onClick={() => g.deleteSelectedNodes()}>
 						<TbBackspace />
 					</Button>
 				</>
@@ -116,7 +112,7 @@ const toolSet = (toolSet: ToolSet, stateBox: Box<State>) => {
 	}
 };
 
-const toolSetMenus = (g: Box<State>, setS: Updater<EditorHrmHeaderState>) => {
+const toolSetMenus = (g: HrmState, setS: Updater<EditorHrmHeaderState>) => {
 	return TOOL_SET_INFO().map((info, idx) => {
 		return (
 			<a
@@ -125,8 +121,8 @@ const toolSetMenus = (g: Box<State>, setS: Updater<EditorHrmHeaderState>) => {
 						...s,
 						toolSet: idx as ToolSet,
 					}));
-					if (g[0]) {
-						g[0].selectMode = idx === ToolSet.Edit;
+					if (g) {
+						g.selectMode = idx === ToolSet.Edit;
 					}
 				}}>
 				{" "}
@@ -142,18 +138,21 @@ const EditorHrmHeader: Component<EditorHrmHeaderProps> = props => {
 	});
 	const dropdownList = () => {
 		return [
-			toolSetMenus(props.stateBox, setState),
+			toolSetMenus(props.state.hrm[0](), setState),
 			[
 				<a
 					onClick={() =>
-						props.modalActionsBox?.[0]?.open(ModalType.Browser)
+						props.state.modalActions[0]()?.open(ModalType.Browser)
 					}>
 					<TbFolderSearch /> {s("mainEditor.menu.browser")}
 				</a>,
 				<a>
 					<TbRocket /> {s("mainEditor.menu.launch")}
 				</a>,
-				<a onClick={() => props.modalActionsBox?.[0]?.openGraphTools()}>
+				<a
+					onClick={() =>
+						props.state.modalActions[0]()?.openGraphTools()
+					}>
 					<TbBinaryTree /> {s("mainEditor.menu.graphTools")}
 				</a>,
 			],
@@ -165,7 +164,7 @@ const EditorHrmHeader: Component<EditorHrmHeaderProps> = props => {
 				<DropdownButton color={Color.primary} list={dropdownList()}>
 					{toolSetIcon(state().toolSet)}
 				</DropdownButton>
-				{toolSet(state().toolSet, props.stateBox)}
+				{toolSet(state().toolSet, props.state.hrm[0]())}
 			</InputGroup>
 		</div>
 	);

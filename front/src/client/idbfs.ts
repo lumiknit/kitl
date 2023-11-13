@@ -395,3 +395,5 @@ export const checkfs = async () => {
 		await format(fs);
 	}
 };
+
+checkfs();

@@ -1,7 +1,7 @@
 import { Component } from "solid-js";
 
 import { toast } from "@/block/ToastContainer";
-import { Box, Nodes as CNodes } from "@/common";
+import { Nodes as CNodes } from "@/common";
 
 import { Nodes } from "./data";
 import HrmPane from "./HrmPane";
@@ -17,7 +17,7 @@ import { parseKeyEvent } from "@/common/event";
 
 export type HrmProps = {
 	initialNodes?: CNodes;
-	stateBox?: Box<State>;
+	state: State;
 };
 
 export type HrmState = {
@@ -25,10 +25,7 @@ export type HrmState = {
 };
 
 const Hrm: Component<HrmProps> = props => {
-	const g = new State(props.initialNodes);
-	if (props.stateBox) {
-		props.stateBox[0] = g;
-	}
+	const g = props.state;
 	const handleScroll = () => {
 		// Reset scroll position.
 		// When transform & input is used, focus or typing will cause scroll position to the change.

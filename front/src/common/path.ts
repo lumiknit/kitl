@@ -29,8 +29,8 @@ export const joinPath = (paths: Path): PathString =>
 	paths.length < 1
 		? "."
 		: paths.length <= 1 && paths[0].length < 1
-		? "/"
-		: paths.join("/");
+		  ? "/"
+		  : paths.join("/");
 
 export const isAbsolutePath = (path: Path): boolean =>
 	path.length > 0 && path[0].length < 1;
@@ -58,7 +58,7 @@ export const refineHostPath = (
 
 // Filename helper
 
-export const filename = (path: PathString): string => {
+export const extractFilename = (path: PathString): string => {
 	const [, , chunks] = refineHostPath(path);
 	return chunks[chunks.length - 1];
 };

@@ -16,6 +16,7 @@ import {
 	parseNodeData,
 	ShapedRect,
 	NON_SOURCE_NODES,
+	PathString,
 } from "@/common";
 import {
 	ConnectingEdge as ConnectingEdge,
@@ -49,6 +50,10 @@ const defaultKeymap = (): Map<string, string> =>
 	]);
 
 export class State {
+	// Module name
+	path: PathString;
+	name: string;
+
 	// Graph data
 	nodes: () => Nodes;
 	setNodes: (a: Nodes | ((ns: Nodes) => Nodes)) => void;
@@ -77,11 +82,13 @@ export class State {
 	// Keymap
 	keymap: Map<string, string> = new Map();
 
-	constructor(initialNodes?: CNodes) {
+	constructor(path: string, name: string, initialNodes?: CNodes) {
 		if (!initialNodes) initialNodes = [];
 		const [nodes, setNodes] = createSignal<Nodes>(thawNodes(initialNodes), {
 			equals: false,
 		});
+		this.path = path;
+		this.name = name;
 		this.nodes = nodes;
 		this.setNodes = setNodes;
 		this.editingNode = createSignal();

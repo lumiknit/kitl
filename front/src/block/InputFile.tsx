@@ -33,7 +33,6 @@ const InputFile: Component<InputFileProps> = props => {
 			<InputText
 				class={`flex-1`}
 				ref={textRef}
-				value=""
 				placeholder={props.placeholder}
 				onClick={() => {
 					fileRef?.click();

@@ -1,4 +1,4 @@
-import { filename, splitHostPath } from "@/common";
+import { extractFilename, splitHostPath } from "@/common";
 import { IClient } from "./i-client";
 import LocalClient from "./local-client";
 import { StorageItem, StorageItemType } from "./storage";
@@ -69,7 +69,7 @@ export default class Clients {
 					await newClient.mkdir(newPath2);
 					const list = await client.list(path2);
 					for (const item of list) {
-						const name = filename(item.path);
+						const name = extractFilename(item.path);
 						await this.copy(
 							`${path}/${name}`,
 							`${newPath}/${name}`,
