@@ -85,6 +85,7 @@
 	},
 	"mainEditor": {
 		"menu": {
+			"save": "Save",
 			"addTools": "Add Node Tools",
 			"selectTools": "Select & Edit Tools",
 			"browser": "Browser",
@@ -101,7 +102,8 @@
 			"paste": "Pasted!",
 			"nothingToCopy": "Nothing to copy",
 			"nothingToCut": "Nothing to cut",
-			"nothingToPaste": "Nothing to paste"
+			"nothingToPaste": "Nothing to paste",
+			"saveSuccess": "Successfully saved!"
 		}
 	},
 	"fileBrowser": {

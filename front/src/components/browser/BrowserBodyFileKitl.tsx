@@ -1,18 +1,18 @@
 import { Button, Color, InputGroup, InputText } from "@/block";
 import InputLabel from "@/block/InputLabel";
 import { toastError } from "@/block/ToastContainer";
-import { Update, Updater, VWrap } from "@/common";
+import { Update, VWrap } from "@/common";
 import {
 	DEF_TYPES,
-	DefAlias,
-	DefTag,
-	DefType,
+	AliasDef,
+	TagDef,
+	TypeDef,
 	Definition,
 	Root,
 	emptyDefFns,
 	loadRoot,
 	newRoot,
-} from "@/common/kitl";
+} from "@/common/kitl/defs";
 import { normalizedWhitenName } from "@/common/name";
 import { s } from "@/locales";
 import {
@@ -114,6 +114,7 @@ const DefItemLine: Component<{
 	contents: KitlContents;
 	label?: string;
 	children?: JSX.Element;
+	onOpen?: () => void;
 }> = props => {
 	const [open, setOpen] = createSignal(false);
 	let inputRef: HTMLInputElement | undefined;
@@ -168,7 +169,9 @@ const DefItemLine: Component<{
 				</Show>
 				<Button
 					color={Color.secondary}
-					onClick={() => setOpen(b => !b)}>
+					onClick={() =>
+						props.onOpen ? props.onOpen() : setOpen(b => !b)
+					}>
 					<Show when={open()} fallback={<TbEdit />}>
 						<TbCaretUp />
 					</Show>
@@ -179,9 +182,22 @@ const DefItemLine: Component<{
 	);
 };
 
-const DefValueItem: Component<ItemProps> = props => {
+const ValueDefItem: Component<ItemProps> = props => {
 	return (
-		<DefItemLine type="value" name={props.name} contents={props.contents} />
+		<DefItemLine
+			type="value"
+			name={props.name}
+			contents={props.contents}
+			onOpen={async () => {
+				if (props.state.editValueDef) {
+					await props.state.editValueDef(
+						props.state.path[0](),
+						props.name,
+					);
+					props.state.onClose?.();
+				}
+			}}
+		/>
 	);
 };
 
@@ -192,7 +208,7 @@ const splitInputValues = (inputRef: HTMLInputElement | undefined): string[] =>
 		.filter(x => x);
 
 const DefTagItem: Component<ItemProps> = props => {
-	const def = (): DefTag => props.def as any;
+	const def = (): TagDef => props.def as any;
 	let inputRef: HTMLInputElement | undefined;
 	const apply = () => {
 		const newElems = splitInputValues(inputRef);
@@ -227,7 +243,7 @@ const DefTagItem: Component<ItemProps> = props => {
 };
 
 const DefTypeItem: Component<ItemProps> = props => {
-	const def = (): DefType => props.def as any;
+	const def = (): TypeDef => props.def as any;
 	let inputRef: HTMLInputElement | undefined;
 	const apply = () => {
 		const newUnions = splitInputValues(inputRef);
@@ -262,7 +278,7 @@ const DefTypeItem: Component<ItemProps> = props => {
 };
 
 const DefAliasItem: Component<ItemProps> = props => {
-	const def = (): DefAlias => props.def as any;
+	const def = (): AliasDef => props.def as any;
 	let inputRef: HTMLInputElement | undefined;
 	const apply = () => {
 		const newOrigin = inputRef?.value;
@@ -295,7 +311,7 @@ const DefAliasItem: Component<ItemProps> = props => {
 const DefItemComponents = {
 	type: DefTypeItem,
 	tag: DefTagItem,
-	value: DefValueItem,
+	value: ValueDefItem,
 	alias: DefAliasItem,
 };
 

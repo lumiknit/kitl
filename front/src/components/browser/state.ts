@@ -39,6 +39,7 @@ export type State = {
 	// Actions
 	onOpenVal?: (path: string, name: string) => void;
 	onClose?: () => void;
+	editValueDef?: (path: string, name: string) => Promise<void>;
 };
 
 export type StateWrap = {

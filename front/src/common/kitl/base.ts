@@ -20,7 +20,7 @@ export type HandleID = number;
 export enum NodeType {
 	Alpha = "a", // Literal / Leaf node
 	Beta = "b", // Unnamed app
-	Delta = "d", // Definition
+	Delta = "d", // Root node
 	Lambda = "l", // Unpatterned Lambda
 	Nu = "n", // Named app
 	Pi = "p", // Pattern
@@ -40,7 +40,7 @@ export type Source = {
 	handle?: HandleID;
 };
 
-const loadSource = (a: any): Source => ({
+export const loadSource = (a: any): Source => ({
 	id: fassertString(a.id),
 	handle: fassertOptional(fassertString)(a.handle),
 });
@@ -72,16 +72,16 @@ const loadBetaNodeData = (d: any): BetaNodeData => ({
 });
 
 export type DeltaNodeData = {
-	// Definition node
+	// Root node
 	type: NodeType.Delta;
 	comment: string;
-	ret?: Source;
+	val?: Source;
 };
 
 const loadDeltaNodeData = (d: DeltaNodeData): DeltaNodeData => ({
 	type: NodeType.Delta,
 	comment: fassertString(d.comment),
-	ret: fassertOptional(loadSource)(d.ret),
+	val: fassertOptional(loadSource)(d.val),
 });
 
 export type LambdaNodeData = {
@@ -107,7 +107,7 @@ export type NuNodeData = {
 
 const loadNuNodeData = (d: NuNodeData): NuNodeData => ({
 	type: NodeType.Nu,
-	name: fassertString(d.name),
+	name: name.loadName(d.name),
 	lhs: fassertNumber(d.lhs),
 	args: fassertArrayOf(loadSource)(d.args),
 });
@@ -122,7 +122,7 @@ export type PiNodeData = {
 
 const loadPiNodeData = (d: PiNodeData): PiNodeData => ({
 	type: NodeType.Pi,
-	name: fassertString(d.name),
+	name: name.loadName(d.name),
 	pat: fassertOptional(loadSource)(d.pat),
 	elems: fassertNumber(d.elems),
 });
@@ -157,14 +157,3 @@ export const loadNode = (n: Node): Node => ({
 });
 
 export type Nodes = Node[];
-
-export const emptyGraph = (): Nodes => [
-	{
-		id: "#def",
-		pos: { x: 0, y: 0 },
-		x: {
-			type: NodeType.Delta,
-			comment: "",
-		},
-	},
-];

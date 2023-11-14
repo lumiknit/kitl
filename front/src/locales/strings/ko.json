@@ -85,6 +85,7 @@
 	},
 	"mainEditor": {
 		"menu": {
+			"save": "저장",
 			"addTools": "노드 추가 도구",
 			"selectTools": "선택 및 편집 도구",
 			"browser": "탐색기",
@@ -101,7 +102,8 @@
 			"paste": "붙여넣었어요!",
 			"nothingToCopy": "선택된 내용이 없어요",
 			"nothingToCut": "선택된 내용이 없어요",
-			"nothingToPaste": "붙여넣을 내용이 없어요"
+			"nothingToPaste": "붙여넣을 내용이 없어요",
+			"saveSuccess": "성공적으로 저장되었어요!"
 		}
 	},
 	"fileBrowser": {

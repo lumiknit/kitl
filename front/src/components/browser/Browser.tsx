@@ -9,6 +9,7 @@ import { s } from "@/locales";
 
 type BrowserProps = {
 	onClose: () => void;
+	editValueDef: (path: string, name: string) => Promise<void>;
 };
 
 const WarningLocal: Component<StateWrap> = props => (
@@ -19,7 +20,9 @@ const WarningLocal: Component<StateWrap> = props => (
 
 const Browser: Component<BrowserProps> = props => {
 	const state = newState("local:/");
-	state.onClose = props.onClose;
+	state.onClose = () => props.onClose();
+	state.editValueDef = (path: string, name: string) =>
+		props.editValueDef(path, name);
 	loadMeta(state);
 	return (
 		<>

@@ -1,7 +1,7 @@
 import { Component, Match, Switch, createSignal } from "solid-js";
 import { Getter, Updater } from "@/common";
 import GraphToolsModal from "./GraphToolsModal";
-import { State } from "@/hrm";
+import { State as HrmState } from "@/hrm";
 import BrowserModal from "../browser/BrowserModal";
 
 export enum ModalType {
@@ -52,7 +52,9 @@ export class ModalActions {
 
 type ModalsProps = {
 	actions: ModalActions;
-	state: State;
+	state: HrmState;
+	// Helpers
+	editValueDef: (path: string, name: string) => Promise<void>;
 };
 
 const Modals: Component<ModalsProps> = props => {
@@ -65,7 +67,10 @@ const Modals: Component<ModalsProps> = props => {
 				/>
 			</Match>
 			<Match when={props.actions.state().type === ModalType.Browser}>
-				<BrowserModal onClose={() => props.actions.close()} />
+				<BrowserModal
+					onClose={() => props.actions.close()}
+					editValueDef={props.editValueDef}
+				/>
 			</Match>
 		</Switch>
 	);

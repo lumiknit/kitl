@@ -10,6 +10,7 @@ import {
 	TbClipboard,
 	TbCopy,
 	TbDeselect,
+	TbDeviceFloppy,
 	TbEdit,
 	TbFolderSearch,
 	TbRocket,
@@ -19,7 +20,8 @@ import {
 import { Component, createSignal } from "solid-js";
 import { s } from "@/locales";
 import { ModalType } from "./Modals";
-import { State } from "./state";
+import { State, saveToFile } from "./state";
+import { toastSuccess } from "@/block/ToastContainer";
 
 enum ToolSet {
 	Add,
@@ -139,6 +141,15 @@ const EditorHrmHeader: Component<EditorHrmHeaderProps> = props => {
 	const dropdownList = () => {
 		return [
 			toolSetMenus(props.state.hrm[0](), setState),
+			[
+				<a
+					onClick={async () => {
+						await saveToFile(props.state);
+						toastSuccess(s("mainEditor.menu.saveSuccess"));
+					}}>
+					<TbDeviceFloppy /> {s("mainEditor.menu.save")}
+				</a>,
+			],
 			[
 				<a
 					onClick={() =>

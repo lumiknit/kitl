@@ -1,3 +1,4 @@
+import { JsonKey } from "@/common";
 import { IClient } from "./i-client";
 import * as idbfs from "./idbfs";
 import { StorageItem } from "./storage";
@@ -69,5 +70,53 @@ export default class LocalClient implements IClient {
 	async copy(from: string, to: string): Promise<void> {
 		const fs = await idbfs.openfs(true);
 		await idbfs.copy(fs, from, to);
+	}
+
+	async readJson(path: string, jsonPath: JsonKey[]): Promise<any> {
+		const fs = await idbfs.openfs(false);
+		const contents = await idbfs.read(fs, path);
+		// Parse
+		const data = JSON.parse(new TextDecoder().decode(contents));
+		// Get json path
+		let current = data;
+		for (const key of jsonPath) {
+			current = current[key];
+		}
+		return current;
+	}
+
+	async writeJson(
+		path: string,
+		jsonPath: JsonKey[],
+		data: any,
+	): Promise<StorageItem> {
+		let item;
+		const fs = await idbfs.openfs(true),
+			l = jsonPath.length;
+		if (l === 0) {
+			item = await idbfs.write(
+				fs,
+				path,
+				new TextEncoder().encode(JSON.stringify(data)),
+			);
+		} else {
+			// Read from file
+			const contents = await idbfs.read(fs, path);
+			// Parse
+			const parsed = JSON.parse(new TextDecoder().decode(contents));
+			let cur = parsed;
+			for (let i = 0; i < l - 1; i++) {
+				cur = cur[jsonPath[i]];
+			}
+			// Update
+			cur[jsonPath[l - 1]] = data;
+			// Write to file
+			item = await idbfs.write(
+				fs,
+				path,
+				new TextEncoder().encode(JSON.stringify(parsed)),
+			);
+		}
+		return metaToItem(item!);
 	}
 }

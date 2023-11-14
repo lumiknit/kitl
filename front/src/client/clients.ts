@@ -96,6 +96,20 @@ export default class Clients {
 			await client.remove(path2);
 		}
 	}
+
+	async readJson(path: string, jsonPath: string[]): Promise<any> {
+		const [client, path2] = this.parsePath(path);
+		return await client.readJson(path2, jsonPath);
+	}
+
+	async writeJson(
+		path: string,
+		jsonPath: string[],
+		data: any,
+	): Promise<StorageItem> {
+		const [client, path2] = this.parsePath(path);
+		return await client.writeJson(path2, jsonPath, data);
+	}
 }
 
 export const clients = new Clients();

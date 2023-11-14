@@ -1,40 +1,43 @@
-import { batch, createSignal, untrack } from "solid-js";
 import {
-	NodeID,
+	BetaNodeData,
 	Node as CNode,
 	Nodes as CNodes,
-	VWrap,
-	Rect,
 	HandleID,
-	Position,
-	origin,
-	ROOT_NODES,
-	NodeType,
-	genID,
-	BetaNodeData,
-	Size,
-	parseNodeData,
-	ShapedRect,
 	NON_SOURCE_NODES,
+	NodeID,
+	NodeType,
 	PathString,
+	Position,
+	ROOT_NODES,
+	Rect,
+	ShapedRect,
+	Size,
+	VWrap,
+	genID,
+	origin,
+	parseNodeData,
 } from "@/common";
+import { HSL2RGB, RGB2GRAY, hslCss } from "@/common/color";
+import { PointerID } from "@/common/pointer-helper";
+import { batch, createSignal, untrack } from "solid-js";
 import {
-	ConnectingEdge as ConnectingEdge,
+	ConnectingEdge,
 	ConnectingEdgeEnd as ConnectingEnd,
 	EditingNode,
 	HandleType,
 	Nodes,
 	SinkHandleData,
 	Transform,
+} from "./data";
+import {
 	freezeNode,
 	freezeNodes,
 	renameHandles,
 	sourceToSinkHandle,
 	thawNode,
 	thawNodes,
-} from "./data";
-import { HSL2RGB, RGB2GRAY, hslCss } from "@/common/color";
-import { PointerID } from "@/common/pointer-helper";
+} from "@/hrm-kitl";
+import { createDelayedSignal } from "@/solid-utils/indes";
 
 /* State */
 
@@ -82,9 +85,8 @@ export class State {
 	// Keymap
 	keymap: Map<string, string> = new Map();
 
-	constructor(path: string, name: string, initialNodes?: CNodes) {
-		if (!initialNodes) initialNodes = [];
-		const [nodes, setNodes] = createSignal<Nodes>(thawNodes(initialNodes), {
+	constructor(path: string, name: string, initialNodes: Nodes) {
+		const [nodes, setNodes] = createSignal<Nodes>(initialNodes, {
 			equals: false,
 		});
 		this.path = path;
@@ -94,9 +96,13 @@ export class State {
 		this.editingNode = createSignal();
 		this.connectingEdge = createSignal();
 		this.connectingEnd = createSignal({ pos: origin });
-		this.transform = [() => ({ x: 0, y: 0, z: 1 }), () => {}];
+		this.transform = createDelayedSignal<Transform>(16, {
+			x: 0,
+			y: 0,
+			z: 1,
+		});
 		// History
-		this.history = [initialNodes];
+		this.history = [freezeNodes(this.nodes())];
 		this.historyIndex = 0;
 		// Keymap
 		this.keymap = defaultKeymap();
@@ -183,6 +189,7 @@ export class State {
 		if (!this.viewRef) return;
 		const rootRect = this.viewRef!.getBoundingClientRect();
 		const t = untrack(this.transform[0]);
+		console.log(rootRect, t, x, y);
 		return {
 			x: (x - rootRect.left) / t.z,
 			y: (y - rootRect.top) / t.z,
@@ -209,6 +216,7 @@ export class State {
 		if (!elem) return;
 		const rect = elem.getBoundingClientRect();
 		const rootRect = this.rootRef!.getBoundingClientRect();
+		console.log(rootRect);
 		let dx = 0,
 			dy = 0;
 		if (rect.right + dx > rootRect.right) {
