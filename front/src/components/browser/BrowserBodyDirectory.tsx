@@ -8,12 +8,7 @@ import {
 	toastSuccess,
 } from "@/block/ToastContainer";
 import { StorageItem, StorageItemType } from "@/client/storage";
-import {
-	addIndexToFilename,
-	dateToShortString,
-	splitHostPath,
-	splitPath,
-} from "@/common";
+import { dateToShortString, splitHostPath, splitPath } from "@/common";
 import { bytesToString } from "@/common/size";
 import { s } from "@/locales";
 import {
@@ -36,8 +31,8 @@ import {
 	StateWrap,
 	cd,
 	copySelectedFiles,
-	cutSelectedFiles,
 	deleteSelectedFiles,
+	findUnusedName,
 	loadData,
 	newFile,
 	newFolder,
@@ -52,7 +47,7 @@ import {
 
 const hCopyFiles = (state: State) => () => {
 	try {
-		copySelectedFiles(state);
+		copySelectedFiles(state, false);
 		toastSuccess(s("fileBrowser.toast.copySuccess"));
 	} catch (e) {
 		if (!(e instanceof NothingSelectedError)) throw e;
@@ -62,7 +57,7 @@ const hCopyFiles = (state: State) => () => {
 
 const hCutFiles = (state: State) => () => {
 	try {
-		cutSelectedFiles(state);
+		copySelectedFiles(state, true);
 		toastSuccess(s("fileBrowser.toast.cutSuccess"));
 		reload(state);
 	} catch (e) {
@@ -93,28 +88,9 @@ const hDeleteFiles = (state: State) => async () => {
 	reload(state);
 };
 
-const newName = (state: State, d?: string): string => {
-	d = d ?? "new";
-	const ls = state.ls[0]();
-	if (ls === undefined) return d;
-	// Generate a new name
-	const names = new Set(
-		ls.map(item => {
-			const p = splitPath(item.path);
-			return p[p.length - 1];
-		}),
-	);
-	let name = d,
-		i = 0;
-	while (names.has(name)) {
-		name = addIndexToFilename(d, i++);
-	}
-	return name;
-};
-
 const hNewFile = (state: State) => async () => {
 	try {
-		await newFile(state, newName(state));
+		await newFile(state, findUnusedName(state));
 		toastSuccess(s("fileBrowser.toast.newFileSuccess"));
 	} catch (e) {
 		toastError(s("fileBrowser.toast.newFileError"));
@@ -125,7 +101,7 @@ const hNewFile = (state: State) => async () => {
 
 const hNewFolder = (state: State) => async () => {
 	try {
-		await newFolder(state, newName(state));
+		await newFolder(state, findUnusedName(state));
 		toastSuccess(s("fileBrowser.toast.newFolderSuccess"));
 	} catch (e) {
 		toastError(s("fileBrowser.toast.newFolderError"));
@@ -137,7 +113,7 @@ const hNewFolder = (state: State) => async () => {
 const hUploadFiles = (state: State) => async (files: FileList) => {
 	for (const file of files) {
 		if (file === undefined) return;
-		const name = newName(state, file.name);
+		const name = findUnusedName(state, file.name);
 		const newPath = `${state.path[0]()}/${name}`;
 		uploadFile(state, newPath, file);
 		toastProgress(s("fileBrowser.toast.uploadingFiles"));

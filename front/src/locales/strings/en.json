@@ -145,7 +145,8 @@
 			"resetLocal": "Are you sure to reset local data?",
 			"deleteSelected": "Delete selected files and folders?",
 			"renameSelected": "Enter new name for the file",
-			"saveConflict": "The file was modified by another program. Overwrite it?"
+			"saveConflict": "The file was modified by another program. Overwrite it?",
+			"pasteOverwrite": "The file already exists. Overwrite it?"
 		},
 		"toast": {
 			"cutSuccess": "Cutted!",

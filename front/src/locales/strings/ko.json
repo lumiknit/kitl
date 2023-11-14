@@ -136,7 +136,8 @@
 			"resetLocal": "정말로 로컬 저장소를 초기화할까요?",
 			"deleteSelected": "선택한 파일을 삭제하겠습니다.",
 			"renameSelected": "변경할 이름을 입력하세요",
-			"saveConflict": "파일이 외부에서 수정되었어요. 덮어쓸까요?"
+			"saveConflict": "파일이 외부에서 수정되었어요. 덮어쓸까요?",
+			"pasteOverwrite": "같은 이름의 파일이 존재해요. 덮어쓸까요?"
 		},
 		"toast": {
 			"cutSuccess": "잘라냈어요!",

@@ -10,6 +10,7 @@ type CheckboxProps = {
 const Checkbox: Component<CheckboxProps> = props => {
 	const handleChange = (e: Event) => {
 		const target = e.target as HTMLInputElement;
+		console.log(target.checked);
 		props.onChange?.(target.checked);
 	};
 	return (
@@ -17,6 +18,7 @@ const Checkbox: Component<CheckboxProps> = props => {
 			<label>
 				<input
 					type="checkbox"
+					name="checkbox"
 					checked={props.value}
 					ref={props.ref}
 					onChange={handleChange}

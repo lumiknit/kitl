@@ -5,11 +5,17 @@ import {
 	StorageItemNotFound,
 	StorageItemType,
 } from "@/client/storage";
-import { VWrap, refineHostPath } from "@/common";
+import { VWrap, addIndexToFilename, refineHostPath, splitPath } from "@/common";
 import { s } from "@/locales";
 import { batch, createSignal } from "solid-js";
 
+// Constants
+
 const LARGE_SIZE = 1024 * 128; // 128 KB
+
+// Helpers
+
+// State
 
 export type SelectableStorageItem = StorageItem & {
 	selected?: boolean;
@@ -74,13 +80,13 @@ export const loadData = async (state: State) => {
 	const item = state.storageItem[0]();
 	if (item?.type === StorageItemType.Directory) {
 		const loaded = await clients.list(path());
-		loaded.sort((a, b) => {
-			if (a.type === b.type) {
-				return a.path.localeCompare(b.path);
-			} else {
-				return a.type === StorageItemType.Directory ? -1 : 1;
-			}
-		});
+		loaded.sort((a, b) =>
+			a.type === b.type
+				? a.path.localeCompare(b.path)
+				: a.type === StorageItemType.Directory
+				  ? -1
+				  : 1,
+		);
 		batch(() => {
 			state.ls[1](loaded);
 			state.data[1](new Uint8Array());
@@ -137,6 +143,20 @@ export const newFile = async (state: State, name: string) => {
 	await clients.write(path() + "/" + name, new Uint8Array());
 };
 
+export const findUnusedName = (state: State, d?: string): string => {
+	d = d ?? "new";
+	const ls = state.ls[0]();
+	if (ls === undefined) return d;
+	// Generate a new name
+	const names = new Set(ls.map(item => splitPath(item.path).pop()));
+	let name = d,
+		i = 0;
+	while (names.has(name)) {
+		name = addIndexToFilename(d, i++);
+	}
+	return name;
+};
+
 export const uploadFile = (state: State, path: string, file: File) => {
 	state.uploads[1](s => s.add(path));
 	const reader = new FileReader();
@@ -175,18 +195,19 @@ export const uploadFile = (state: State, path: string, file: File) => {
 
 export const setFileSelected = (
 	state: State,
-	filename: string,
+	path: string,
 	value?: boolean,
 ) => {
-	state.ls[1](ls => {
-		if (!ls) return ls;
-		return ls.map(item => {
-			if (item.path === filename) {
-				item.selected = value;
-			}
-			return item;
-		});
-	});
+	state.ls[1](ls =>
+		ls
+			? ls.map(item => {
+					if (item.path === path) {
+						item.selected = value;
+					}
+					return item;
+			  })
+			: ls,
+	);
 };
 
 export const getSelectedFiles = (state: State): string[] => {
@@ -204,25 +225,14 @@ export class NothingSelectedError extends Error {
 	}
 }
 
-export const copySelectedFiles = (state: State) => {
+export const copySelectedFiles = (state: State, isCutted: boolean) => {
 	const selected = getSelectedFiles(state);
 	if (selected.length === 0) {
 		throw new NothingSelectedError();
 	}
 	state.copyState[1]({
 		items: getSelectedFiles(state),
-		isCutted: false,
-	});
-};
-
-export const cutSelectedFiles = (state: State) => {
-	const selected = getSelectedFiles(state);
-	if (selected.length === 0) {
-		throw new NothingSelectedError();
-	}
-	state.copyState[1]({
-		items: getSelectedFiles(state),
-		isCutted: true,
+		isCutted: isCutted,
 	});
 };
 
@@ -233,15 +243,23 @@ export const pasteFiles = async (state: State) => {
 		return;
 	}
 	const dest = path();
+	const lsSet = new Set(
+		(state.ls[0]() ?? []).map(item => item.path.split("/").pop()),
+	);
 	const copyState = state.copyState[0]();
 	for (const src of copyState.items) {
-		const destPath = dest + "/" + src.split("/").pop();
-		console.log("Paste", src, destPath);
-		if (copyState.isCutted) {
-			await clients.move(src, destPath);
-		} else {
-			await clients.copy(src, destPath);
+		let filename = src.split("/").pop();
+		// Check file name conflict
+		if (
+			lsSet.has(filename) &&
+			!confirm(s("fileBrowser.prompt.pasteOverwrite"))
+		) {
+			// Change name
+			filename = findUnusedName(state, filename);
 		}
+		const destPath = dest + "/" + filename;
+		console.log("Paste", src, destPath);
+		await clients[copyState.isCutted ? "move" : "copy"](src, destPath);
 	}
 	if (copyState.isCutted) {
 		// Reset state
@@ -288,7 +306,6 @@ export const saveFile = async (state: State, contents: string) => {
 	if (!currentMeta) return;
 	if (
 		oldMeta.lastModified < currentMeta.lastModified ||
-		oldMeta.lastModified > currentMeta.lastModified ||
 		oldMeta.size !== currentMeta.size
 	) {
 		if (!confirm(s("fileBrowser.prompt.saveConflict"))) return;
