@@ -1,6 +1,5 @@
 import { Button, Color, InputGroup, InputText } from "@/block";
 import InputLabel from "@/block/InputLabel";
-import { Box } from "@/common";
 import Modal from "@/components/modal/Modal";
 import { State } from "@/hrm";
 import { s } from "@/locales";
@@ -9,7 +8,7 @@ import { Component } from "solid-js";
 
 type GraphToolsModalProps = {
 	onClose: () => void;
-	stateBox: Box<State>;
+	state: State;
 };
 
 const GraphToolsModal: Component<GraphToolsModalProps> = props => {
@@ -20,7 +19,7 @@ const GraphToolsModal: Component<GraphToolsModalProps> = props => {
 				<InputLabel color={Color.primary}>
 					<TbBinaryTree />
 				</InputLabel>
-				<InputText class="flex-1" disabled={true} value="Graph Tools" />
+				<InputText class="flex-1" readonly={true} value="Graph Tools" />
 				<Button color={Color.danger} onClick={props.onClose}>
 					<TbX />
 				</Button>

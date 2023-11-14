@@ -49,24 +49,16 @@ export const RGB2HSL = (
 		min = Math.min(r, g, b),
 		sm = max + min,
 		dm = max - min;
-	let h = 0,
-		s = 0;
-	if (max !== min) {
-		s = sm > 1 ? dm / (2 - 2 * sm) : dm / sm;
-		switch (max) {
-			case r:
-				h = (g - b) / dm + (g < b ? 6 : 0);
-				break;
-			case g:
-				h = (b - r) / dm + 2;
-				break;
-			case b:
-				h = (r - g) / dm + 4;
-				break;
-		}
-		h /= 6;
+	if (max === min) return [0, 0, max];
+	const s = sm > 1 ? dm / (2 - 2 * sm) : dm / sm;
+	switch (max) {
+		case r:
+			return [((g - b) / dm + (g < b ? 6 : 0)) / 6, s, sm / 2];
+		case g:
+			return [((b - r) / dm + 2) / 6, s, sm / 2];
+		default:
+			return [((r - g) / dm + 4) / 6, s, sm / 2];
 	}
-	return [h, s, sm / 2];
 };
 
 export const hslCss = (h: number, s: number, l: number): string =>

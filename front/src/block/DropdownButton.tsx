@@ -19,7 +19,7 @@ const DropdownButton: Component<DropdownButtonProps> = props => {
 					props.class ?? ""
 				}`}
 				onClick={() => {
-					setVisible(!visible());
+					setVisible(v => !v);
 				}}>
 				{props.children}
 			</button>

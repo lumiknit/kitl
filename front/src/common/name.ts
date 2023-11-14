@@ -1,7 +1,14 @@
+import { fassertString } from "./assert";
+
 export type Name = {
 	module: string;
 	name: string;
 };
+
+export const loadName = (d: Name): Name => ({
+	module: fassertString(d.module),
+	name: fassertString(d.name),
+});
 
 export const invalidChars = '()[]{},;\\@#"';
 export const invalidCharMap = new Map<string, boolean>();
@@ -51,6 +58,9 @@ export const normalizeName = (name: string): string =>
 
 export const whitenNameString = (name: string): string =>
 	name.replace(/_/g, " ");
+
+export const normalizedWhitenName = (name: string): string =>
+	whitenNameString(normalizeName(name));
 
 export const newName = (name: string, module: string): Name => ({
 	module: normalizeName(module),

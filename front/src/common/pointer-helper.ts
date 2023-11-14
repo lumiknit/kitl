@@ -2,9 +2,9 @@
 
 import { distSquare } from "./geometry";
 
-const MOVE_THRESHOLD = 8,
-	DOUBLE_CLICK_TIME = 300,
-	DOUBLE_CLICK_THRESHOLD = 32,
+const MOVE_THRESHOLD = 6,
+	DOUBLE_CLICK_TIME = 250,
+	DOUBLE_CLICK_THRESHOLD = 16,
 	LONG_PRESS_TIME = 750;
 
 const st = window.setTimeout,
@@ -51,6 +51,7 @@ const modifiersFromHTMLEvent = (e: MouseEvent | TouchEvent): Modifiers => ({
 export type ClickEvent = BaseEvent & {
 	pointers: number;
 	modifiers: Modifiers;
+	dragged?: boolean;
 };
 
 export type DragEvent = BaseEvent & {
@@ -97,6 +98,11 @@ type State = {
 
 /* Functions */
 
+const pdsp = (e: any) => {
+	e.preventDefault();
+	e.stopPropagation();
+};
+
 export const addEventListeners = (handlers: Props, el: Element) => {
 	const s: State = {
 		pointers: new Map(),
@@ -127,8 +133,7 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 			handlers.onLeave?.(e.pointerId);
 		},
 		pointerdown: (e: PointerEvent) => {
-			e.preventDefault();
-			e.stopPropagation();
+			pdsp(e);
 			const id = e.pointerId;
 			handlers.onDown?.({
 				id,
@@ -139,10 +144,8 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 			});
 			(e.target as any).releasePointerCapture(id);
 			if (handlers.capture) {
-				console.log("CAPTURE");
 				(e.currentTarget as any).setPointerCapture(id);
 			} else {
-				console.log("RELEASE");
 				(e.currentTarget as any).releasePointerCapture(id);
 			}
 			const p: Pointer = {
@@ -181,8 +184,7 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 			}
 		},
 		pointermove: (e: PointerEvent) => {
-			e.preventDefault();
-			e.stopPropagation();
+			pdsp(e);
 			const id = e.pointerId;
 			handlers.onMove?.({
 				id,
@@ -217,18 +219,18 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 			p.y = e.clientY;
 		},
 		pointerup: (e: PointerEvent) => {
-			e.preventDefault();
-			e.stopPropagation();
+			pdsp(e);
 			const id = e.pointerId;
+			const pointer = s.pointers.get(id);
 			const event: ClickEvent = {
 				id,
 				x: e.clientX,
 				y: e.clientY,
 				pointers: s.maxPointers,
 				modifiers: modifiersFromHTMLEvent(e),
+				dragged: s.pointers.get(id)?.moved,
 			};
 			handlers.onUp?.(event);
-			const pointer = s.pointers.get(id);
 			if (!pointer) return;
 			cancelPointer(e.pointerId);
 			const now = Date.now();

@@ -36,6 +36,10 @@ div.hrm-container:focus {
 	white-space: nowrap;
 }
 
+.hrm-node-root {
+	border-style: dashed;
+}
+
 .hrm-node.selected {
 	outline: 0.125rem dashed var(--hrm-c-select);
 	outline-offset: 0.25rem;
@@ -93,7 +97,8 @@ div.hrm-container:focus {
 
 .hrm-node-mark {
 	margin-right: 0.2rem;
-	font-size: 1.2rem;
+	font-size: 1.4rem;
+	line-height: 0rem;
 	opacity: 0.33;
 }
 
@@ -120,10 +125,13 @@ div.hrm-container:focus {
 .hrm-node-handle {
 	cursor: pointer;
 	position: absolute;
-	width: 100%;
+	width: 80%;
 	height: 1.2rem;
-	left: 0;
-	bottom: -0.8rem;
+	left: 10%;
+	bottom: -1rem;
+	background-color: var(--hrm-c-connect);
+	opacity: 0;
+	transition: opacity 0.1s ease-in-out;
 }
 
 // Handle
@@ -131,23 +139,26 @@ div.hrm-container:focus {
 .hrm-handle {
 	display: inline-block;
 	border: 2px solid var(--hrm-c-empty);
-	border-radius: 999rem;
 }
 
 .hrm-handle-new {
 	position: absolute;
 	padding: 0;
-	width: 1.2rem;
-	height: 100%;
-	top: 0;
+	width: 1.4rem;
+	height: 80%;
+	top: 10%;
+	opacity: 0;
+	background-color: var(--hrm-c-connect);
+	color: var(--hrm-c-bg);
+	transition: opacity 0.1s ease-in-out;
 }
 
 .hrm-handle-new.lhs {
-	left: -0.6rem;
+	left: -1.2rem;
 }
 
 .hrm-handle-new.rhs {
-	right: -0.6rem;
+	right: -1.2rem;
 }
 
 // Edge
@@ -181,6 +192,7 @@ div.hrm-container:focus {
 	z-index: 1;
 	top: 0;
 	left: 0;
+	max-width: 80vw;
 
 	border-radius: 1rem;
 	padding: 0.5rem;
@@ -191,6 +203,10 @@ div.hrm-container:focus {
 	backdrop-filter: blur(0.25rem);
 	-webkit-backdrop-filter: blur(0.25rem);
 	border: 2px solid #0004;
+}
+
+.hrm-edit-overlay textarea {
+	max-width: calc(100% - 1rem);
 }
 
 .hrm-edit-overlay .edit {

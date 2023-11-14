@@ -24,6 +24,12 @@
 		"beta": "베타",
 		"comment": "주석"
 	},
+	"defType": {
+		"value": "값",
+		"tag": "꼬리표",
+		"type": "형",
+		"alias": "별칭"
+	},
 	"defFinder": {
 		"name": "이름",
 		"module": "모듈"
@@ -79,6 +85,7 @@
 	},
 	"mainEditor": {
 		"menu": {
+			"save": "저장",
 			"addTools": "노드 추가 도구",
 			"selectTools": "선택 및 편집 도구",
 			"browser": "탐색기",
@@ -95,7 +102,69 @@
 			"paste": "붙여넣었어요!",
 			"nothingToCopy": "선택된 내용이 없어요",
 			"nothingToCut": "선택된 내용이 없어요",
-			"nothingToPaste": "붙여넣을 내용이 없어요"
+			"nothingToPaste": "붙여넣을 내용이 없어요",
+			"saveSuccess": "성공적으로 저장되었어요!"
+		}
+	},
+	"fileBrowser": {
+		"warningLocal": "주의: Local 데이터는 브라우저에만 저장되며, 브라우저 데이터 삭제 시 유실될 수 있습니다.",
+		"folder": "폴더",
+		"file": "파일",
+		"name": "이름",
+		"size": "용량",
+		"modified": "수정된 시각",
+		"uploadPlaceholder": "업로드 (클릭 또는 드래그&드롭)",
+		"fileTooLarge": {
+			"message": "파일이 너무 큽니다!",
+			"show": "그래도 열기",
+			"download": "다운로드"
+		},
+		"directory": {
+			"empty": "디렉토리가 비어있습니다."
+		},
+		"menu": {
+			"refresh": "새로고침",
+			"formatLocalStorage": "로컬 저장소 초기화",
+			"rename": "이름 바꾸기",
+			"copy": "복사",
+			"cut": "잘라내기",
+			"paste": "붙여넣기",
+			"delete": "삭제",
+			"save": "저장"
+		},
+		"prompt": {
+			"resetLocal": "정말로 로컬 저장소를 초기화할까요?",
+			"deleteSelected": "선택한 파일을 삭제하겠습니다.",
+			"renameSelected": "변경할 이름을 입력하세요",
+			"saveConflict": "파일이 외부에서 수정되었어요. 덮어쓸까요?",
+			"pasteOverwrite": "같은 이름의 파일이 존재해요. 덮어쓸까요?"
+		},
+		"toast": {
+			"cutSuccess": "잘라냈어요!",
+			"cutError": "잘라내지 못했어요..",
+			"copySuccess": "복사했어요!",
+			"copyError": "복사하지 못했어요..",
+			"pasteSuccess": "붙여넣었어요!",
+			"pasteError": "붙여넣지 못했어요..",
+			"deleteSuccess": "삭제했어요!",
+			"deleteError": "삭제하지 못했어요..",
+			"newFileSuccess": "새 파일이 만들어졌어요",
+			"newFileError": "새 파일을 만들지 못했어요..",
+			"newFolderSuccess": "새 폴더가 만들어졌어요",
+			"newFolderError": "새 폴더를 만들지 못했어요..",
+			"uploadingFiles": "파일 업로드 중...",
+			"uploadSuccess": "업로드 되었어요!",
+			"uploadError": "업로드하지 못했어요..",
+			"uploadReadError": "업로드할 파일을 읽을 수 없어요..",
+			"nothingSelected": "선택된 파일이 없어요..",
+			"saved": "저장되었어요!",
+			"invalidKitl": "올바르지 않은 KITL 파일입니다..",
+			"invalidDefCreationName": "올바르지 않은 정의 이름이에요.",
+			"defAlreadyExists": "같은 이름의 정의가 존재합니다!"
+		},
+		"title": {
+			"uploading": "업로드 중...",
+			"invalidKitl": "올바르지 않는 KITL 파일입니다. 확장자를 .json 으로 변경한 후 내용을 확인해주세요."
 		}
 	}
 }

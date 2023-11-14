@@ -1,38 +1,43 @@
-import { batch, createSignal, untrack } from "solid-js";
 import {
-	NodeID,
+	BetaNodeData,
 	Node as CNode,
 	Nodes as CNodes,
-	VWrap,
-	Rect,
 	HandleID,
-	Position,
-	origin,
-	ROOT_NODES,
+	NON_SOURCE_NODES,
+	NodeID,
 	NodeType,
-	genID,
-	BetaNodeData,
-	Size,
-	parseNodeData,
+	PathString,
+	Position,
+	ROOT_NODES,
+	Rect,
 	ShapedRect,
+	Size,
+	VWrap,
+	genID,
+	origin,
+	parseNodeData,
 } from "@/common";
+import { HSL2RGB, RGB2GRAY, hslCss } from "@/common/color";
+import { PointerID } from "@/common/pointer-helper";
+import { batch, createSignal, untrack } from "solid-js";
 import {
-	ConnectingEdge as ConnectingEdge,
+	ConnectingEdge,
 	ConnectingEdgeEnd as ConnectingEnd,
 	EditingNode,
 	HandleType,
 	Nodes,
 	SinkHandleData,
 	Transform,
+} from "./data";
+import {
 	freezeNode,
 	freezeNodes,
 	renameHandles,
 	sourceToSinkHandle,
 	thawNode,
 	thawNodes,
-} from "./data";
-import { HSL2RGB, RGB2GRAY, hslCss } from "@/common/color";
-import { PointerID } from "@/common/pointer-helper";
+} from "@/hrm-kitl";
+import { createDelayedSignal } from "@/solid-utils/indes";
 
 /* State */
 
@@ -48,6 +53,10 @@ const defaultKeymap = (): Map<string, string> =>
 	]);
 
 export class State {
+	// Module name
+	path: PathString;
+	name: string;
+
 	// Graph data
 	nodes: () => Nodes;
 	setNodes: (a: Nodes | ((ns: Nodes) => Nodes)) => void;
@@ -76,19 +85,24 @@ export class State {
 	// Keymap
 	keymap: Map<string, string> = new Map();
 
-	constructor(initialNodes?: CNodes) {
-		if (!initialNodes) initialNodes = [];
-		const [nodes, setNodes] = createSignal<Nodes>(thawNodes(initialNodes), {
+	constructor(path: string, name: string, initialNodes: Nodes) {
+		const [nodes, setNodes] = createSignal<Nodes>(initialNodes, {
 			equals: false,
 		});
+		this.path = path;
+		this.name = name;
 		this.nodes = nodes;
 		this.setNodes = setNodes;
 		this.editingNode = createSignal();
 		this.connectingEdge = createSignal();
 		this.connectingEnd = createSignal({ pos: origin });
-		this.transform = [() => ({ x: 0, y: 0, z: 1 }), () => {}];
+		this.transform = createDelayedSignal<Transform>(16, {
+			x: 0,
+			y: 0,
+			z: 1,
+		});
 		// History
-		this.history = [initialNodes];
+		this.history = [freezeNodes(this.nodes())];
 		this.historyIndex = 0;
 		// Keymap
 		this.keymap = defaultKeymap();
@@ -175,23 +189,55 @@ export class State {
 		if (!this.viewRef) return;
 		const rootRect = this.viewRef!.getBoundingClientRect();
 		const t = untrack(this.transform[0]);
+		console.log(rootRect, t, x, y);
 		return {
 			x: (x - rootRect.left) / t.z,
 			y: (y - rootRect.top) / t.z,
 		};
 	}
 
-	viewRect(elem?: HTMLElement): Rect | undefined {
+	viewRect(elem?: HTMLElement): ShapedRect | undefined {
 		if (!elem || !this.viewRef) return;
 		const rootRect = this.viewRef!.getBoundingClientRect();
 		const rect = elem.getBoundingClientRect();
+		const angular = !elem.classList.contains("hrm-pill");
 		const t = untrack(this.transform[0]);
 		return {
 			x: (rect.left - rootRect.left) / t.z,
 			y: (rect.top - rootRect.top) / t.z,
 			w: rect.width / t.z,
 			h: rect.height / t.z,
+			angular,
 		};
+	}
+
+	fitTransformFor(elem?: HTMLElement) {
+		// If elem is out of view, move transform to show it
+		if (!elem) return;
+		const rect = elem.getBoundingClientRect();
+		const rootRect = this.rootRef!.getBoundingClientRect();
+		console.log(rootRect);
+		let dx = 0,
+			dy = 0;
+		if (rect.right + dx > rootRect.right) {
+			dx = rootRect.right - rect.right;
+		}
+		if (rect.left + dx < rootRect.left) {
+			dx = rootRect.left - rect.left;
+		}
+		if (rect.bottom + dy > rootRect.bottom) {
+			dy = rootRect.bottom - rect.bottom;
+		}
+		if (rect.top + dy < rootRect.top) {
+			dy = rootRect.top - rect.top;
+		}
+		this.transform[1](t => {
+			return {
+				...t,
+				x: t.x + dx,
+				y: t.y + dy,
+			};
+		});
 	}
 
 	// Range
@@ -222,16 +268,8 @@ export class State {
 	viewRectOf(id: NodeID, handle?: HandleID): ShapedRect | undefined {
 		const node = this.nodes().get(id);
 		if (!node) return;
-		const n = node[0]();
-		if (handle === undefined) {
-			const r = this.viewRect(n.ref);
-			if (!r) return;
-			return {
-				...r,
-				angular: n.angular,
-			};
-		}
-		const ref = n.handles[handle][0]().ref;
+		const n = node[0](),
+			ref = handle === undefined ? n.ref : n.handles[handle][0]().ref;
 		if (!ref) return;
 		return this.viewRect(ref);
 	}
@@ -298,10 +336,22 @@ export class State {
 
 	// Selected Nodes
 
-	translateSelectedNodes(id: NodeID, dx: number, dy: number, zoom: number) {
-		for (const [nid, node] of this.nodes()) {
+	translateOneNode(id: NodeID, dx: number, dy: number, zoom: number) {
+		const node = this.nodes().get(id);
+		if (!node) return;
+		node[1](n => ({
+			...n,
+			position: {
+				x: n.position.x + dx / zoom,
+				y: n.position.y + dy / zoom,
+			},
+		}));
+	}
+
+	translateSelectedNodes(dx: number, dy: number, zoom: number) {
+		for (const [, node] of this.nodes()) {
 			node[1](n => {
-				if (nid !== id && !n.selected) return n;
+				if (!n.selected) return n;
 				return {
 					...n,
 					position: {
@@ -491,7 +541,7 @@ export class State {
 				srcNode = nodes.get(srcID);
 			if (!sinkNode || !srcNode) return;
 			if (srcHandle === undefined) {
-				if (ROOT_NODES.has(srcNode[0]().data.type)) return;
+				if (NON_SOURCE_NODES.has(srcNode[0]().data.type)) return;
 			} else {
 				const h = srcNode[0]().handles[srcHandle];
 				if (!h || h[0]().data.type !== HandleType.Source) return;
@@ -604,7 +654,6 @@ export class State {
 					oldSinkHandles.push(h.data);
 				}
 			}
-			console.log(oldSinkHandles);
 			const newHandles = thawed[0]().handles;
 			for (let i = 0; i < newHandles.length; i++) {
 				newHandles[i][1](h => {

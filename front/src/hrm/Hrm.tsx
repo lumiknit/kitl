@@ -1,7 +1,6 @@
-import { Component } from "solid-js";
+import { Component, createEffect } from "solid-js";
 
 import { toast } from "@/block/ToastContainer";
-import { Box, Nodes as CNodes } from "@/common";
 
 import { Nodes } from "./data";
 import HrmPane from "./HrmPane";
@@ -16,8 +15,7 @@ import HrmEditOverlay from "./HrmEditOverlay";
 import { parseKeyEvent } from "@/common/event";
 
 export type HrmProps = {
-	initialNodes?: CNodes;
-	stateBox?: Box<State>;
+	state: State;
 };
 
 export type HrmState = {
@@ -25,52 +23,57 @@ export type HrmState = {
 };
 
 const Hrm: Component<HrmProps> = props => {
-	const g = new State(props.initialNodes);
-	if (props.stateBox) {
-		props.stateBox[0] = g;
-	}
+	let rootRef: HTMLDivElement | undefined;
+	createEffect(() => {
+		console.log("Update rootRef", rootRef);
+		props.state.rootRef = rootRef;
+	});
 	const handleScroll = () => {
 		// Reset scroll position.
 		// When transform & input is used, focus or typing will cause scroll position to the change.
 		// Then, pane position move incorrectly and touch is disabled.
-		if (g.rootRef) {
-			if (g.rootRef.scrollLeft != 0 || g.rootRef.scrollTop != 0) {
-				g.rootRef.scrollTo(0, 0);
+		if (props.state.rootRef) {
+			if (
+				props.state.rootRef.scrollLeft != 0 ||
+				props.state.rootRef.scrollTop != 0
+			) {
+				props.state.rootRef.scrollTo(0, 0);
 			}
 		}
 	};
 	const handleKeyDown = (e: KeyboardEvent) => {
+		if (e.target !== props.state.rootRef) return;
 		const key = parseKeyEvent(e);
 		console.log(key);
-		g.handleKey(key);
+		props.state.handleKey(key);
 	};
 	const handlePointerEnter = (e: any) => {
 		e.currentTarget.focus();
 	};
 	return (
 		<div
-			ref={g.rootRef}
+			ref={rootRef}
 			class="hrm-container abs-parent"
 			onScroll={handleScroll}
 			onKeyDown={handleKeyDown}
 			onPointerEnter={handlePointerEnter}
 			tabIndex={0}>
 			<HrmPane
-				g={g}
-				onClick={() => g.deselectAll()}
+				g={props.state}
+				onClick={() => props.state.deselectAll()}
 				onDoubleClick={e => {
-					const p = g.viewPos(e.x, e.y);
-					const id = g.addEmptyNode(p);
+					const p = props.state.viewPos(e.x, e.y);
+					const id = props.state.addEmptyNode(p);
 					setTimeout(() => {
-						g.editNode(id);
+						props.state.editNode(id);
 					}, 100);
 				}}
 				onLongPress={() => {
 					toast("[Hrm] Long press");
 				}}>
-				<HrmNodes g={g} />
-				<HrmConnectingEdge g={g} />
-				<HrmEditOverlay g={g} />
+				<HrmNodes g={props.state} />
+				<HrmConnectingEdge g={props.state} />
+				<HrmEditOverlay g={props.state} />
 			</HrmPane>
 		</div>
 	);

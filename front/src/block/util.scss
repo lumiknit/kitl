@@ -1,3 +1,43 @@
+/* Font size */
+
+.rem-075 {
+	font-size: 0.75rem;
+}
+.rem-1 {
+	font-size: 1rem;
+}
+.rem-125 {
+	font-size: 1.25rem;
+}
+.rem-15 {
+	font-size: 1.5rem;
+}
+.rem-175 {
+	font-size: 1.75rem;
+}
+.rem-2 {
+	font-size: 2rem;
+}
+
+.em-075 {
+	font-size: 0.75em;
+}
+.em-1 {
+	font-size: 1em;
+}
+.em-125 {
+	font-size: 1.25em;
+}
+.em-15 {
+	font-size: 1.5em;
+}
+.em-175 {
+	font-size: 1.75em;
+}
+.em-2 {
+	font-size: 2em;
+}
+
 /* Fill parent */
 
 .abs-parent {
@@ -8,6 +48,11 @@
 .rel-parent {
 	position: relative;
 	inset: 0;
+}
+
+.sticky-top {
+	position: sticky;
+	top: 0;
 }
 
 /* Size */
@@ -157,15 +202,23 @@ $spacer: 0.25rem;
 	margin-left: auto;
 }
 
+/* Text align */
+
+@each $align in (left, center, right, justify) {
+	.text-#{$align} {
+		text-align: $align;
+	}
+}
+
 /* Opacity */
 .opacity-0 {
-	opacity: 0;
+	opacity: 0 !important;
 }
 .opacity-50 {
-	opacity: 0.5;
+	opacity: 0.5 !important;
 }
-.opactiy-100 {
-	opacity: 1;
+.opacity-100 {
+	opacity: 1 !important;
 }
 
 /* Shadow */
@@ -185,6 +238,10 @@ $spacer: 0.25rem;
 }
 .visible {
 	visibility: visible !important;
+}
+
+.word-break-all {
+	word-break: break-all;
 }
 
 /* User select */

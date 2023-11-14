@@ -18,6 +18,7 @@ $ui-border-radius: 0.25rem;
 		color 0.1s ease-in-out,
 		background-color 0.1s ease-in-out,
 		border-color 0.1s ease-in-out;
+	cursor: pointer;
 }
 
 /* Dropdown */
@@ -68,7 +69,7 @@ $ui-border-radius: 0.25rem;
 	font-size: 1rem;
 	padding: 0.5rem;
 	color: rgb(var(--b-rgb-fg));
-	background-color: rgb(var(--b-rgb-bg));
+	background-color: rgb(var(--b-rgb-bg-hard));
 }
 
 .code-area > textarea.form-control,
@@ -87,16 +88,21 @@ $ui-border-radius: 0.25rem;
 	outline: 0.125rem solid rgba(var(--b-rgb-primary), 0.5);
 }
 
-.code-area > textarea.form-control:disabled,
-input.form-control[type="text"]:disabled {
+.code-area > textarea.form-control:read-only,
+input.form-control[type="text"]:read-only {
 	color: rgba(var(--b-rgb-fg), 1);
 	background-color: rgba(var(--b-rgb-bg), 1);
+}
+
+.code-area {
+	display: flex;
 }
 
 .code-area > textarea {
 	font-family: monospace;
 	resize: both;
-	width: 20rem;
+	flex: 1;
+	tab-size: 2;
 }
 
 .code-area > textarea.code-area-hidden {
@@ -104,11 +110,6 @@ input.form-control[type="text"]:disabled {
 	height: 1px;
 	margin: 0;
 	padding: 0;
-}
-
-.checkbox > input {
-	width: 1.25em;
-	height: 1.25em;
 }
 
 .input-group {
@@ -191,4 +192,52 @@ input.form-control[type="text"]:disabled {
 	padding: 0.5rem;
 	margin: 0.25rem;
 	max-width: 80%;
+}
+
+/* Spinner */
+span.spinner {
+	width: 1em;
+	height: 1em;
+	border: 0.125em solid #fff;
+	border-bottom-color: rgba(var(--b-rgb-primary), 1);
+	border-radius: 50%;
+	display: inline-block;
+	box-sizing: border-box;
+	animation: rotation 0.5s linear infinite;
+}
+
+@keyframes rotation {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+/* Checkbox */
+
+.checkbox input {
+	display: none;
+}
+
+.checkbox label::before {
+	content: "";
+	display: inline-block;
+	width: 1em;
+	height: 1em;
+	color: rgba(var(--b-rgb-primary), 1);
+	border: 0.125em solid rgba(var(--b-rgb-secondary), 0.5);
+	border-radius: 0.25em;
+	vertical-align: text-bottom;
+	text-align: center;
+}
+
+.checkbox:hover label::before {
+	outline: 0.175rem solid rgba(var(--b-rgb-primary), 0.25);
+}
+
+.checkbox label:has(input:checked)::before {
+	content: "✓";
+	border-color: rgba(var(--b-rgb-primary), 1);
 }

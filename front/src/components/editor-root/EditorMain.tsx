@@ -1,23 +1,24 @@
-import { Box, emptyBox } from "@/common";
-import { State } from "@/hrm";
 import { Component } from "solid-js";
 
 import "./style.scss";
 import HrmEditor from "./EditorHrm";
 import EditorHrmHeader from "./EditorHrmHeader";
-import Modals, { ModalActions } from "./Modals";
+import Modals from "./Modals";
+import { editValueDef, newState } from "./state";
 
 const MainEditor: Component = () => {
-	const state: Box<State> = emptyBox();
-	const modalActionsBox: Box<ModalActions> = emptyBox();
+	const state = newState();
 	return (
 		<div class="editor-root">
-			<HrmEditor stateBox={state} />
-			<EditorHrmHeader
-				stateBox={state}
-				modalActionsBox={modalActionsBox}
+			<HrmEditor state={state.hrm[0]()} />
+			<EditorHrmHeader state={state} />
+			<Modals
+				actions={state.modalActions[0]()}
+				state={state.hrm[0]()}
+				editValueDef={(path: string, name: string) =>
+					editValueDef(state, path, name)
+				}
 			/>
-			<Modals actionsBox={modalActionsBox} stateBox={state} />
 		</div>
 	);
 };

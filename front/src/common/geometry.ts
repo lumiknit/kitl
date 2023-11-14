@@ -1,9 +1,16 @@
 /* Types */
 
+import { fassertNumber } from "./assert";
+
 export type Position = {
 	x: number;
 	y: number;
 };
+
+export const loadPosition = (a: any): Position => ({
+	x: fassertNumber(a.x),
+	y: fassertNumber(a.y),
+});
 
 export type Size = {
 	w: number;
@@ -21,6 +28,11 @@ export type ShapedRect = Rect & {
 export const origin: Position = { x: 0, y: 0 };
 
 /* Helpers */
+
+export const makePositionInt = (p: Position): Position => ({
+	x: Math.round(p.x),
+	y: Math.round(p.y),
+});
 
 export const distSquare = (dx: number, dy: number) => dx * dx + dy * dy;
 export const dist = (dx: number, dy: number) => Math.sqrt(distSquare(dx, dy));

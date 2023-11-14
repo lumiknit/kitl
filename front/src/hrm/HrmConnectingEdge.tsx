@@ -1,4 +1,4 @@
-import { Component, JSX } from "solid-js";
+import { Component, JSX, createEffect } from "solid-js";
 import { State } from "./state";
 import { pathBetweenRects } from "@/common";
 

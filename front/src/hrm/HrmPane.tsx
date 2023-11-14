@@ -11,7 +11,6 @@ import {
 	ClickEvent,
 	addEventListeners,
 } from "@/common/pointer-helper";
-import { createDelayedSignal } from "@/solid-utils/indes";
 
 const transformToStyle = (t: Transform) =>
 	`translate(${t.x}px, ${t.y}px) scale(${t.z})`;
@@ -25,16 +24,17 @@ type HrmPaneProps = {
 };
 
 const HrmPane: Component<HrmPaneProps> = props => {
+	let viewRef: HTMLDivElement | undefined;
 	let paneRef: HTMLDivElement | undefined;
-	const [t, setT] = createDelayedSignal<Transform>(10, { x: 0, y: 0, z: 1 }),
-		tr = (dx: number, dy: number, dz: number) =>
-			setT(s => ({
-				x: s.x * dz + dx,
-				y: s.y * dz + dy,
-				z: s.z * dz,
-			}));
-	props.g.transform[0] = t;
-	props.g.transform[1] = setT;
+	createEffect(() => {
+		props.g.viewRef = viewRef;
+	});
+	const tr = (dx: number, dy: number, dz: number) =>
+		props.g.transform[1](s => ({
+			x: s.x * dz + dx,
+			y: s.y * dz + dy,
+			z: s.z * dz,
+		}));
 
 	type Control =
 		| [JSXElement, () => any]
@@ -59,7 +59,10 @@ const HrmPane: Component<HrmPaneProps> = props => {
 					1 / dz,
 				),
 		],
-		[<TbZoomReset />, () => setT(() => ({ x: 0, y: 0, z: 1 }))],
+		[
+			<TbZoomReset />,
+			() => props.g.transform[1](() => ({ x: 0, y: 0, z: 1 })),
+		],
 		[
 			<TbZoomInArea />,
 			() => {
@@ -73,7 +76,7 @@ const HrmPane: Component<HrmPaneProps> = props => {
 					z = Math.min(zoomX, zoomY);
 				const x = -rect.x * z + (paneSize.w - rect.w * z) / 2,
 					y = -rect.y * z + (paneSize.h - rect.h * z) / 2;
-				setT({ x, y, z });
+				props.g.transform[1]({ x, y, z });
 			},
 		],
 	];
@@ -139,12 +142,12 @@ const HrmPane: Component<HrmPaneProps> = props => {
 	});
 
 	return (
-		<div ref={paneRef} class="hrm-pane abs-parent">
+		<div ref={paneRef} class="no-user-select hrm-pane abs-parent">
 			<div
 				class="hrm-view"
-				ref={props.g.viewRef}
+				ref={viewRef}
 				style={{
-					transform: transformToStyle(t()),
+					transform: transformToStyle(props.g.transform[0]()),
 				}}>
 				{props.children}
 			</div>

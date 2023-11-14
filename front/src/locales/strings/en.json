@@ -24,6 +24,12 @@
 		"beta": "beta",
 		"comment": "comment"
 	},
+	"defType": {
+		"value": "Value",
+		"tag": "Tag",
+		"type": "Type",
+		"alias": "Alias"
+	},
 	"defFinder": {
 		"name": "Name",
 		"module": "Module"
@@ -79,6 +85,7 @@
 	},
 	"mainEditor": {
 		"menu": {
+			"save": "Save",
 			"addTools": "Add Node Tools",
 			"selectTools": "Select & Edit Tools",
 			"browser": "Browser",
@@ -95,7 +102,78 @@
 			"paste": "Pasted!",
 			"nothingToCopy": "Nothing to copy",
 			"nothingToCut": "Nothing to cut",
-			"nothingToPaste": "Nothing to paste"
+			"nothingToPaste": "Nothing to paste",
+			"saveSuccess": "Successfully saved!"
+		}
+	},
+	"fileBrowser": {
+		"warningLocal": "Warning: Local data are saved in your browser, and will be lost if you clear your browser data.",
+		"folder": "Folder",
+		"file": "File",
+		"name": "Name",
+		"size": "Size",
+		"modified": "Modified",
+		"uploadPlaceholder": "Upload (Click or Drag&Drop)",
+		"fileTooLarge": {
+			"message": "File is too large!",
+			"show": "Show Anyway",
+			"download": "Download"
+		},
+		"resetLocal": {
+			"confirm": "Are you sure to reset local data?"
+		},
+		"deleteSelected": {
+			"confirm": "Delete selected files and folders?"
+		},
+		"renameSelected": {
+			"prompt": "Enter new name for the file"
+		},
+		"directory": {
+			"empty": "The directy is empty."
+		},
+		"menu": {
+			"refresh": "Refresh",
+			"formatLocalStorage": "Format Local Storage",
+			"rename": "Rename",
+			"copy": "Copy",
+			"cut": "Cut",
+			"paste": "Paste",
+			"delete": "Delete",
+			"save": "Save"
+		},
+		"prompt": {
+			"resetLocal": "Are you sure to reset local data?",
+			"deleteSelected": "Delete selected files and folders?",
+			"renameSelected": "Enter new name for the file",
+			"saveConflict": "The file was modified by another program. Overwrite it?",
+			"pasteOverwrite": "The file already exists. Overwrite it?"
+		},
+		"toast": {
+			"cutSuccess": "Cutted!",
+			"cutError": "Cut failed..",
+			"copySuccess": "Copied!",
+			"copyError": "Copy failed..",
+			"pasteSuccess": "Pasted!",
+			"pasteError": "Paste failed..",
+			"deleteSuccess": "Deleted!",
+			"deleteError": "Delete failed..",
+			"newFileSuccess": "New file created",
+			"newFileError": "New file creation failed..",
+			"newFolder": "New folder created",
+			"newFolderError": "New folder creation failed..",
+			"uploadingFiles": "Uploading files...",
+			"uploadSuccess": "Upload success!",
+			"uploadError": "Upload failed..",
+			"uploadReadError": "Failed to read file to upload..",
+			"nothingSelected": "No file or folder selected..",
+			"saved": "Saved successfully!",
+			"invalidKitl": "Invalid KITL file!",
+			"invalidDefCreationName": "Invalid definition creation name!",
+			"defAlreadyExists": "Definition already exists!"
+		},
+		"title": {
+			"uploading": "Uploading...",
+			"invalidKitl": "Invalid KITL file. You may rename to .json and open it as a text file."
 		}
 	}
 }

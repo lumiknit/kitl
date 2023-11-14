@@ -1,10 +1,10 @@
-import { For, Show, createEffect } from "solid-js";
+import { For, Show, createEffect, createSignal } from "solid-js";
 import {
 	Getter,
 	LEFT_EXPANDABLE_NODES,
+	NON_SOURCE_NODES,
 	NodeID,
 	RIGHT_EXPANDABLE_NODES,
-	ROOT_NODES,
 } from "@/common";
 import { Handle, Node } from "./data";
 
@@ -22,6 +22,7 @@ type HrmNodeProps = {
 };
 
 const HrmNode = (props: HrmNodeProps) => {
+	const [handleHover, setHandleHover]: VWrap<boolean> = createSignal(false);
 	const [n, update]: VWrap<Node> = props.nodeW;
 	console.log("[HrmNode] render");
 	let nodeRef: HTMLDivElement | undefined,
@@ -71,16 +72,26 @@ const HrmNode = (props: HrmNodeProps) => {
 					}
 				},
 				onClick: e => {
-					const keep = e.modifiers.shift || e.modifiers.ctrl;
-					props.g.selectOneNode(props.id, keep);
+					if (!e.dragged) {
+						const keep = e.modifiers.shift || e.modifiers.ctrl;
+						props.g.selectOneNode(props.id, keep);
+					}
 				},
 				onDrag: e => {
-					props.g.translateSelectedNodes(
-						props.id,
-						e.dx,
-						e.dy,
-						props.g.transform[0]().z,
-					);
+					if (n().selected) {
+						props.g.translateSelectedNodes(
+							e.dx,
+							e.dy,
+							props.g.transform[0]().z,
+						);
+					} else {
+						props.g.translateOneNode(
+							props.id,
+							e.dx,
+							e.dy,
+							props.g.transform[0]().z,
+						);
+					}
 				},
 				onDoubleClick: () => {
 					setTimeout(() => {
@@ -96,6 +107,12 @@ const HrmNode = (props: HrmNodeProps) => {
 		if (!handleRef) return;
 		addEventListeners(
 			{
+				onEnter: () => {
+					setHandleHover(true);
+				},
+				onLeave: () => {
+					setHandleHover(false);
+				},
 				onDown: e => {
 					props.g.addConnectingEnd(
 						e.id,
@@ -125,10 +142,12 @@ const HrmNode = (props: HrmNodeProps) => {
 		<div
 			classList={{
 				"hrm-node": true,
+				"hrm-node-root": NON_SOURCE_NODES.has(n().data.type),
 				"abs-lt": true,
 				selected: n().selected,
 				"hrm-rect": n().angular,
 				"hrm-pill": !n().angular,
+				"no-user-select": true,
 			}}
 			ref={nodeRef}
 			style={{
@@ -161,8 +180,13 @@ const HrmNode = (props: HrmNodeProps) => {
 					node={n()}
 				/>
 			</Show>
-			<Show when={!ROOT_NODES.has(n().data.type)}>
-				<div ref={handleRef} class="hrm-node-handle" />
+			<Show when={!NON_SOURCE_NODES.has(n().data.type)}>
+				<div
+					ref={handleRef}
+					class={`hrm-node-handle hrm-pill ${
+						handleHover() ? "opacity-100" : ""
+					}`}
+				/>
 			</Show>
 		</div>
 	);
