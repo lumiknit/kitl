@@ -16,22 +16,23 @@ import {
 	TbRocket,
 	TbScissors,
 	TbSquarePlus,
+	TbTools,
 } from "solid-icons/tb";
 import { Component, createSignal } from "solid-js";
 import { s } from "@/locales";
 import { ModalType } from "./Modals";
 import { State, saveToFile } from "./state";
-import { toastSuccess } from "@/block/ToastContainer";
+import { toast, toastSuccess } from "@/block/ToastContainer";
 
 enum ToolSet {
-	Add,
+	Default,
 	Edit,
 }
 
 const TOOL_SET_INFO = () => [
 	{
-		name: s("mainEditor.menu.addTools"),
-		icon: <TbSquarePlus />,
+		name: s("mainEditor.menu.defaultTools"),
+		icon: <TbTools />,
 	},
 	{
 		name: s("mainEditor.menu.selectTools"),
@@ -53,7 +54,7 @@ const toolSetIcon = (toolSet: ToolSet) => {
 
 const toolSet = (toolSet: ToolSet, g: HrmState) => {
 	switch (toolSet) {
-		case ToolSet.Add:
+		case ToolSet.Default:
 			return (
 				<>
 					<Button color={Color.warning} onClick={() => g.undo()}>
@@ -65,14 +66,11 @@ const toolSet = (toolSet: ToolSet, g: HrmState) => {
 					<Button
 						color={Color.secondary}
 						class="flex-1"
-						onClick={() => g.addEmptyNode()}>
+						onClick={() => {
+							const t = 1000 + Math.random() * 3000;
+							toast(`Test: ${t} ms`, { ttl: t });
+						}}>
 						<TbSquarePlus />
-					</Button>
-					<Button
-						color={Color.danger}
-						class="flex-1"
-						onClick={() => g.deleteSelectedNodes()}>
-						<TbBackspace />
 					</Button>
 				</>
 			);
@@ -136,7 +134,7 @@ const toolSetMenus = (g: HrmState, setS: Updater<EditorHrmHeaderState>) => {
 
 const EditorHrmHeader: Component<EditorHrmHeaderProps> = props => {
 	const [state, setState] = createSignal<EditorHrmHeaderState>({
-		toolSet: ToolSet.Add,
+		toolSet: ToolSet.Default,
 	});
 	const dropdownList = () => {
 		return [

@@ -42,6 +42,10 @@
 	--b-rgb-warning-light: 247, 219, 150;
 	--b-rgb-warning-dark: 246, 187, 66;
 	--b-rgb-warning-text: var(--b-rgb-black);
+	--b-rgb-info: 159, 128, 169;
+	--b-rgb-info-light: 209, 160, 226;
+	--b-rgb-info-dark: 147, 102, 171;
+	--b-rgb-info-text: var(--b-rgb-white);
 }
 
 /* Hrm colors */

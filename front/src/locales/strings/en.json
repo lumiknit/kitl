@@ -86,7 +86,7 @@
 	"mainEditor": {
 		"menu": {
 			"save": "Save",
-			"addTools": "Add Node Tools",
+			"defaultTools": "Default Tools",
 			"selectTools": "Select & Edit Tools",
 			"browser": "Browser",
 			"launch": "Launch",

@@ -86,7 +86,7 @@
 	"mainEditor": {
 		"menu": {
 			"save": "저장",
-			"addTools": "노드 추가 도구",
+			"defaultTools": "기본 도구",
 			"selectTools": "선택 및 편집 도구",
 			"browser": "탐색기",
 			"launch": "실행",

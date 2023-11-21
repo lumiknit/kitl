@@ -68,6 +68,9 @@ export class State {
 	rootRef?: HTMLDivElement;
 	viewRef?: HTMLDivElement;
 
+	// Selected State
+	selectedNodes: VWrap<number>;
+
 	// Editing Node
 	editingNode: VWrap<EditingNode | undefined>;
 
@@ -93,6 +96,7 @@ export class State {
 		this.name = name;
 		this.nodes = nodes;
 		this.setNodes = setNodes;
+		this.selectedNodes = createSignal(0);
 		this.editingNode = createSignal();
 		this.connectingEdge = createSignal();
 		this.connectingEnd = createSignal({ pos: origin });
@@ -364,37 +368,52 @@ export class State {
 	}
 
 	selectAll() {
-		for (const [, node] of this.nodes()) {
-			node[1](n => (n.selected ? n : { ...n, selected: true }));
-		}
+		batch(() => {
+			const nodes = this.nodes();
+			for (const [, node] of nodes) {
+				node[1](n => (n.selected ? n : { ...n, selected: true }));
+			}
+			this.selectedNodes[1](nodes.size);
+		});
 	}
 
 	deselectAll() {
-		for (const [, node] of this.nodes()) {
-			node[1](n => (n.selected ? { ...n, selected: false } : n));
-		}
+		batch(() => {
+			for (const [, node] of this.nodes()) {
+				node[1](n => (n.selected ? { ...n, selected: false } : n));
+			}
+			this.selectedNodes[1](0);
+		});
 	}
 
 	selectOneNode(id: NodeID, keep?: boolean) {
-		this.connectingEdge[1](undefined);
-		// Check is selected
-		for (const [nid, node] of this.nodes()) {
-			if (nid === id) {
-				node[1](n => ({
-					...n,
-					selected: !n.selected,
-				}));
-			} else if (!keep && !this.selectMode) {
-				node[1](n =>
-					n.selected
-						? {
-								...n,
-								selected: false,
-						  }
-						: n,
-				);
+		keep ||= this.selectMode;
+		batch(() => {
+			let selected = false;
+			this.connectingEdge[1](undefined);
+			// Check is selected
+			for (const [nid, node] of this.nodes()) {
+				if (nid === id) {
+					selected = !node[0]().selected;
+					node[1](n => ({
+						...n,
+						selected: !n.selected,
+					}));
+				} else if (!keep) {
+					node[1](n =>
+						n.selected
+							? {
+									...n,
+									selected: false,
+							  }
+							: n,
+					);
+				}
 			}
-		}
+			this.selectedNodes[1](n =>
+				keep ? (selected ? n + 1 : n - 1) : selected ? 1 : 0,
+			);
+		});
 	}
 
 	// Deletion
@@ -409,6 +428,7 @@ export class State {
 					toDelete.add(id);
 				}
 			}
+			this.selectedNodes[1](n => n - toDelete.size);
 			for (const [id, node] of ns) {
 				if (toDelete.has(id)) {
 					ns.delete(id);

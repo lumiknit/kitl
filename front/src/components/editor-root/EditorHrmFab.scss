@@ -1,0 +1,11 @@
+.hrm-fab {
+	position: absolute;
+	left: 50%;
+	bottom: 0;
+	margin: 1rem;
+	z-index: 10;
+	border-radius: 50%;
+	width: 3.5rem;
+	height: 3.5rem;
+	transform: translateX(-50%);
+}
