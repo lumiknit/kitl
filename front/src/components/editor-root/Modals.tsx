@@ -3,6 +3,7 @@ import { Getter, Updater } from "@/common";
 import GraphToolsModal from "./GraphToolsModal";
 import { State as HrmState } from "@/hrm";
 import BrowserModal from "../browser/BrowserModal";
+import { Dynamic } from "solid-js/web";
 
 export enum ModalType {
 	None,
@@ -57,22 +58,20 @@ type ModalsProps = {
 	editValueDef: (path: string, name: string) => Promise<void>;
 };
 
+const ModalComponents = {
+	[ModalType.None]: (p: ModalsProps) => null,
+	[ModalType.Launch]: (p: ModalsProps) => null,
+	[ModalType.GraphTools]: GraphToolsModal,
+	[ModalType.Browser]: BrowserModal,
+};
+
 const Modals: Component<ModalsProps> = props => {
 	return (
-		<Switch>
-			<Match when={props.actions.state().type === ModalType.GraphTools}>
-				<GraphToolsModal
-					onClose={() => props.actions.close()}
-					state={props.state}
-				/>
-			</Match>
-			<Match when={props.actions.state().type === ModalType.Browser}>
-				<BrowserModal
-					onClose={() => props.actions.close()}
-					editValueDef={props.editValueDef}
-				/>
-			</Match>
-		</Switch>
+		<Dynamic
+			component={ModalComponents[props.actions.state().type]}
+			onClose={() => props.actions.close()}
+			{...props}
+		/>
 	);
 };
 

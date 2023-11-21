@@ -58,7 +58,7 @@ const ToastContainer: Component<ToastContainerProps> = props => {
 		setState(s => {
 			const toasts = s.toasts,
 				id = s.cnt,
-				ttl = Math.max(200, options?.ttl ?? 2000),
+				ttl = Math.max(400, options?.ttl ?? 2000),
 				timeout = (f: (ts: Toast[]) => Toast[], t: number) =>
 					window.setTimeout(
 						() => setState(s => ({ ...s, toasts: f(s.toasts) })),
@@ -75,7 +75,7 @@ const ToastContainer: Component<ToastContainerProps> = props => {
 							? { ...toast, class: "toast-a-out" }
 							: toast,
 					),
-				ttl - 100,
+				ttl - 200,
 			);
 			toasts.push({
 				id,

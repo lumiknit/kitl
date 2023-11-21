@@ -9,6 +9,7 @@ import EditorHrmFab from "./EditorHrmFab";
 
 const MainEditor: Component = () => {
 	const state = newState();
+
 	return (
 		<div class="editor-root">
 			<HrmEditor state={state.hrm[0]()} />

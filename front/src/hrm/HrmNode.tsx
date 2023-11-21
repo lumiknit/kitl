@@ -98,6 +98,9 @@ const HrmNode = (props: HrmNodeProps) => {
 						props.g.editNode(props.id);
 					}, 100);
 				},
+				onLongPress: () => {
+					props.g.selectOneNodeWithMode(props.id);
+				},
 			},
 			nodeRef,
 		);

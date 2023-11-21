@@ -2,7 +2,18 @@ import { Component, JSX } from "solid-js";
 
 import "./style.scss";
 
+enum ModalPosition {
+	Center,
+	Bottom,
+}
+
+const ModalPositionClass = {
+	[ModalPosition.Center]: "m-modal-center",
+	[ModalPosition.Bottom]: "m-modal-bottom",
+};
+
 type ModalProps = {
+	position?: ModalPosition;
 	fullHeight?: boolean;
 	open?: boolean;
 	onClose?: () => void;
@@ -20,11 +31,14 @@ const Modal: Component<ModalProps> = props => {
 		}
 	};
 	return (
-		<div class="m-modal" onClick={handleModalClick}>
+		<div
+			class={`m-modal ${
+				ModalPositionClass[props.position ?? ModalPosition.Center]
+			}`}
+			onClick={handleModalClick}>
 			<div
 				classList={{
 					"m-modal-content": true,
-					"m-modal-content-stick-to-center": true,
 					"h-100": props.fullHeight,
 				}}>
 				{props.children}

@@ -1,4 +1,4 @@
-import { Button, Color, InputGroup } from "@/block";
+import { Button, Color, InputGroup, InputText } from "@/block";
 import DropdownButton from "@/block/DropdownButton";
 import { Updater } from "@/common";
 import { State as HrmState } from "@/hrm";
@@ -57,20 +57,16 @@ const toolSet = (toolSet: ToolSet, g: HrmState) => {
 		case ToolSet.Default:
 			return (
 				<>
+					<InputText
+						class="flex-1"
+						readonly
+						value={`${g.name} @ ${g.path}`}
+					/>
 					<Button color={Color.warning} onClick={() => g.undo()}>
 						<TbArrowBackUp />
 					</Button>
 					<Button color={Color.warning} onClick={() => g.redo()}>
 						<TbArrowForwardUp />
-					</Button>
-					<Button
-						color={Color.secondary}
-						class="flex-1"
-						onClick={() => {
-							const t = 1000 + Math.random() * 3000;
-							toast(`Test: ${t} ms`, { ttl: t });
-						}}>
-						<TbSquarePlus />
 					</Button>
 				</>
 			);

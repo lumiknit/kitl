@@ -88,6 +88,9 @@ export class State {
 	// Keymap
 	keymap: Map<string, string> = new Map();
 
+	// Other callbacks
+	changeToSelectMode?: () => void;
+
 	constructor(path: string, name: string, initialNodes: Nodes) {
 		const [nodes, setNodes] = createSignal<Nodes>(initialNodes, {
 			equals: false,
@@ -414,6 +417,11 @@ export class State {
 				keep ? (selected ? n + 1 : n - 1) : selected ? 1 : 0,
 			);
 		});
+	}
+
+	selectOneNodeWithMode(id: NodeID, keep?: boolean) {
+		this.changeToSelectMode?.();
+		this.selectOneNode(id, keep);
 	}
 
 	// Deletion

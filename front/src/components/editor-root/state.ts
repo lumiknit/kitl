@@ -24,6 +24,10 @@ const scratchHrmState = (): HrmState => {
 	);
 };
 
+const initHrmState = (state: State, h: HrmState): HrmState => {
+	//TODO
+};
+
 export const newState = (): State => ({
 	hrm: createSignal<HrmState>(scratchHrmState()),
 	modalActions: createSignal<ModalActions>(new ModalActions()),
