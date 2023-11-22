@@ -2,11 +2,22 @@ import { VWrap } from "@/common";
 import { State as HrmState } from "@/hrm";
 import { ModalActions } from "./Modals";
 import { ValueDef, defsJsonPath, loadDefFns } from "@/common/kitl/defs";
-import { createSignal } from "solid-js";
+import { createEffect, createSignal, untrack } from "solid-js";
 import { freezeValueDef, thawValueDef } from "@/hrm-kitl";
 import { clients } from "@/client";
 
+// Defs
+
+export enum ToolSet {
+	Default,
+	Edit,
+}
+
+// State
+
 export type State = {
+	toolSet: VWrap<ToolSet>;
+	lastToolSet: ToolSet;
 	hrm: VWrap<HrmState>;
 	modalActions: VWrap<ModalActions>;
 };
@@ -24,14 +35,26 @@ const scratchHrmState = (): HrmState => {
 	);
 };
 
-const initHrmState = (state: State, h: HrmState): HrmState => {
-	//TODO
+const postInitHrmState = (state: State) => {
+	// Handler after HrmState is initialized
+	const hrmState = untrack(state.hrm[0]);
+	createEffect(() =>
+		hrmState.selectedNodes[0]() < 1
+			? restoreMode(state)
+			: changeMode(state, ToolSet.Edit),
+	);
 };
 
-export const newState = (): State => ({
-	hrm: createSignal<HrmState>(scratchHrmState()),
-	modalActions: createSignal<ModalActions>(new ModalActions()),
-});
+export const newState = (): State => {
+	const s = {
+		toolSet: createSignal<ToolSet>(ToolSet.Default),
+		lastToolSet: ToolSet.Default,
+		hrm: createSignal<HrmState>(scratchHrmState()),
+		modalActions: createSignal<ModalActions>(new ModalActions()),
+	};
+	postInitHrmState(s);
+	return s;
+};
 
 export const editValueDef = async (
 	state: State,
@@ -41,8 +64,8 @@ export const editValueDef = async (
 	const j = await clients.readJson(path, defsJsonPath(name));
 	const def = loadDefFns.value(j);
 	const newHrmState = new HrmState(path, name, thawValueDef(def));
-	console.log(newHrmState);
 	state.hrm[1](newHrmState);
+	postInitHrmState(state);
 };
 
 export const saveToFile = async (state: State) => {
@@ -51,4 +74,17 @@ export const saveToFile = async (state: State) => {
 	const j = loadDefFns.value(valueDef);
 	console.log(j);
 	await clients.writeJson(hrm.path, defsJsonPath(hrm.name), j);
+};
+
+export const changeMode = (state: State, mode: ToolSet) => {
+	const currentToolSet = untrack(state.toolSet[0]);
+	if (currentToolSet !== mode) {
+		state.lastToolSet = currentToolSet;
+		state.toolSet[1](mode);
+		state.hrm[0]().selectMode = mode === ToolSet.Edit;
+	}
+};
+
+export const restoreMode = (state: State) => {
+	state.toolSet[1](state.lastToolSet);
 };

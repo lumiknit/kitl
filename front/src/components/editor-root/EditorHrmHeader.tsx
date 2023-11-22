@@ -15,19 +15,13 @@ import {
 	TbFolderSearch,
 	TbRocket,
 	TbScissors,
-	TbSquarePlus,
 	TbTools,
 } from "solid-icons/tb";
 import { Component, createSignal } from "solid-js";
 import { s } from "@/locales";
 import { ModalType } from "./Modals";
-import { State, saveToFile } from "./state";
+import { State, ToolSet, changeMode, saveToFile } from "./state";
 import { toast, toastSuccess } from "@/block/ToastContainer";
-
-enum ToolSet {
-	Default,
-	Edit,
-}
 
 const TOOL_SET_INFO = () => [
 	{
@@ -108,20 +102,13 @@ const toolSet = (toolSet: ToolSet, g: HrmState) => {
 	}
 };
 
-const toolSetMenus = (g: HrmState, setS: Updater<EditorHrmHeaderState>) => {
+const toolSetMenus = (state: State) => {
 	return TOOL_SET_INFO().map((info, idx) => {
 		return (
 			<a
 				onClick={() => {
-					setS(s => ({
-						...s,
-						toolSet: idx as ToolSet,
-					}));
-					if (g) {
-						g.selectMode = idx === ToolSet.Edit;
-					}
+					changeMode(state, idx as ToolSet);
 				}}>
-				{" "}
 				{info.icon} {info.name}
 			</a>
 		);
@@ -129,12 +116,9 @@ const toolSetMenus = (g: HrmState, setS: Updater<EditorHrmHeaderState>) => {
 };
 
 const EditorHrmHeader: Component<EditorHrmHeaderProps> = props => {
-	const [state, setState] = createSignal<EditorHrmHeaderState>({
-		toolSet: ToolSet.Default,
-	});
 	const dropdownList = () => {
 		return [
-			toolSetMenus(props.state.hrm[0](), setState),
+			toolSetMenus(props.state),
 			[
 				<a
 					onClick={async () => {
@@ -151,7 +135,10 @@ const EditorHrmHeader: Component<EditorHrmHeaderProps> = props => {
 					}>
 					<TbFolderSearch /> {s("mainEditor.menu.browser")}
 				</a>,
-				<a>
+				<a
+					onClick={() =>
+						props.state.modalActions[0]()?.open(ModalType.Launch)
+					}>
 					<TbRocket /> {s("mainEditor.menu.launch")}
 				</a>,
 				<a
@@ -167,9 +154,9 @@ const EditorHrmHeader: Component<EditorHrmHeaderProps> = props => {
 		<div class="editor-root-hrm-header-container">
 			<InputGroup class="editor-root-hrm-header shadow-2">
 				<DropdownButton color={Color.primary} list={dropdownList()}>
-					{toolSetIcon(state().toolSet)}
+					{toolSetIcon(props.state.toolSet[0]())}
 				</DropdownButton>
-				{toolSet(state().toolSet, props.state.hrm[0]())}
+				{toolSet(props.state.toolSet[0](), props.state.hrm[0]())}
 			</InputGroup>
 		</div>
 	);

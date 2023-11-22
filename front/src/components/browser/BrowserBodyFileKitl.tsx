@@ -27,6 +27,7 @@ import {
 import { Component, For, JSX, Show, batch, createSignal } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { State, StateWrap, saveFile } from "./state";
+import RadioButtons, { RadioButton } from "@/block/RadioButtons";
 
 const DEF_TYPE_COLORS: { [k: string]: Color } = {
 	value: Color.primary,
@@ -346,11 +347,16 @@ const BrowserBodyFileKitl: Component<StateWrap> = props => {
 	};
 
 	const DefCreation: Component<any> = () => {
+		const radioButtons: RadioButton<number>[] = Object.entries(
+			DEF_TYPE_COLORS,
+		).map((entry, idx) => ({
+			color: entry[1],
+			label: s(`defType.${entry[0]}`),
+			value: idx,
+			class: "flex-1",
+		}));
 		let inputRef: HTMLInputElement | undefined;
 		const [typeIndex, setTypeIndex] = createSignal(0);
-		const nextType = () => {
-			setTypeIndex((typeIndex() + 1) % DEF_TYPES.length);
-		};
 		const add = () => {
 			const name = verifyDefName(contents, inputRef?.value ?? "");
 			updateDef(contents, [
@@ -361,12 +367,14 @@ const BrowserBodyFileKitl: Component<StateWrap> = props => {
 		return (
 			<>
 				Creation
+				<RadioButtons
+					buttons={radioButtons}
+					initialValue={0}
+					onChange={(idx: number) => {
+						setTypeIndex(idx);
+					}}
+				/>
 				<InputGroup class="my-1">
-					<Button
-						color={DEF_TYPE_COLORS[DEF_TYPES[typeIndex()]]}
-						onClick={nextType}>
-						{s(`defType.${DEF_TYPES[typeIndex()]}`)}
-					</Button>
 					<InputText
 						class="flex-1"
 						placeholder="Name"
@@ -377,7 +385,9 @@ const BrowserBodyFileKitl: Component<StateWrap> = props => {
 							}
 						}}
 					/>
-					<Button color={Color.primary} onClick={add}>
+					<Button
+						color={DEF_TYPE_COLORS[DEF_TYPES[typeIndex()]]}
+						onClick={add}>
 						<TbSquarePlus />
 					</Button>
 				</InputGroup>

@@ -4,6 +4,7 @@ import GraphToolsModal from "./GraphToolsModal";
 import { State as HrmState } from "@/hrm";
 import BrowserModal from "../browser/BrowserModal";
 import { Dynamic } from "solid-js/web";
+import LaunchModal from "./LaunchModal";
 
 export enum ModalType {
 	None,
@@ -60,7 +61,7 @@ type ModalsProps = {
 
 const ModalComponents = {
 	[ModalType.None]: (p: ModalsProps) => null,
-	[ModalType.Launch]: (p: ModalsProps) => null,
+	[ModalType.Launch]: LaunchModal,
 	[ModalType.GraphTools]: GraphToolsModal,
 	[ModalType.Browser]: BrowserModal,
 };

@@ -1,8 +1,8 @@
-import { Component, JSX } from "solid-js";
+import { Component, JSX, onMount } from "solid-js";
 
 import "./style.scss";
 
-enum ModalPosition {
+export enum ModalPosition {
 	Center,
 	Bottom,
 }
@@ -21,6 +21,7 @@ type ModalProps = {
 };
 
 const Modal: Component<ModalProps> = props => {
+	let ref: HTMLDivElement | undefined;
 	const handleModalClick: JSX.EventHandler<
 		HTMLDivElement,
 		MouseEvent
@@ -30,9 +31,15 @@ const Modal: Component<ModalProps> = props => {
 			props.onClose();
 		}
 	};
+	onMount(() => {
+		setTimeout(() => {
+			ref?.classList.remove("hide");
+		});
+	});
 	return (
 		<div
-			class={`m-modal ${
+			ref={ref}
+			class={`m-modal hide ${
 				ModalPositionClass[props.position ?? ModalPosition.Center]
 			}`}
 			onClick={handleModalClick}>
