@@ -6,7 +6,7 @@ import { s } from "@/locales";
 import { TbBinaryTree, TbX } from "solid-icons/tb";
 import { Component } from "solid-js";
 
-type GraphToolsModalProps = {
+export type GraphToolsModalProps = {
 	onClose: () => void;
 	state: State;
 };

@@ -15,13 +15,7 @@ const MainEditor: Component = () => {
 			<HrmEditor state={state.hrm[0]()} />
 			<EditorHrmHeader state={state} />
 			<EditorHrmFab state={state.hrm[0]()} />
-			<Modals
-				actions={state.modalActions[0]()}
-				state={state.hrm[0]()}
-				editValueDef={(path: string, name: string) =>
-					editValueDef(state, path, name)
-				}
-			/>
+			<Modals state={state} />
 		</div>
 	);
 };

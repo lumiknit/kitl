@@ -2,8 +2,9 @@ import Modal from "@/components/modal/Modal";
 import { Component } from "solid-js";
 import Browser from "./Browser";
 
-type BrowserModalProps = {
+export type BrowserModalProps = {
 	onClose: () => void;
+	initialPath: string;
 	editValueDef: (path: string, name: string) => Promise<void>;
 };
 

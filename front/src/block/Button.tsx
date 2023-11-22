@@ -7,6 +7,7 @@ type ButtonProps = {
 	class?: string;
 	color: Color;
 	outline?: boolean;
+	small?: boolean;
 	onClick?: () => void;
 	disabled?: boolean;
 };
@@ -16,7 +17,7 @@ const Button: Component<ButtonProps> = props => {
 		<button
 			class={`btn btn-${props.outline ? "ol-" : ""}${props.color} ${
 				props.class ?? ""
-			}`}
+			} ${props.small ? "btn-sm" : ""}`}
 			onClick={props.onClick}
 			disabled={props.disabled}>
 			{props.children}

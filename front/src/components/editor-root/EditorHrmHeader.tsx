@@ -1,6 +1,5 @@
 import { Button, Color, InputGroup, InputText } from "@/block";
 import DropdownButton from "@/block/DropdownButton";
-import { Updater } from "@/common";
 import { State as HrmState } from "@/hrm";
 import {
 	TbArrowBackUp,
@@ -20,7 +19,15 @@ import {
 import { Component, createSignal } from "solid-js";
 import { s } from "@/locales";
 import { ModalType } from "./Modals";
-import { State, ToolSet, changeMode, saveToFile } from "./state";
+import {
+	State,
+	ToolSet,
+	changeMode,
+	openBrowserModal,
+	openGraphToolsModal,
+	openLaunchModal,
+	saveToFile,
+} from "./state";
 import { toast, toastSuccess } from "@/block/ToastContainer";
 
 const TOOL_SET_INFO = () => [
@@ -129,22 +136,13 @@ const EditorHrmHeader: Component<EditorHrmHeaderProps> = props => {
 				</a>,
 			],
 			[
-				<a
-					onClick={() =>
-						props.state.modalActions[0]()?.open(ModalType.Browser)
-					}>
+				<a onClick={() => openBrowserModal(props.state)}>
 					<TbFolderSearch /> {s("mainEditor.menu.browser")}
 				</a>,
-				<a
-					onClick={() =>
-						props.state.modalActions[0]()?.open(ModalType.Launch)
-					}>
+				<a onClick={() => openLaunchModal(props.state)}>
 					<TbRocket /> {s("mainEditor.menu.launch")}
 				</a>,
-				<a
-					onClick={() =>
-						props.state.modalActions[0]()?.openGraphTools()
-					}>
+				<a onClick={() => openGraphToolsModal(props.state)}>
 					<TbBinaryTree /> {s("mainEditor.menu.graphTools")}
 				</a>,
 			],
@@ -158,6 +156,15 @@ const EditorHrmHeader: Component<EditorHrmHeaderProps> = props => {
 				</DropdownButton>
 				{toolSet(props.state.toolSet[0](), props.state.hrm[0]())}
 			</InputGroup>
+			<div>
+				<Button
+					color={Color.primary}
+					outline
+					small
+					onClick={() => alert("unimpl")}>
+					Test
+				</Button>
+			</div>
 		</div>
 	);
 };

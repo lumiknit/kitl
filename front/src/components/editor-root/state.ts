@@ -1,9 +1,9 @@
-import { VWrap } from "@/common";
+import { VWrap, stringifyNodeData } from "@/common";
 import { State as HrmState } from "@/hrm";
-import { ModalActions } from "./Modals";
+import { ModalActions, ModalType } from "./Modals";
 import { ValueDef, defsJsonPath, loadDefFns } from "@/common/kitl/defs";
 import { createEffect, createSignal, untrack } from "solid-js";
-import { freezeValueDef, thawValueDef } from "@/hrm-kitl";
+import { freezeNode, freezeValueDef, thawValueDef } from "@/hrm-kitl";
 import { clients } from "@/client";
 
 // Defs
@@ -38,6 +38,7 @@ const scratchHrmState = (): HrmState => {
 const postInitHrmState = (state: State) => {
 	// Handler after HrmState is initialized
 	const hrmState = untrack(state.hrm[0]);
+	hrmState.onEditNode = id => openNodeEditModal(state, id);
 	createEffect(() =>
 		hrmState.selectedNodes[0]() < 1
 			? restoreMode(state)
@@ -87,4 +88,45 @@ export const changeMode = (state: State, mode: ToolSet) => {
 
 export const restoreMode = (state: State) => {
 	state.toolSet[1](state.lastToolSet);
+};
+
+// Modals
+
+export const openBrowserModal = (state: State) => {
+	state.modalActions[0]().open({
+		type: ModalType.Browser,
+		initialPath: "/",
+		editValueDef: (path, name) => editValueDef(state, path, name),
+		onClose: () => state.modalActions[0]().close(),
+	});
+};
+
+export const openGraphToolsModal = (state: State) => {
+	state.modalActions[0]().open({
+		type: ModalType.GraphTools,
+		state: state.hrm[0](),
+		onClose: () => state.modalActions[0]().close(),
+	});
+};
+
+export const openNodeEditModal = (state: State, id: string) => {
+	const hrmState = state.hrm[0]();
+	state.modalActions[0]().open({
+		type: ModalType.NodeEdit,
+		id,
+		initValue: hrmState.getNodeStringData(id),
+		onApply: value => {
+			hrmState.applyEditNode(id, value);
+			state.modalActions[0]().close();
+		},
+		onClose: () => state.modalActions[0]().close(),
+	});
+};
+
+export const openLaunchModal = (state: State) => {
+	state.modalActions[0]().open({
+		type: ModalType.Launch,
+		state: state.hrm[0](),
+		onClose: () => state.modalActions[0]().close(),
+	});
 };

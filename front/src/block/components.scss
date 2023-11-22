@@ -21,6 +21,12 @@ $ui-border-radius: 0.25rem;
 	cursor: pointer;
 }
 
+.btn-sm {
+	font-size: 0.75rem;
+	padding: 0.25rem;
+	border-radius: 9999rem;
+}
+
 /* Dropdown */
 .dropdown {
 	display: inline-block;

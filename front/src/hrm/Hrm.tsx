@@ -11,7 +11,6 @@ import { State } from "./state";
 import "./Hrm.scss";
 import "./HrmColors.scss";
 import HrmConnectingEdge from "./HrmConnectingEdge";
-import HrmEditOverlay from "./HrmEditOverlay";
 import { parseKeyEvent } from "@/common/event";
 
 export type HrmProps = {
@@ -73,7 +72,6 @@ const Hrm: Component<HrmProps> = props => {
 				}}>
 				<HrmNodes g={props.state} />
 				<HrmConnectingEdge g={props.state} />
-				<HrmEditOverlay g={props.state} />
 			</HrmPane>
 		</div>
 	);

@@ -23,7 +23,7 @@ const tabButtons: RadioButton<LaunchModalTab>[] = [
 	},
 ];
 
-type LaunchModalProps = {
+export type LaunchModalProps = {
 	onClose: () => void;
 	state: State;
 };

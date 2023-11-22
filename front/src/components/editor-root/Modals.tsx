@@ -1,78 +1,77 @@
-import { Component, Match, Switch, createSignal } from "solid-js";
-import { Getter, Updater } from "@/common";
-import GraphToolsModal from "./GraphToolsModal";
-import { State as HrmState } from "@/hrm";
-import BrowserModal from "../browser/BrowserModal";
+import { Component, Show, Switch, createSignal } from "solid-js";
+import { VWrap } from "@/common";
+import GraphToolsModal, { GraphToolsModalProps } from "./GraphToolsModal";
+import BrowserModal, { BrowserModalProps } from "../browser/BrowserModal";
+import LaunchModal, { LaunchModalProps } from "./LaunchModal";
+import NodeEditModal, { NodeEditModalProps } from "./NodeEditModal";
+import { State } from "./state";
 import { Dynamic } from "solid-js/web";
-import LaunchModal from "./LaunchModal";
 
 export enum ModalType {
-	None,
 	Browser,
 	Launch,
 	GraphTools,
+	NodeEdit,
 }
 
-type ModalsState = {
-	type: ModalType;
+const ModalComponents = {
+	[ModalType.Launch]: LaunchModal,
+	[ModalType.GraphTools]: GraphToolsModal,
+	[ModalType.Browser]: BrowserModal,
+	[ModalType.NodeEdit]: NodeEditModal,
 };
 
+type BrowserModalState = {
+	type: ModalType.Browser;
+} & BrowserModalProps;
+
+type LaunchModalState = {
+	type: ModalType.Launch;
+} & LaunchModalProps;
+
+type GraphToolsModalState = {
+	type: ModalType.GraphTools;
+} & GraphToolsModalProps;
+
+type NodeEditModalState = {
+	type: ModalType.NodeEdit;
+} & NodeEditModalProps;
+
+type ModalsState =
+	| BrowserModalState
+	| LaunchModalState
+	| GraphToolsModalState
+	| NodeEditModalState;
+
 export class ModalActions {
-	state: Getter<ModalsState>;
-	setState: Updater<ModalsState>;
+	state: VWrap<ModalsState | undefined>;
 
 	constructor() {
-		const [state, setState] = createSignal<ModalsState>({
-			type: ModalType.None,
-		});
-
-		this.state = state;
-		this.setState = setState;
+		this.state = createSignal<ModalsState | undefined>();
 	}
 
 	close() {
-		this.setState(s => ({
-			...s,
-			type: ModalType.None,
-		}));
+		this.state[1](undefined);
 	}
 
-	open(type: ModalType) {
-		this.setState(s => ({
-			...s,
-			type: type,
-		}));
-	}
-
-	openGraphTools() {
-		this.setState(s => ({
-			...s,
-			type: ModalType.GraphTools,
-		}));
+	open(state: ModalsState) {
+		this.state[1](state);
 	}
 }
 
 type ModalsProps = {
-	actions: ModalActions;
-	state: HrmState;
-	// Helpers
-	editValueDef: (path: string, name: string) => Promise<void>;
-};
-
-const ModalComponents = {
-	[ModalType.None]: (p: ModalsProps) => null,
-	[ModalType.Launch]: LaunchModal,
-	[ModalType.GraphTools]: GraphToolsModal,
-	[ModalType.Browser]: BrowserModal,
+	state: State;
 };
 
 const Modals: Component<ModalsProps> = props => {
+	const modalState = () => props.state.modalActions[0]().state[0]();
 	return (
-		<Dynamic
-			component={ModalComponents[props.actions.state().type]}
-			onClose={() => props.actions.close()}
-			{...props}
-		/>
+		<Show when={modalState()}>
+			<Dynamic
+				component={ModalComponents[modalState()!.type]}
+				{...modalState()!}
+			/>
+		</Show>
 	);
 };
 

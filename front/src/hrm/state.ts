@@ -16,6 +16,7 @@ import {
 	genID,
 	origin,
 	parseNodeData,
+	stringifyNodeData,
 } from "@/common";
 import { HSL2RGB, RGB2GRAY, hslCss } from "@/common/color";
 import { PointerID } from "@/common/pointer-helper";
@@ -71,9 +72,6 @@ export class State {
 	// Selected State
 	selectedNodes: VWrap<number>;
 
-	// Editing Node
-	editingNode: VWrap<EditingNode | undefined>;
-
 	// Connecting Edge
 	connectingEdge: VWrap<ConnectingEdge | undefined>;
 	connectingEnd: VWrap<ConnectingEnd>;
@@ -88,6 +86,9 @@ export class State {
 	// Keymap
 	keymap: Map<string, string> = new Map();
 
+	// Callbacks
+	onEditNode?: (id: NodeID) => void;
+
 	constructor(path: string, name: string, initialNodes: Nodes) {
 		const [nodes, setNodes] = createSignal<Nodes>(initialNodes, {
 			equals: false,
@@ -97,7 +98,6 @@ export class State {
 		this.nodes = nodes;
 		this.setNodes = setNodes;
 		this.selectedNodes = createSignal(0);
-		this.editingNode = createSignal();
 		this.connectingEdge = createSignal();
 		this.connectingEnd = createSignal({ pos: origin });
 		this.transform = createDelayedSignal<Transform>(16, {
@@ -642,24 +642,22 @@ export class State {
 
 	// Edit Node
 	editNode(id: NodeID) {
-		// Find node
-		const node = this.nodes().get(id);
-		if (node && !ROOT_NODES.has(node[0]().data.type)) {
-			this.editingNode[1]({
-				node: freezeNode(id, node[0]()),
-				color: node[0]().color,
-			});
-		}
+		this.onEditNode?.(id);
 	}
 
-	applyEditNode(s: string) {
+	getNodeStringData(id: string): string {
+		const node = this.nodes().get(id);
+		if (!node) return "";
+		const n = node[0]();
+		return stringifyNodeData(n.data);
+	}
+
+	applyEditNode(id: string, s: string) {
 		batch(() => {
-			// Convert string to node
-			const editing = this.editingNode[0]();
-			if (!editing) return;
-			const id = editing.node.id;
+			const node = this.nodes().get(id);
+			if (!node) return;
 			const newNode: CNode = {
-				...editing.node,
+				...freezeNode(id, node[0]()),
 				x: parseNodeData(s),
 			};
 			const thawed = thawNode(newNode);
@@ -700,12 +698,7 @@ export class State {
 				ns.set(id, thawed);
 				return ns;
 			});
-			this.editingNode[1](undefined);
 		});
-	}
-
-	cancelEditNode() {
-		this.editingNode[1](undefined);
 	}
 
 	// Keymap & Commands

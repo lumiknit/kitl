@@ -34,7 +34,7 @@ const Modal: Component<ModalProps> = props => {
 	onMount(() => {
 		setTimeout(() => {
 			ref?.classList.remove("hide");
-		});
+		}, 16);
 	});
 	return (
 		<div
