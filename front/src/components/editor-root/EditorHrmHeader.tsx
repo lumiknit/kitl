@@ -127,7 +127,7 @@ const EditorHrmHeader: Component<EditorHrmHeaderProps> = props => {
 						await saveToFile(props.state);
 						toastSuccess(s("mainEditor.menu.saveSuccess"));
 					}}>
-					<TbDeviceFloppy /> {s("mainEditor.menu.save")}
+					<TbDeviceFloppy /> {s("menu.save")}
 				</a>,
 			],
 			[

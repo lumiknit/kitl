@@ -1,28 +1,44 @@
 import { Button, Color } from "@/block";
-import { Component, Match, Switch } from "solid-js";
+import { Component, Match, Switch, onMount } from "solid-js";
 
 import "./EditorHrmFab.scss";
 import { TbPlus, TbTrash } from "solid-icons/tb";
-import { State } from "@/hrm";
+import { addEventListeners } from "@/common/pointer-helper";
+import { State, openMetaModal } from "./state";
 
 type Props = {
 	state: State;
 };
 
 const EditorHrmFab: Component<Props> = props => {
-	const selected = () => props.state.selectedNodes[0]() > 0;
+	let buttonRef: HTMLButtonElement | undefined;
+	const hrmState = () => props.state.hrm[0]();
+	const selected = () => hrmState().selectedNodes[0]() > 0;
+	onMount(() => {
+		if (!buttonRef) return;
+		addEventListeners(
+			{
+				onClick: () => {
+					if (selected()) {
+						hrmState().deleteSelectedNodes();
+					} else {
+						const id = hrmState().addEmptyNode();
+						hrmState().editNode(id);
+					}
+				},
+				onLongPress: () => {
+					// Open menu
+					openMetaModal(props.state);
+				},
+			},
+			buttonRef,
+		);
+	});
 	return (
 		<Button
+			ref={buttonRef}
 			class="hrm-fab shadow-2	"
-			color={selected() ? Color.danger : Color.primary}
-			onClick={() => {
-				if (selected()) {
-					props.state.deleteSelectedNodes();
-				} else {
-					const id = props.state.addEmptyNode();
-					props.state.editNode(id);
-				}
-			}}>
+			color={selected() ? Color.danger : Color.primary}>
 			<Switch>
 				<Match when={selected()}>
 					<TbTrash />

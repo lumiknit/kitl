@@ -59,7 +59,7 @@ const thawHandles = (node: KitlNode): Handles => {
 		result: any;
 	switch (node.x.type) {
 		case NodeType.Alpha:
-			result = [sourceHandle(SYM_PAT)];
+			result = [sourceToSinkHandle(SYM_PAT, node.x.pat)];
 			lhs = 1;
 			break; // No Handles
 		case NodeType.Beta:

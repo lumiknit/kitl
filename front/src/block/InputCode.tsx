@@ -1,4 +1,4 @@
-import { Component, Ref, type JSX, createEffect } from "solid-js";
+import { Component, Ref, type JSX, onMount } from "solid-js";
 
 type TATarget = {
 	target: Element;
@@ -77,9 +77,14 @@ const InputCode: Component<CodeProps> = props => {
 		textarea.style.height = hiddenRef.scrollHeight + "px";
 	};
 
-	createEffect(() => {
+	onMount(() => {
 		if (props.autoresize) {
 			resizeTextarea(taRef!);
+		}
+		if (props.autofocus) {
+			setTimeout(() => {
+				taRef?.focus();
+			});
 		}
 	});
 
@@ -139,6 +144,11 @@ const InputCode: Component<CodeProps> = props => {
 	return (
 		<div class="code-area">
 			<textarea
+				ref={hiddenRef}
+				disabled
+				class={`form-control abs-lt ${props.class} code-area-hidden no-pointer-events no-user-select`}
+			/>
+			<textarea
 				ref={hackRef}
 				autofocus={props.autofocus}
 				disabled={props.disabled}
@@ -149,11 +159,6 @@ const InputCode: Component<CodeProps> = props => {
 				onChange={props.onChange}
 				onInput={props.onInput}
 				onKeyDown={onKeyDown}
-			/>
-			<textarea
-				ref={hiddenRef}
-				disabled
-				class={`form-control abs-lt ${props.class} code-area-hidden no-pointer-events no-user-select`}
 			/>
 		</div>
 	);

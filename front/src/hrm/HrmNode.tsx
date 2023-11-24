@@ -73,7 +73,7 @@ const HrmNode = (props: HrmNodeProps) => {
 				},
 				onClick: e => {
 					const modifier = e.modifiers.shift || e.modifiers.ctrl;
-					if (!e.dragged && modifier) {
+					if (!e.dragged && (modifier || props.g.selectMode)) {
 						props.g.selectOneNode(props.id, modifier);
 					}
 				},

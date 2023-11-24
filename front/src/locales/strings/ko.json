@@ -1,4 +1,20 @@
 {
+	"menu": {
+		"apply": "반영",
+		"close": "닫기",
+		"copy": "복사",
+		"cut": "자르기",
+		"delete": "지우기",
+		"discard": "버리기",
+		"download": "다운로드",
+		"load": "불러오기",
+		"paste": "붙여넣기",
+		"redo": "재실행",
+		"refresh": "새로고침",
+		"save": "저장",
+		"undo": "실행취소",
+		"upload": "업로드"
+	},
 	"ERROR": "오류",
 	"WARN": "주의",
 	"INFO": "참고",
@@ -17,58 +33,15 @@
 		"dec": "10진법",
 		"hex": "16진법"
 	},
-	"node": {
-		"literal": "상수",
-		"def": "정의",
-		"lambda": "람다",
-		"beta": "베타",
-		"comment": "주석"
-	},
 	"defType": {
 		"value": "값",
 		"tag": "꼬리표",
 		"type": "형",
 		"alias": "별칭"
 	},
-	"defFinder": {
+	"term": {
 		"name": "이름",
 		"module": "모듈"
-	},
-	"nodeEditor": {
-		"common": {
-			"argc": "인수 개수",
-			"name": "이름",
-			"module": "모듈",
-			"comment": "주석",
-			"literal": "상수",
-			"lambda": "람다",
-			"beta": "베타"
-		},
-		"menu": {
-			"discard": "저장하지 않고 닫기"
-		},
-		"toast": {
-			"saved": "노드가 저장되었어요!",
-			"discarded": "노드 수정 내용이 버려져요"
-		},
-		"string": {
-			"showEscape": "탈출 문자 표시"
-		},
-		"json": {
-			"format": "서식",
-			"formatDescription": "포맷: JSON5",
-			"formatToSave": "서식에 맞춰 정리하면 저장되어요",
-			"valid": "구문 오류 없어요",
-			"syntaxError": "구문 오류!",
-			"btnMin": "최소화",
-			"btnPretty": "예쁘게"
-		},
-		"lambda": {
-			"withPattern": "양식 대조 사용"
-		},
-		"beta": {
-			"withName": "이름 사용"
-		}
 	},
 	"graphTools": {
 		"errorOccurred": "그래프 도구 실행 중 오류가 발생했어요",
@@ -85,7 +58,6 @@
 	},
 	"mainEditor": {
 		"menu": {
-			"save": "저장",
 			"defaultTools": "기본 도구",
 			"selectTools": "선택 및 편집 도구",
 			"browser": "탐색기",
@@ -123,14 +95,8 @@
 			"empty": "디렉토리가 비어있습니다."
 		},
 		"menu": {
-			"refresh": "새로고침",
 			"formatLocalStorage": "로컬 저장소 초기화",
-			"rename": "이름 바꾸기",
-			"copy": "복사",
-			"cut": "잘라내기",
-			"paste": "붙여넣기",
-			"delete": "삭제",
-			"save": "저장"
+			"rename": "이름 바꾸기"
 		},
 		"prompt": {
 			"resetLocal": "정말로 로컬 저장소를 초기화할까요?",

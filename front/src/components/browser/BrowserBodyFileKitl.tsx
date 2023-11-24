@@ -340,7 +340,7 @@ const BrowserBodyFileKitl: Component<StateWrap> = props => {
 					disabled={!contents.modified[0]()}>
 					<TbDeviceFloppy />
 					&nbsp;
-					{s("fileBrowser.menu.save")}
+					{s("menu.save")}
 				</Button>
 			</InputGroup>
 		);
@@ -377,7 +377,7 @@ const BrowserBodyFileKitl: Component<StateWrap> = props => {
 				<InputGroup class="my-1">
 					<InputText
 						class="flex-1"
-						placeholder="Name"
+						placeholder={s("term.name")}
 						ref={inputRef}
 						onKeyDown={e => {
 							if (e.key === "Enter") {

@@ -1,4 +1,20 @@
 {
+	"menu": {
+		"apply": "Apply",
+		"close": "Close",
+		"copy": "Copy",
+		"cut": "Cut",
+		"delete": "Delete",
+		"discard": "Discard",
+		"download": "Download",
+		"load": "Load",
+		"paste": "Paste",
+		"redo": "Redo",
+		"refresh": "Refresh",
+		"save": "Save",
+		"undo": "Undo",
+		"upload": "Upload"
+	},
 	"ERROR": "ERROR",
 	"WARN": "WARN",
 	"INFO": "INFO",
@@ -17,58 +33,15 @@
 		"dec": "dec",
 		"hex": "hex"
 	},
-	"node": {
-		"literal": "literal",
-		"def": "def",
-		"lambda": "lambda",
-		"beta": "beta",
-		"comment": "comment"
-	},
 	"defType": {
 		"value": "Value",
 		"tag": "Tag",
 		"type": "Type",
 		"alias": "Alias"
 	},
-	"defFinder": {
+	"term": {
 		"name": "Name",
 		"module": "Module"
-	},
-	"nodeEditor": {
-		"common": {
-			"argc": "Argument Count",
-			"name": "Name",
-			"module": "Module",
-			"comment": "Comment",
-			"literal": "Literal",
-			"lambda": "Lambda",
-			"beta": "Beta"
-		},
-		"menu": {
-			"discard": "Discard"
-		},
-		"toast": {
-			"saved": "Node data saved!",
-			"discarded": "Node changes discarded"
-		},
-		"string": {
-			"showEscape": "Show escape characters"
-		},
-		"json": {
-			"format": "Format",
-			"formatDescription": "Format: JSON5",
-			"formatToSave": "Format to save",
-			"valid": "Valid",
-			"syntaxError": "JSON Syntax Error!",
-			"btnMin": "min",
-			"btnPretty": "pretty"
-		},
-		"lambda": {
-			"withPattern": "With pattern matching"
-		},
-		"beta": {
-			"withName": "With name"
-		}
 	},
 	"graphTools": {
 		"errorOccurred": "Error occurred during graph tools",
@@ -85,7 +58,6 @@
 	},
 	"mainEditor": {
 		"menu": {
-			"save": "Save",
 			"defaultTools": "Default Tools",
 			"selectTools": "Select & Edit Tools",
 			"browser": "Browser",
@@ -132,14 +104,8 @@
 			"empty": "The directy is empty."
 		},
 		"menu": {
-			"refresh": "Refresh",
 			"formatLocalStorage": "Format Local Storage",
-			"rename": "Rename",
-			"copy": "Copy",
-			"cut": "Cut",
-			"paste": "Paste",
-			"delete": "Delete",
-			"save": "Save"
+			"rename": "Rename"
 		},
 		"prompt": {
 			"resetLocal": "Are you sure to reset local data?",

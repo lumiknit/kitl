@@ -10,7 +10,7 @@ const BrowserHeader: Component<StateWrap> = props => {
 		[
 			<a onClick={() => reload(props.state)}>
 				<TbRefresh />
-				&nbsp; {s("fileBrowser.menu.refresh")}
+				&nbsp; {s("menu.refresh")}
 			</a>,
 		],
 		[

@@ -10,7 +10,10 @@ export type BrowserModalProps = {
 
 const BrowserModal: Component<BrowserModalProps> = props => {
 	return (
-		<Modal onClose={props.onClose} position={ModalPosition.Bottom}>
+		<Modal
+			onClose={props.onClose}
+			transition
+			position={ModalPosition.Bottom}>
 			<Browser
 				onClose={props.onClose}
 				editValueDef={props.editValueDef}

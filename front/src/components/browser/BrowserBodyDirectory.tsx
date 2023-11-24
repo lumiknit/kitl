@@ -9,7 +9,7 @@ import {
 } from "@/block/ToastContainer";
 import { StorageItem, StorageItemType } from "@/client/storage";
 import { dateToShortString, splitHostPath, splitPath } from "@/common";
-import { bytesToString } from "@/common/size";
+import { bytesToString } from "@/common";
 import { s } from "@/locales";
 import {
 	TbClipboard,
@@ -137,21 +137,21 @@ const Header: Component<StateWrap> = props => {
 					[
 						<a onClick={() => hCopyFiles(props.state)}>
 							<TbCopy />
-							&nbsp; {s("fileBrowser.menu.copy")}
+							&nbsp; {s("menu.copy")}
 						</a>,
 						<a onClick={() => hCutFiles(props.state)}>
 							<TbCut />
-							&nbsp; {s("fileBrowser.menu.cut")}
+							&nbsp; {s("menu.cut")}
 						</a>,
 						<a onClick={() => hCopyFiles(props.state)}>
 							<TbClipboard />
-							&nbsp; {s("fileBrowser.menu.paste")}
+							&nbsp; {s("menu.paste")}
 						</a>,
 					],
 					[
 						<a onClick={() => hCopyFiles(props.state)}>
 							<TbTrash />
-							&nbsp; {s("fileBrowser.menu.delete")}
+							&nbsp; {s("menu.delete")}
 						</a>,
 					],
 				]}>

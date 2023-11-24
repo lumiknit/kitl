@@ -78,6 +78,10 @@ $ui-border-radius: 0.25rem;
 	background-color: rgb(var(--b-rgb-bg-hard));
 }
 
+.code-area > textarea.form-control {
+	height: 1rem;
+}
+
 .code-area > textarea.form-control,
 .form-control[type="text"],
 .form-control[type="password"],

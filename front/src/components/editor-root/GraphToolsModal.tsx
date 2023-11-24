@@ -11,7 +11,10 @@ export type GraphToolsModalProps = {
 
 const GraphToolsModal: Component<GraphToolsModalProps> = props => {
 	return (
-		<Modal position={ModalPosition.Bottom} onClose={props.onClose}>
+		<Modal
+			position={ModalPosition.Bottom}
+			transition
+			onClose={props.onClose}>
 			{/* Body */}
 
 			<h3> {s("graphTools.layout")} </h3>

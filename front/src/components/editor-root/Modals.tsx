@@ -6,8 +6,10 @@ import LaunchModal, { LaunchModalProps } from "./LaunchModal";
 import NodeEditModal, { NodeEditModalProps } from "./NodeEditModal";
 import { State } from "./state";
 import { Dynamic } from "solid-js/web";
+import MetaModal, { MetaModalProps } from "./MetaModal";
 
 export enum ModalType {
+	Meta,
 	Browser,
 	Launch,
 	GraphTools,
@@ -15,11 +17,16 @@ export enum ModalType {
 }
 
 const ModalComponents = {
+	[ModalType.Meta]: MetaModal,
 	[ModalType.Launch]: LaunchModal,
 	[ModalType.GraphTools]: GraphToolsModal,
 	[ModalType.Browser]: BrowserModal,
 	[ModalType.NodeEdit]: NodeEditModal,
 };
+
+type MetaModalState = {
+	type: ModalType.Meta;
+} & MetaModalProps;
 
 type BrowserModalState = {
 	type: ModalType.Browser;
@@ -38,6 +45,7 @@ type NodeEditModalState = {
 } & NodeEditModalProps;
 
 type ModalsState =
+	| MetaModalState
 	| BrowserModalState
 	| LaunchModalState
 	| GraphToolsModalState

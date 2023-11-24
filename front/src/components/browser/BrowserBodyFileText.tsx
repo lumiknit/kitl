@@ -32,7 +32,7 @@ const BrowserBodyFileText: Component<StateWrap> = props => {
 					disabled={!modified()}
 					class="flex-1">
 					<TbUpload />
-					&nbsp;{s("fileBrowser.menu.save")}
+					&nbsp;{s("menu.save")}
 				</Button>
 			</InputGroup>
 		);

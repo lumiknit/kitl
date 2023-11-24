@@ -29,7 +29,10 @@ export type LaunchModalProps = {
 
 const LaunchModal: Component<LaunchModalProps> = props => {
 	return (
-		<Modal position={ModalPosition.Bottom} onClose={props.onClose}>
+		<Modal
+			position={ModalPosition.Bottom}
+			transition
+			onClose={props.onClose}>
 			<RadioButtons
 				buttons={tabButtons}
 				initialValue={LaunchModalTab.Launch}

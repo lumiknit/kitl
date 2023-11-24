@@ -7,9 +7,12 @@ div.m-modal {
 	z-index: 999;
 	inset: 0;
 	background-color: #0002;
-	opacity: 1;
-	transition: opacity $modal-animation-duration ease;
+	opacity: 0;
 	scrollbar-color: var(--kitl-c-fg) var(--kitl-c-bg);
+
+	&.transition {
+		transition: opacity $modal-animation-duration ease;
+	}
 }
 
 div.m-modal-content {
@@ -20,7 +23,9 @@ div.m-modal-content {
 	color: var(--kitl-c-fg);
 	background-color: var(--kitl-c-bg);
 	box-shadow: 0 0 1rem #00000080;
-	transition: transform $modal-animation-duration ease;
+	&.transition {
+		transition: transform $modal-animation-duration ease;
+	}
 }
 
 div.m-modal.m-modal-center {
@@ -30,15 +35,15 @@ div.m-modal.m-modal-center {
 	& div.m-modal-content {
 		left: 50%;
 		top: 50%;
-		transform: translate(-50%, -50%);
+		transform: translate(-50%, 0%);
 		border-radius: 0.5rem;
 	}
 
-	&.hide {
-		opacity: 0;
+	&.show {
+		opacity: 1;
 
 		& div.m-modal-content {
-			transform: translate(-50%, 0%);
+			transform: translate(-50%, -50%);
 		}
 	}
 }
@@ -49,15 +54,18 @@ div.m-modal.m-modal-bottom {
 
 	& div.m-modal-content {
 		left: 50%;
-		transform: translateX(-50%) translateY(calc(max(100dvh - 100%, 2rem)));
+		bottom: 0;
+		transform: translateX(-50%) translateY(100dvh);
 		border-radius: 0.5rem 0.5rem 0 0;
+		padding-bottom: 1rem;
 	}
 
-	&.hide {
-		opacity: 0;
+	&.show {
+		opacity: 1;
 
 		& div.m-modal-content {
-			transform: translateX(-50%) translateY(100dvh);
+			transform: translateX(-50%)
+				translateY(calc(max(100dvh - 100%, 2rem)));
 		}
 	}
 }

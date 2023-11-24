@@ -92,6 +92,14 @@ export const restoreMode = (state: State) => {
 
 // Modals
 
+export const openMetaModal = (state: State) => {
+	state.modalActions[0]().open({
+		type: ModalType.Meta,
+		state: state,
+		onClose: () => state.modalActions[0]().close(),
+	});
+};
+
 export const openBrowserModal = (state: State) => {
 	state.modalActions[0]().open({
 		type: ModalType.Browser,

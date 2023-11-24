@@ -15,6 +15,7 @@ const ModalPositionClass = {
 type ModalProps = {
 	position?: ModalPosition;
 	fullHeight?: boolean;
+	transition?: boolean;
 	open?: boolean;
 	onClose?: () => void;
 	children: any;
@@ -33,19 +34,20 @@ const Modal: Component<ModalProps> = props => {
 	};
 	onMount(() => {
 		setTimeout(() => {
-			ref?.classList.remove("hide");
-		}, 16);
+			ref?.classList.add("show");
+		}, 100);
 	});
 	return (
 		<div
 			ref={ref}
-			class={`m-modal hide ${
+			class={`m-modal ${
 				ModalPositionClass[props.position ?? ModalPosition.Center]
-			}`}
+			} ${props.transition ? "transition" : ""}`}
 			onClick={handleModalClick}>
 			<div
 				classList={{
 					"m-modal-content": true,
+					transition: props.transition,
 					"h-100": props.fullHeight,
 				}}>
 				{props.children}

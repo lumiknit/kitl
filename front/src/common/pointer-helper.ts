@@ -5,7 +5,7 @@ import { distSquare } from "./geometry";
 const MOVE_THRESHOLD = 6,
 	DOUBLE_CLICK_TIME = 250,
 	DOUBLE_CLICK_THRESHOLD = 16,
-	LONG_PRESS_TIME = 750;
+	LONG_PRESS_TIME = 660;
 
 const st = window.setTimeout,
 	ct = window.clearTimeout;

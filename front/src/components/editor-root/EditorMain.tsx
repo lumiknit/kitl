@@ -14,7 +14,7 @@ const MainEditor: Component = () => {
 		<div class="editor-root">
 			<HrmEditor state={state.hrm[0]()} />
 			<EditorHrmHeader state={state} />
-			<EditorHrmFab state={state.hrm[0]()} />
+			<EditorHrmFab state={state} />
 			<Modals state={state} />
 		</div>
 	);
