@@ -1,6 +1,6 @@
-import { Component, JSX, createEffect } from "solid-js";
+import { Component, JSX } from "solid-js";
 import { State } from "./state";
-import { pathBetweenRects } from "@/common";
+import { pathBetweenPill } from "@/common";
 
 type HrmConnectingEdgeProps = {
 	g: State;
@@ -20,10 +20,8 @@ const HrmConnectingEdge: Component<HrmConnectingEdgeProps> = props => {
 		if (!node || !rect) return;
 		const endRefRect = props.g.viewRect(ee.ref);
 		if (!endRefRect) return;
-		return pathBetweenRects(rect, endRefRect, 0);
+		return pathBetweenPill(rect, endRefRect, 0);
 	};
-	const handleClass = (): string =>
-		nodeRect()?.angular ? `hrm-rect` : `hrm-pill`;
 	const style = (): JSX.CSSProperties | undefined => {
 		// Get node and handle
 		const rect = nodeRect();
@@ -47,7 +45,7 @@ const HrmConnectingEdge: Component<HrmConnectingEdgeProps> = props => {
 				/>
 			</svg>
 			<div
-				class={`hrm-editing-edge-handle no-pointer-events ${handleClass()}`}
+				class="hrm-editing-edge-handle no-pointer-events hrm-pill"
 				style={style()}
 			/>
 		</>

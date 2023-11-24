@@ -15,11 +15,14 @@ const EditorHrmFab: Component<Props> = props => {
 		<Button
 			class="hrm-fab shadow-2	"
 			color={selected() ? Color.danger : Color.primary}
-			onClick={() =>
-				selected()
-					? props.state.deleteSelectedNodes()
-					: props.state.addEmptyNode()
-			}>
+			onClick={() => {
+				if (selected()) {
+					props.state.deleteSelectedNodes();
+				} else {
+					const id = props.state.addEmptyNode();
+					props.state.editNode(id);
+				}
+			}}>
 			<Switch>
 				<Match when={selected()}>
 					<TbTrash />

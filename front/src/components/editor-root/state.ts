@@ -1,9 +1,9 @@
-import { VWrap, stringifyNodeData } from "@/common";
+import { VWrap } from "@/common";
 import { State as HrmState } from "@/hrm";
 import { ModalActions, ModalType } from "./Modals";
 import { ValueDef, defsJsonPath, loadDefFns } from "@/common/kitl/defs";
 import { createEffect, createSignal, untrack } from "solid-js";
-import { freezeNode, freezeValueDef, thawValueDef } from "@/hrm-kitl";
+import { freezeValueDef, thawValueDef } from "@/hrm-kitl";
 import { clients } from "@/client";
 
 // Defs

@@ -11,7 +11,7 @@ import { State } from "./state";
 import "./Hrm.scss";
 import "./HrmColors.scss";
 import HrmConnectingEdge from "./HrmConnectingEdge";
-import { parseKeyEvent } from "@/common/event";
+import { parseKeyEvent } from "@/common";
 
 export type HrmProps = {
 	state: State;
@@ -63,9 +63,7 @@ const Hrm: Component<HrmProps> = props => {
 				onDoubleClick={e => {
 					const p = props.state.viewPos(e.x, e.y);
 					const id = props.state.addEmptyNode(p);
-					setTimeout(() => {
-						props.state.editNode(id);
-					}, 100);
+					props.state.editNode(id);
 				}}
 				onLongPress={() => {
 					toast("[Hrm] Long press");

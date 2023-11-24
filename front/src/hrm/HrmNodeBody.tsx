@@ -6,7 +6,7 @@ import {
 	NodeData,
 	NodeType,
 } from "@/common";
-import { SYM_BETA, SYM_DELTA, SYM_LAMBDA, SYM_PI } from "./data";
+import { SYM_DELTA, SYM_LAMBDA, SYM_PI } from "./data";
 import { compactify } from "@/jasen";
 import { Dynamic } from "solid-js/web";
 import { renameSymbol } from "@/common/name-symbols";
@@ -17,8 +17,14 @@ type HrmNodeBodyProps = {
 
 const HrmName = (props: { name: Name }) => (
 	<div class="hrm-node-name">
-		<div class="hrm-node-name-name">{renameSymbol(props.name.name)}</div>
-		<Show when={props.name.module}>
+		<div
+			classList={{
+				"hrm-node-name-name": true,
+				"hrm-node-name-builtin": props.name.module === "_",
+			}}>
+			{renameSymbol(props.name.name)}
+		</div>
+		<Show when={props.name.module && props.name.module !== "_"}>
 			<div class="hrm-node-name-module">{"@" + props.name.module}</div>
 		</Show>
 	</div>
@@ -35,7 +41,7 @@ const HrmNodeBody = (props: HrmNodeBodyProps) => {
 				{compactify((props.data as AlphaNodeData).val)}
 			</div>
 		),
-		[NodeType.Beta]: () => <Mark mark={SYM_BETA} />,
+		[NodeType.Beta]: () => <HrmName name={(props.data as any).name} />,
 		[NodeType.Delta]: () => (
 			<>
 				<Mark mark={SYM_DELTA} />
@@ -47,7 +53,6 @@ const HrmNodeBody = (props: HrmNodeBodyProps) => {
 			</>
 		),
 		[NodeType.Lambda]: () => <Mark mark={SYM_LAMBDA} />,
-		[NodeType.Nu]: () => <HrmName name={(props.data as any).name} />,
 		[NodeType.Pi]: () => (
 			<>
 				<Mark mark={SYM_PI} />

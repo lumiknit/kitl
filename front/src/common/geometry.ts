@@ -19,10 +19,6 @@ export type Size = {
 
 export type Rect = Position & Size;
 
-export type ShapedRect = Rect & {
-	angular?: boolean; // If true, rectangle, otherwise, pill
-};
-
 /* Constant */
 
 export const origin: Position = { x: 0, y: 0 };
@@ -39,11 +35,11 @@ export const dist = (dx: number, dy: number) => Math.sqrt(distSquare(dx, dy));
 
 // Nearest point helper
 
-export const nearestPointInRect = (
+export const nearestPointInPill = (
 	// External point
 	px: number,
 	py: number,
-	rect: ShapedRect,
+	rect: Rect,
 ): [number, number, number, number] => {
 	/* Find nearest point in the rectanble */
 	const hw = rect.w / 2,
@@ -59,41 +55,28 @@ export const nearestPointInRect = (
 	if (ox > hw) (ox = hw), (vx = 1);
 	if (oy < -hh) (oy = -hh), (vy = -1);
 	if (oy > hh) (oy = hh), (vy = 1);
-	if (rect.angular) {
-		if (vx * vy !== 0) {
-			// Direction
-			const d = dist(ox, oy);
-			return [cx + ox - 1.4 * vx, cy + oy - 1.4 * vy, ox / d, oy / d];
-		}
-	} else {
-		// If point is in the corner of pill, find nearest point.
-		if (hw > hh && Math.abs(ox) > m) {
-			const z = ox > 0 ? m : -m,
-				x = ox - z,
-				d = dist(x, oy) / hh;
-			return [cx + z + x / d, cy + oy / d, x / hh, oy / (d * hh)];
-		}
-		if (hh > hw && Math.abs(oy) > m) {
-			const z = oy > 0 ? m : -m,
-				y = oy - z,
-				d = dist(ox, y) / hw;
-			return [cx + ox / d, cy + z + y / d, ox / (d * hw), y / hw];
-		}
+	if (hw > hh && Math.abs(ox) > m) {
+		const z = ox > 0 ? m : -m,
+			x = ox - z,
+			d = dist(x, oy) / hh;
+		return [cx + z + x / d, cy + oy / d, x / hh, oy / (d * hh)];
+	}
+	if (hh > hw && Math.abs(oy) > m) {
+		const z = oy > 0 ? m : -m,
+			y = oy - z,
+			d = dist(ox, y) / hw;
+		return [cx + ox / d, cy + z + y / d, ox / (d * hw), y / hw];
 	}
 	return [cx + ox, cy + oy, vx, vy];
 };
 
-export const pathBetweenRects = (
-	srcRect: ShapedRect,
-	sinkRect: ShapedRect,
-	off: number,
-) => {
-	const [x2, y2, vx2, vy2] = nearestPointInRect(
+export const pathBetweenPill = (srcRect: Rect, sinkRect: Rect, off: number) => {
+	const [x2, y2, vx2, vy2] = nearestPointInPill(
 			sinkRect.x + sinkRect.w / 2,
 			sinkRect.y + sinkRect.h / 2,
 			srcRect,
 		),
-		[x1, y1, vx1, vy1] = nearestPointInRect(x2, y2, sinkRect),
+		[x1, y1, vx1, vy1] = nearestPointInPill(x2, y2, sinkRect),
 		d = 0.2 * dist(x2 - x1, y2 - y1);
 	return `M ${x1 - off * vx1} ${y1 - off * vy1} C ${x1 + vx1 * d} ${
 		y1 + vy1 * d

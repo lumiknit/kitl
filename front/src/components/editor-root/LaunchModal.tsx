@@ -1,7 +1,6 @@
 import Modal, { ModalPosition } from "@/components/modal/Modal";
 import { State } from "@/hrm";
 import { Component } from "solid-js";
-import { ModalType } from "./Modals";
 import RadioButtons, { RadioButton } from "@/block/RadioButtons";
 import { Color } from "@/block";
 

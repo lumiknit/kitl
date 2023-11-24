@@ -26,14 +26,9 @@ export const cBdEmpty = "hrm-c-bd-empty";
 /* Symbols */
 
 export const SYM_FALLBACK = "⎇",
-	SYM_FN = "𝑓",
-	SYM_ARG = "𝑥",
-	SYM_RET = "𝑦",
-	SYM_ALPHA = "𝛂",
-	SYM_BETA = "◁",
-	SYM_DELTA = "≝",
+	SYM_RET = "⟡",
+	SYM_DELTA = "⊥",
 	SYM_LAMBDA = "⟾",
-	SYM_NU = "𝛎",
 	SYM_PI = "↯",
 	SYM_PAT = "⧉";
 
@@ -77,7 +72,6 @@ export type Handles = VWrap<Handle>[] & {
 export type Node = {
 	ref?: HTMLElement;
 	color: NodeColor;
-	angular?: boolean;
 	data: NodeData;
 	handles: Handles;
 	position: Position;

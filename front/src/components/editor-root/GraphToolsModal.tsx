@@ -1,9 +1,7 @@
-import { Button, Color, InputGroup, InputText } from "@/block";
-import InputLabel from "@/block/InputLabel";
+import { Button, Color } from "@/block";
 import Modal, { ModalPosition } from "@/components/modal/Modal";
 import { State } from "@/hrm";
 import { s } from "@/locales";
-import { TbBinaryTree, TbX } from "solid-icons/tb";
 import { Component } from "solid-js";
 
 export type GraphToolsModalProps = {

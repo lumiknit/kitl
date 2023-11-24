@@ -1,5 +1,6 @@
 import * as jasen from "@/jasen";
 import { NodeData, NodeType } from "./base";
+import { Name } from "../name";
 
 // Node editing helpers
 
@@ -50,17 +51,24 @@ export const detectCodeType = (s: string): CodeType => {
 
 // Parser
 
+const parseIntOrZero = (s: string): number => {
+	const n = parseInt(s);
+	return isNaN(n) ? 0 : n;
+};
+
+const parseName = (s: string): Name => {
+	const splitted = s.split("@", 2);
+	return {
+		name: splitted[0].trim(),
+		module: splitted[1] ? splitted[1].trim() : "",
+	};
+};
+
 export const stringifyNodeData = (x: NodeData): string => {
 	switch (x.type) {
 		case NodeType.Alpha:
 			return JSON.stringify(x.val, null, 2);
-		case NodeType.Beta:
-			return x.args.length <= 0 ? "" : `,${x.args.length}`;
-		case NodeType.Delta:
-			return `${x.comment}`;
-		case NodeType.Lambda:
-			return `λ`;
-		case NodeType.Nu: {
+		case NodeType.Beta: {
 			const name = x.name,
 				ns = name.module ? `@${name.module}` : "",
 				argc =
@@ -69,11 +77,15 @@ export const stringifyNodeData = (x: NodeData): string => {
 						: `,${x.lhs},${Math.max(0, x.args.length - x.lhs)}`;
 			return `${name.name}${ns}${argc}`;
 		}
+		case NodeType.Delta:
+			return `${x.comment}`;
+		case NodeType.Lambda:
+			return x.params.map(x => "\\" + x).join(" ");
 		case NodeType.Pi: {
 			const name = x.name,
 				ns = name.module ? `@${name.module}` : "",
 				argc = x.elems <= 0 ? "" : `,${x.elems}`;
-			return `λ ${name.name}${ns}${argc}`;
+			return `? ${name.name}${ns}${argc}`;
 		}
 	}
 };
@@ -92,56 +104,49 @@ export const parseNodeData = (s: string): NodeData => {
 	// Check the first character
 	const first = trimmed[0];
 	switch (first) {
-		case "λ":
 		case "\\": {
-			// Lambda or Pi node
-			const splitted = trimmed.slice(1).split(","),
-				names = splitted[0].split("@");
-			if (names[0]) {
-				const name = names[0] ? names[0].toString().trim() : "",
-					module = names[1] ? names[1].toString().trim() : "";
-				let elems = parseInt(splitted[1]);
-				if (isNaN(elems)) elems = 0;
-				return {
-					type: NodeType.Pi,
-					name: { name, module },
-					elems,
-				};
-			} else {
-				return {
-					type: NodeType.Lambda,
-				};
-			}
+			// Lambda node
+			const splitted: string[] = trimmed
+				.slice(1)
+				.split("\\")
+				.reduce((acc: string[], x) => {
+					const trimmed = x.trim();
+					if (trimmed) acc.push(trimmed);
+					return acc;
+				}, []);
+			return {
+				type: NodeType.Lambda,
+				params: splitted.length < 1 ? ["x"] : splitted,
+			};
+		}
+		case "?": {
+			// Pi node
+			const splitted = trimmed.slice(1).split(",");
+			const name = parseName(splitted[0]);
+			const elems = parseIntOrZero(splitted[1]);
+			return {
+				type: NodeType.Pi,
+				name,
+				elems,
+			};
 		}
 		default: {
-			// Beta / Nu node
+			// Beta node
 			const splitted = trimmed.split(","),
-				names = splitted[0].split("@"),
-				name = names[0] ? names[0].toString().trim() : "",
-				module = names[1] ? names[1].toString().trim() : "";
-			let lhs = parseInt(splitted[1]),
+				name = parseName(splitted[0]);
+			let lhs = parseIntOrZero(splitted[1]),
 				rhs = parseInt(splitted[2]);
-			if (!name) {
-				// Beta node
-				const args = (isNaN(lhs) ? 0 : lhs) + (isNaN(rhs) ? 0 : rhs);
-				return {
-					type: NodeType.Beta,
-					args: new Array(args).fill({ id: "" }),
-				};
-			} else {
-				if (isNaN(lhs)) lhs = 0;
-				if (isNaN(rhs)) {
-					rhs = lhs;
-					lhs = 0;
-				}
-				// Nu node
-				return {
-					type: NodeType.Nu,
-					name: { name, module },
-					lhs,
-					args: new Array(lhs + rhs).fill({ id: "" }),
-				};
+			if (isNaN(rhs)) {
+				rhs = lhs;
+				lhs = 0;
 			}
+			// Nu node
+			return {
+				type: NodeType.Beta,
+				name,
+				lhs,
+				args: new Array(lhs + rhs).fill({ id: "" }),
+			};
 		}
 	}
 };

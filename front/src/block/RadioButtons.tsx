@@ -1,4 +1,4 @@
-import { Component, For, createSignal } from "solid-js";
+import { For, createSignal } from "solid-js";
 import { Color } from "./colors";
 import InputGroup from "./InputGroup";
 import Button from "./Button";

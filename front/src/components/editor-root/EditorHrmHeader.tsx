@@ -1,6 +1,8 @@
 import { Button, Color, InputGroup, InputText } from "@/block";
 import DropdownButton from "@/block/DropdownButton";
+import { toastSuccess } from "@/block/ToastContainer";
 import { State as HrmState } from "@/hrm";
+import { s } from "@/locales";
 import {
 	TbArrowBackUp,
 	TbArrowForwardUp,
@@ -16,9 +18,7 @@ import {
 	TbScissors,
 	TbTools,
 } from "solid-icons/tb";
-import { Component, createSignal } from "solid-js";
-import { s } from "@/locales";
-import { ModalType } from "./Modals";
+import { Component } from "solid-js";
 import {
 	State,
 	ToolSet,
@@ -28,7 +28,6 @@ import {
 	openLaunchModal,
 	saveToFile,
 } from "./state";
-import { toast, toastSuccess } from "@/block/ToastContainer";
 
 const TOOL_SET_INFO = () => [
 	{
@@ -40,10 +39,6 @@ const TOOL_SET_INFO = () => [
 		icon: <TbEdit />,
 	},
 ];
-
-type EditorHrmHeaderState = {
-	toolSet: ToolSet;
-};
 
 type EditorHrmHeaderProps = {
 	state: State;

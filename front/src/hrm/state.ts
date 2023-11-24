@@ -10,8 +10,8 @@ import {
 	Position,
 	ROOT_NODES,
 	Rect,
-	ShapedRect,
 	Size,
+	Source,
 	VWrap,
 	genID,
 	origin,
@@ -24,7 +24,6 @@ import { batch, createSignal, untrack } from "solid-js";
 import {
 	ConnectingEdge,
 	ConnectingEdgeEnd as ConnectingEnd,
-	EditingNode,
 	HandleType,
 	Nodes,
 	SinkHandleData,
@@ -200,18 +199,16 @@ export class State {
 		};
 	}
 
-	viewRect(elem?: HTMLElement): ShapedRect | undefined {
+	viewRect(elem?: HTMLElement): Rect | undefined {
 		if (!elem || !this.viewRef) return;
 		const rootRect = this.viewRef!.getBoundingClientRect();
 		const rect = elem.getBoundingClientRect();
-		const angular = !elem.classList.contains("hrm-pill");
 		const t = untrack(this.transform[0]);
 		return {
 			x: (rect.left - rootRect.left) / t.z,
 			y: (rect.top - rootRect.top) / t.z,
 			w: rect.width / t.z,
 			h: rect.height / t.z,
-			angular,
 		};
 	}
 
@@ -269,7 +266,7 @@ export class State {
 
 	// Node / Handle Getter
 
-	viewRectOf(id: NodeID, handle?: HandleID): ShapedRect | undefined {
+	viewRectOf(id: NodeID, handle?: HandleID): Rect | undefined {
 		const node = this.nodes().get(id);
 		if (!node) return;
 		const n = node[0](),
@@ -296,15 +293,15 @@ export class State {
 			}
 		}
 		const id = genID();
-		let fn;
+		const args: Source[] = [];
 		// If connecting edge exists, connect to it
 		const ce = this.connectingEdge[0]();
 		if (ce) {
 			if (ce.isSource) {
-				fn = {
+				args.push({
 					id: ce.nodeID,
 					handle: ce.handleID,
-				};
+				});
 			} else {
 				const n = this.nodes().get(ce.nodeID);
 				if (n) {
@@ -322,8 +319,9 @@ export class State {
 		this.connectingEdge[1](undefined);
 		const x: BetaNodeData = {
 			type: NodeType.Beta,
-			fn,
-			args: [],
+			name: { name: "<|", module: "_" },
+			lhs: args.length,
+			args,
 		};
 		const emptyNode: CNode = {
 			id,

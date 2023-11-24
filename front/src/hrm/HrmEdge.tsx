@@ -1,8 +1,8 @@
-import { Component, Show, createEffect, createMemo } from "solid-js";
+import { Component, Show, createEffect, createSignal } from "solid-js";
 
 import { Handle, HandleType, Node, SinkHandleData } from "./data";
 import { State } from "./state";
-import { HandleID, NodeID, VWrap, pathBetweenRects, pathSelf } from "@/common";
+import { HandleID, NodeID, VWrap, pathBetweenPill, pathSelf } from "@/common";
 import { addEventListeners } from "@/common/pointer-helper";
 
 type HrmEdgeProps = {
@@ -14,13 +14,14 @@ type HrmEdgeProps = {
 };
 
 const HrmEdgeSub = (props: HrmEdgeProps) => {
+	const [path, setPath] = createSignal<string[]>([]);
 	console.log("[HrmEdge] render");
 
 	let clickPathRef: SVGPathElement | undefined;
 	const [n] = props.nodeW,
 		[h] = props.handleW;
 
-	const path = createMemo(() => {
+	createEffect(() => {
 		console.log("[HrmEdge] Effect (path)");
 		n(); // For reactive re-rendering
 		// Get target handle
@@ -32,12 +33,14 @@ const HrmEdgeSub = (props: HrmEdgeProps) => {
 		const srcRect = props.g.viewRectOf(sourceID, sourceHandle),
 			handleRect = props.g.viewRect(handle.ref);
 		if (!srcRect || !handleRect) return "";
-		return props.nodeID === sourceID
-			? [pathSelf(srcRect, handleRect), pathSelf(srcRect, handleRect)]
-			: [
-					pathBetweenRects(srcRect, handleRect, 0.5),
-					pathBetweenRects(srcRect, handleRect, -0.5),
-			  ];
+		setPath(
+			props.nodeID === sourceID
+				? [pathSelf(srcRect, handleRect), pathSelf(srcRect, handleRect)]
+				: [
+						pathBetweenPill(srcRect, handleRect, 0.5),
+						pathBetweenPill(srcRect, handleRect, -0.5),
+				  ],
+		);
 	});
 
 	createEffect(() => {

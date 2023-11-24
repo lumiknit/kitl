@@ -19,10 +19,9 @@ export type HandleID = number;
 
 export enum NodeType {
 	Alpha = "a", // Literal / Leaf node
-	Beta = "b", // Unnamed app
+	Beta = "b", // Application
 	Delta = "d", // Root node
 	Lambda = "l", // Unpatterned Lambda
-	Nu = "n", // Named app
 	Pi = "p", // Pattern
 }
 
@@ -30,8 +29,8 @@ export enum NodeType {
 // Root: The root node of whole tree. Cannot be deleted & has no parent.
 export const ROOT_NODES = new Set([NodeType.Delta]);
 // Expandable: Able to add handle/edge on the left/right most.
-export const LEFT_EXPANDABLE_NODES = new Set([NodeType.Nu]);
-export const RIGHT_EXPANDABLE_NODES = new Set([NodeType.Beta, NodeType.Nu]);
+export const LEFT_EXPANDABLE_NODES = new Set([NodeType.Beta]);
+export const RIGHT_EXPANDABLE_NODES = new Set([NodeType.Beta]);
 // Non-source: Node itself is not a source.
 export const NON_SOURCE_NODES = new Set([NodeType.Delta, NodeType.Pi]);
 
@@ -51,23 +50,27 @@ export type AlphaNodeData = {
 	// Literal / Leaf node
 	type: NodeType.Alpha;
 	val: j.Json;
+	pat?: Source; // Pattern
 };
 
 const loadAlphaNodeData = (d: any): AlphaNodeData => ({
 	type: NodeType.Alpha,
 	val: d.val,
+	pat: fassertOptional(loadSource)(d.pat),
 });
 
 export type BetaNodeData = {
-	// Beta reduction node
+	// Named app node
 	type: NodeType.Beta;
-	fn?: Source;
+	name: Name;
+	lhs: number;
 	args: Source[];
 };
 
-const loadBetaNodeData = (d: any): BetaNodeData => ({
+const loadBetaNodeData = (d: BetaNodeData): BetaNodeData => ({
 	type: NodeType.Beta,
-	fn: fassertOptional(loadSource)(d.fn),
+	name: name.loadName(d.name),
+	lhs: fassertNumber(d.lhs),
 	args: fassertArrayOf(loadSource)(d.args),
 });
 
@@ -88,32 +91,19 @@ export type LambdaNodeData = {
 	// Lambda node
 	type: NodeType.Lambda;
 	fallback?: Source;
+	params: string[];
 	ret?: Source;
 };
 
 const loadLambdaNodeData = (d: LambdaNodeData): LambdaNodeData => ({
 	type: NodeType.Lambda,
 	fallback: fassertOptional(loadSource)(d.fallback),
+	params: fassertArrayOf(fassertString)(d.params),
 	ret: fassertOptional(loadSource)(d.ret),
 });
 
-export type NuNodeData = {
-	// Named app node
-	type: NodeType.Nu;
-	name: Name;
-	lhs: number;
-	args: Source[];
-};
-
-const loadNuNodeData = (d: NuNodeData): NuNodeData => ({
-	type: NodeType.Nu,
-	name: name.loadName(d.name),
-	lhs: fassertNumber(d.lhs),
-	args: fassertArrayOf(loadSource)(d.args),
-});
-
 export type PiNodeData = {
-	// Patterned Lambda
+	// Pattern
 	type: NodeType.Pi;
 	name: Name;
 	pat?: Source;
@@ -132,7 +122,6 @@ export type NodeData =
 	| BetaNodeData
 	| DeltaNodeData
 	| LambdaNodeData
-	| NuNodeData
 	| PiNodeData;
 
 const loadNodeDatas: any = {
@@ -140,7 +129,6 @@ const loadNodeDatas: any = {
 	[NodeType.Beta]: loadBetaNodeData,
 	[NodeType.Delta]: loadDeltaNodeData,
 	[NodeType.Lambda]: loadLambdaNodeData,
-	[NodeType.Nu]: loadNuNodeData,
 	[NodeType.Pi]: loadPiNodeData,
 };
 

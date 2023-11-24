@@ -1,4 +1,4 @@
-import { Component, Show, Switch, createSignal } from "solid-js";
+import { Component, Show, createSignal } from "solid-js";
 import { VWrap } from "@/common";
 import GraphToolsModal, { GraphToolsModalProps } from "./GraphToolsModal";
 import BrowserModal, { BrowserModalProps } from "../browser/BrowserModal";

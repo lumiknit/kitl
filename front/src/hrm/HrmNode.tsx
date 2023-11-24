@@ -72,9 +72,9 @@ const HrmNode = (props: HrmNodeProps) => {
 					}
 				},
 				onClick: e => {
-					if (!e.dragged) {
-						const keep = e.modifiers.shift || e.modifiers.ctrl;
-						props.g.selectOneNode(props.id, keep);
+					const modifier = e.modifiers.shift || e.modifiers.ctrl;
+					if (!e.dragged && modifier) {
+						props.g.selectOneNode(props.id, modifier);
 					}
 				},
 				onDrag: e => {
@@ -148,8 +148,7 @@ const HrmNode = (props: HrmNodeProps) => {
 				"hrm-node-root": NON_SOURCE_NODES.has(n().data.type),
 				"abs-lt": true,
 				selected: n().selected,
-				"hrm-rect": n().angular,
-				"hrm-pill": !n().angular,
+				"hrm-pill": true,
 				"no-user-select": true,
 			}}
 			ref={nodeRef}

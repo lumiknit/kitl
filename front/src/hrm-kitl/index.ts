@@ -23,9 +23,7 @@ import {
 	Handles,
 	Node as HrmNode,
 	Nodes as HrmNodes,
-	SYM_ARG,
 	SYM_FALLBACK,
-	SYM_FN,
 	SYM_PAT,
 	SYM_RET,
 	randomColor,
@@ -61,32 +59,25 @@ const thawHandles = (node: KitlNode): Handles => {
 		result: any;
 	switch (node.x.type) {
 		case NodeType.Alpha:
-			result = [];
+			result = [sourceHandle(SYM_PAT)];
+			lhs = 1;
 			break; // No Handles
 		case NodeType.Beta:
-			lhs = 1;
-			result = [sourceToSinkHandle(SYM_FN, node.x.fn)];
-			for (const idx in node.x.args) {
-				const arg = node.x.args[idx];
-				result.push(sourceToSinkHandle(idx, arg));
-			}
+			result = node.x.args.map((arg, idx) =>
+				sourceToSinkHandle(String(idx), arg),
+			);
+			lhs = clamp(node.x.lhs, 0, node.x.args.length);
 			break;
 		case NodeType.Delta:
 			result = [sourceToSinkHandle(SYM_RET, node.x.val)];
 			break;
 		case NodeType.Lambda:
-			lhs = 2;
+			lhs = 1 + node.x.params.length;
 			result = [
 				sourceToSinkHandle(SYM_FALLBACK, node.x.fallback),
-				sourceHandle(SYM_ARG),
+				...node.x.params.map(param => sourceHandle(param)),
 				sourceToSinkHandle(SYM_RET, node.x.ret),
 			];
-			break;
-		case NodeType.Nu:
-			result = node.x.args.map((arg, idx) =>
-				sourceToSinkHandle(String(idx), arg),
-			);
-			lhs = clamp(node.x.lhs, 0, node.x.args.length);
 			break;
 		case NodeType.Pi:
 			result = [sourceToSinkHandle(SYM_PAT, node.x.pat)];
@@ -103,7 +94,6 @@ const thawHandles = (node: KitlNode): Handles => {
 export const thawNode = (node: KitlNode): VWrap<HrmNode> =>
 	createSignal({
 		color: randomColor(),
-		angular: node.x.type === NodeType.Alpha,
 		data: node.x,
 		handles: thawHandles(node),
 		position: node.pos,
@@ -139,17 +129,18 @@ const freezeNodeData = (node: HrmNode): NodeData => {
 			return {
 				type: NodeType.Alpha,
 				val: node.data.val,
+				pat: f(0),
 			};
 		case NodeType.Beta: {
-			const args: Source[] = [];
-			for (let i = 1; i < node.handles.length; i++) {
-				const frozen = f(i);
-				if (frozen) args.push(frozen);
-			}
 			return {
 				type: NodeType.Beta,
-				fn: f(0),
-				args,
+				name: node.data.name,
+				lhs: node.handles.lhs,
+				args: node.handles.reduce<Source[]>((acc, h) => {
+					const frozen = freezeSource(h[0]().data);
+					if (frozen) acc.push(frozen);
+					return acc;
+				}, []),
 			};
 		}
 		case NodeType.Delta:
@@ -162,20 +153,9 @@ const freezeNodeData = (node: HrmNode): NodeData => {
 			return {
 				type: NodeType.Lambda,
 				fallback: f(0),
-				ret: f(2),
+				params: node.handles.slice(1, -1).map(h => h[0]().name),
+				ret: f(node.handles.length - 1),
 			};
-		case NodeType.Nu: {
-			return {
-				type: NodeType.Nu,
-				name: node.data.name,
-				lhs: node.handles.lhs,
-				args: node.handles.reduce<Source[]>((acc, h) => {
-					const frozen = freezeSource(h[0]().data);
-					if (frozen) acc.push(frozen);
-					return acc;
-				}, []),
-			};
-		}
 		case NodeType.Pi:
 			return {
 				type: NodeType.Pi,
@@ -205,13 +185,6 @@ export const freezeNodes = (nodes: HrmNodes): KitlNodes => {
 export const renameHandles = (node: HrmNode) => {
 	switch (node.data.type) {
 		case NodeType.Beta:
-			node.handles[0][1](h => ({ ...h, name: SYM_FN }));
-			node.handles[0][0]().name = SYM_FN;
-			for (let i = 1; i < node.handles.length; i++) {
-				node.handles[i][1](h => ({ ...h, name: String(i - 1) }));
-			}
-			break;
-		case NodeType.Nu:
 			for (let i = 0; i < node.handles.length; i++) {
 				node.handles[i][1](h => ({ ...h, name: String(i) }));
 			}

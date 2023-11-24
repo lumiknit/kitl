@@ -1,4 +1,4 @@
-import Modal from "@/components/modal/Modal";
+import Modal, { ModalPosition } from "@/components/modal/Modal";
 import { Component } from "solid-js";
 import Browser from "./Browser";
 
@@ -10,7 +10,7 @@ export type BrowserModalProps = {
 
 const BrowserModal: Component<BrowserModalProps> = props => {
 	return (
-		<Modal onClose={props.onClose}>
+		<Modal onClose={props.onClose} position={ModalPosition.Bottom}>
 			<Browser
 				onClose={props.onClose}
 				editValueDef={props.editValueDef}

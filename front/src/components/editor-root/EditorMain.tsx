@@ -4,7 +4,7 @@ import "./style.scss";
 import HrmEditor from "./EditorHrm";
 import EditorHrmHeader from "./EditorHrmHeader";
 import Modals from "./Modals";
-import { editValueDef, newState } from "./state";
+import { newState } from "./state";
 import EditorHrmFab from "./EditorHrmFab";
 
 const MainEditor: Component = () => {
