@@ -230,7 +230,7 @@ span.spinner {
 	display: none;
 }
 
-.checkbox label::before {
+.checkbox-box {
 	content: "";
 	display: inline-block;
 	width: 1em;
@@ -240,13 +240,14 @@ span.spinner {
 	border-radius: 0.25em;
 	vertical-align: text-bottom;
 	text-align: center;
-}
+	padding: 0;
 
-.checkbox:hover label::before {
-	outline: 0.175rem solid rgba(var(--b-rgb-primary), 0.25);
-}
+	&:hover {
+		outline: 0.175rem solid rgba(var(--b-rgb-primary), 0.25);
+	}
 
-.checkbox label:has(input:checked)::before {
-	content: "✓";
-	border-color: rgba(var(--b-rgb-primary), 1);
+	& > svg {
+		stroke: rgba(var(--b-rgb-primary), 1);
+		fill: transparent;
+	}
 }

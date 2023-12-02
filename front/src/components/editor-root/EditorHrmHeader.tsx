@@ -151,7 +151,7 @@ const EditorHrmHeader: Component<EditorHrmHeaderProps> = props => {
 				</DropdownButton>
 				{toolSet(props.state.toolSet[0](), props.state.hrm[0]())}
 			</InputGroup>
-			<div>
+			<div class="editor-root-hrm-badges">
 				<Button
 					color={Color.primary}
 					outline

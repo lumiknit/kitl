@@ -69,3 +69,12 @@ div.m-modal.m-modal-bottom {
 		}
 	}
 }
+
+div.m-modal-handle {
+	background-color: var(--kitl-c-fg);
+	width: 25%;
+	height: 0.25rem;
+	border-radius: 0.125rem;
+	margin: auto;
+	margin-bottom: 0.25rem;
+}

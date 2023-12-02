@@ -11,3 +11,7 @@ body {
 svg.icon {
 	vertical-align: sub;
 }
+
+* {
+	-webkit-tap-highlight-color: transparent;
+}

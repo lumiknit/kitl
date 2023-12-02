@@ -70,6 +70,7 @@ const thawHandles = (node: KitlNode): Handles => {
 			break;
 		case NodeType.Delta:
 			result = [sourceToSinkHandle(SYM_RET, node.x.val)];
+			lhs = 1;
 			break;
 		case NodeType.Lambda:
 			lhs = 1 + node.x.params.length;

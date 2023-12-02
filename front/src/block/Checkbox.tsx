@@ -1,4 +1,4 @@
-import { Component, JSX, Ref } from "solid-js";
+import { Component, JSX, Ref, Show, createSignal } from "solid-js";
 
 type CheckboxProps = {
 	ref?: Ref<HTMLInputElement>;
@@ -8,24 +8,38 @@ type CheckboxProps = {
 };
 
 const Checkbox: Component<CheckboxProps> = props => {
+	const [checked, setChecked] = createSignal(props.value);
 	const handleChange = (e: Event) => {
 		const target = e.target as HTMLInputElement;
 		console.log(target.checked);
+		setChecked(target.checked);
 		props.onChange?.(target.checked);
 	};
 	return (
-		<div class="checkbox no-user-select cursor-pointer">
-			<label>
-				<input
-					type="checkbox"
-					name="checkbox"
-					checked={props.value}
-					ref={props.ref}
-					onChange={handleChange}
-				/>
-				{props.children}
-			</label>
-		</div>
+		<label class="checkbox">
+			<div class="checkbox-box no-user-select cursor-pointer">
+				<Show when={checked()}>
+					<svg stroke-width={0.125} viewBox="0 0 1 1">
+						// Check shape
+						<path
+							d="
+							M 0.2 0.5
+							L 0.45 0.75
+							L 0.9 0.25
+						"
+						/>
+					</svg>
+				</Show>
+			</div>
+			<input
+				type="checkbox"
+				name="checkbox"
+				checked={props.value}
+				ref={props.ref}
+				onChange={handleChange}
+			/>
+			{props.children}
+		</label>
 	);
 };
 

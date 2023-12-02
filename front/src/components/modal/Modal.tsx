@@ -1,4 +1,4 @@
-import { Component, JSX, onMount } from "solid-js";
+import { Component, JSX, Show, onMount } from "solid-js";
 
 import "./style.scss";
 
@@ -32,7 +32,18 @@ const Modal: Component<ModalProps> = props => {
 			props.onClose();
 		}
 	};
+	const handleModalKeyDown: JSX.EventHandler<
+		HTMLDivElement,
+		KeyboardEvent
+	> = e => {
+		console.log(e.key);
+		if (!props.onClose) return;
+		if (e.key === "Escape") {
+			props.onClose();
+		}
+	};
 	onMount(() => {
+		ref?.focus();
 		setTimeout(() => {
 			ref?.classList.add("show");
 		}, 100);
@@ -43,13 +54,18 @@ const Modal: Component<ModalProps> = props => {
 			class={`m-modal ${
 				ModalPositionClass[props.position ?? ModalPosition.Center]
 			} ${props.transition ? "transition" : ""}`}
-			onClick={handleModalClick}>
+			onClick={handleModalClick}
+			onKeyDown={handleModalKeyDown}
+			tabIndex={0}>
 			<div
 				classList={{
 					"m-modal-content": true,
 					transition: props.transition,
 					"h-100": props.fullHeight,
 				}}>
+				<Show when={props.position === ModalPosition.Bottom}>
+					<div class="m-modal-handle" />
+				</Show>
 				{props.children}
 			</div>
 		</div>
