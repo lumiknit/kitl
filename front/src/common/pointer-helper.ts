@@ -2,10 +2,10 @@
 
 import { distSquare } from "./geometry";
 
-const MOVE_THRESHOLD = 6,
+const MOVE_THRESHOLD = 16,
 	DOUBLE_CLICK_TIME = 250,
 	DOUBLE_CLICK_THRESHOLD = 16,
-	LONG_PRESS_TIME = 660;
+	LONG_PRESS_TIME = 600;
 
 const st = window.setTimeout,
 	ct = window.clearTimeout;
@@ -195,7 +195,10 @@ export const addEventListeners = (handlers: Props, el: Element) => {
 			if (!p) return;
 			const dx = e.clientX - p.x,
 				dy = e.clientY - p.y;
-			if (!p.moved && distSquare(dx, dy) < MOVE_THRESHOLD) {
+			if (
+				!p.moved &&
+				distSquare(dx, dy) < MOVE_THRESHOLD * MOVE_THRESHOLD
+			) {
 				return;
 			}
 			if (handlers.onDrag) {

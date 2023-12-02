@@ -13,9 +13,8 @@ type HrmEdgesProps = {
 };
 
 const HrmEdges: Component<HrmEdgesProps> = props => {
-	const [n] = props.nodeW;
 	return (
-		<For each={n().handles}>
+		<For each={props.nodeW[0]().handles}>
 			{(handle, index) => (
 				<HrmEdge
 					g={props.g}

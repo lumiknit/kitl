@@ -1,4 +1,4 @@
-import { Component, Show, createEffect, createSignal } from "solid-js";
+import { Component, Show, createEffect, createSignal, onMount } from "solid-js";
 
 import { Handle, HandleType, Node, SinkHandleData } from "./data";
 import { State } from "./state";
@@ -15,17 +15,13 @@ type HrmEdgeProps = {
 
 const HrmEdgeSub = (props: HrmEdgeProps) => {
 	const [path, setPath] = createSignal<string[]>([]);
-	console.log("[HrmEdge] render");
 
 	let clickPathRef: SVGPathElement | undefined;
-	const [n] = props.nodeW,
-		[h] = props.handleW;
 
 	createEffect(() => {
-		console.log("[HrmEdge] Effect (path)");
-		n(); // For reactive re-rendering
+		props.nodeW[0](); // For reactive re-rendering
 		// Get target handle
-		const handle = h();
+		const handle = props.handleW[0]();
 		if (handle.data.type !== HandleType.Sink) return "";
 		const sourceID = handle.data.sourceID,
 			sourceHandle = handle.data.sourceHandle;
@@ -43,7 +39,7 @@ const HrmEdgeSub = (props: HrmEdgeProps) => {
 		);
 	});
 
-	createEffect(() => {
+	onMount(() => {
 		if (!clickPathRef) return;
 		return addEventListeners(
 			{
@@ -56,7 +52,7 @@ const HrmEdgeSub = (props: HrmEdgeProps) => {
 	});
 
 	const style = () => {
-		const c = h().color;
+		const c = props.handleW[0]().color;
 		return c ? props.g.nodeColorStroke(c) : {};
 	};
 
@@ -93,12 +89,11 @@ const HrmEdgeSub = (props: HrmEdgeProps) => {
 };
 
 const HrmEdge: Component<HrmEdgeProps> = props => {
-	const [h] = props.handleW;
 	return (
 		<Show
 			when={
-				h().data.type === HandleType.Sink &&
-				(h().data as SinkHandleData).sourceID
+				props.handleW[0]().data.type === HandleType.Sink &&
+				(props.handleW[0]().data as SinkHandleData).sourceID
 			}>
 			<HrmEdgeSub {...props} />
 		</Show>

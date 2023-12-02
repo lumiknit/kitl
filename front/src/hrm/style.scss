@@ -115,15 +115,11 @@ div.hrm-container:focus {
 }
 
 .hrm-node-comment {
-	position: absolute;
-	width: 40rem;
+	max-width: 40rem;
 	text-align: left;
-	border-left: 0.25rem solid var(--hrm-c-comment);
 	color: var(--hrm-c-comment);
-	padding: 0.25rem;
 	font-family: serif;
-	left: 0;
-	top: 110%;
+	margin: 0;
 }
 
 .hrm-node-handle {
@@ -136,6 +132,15 @@ div.hrm-container:focus {
 	background-color: var(--hrm-c-connect);
 	opacity: 0;
 	transition: opacity 0.1s ease-in-out;
+}
+
+.hrm-node-details {
+	z-index: 2;
+	position: absolute;
+	color: var(--hrm-c-fg);
+	background-color: rgb(var(--hrm-rgb-bg));
+	padding: 0.5rem;
+	border-radius: 0.25rem;
 }
 
 // Handle

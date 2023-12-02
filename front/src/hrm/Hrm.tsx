@@ -8,8 +8,8 @@ import HrmNodes from "./HrmNodes";
 
 import { State } from "./state";
 
-import "./Hrm.scss";
-import "./HrmColors.scss";
+import "./style.scss";
+import "./colors.scss";
 import HrmConnectingEdge from "./HrmConnectingEdge";
 import { parseKeyEvent } from "@/common";
 

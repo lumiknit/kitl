@@ -1,4 +1,4 @@
-import { For, Show, createEffect, createSignal } from "solid-js";
+import { For, Show, createEffect, createSignal, onMount } from "solid-js";
 import {
 	Getter,
 	LEFT_EXPANDABLE_NODES,
@@ -12,7 +12,7 @@ import { addEventListeners } from "@/common/pointer-helper";
 import { VWrap } from "@/common";
 import HrmHandle from "./HrmHandle";
 import { State } from "./state";
-import HrmNodeBody from "./HrmNodeBody";
+import { HrmNodeBody, HrmNodeDetails } from "./HrmNodeBody";
 import HrmNewHandle from "./HrmNewHandle";
 
 type HrmNodeProps = {
@@ -23,7 +23,7 @@ type HrmNodeProps = {
 
 const HrmNode = (props: HrmNodeProps) => {
 	const [handleHover, setHandleHover]: VWrap<boolean> = createSignal(false);
-	const [n, update]: VWrap<Node> = props.nodeW;
+	const [showDetails, setShowDetails] = createSignal(false);
 	console.log("[HrmNode] render");
 	let nodeRef: HTMLDivElement | undefined,
 		handleRef: HTMLDivElement | undefined;
@@ -31,15 +31,18 @@ const HrmNode = (props: HrmNodeProps) => {
 	createEffect(() => {
 		if (!nodeRef) return;
 		const ref = nodeRef;
-		update(n => ({
+		props.nodeW[1](n => ({
 			...n,
 			ref: ref,
 			size: {
 				w: ref.offsetWidth,
 				h: ref.offsetHeight,
 			},
-			selected: false,
 		}));
+	});
+
+	onMount(() => {
+		if (!nodeRef) return;
 		// DO NOT touch handles
 		addEventListeners(
 			{
@@ -73,12 +76,16 @@ const HrmNode = (props: HrmNodeProps) => {
 				},
 				onClick: e => {
 					const modifier = e.modifiers.shift || e.modifiers.ctrl;
-					if (!e.dragged && (modifier || props.g.selectMode)) {
-						props.g.selectOneNode(props.id, modifier);
+					if (!e.dragged) {
+						if (modifier || props.g.selectMode) {
+							props.g.selectOneNode(props.id, modifier);
+						} else {
+							setShowDetails(v => !v);
+						}
 					}
 				},
 				onDrag: e => {
-					if (n().selected) {
+					if (props.nodeW[0]().selected) {
 						props.g.translateSelectedNodes(
 							e.dx,
 							e.dy,
@@ -94,9 +101,7 @@ const HrmNode = (props: HrmNodeProps) => {
 					}
 				},
 				onDoubleClick: () => {
-					setTimeout(() => {
-						props.g.editNode(props.id);
-					}, 100);
+					props.g.editNode(props.id);
 				},
 				onLongPress: () => {
 					props.g.selectOneNodeWithMode(props.id);
@@ -133,64 +138,90 @@ const HrmNode = (props: HrmNodeProps) => {
 			<HrmHandle
 				g={props.g}
 				nodeID={props.id}
-				node={n()}
+				node={props.nodeW[0]()}
 				handleID={index()}
 				handleW={handle}
 			/>
 		),
 		hrmHandleRHS = (handle: VWrap<Handle>, index: Getter<number>) =>
-			hrmHandle(handle, () => index() + n().handles.lhs);
+			hrmHandle(handle, () => index() + props.nodeW[0]().handles.lhs);
 
 	return (
-		<div
-			classList={{
-				"hrm-node": true,
-				"hrm-node-root": NON_SOURCE_NODES.has(n().data.type),
-				"abs-lt": true,
-				selected: n().selected,
-				"hrm-pill": true,
-				"no-user-select": true,
-			}}
-			ref={nodeRef}
-			style={{
-				left: `${n().position.x}px`,
-				top: `${n().position.y}px`,
-				...props.g.nodeColorBd(n().color),
-			}}>
-			<Show when={LEFT_EXPANDABLE_NODES.has(n().data.type)}>
-				<HrmNewHandle
-					g={props.g}
-					nodeID={props.id}
-					handleID={-Infinity}
-					node={n()}
-				/>
-			</Show>
-			<div class="hrm-node-row no-user-select">
-				<For each={n().handles.slice(0, n().handles.lhs)}>
-					{hrmHandle}
-				</For>
-				<HrmNodeBody data={n().data} />
-				<For each={n().handles.slice(n().handles.lhs)}>
-					{hrmHandleRHS}
-				</For>
+		<>
+			<div
+				classList={{
+					"hrm-node": true,
+					"hrm-node-root": NON_SOURCE_NODES.has(
+						props.nodeW[0]().data.type,
+					),
+					"abs-lt": true,
+					selected: props.nodeW[0]().selected,
+					"hrm-pill": true,
+					"no-user-select": true,
+				}}
+				ref={nodeRef}
+				style={{
+					left: `${props.nodeW[0]().position.x}px`,
+					top: `${props.nodeW[0]().position.y}px`,
+					...props.g.nodeColorBd(props.nodeW[0]().color),
+				}}>
+				<Show
+					when={LEFT_EXPANDABLE_NODES.has(
+						props.nodeW[0]().data.type,
+					)}>
+					<HrmNewHandle
+						g={props.g}
+						nodeID={props.id}
+						handleID={-Infinity}
+						node={props.nodeW[0]()}
+					/>
+				</Show>
+				<div class="hrm-node-row no-user-select">
+					<For
+						each={props.nodeW[0]().handles.slice(
+							0,
+							props.nodeW[0]().handles.lhs,
+						)}>
+						{hrmHandle}
+					</For>
+					<HrmNodeBody data={props.nodeW[0]().data} />
+					<For
+						each={props.nodeW[0]().handles.slice(
+							props.nodeW[0]().handles.lhs,
+						)}>
+						{hrmHandleRHS}
+					</For>
+				</div>
+				<Show
+					when={RIGHT_EXPANDABLE_NODES.has(
+						props.nodeW[0]().data.type,
+					)}>
+					<HrmNewHandle
+						g={props.g}
+						nodeID={props.id}
+						handleID={Infinity}
+						node={props.nodeW[0]()}
+					/>
+				</Show>
+				<Show when={!NON_SOURCE_NODES.has(props.nodeW[0]().data.type)}>
+					<div
+						ref={handleRef}
+						classList={{
+							"hrm-node-handle": true,
+							"hrm-pill": true,
+							"opacity-100": handleHover(),
+						}}
+					/>
+				</Show>
 			</div>
-			<Show when={RIGHT_EXPANDABLE_NODES.has(n().data.type)}>
-				<HrmNewHandle
-					g={props.g}
-					nodeID={props.id}
-					handleID={Infinity}
-					node={n()}
+			<Show when={showDetails()}>
+				<HrmNodeDetails
+					nodeW={props.nodeW}
+					data={props.nodeW[0]().data}
+					onClick={() => setShowDetails(false)}
 				/>
 			</Show>
-			<Show when={!NON_SOURCE_NODES.has(n().data.type)}>
-				<div
-					ref={handleRef}
-					class={`hrm-node-handle hrm-pill ${
-						handleHover() ? "opacity-100" : ""
-					}`}
-				/>
-			</Show>
-		</div>
+		</>
 	);
 };
 

@@ -26,7 +26,7 @@ const scratchHrmState = (): HrmState => {
 	const emptyValueDef = (): ValueDef => ({
 		type: "value",
 		nodes: [],
-		comment: "",
+		comment: "Test",
 	});
 	return new HrmState(
 		"local:/.scratch.kitl",
@@ -73,7 +73,6 @@ export const saveToFile = async (state: State) => {
 	const hrm = state.hrm[0]();
 	const valueDef = freezeValueDef(state.hrm[0]().nodes());
 	const j = loadDefFns.value(valueDef);
-	console.log(j);
 	await clients.writeJson(hrm.path, defsJsonPath(hrm.name), j);
 };
 

@@ -28,6 +28,7 @@ const EditorHrmFab: Component<Props> = props => {
 				},
 				onLongPress: () => {
 					// Open menu
+					navigator.vibrate(10);
 					openMetaModal(props.state);
 				},
 			},

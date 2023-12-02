@@ -36,7 +36,6 @@ const Modal: Component<ModalProps> = props => {
 		HTMLDivElement,
 		KeyboardEvent
 	> = e => {
-		console.log(e.key);
 		if (!props.onClose) return;
 		if (e.key === "Escape") {
 			props.onClose();
