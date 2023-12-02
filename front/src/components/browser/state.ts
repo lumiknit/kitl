@@ -314,5 +314,5 @@ export const saveFile = async (state: State, contents: string) => {
 	await clients.write(path, new TextEncoder().encode(contents));
 	// Update state
 	state.storageItem[1](await clients.stat(path));
-	toastSuccess(s("fileBrowser.toast.saved"));
+	toastSuccess(s("toast.saveSuccess"));
 };

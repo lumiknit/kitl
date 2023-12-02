@@ -1,4 +1,4 @@
-import { extractFilename, splitHostPath } from "@/common";
+import { extractFilename, newRoot, splitHostPath, str2arr } from "@/common";
 import { IClient } from "./i-client";
 import LocalClient from "./local-client";
 import { StorageItem, StorageItemType } from "./storage";
@@ -9,9 +9,28 @@ export default class Clients {
 
 	constructor() {
 		this.local = new LocalClient();
-		this.clients = new Map<string, IClient>([
-			["local", this.local as IClient],
-		]);
+		this.clients = new Map<string, IClient>();
+		this.addClient("local", this.local);
+	}
+
+	async addClient(name: string, client: IClient) {
+		this.clients.set(name, client);
+		// Initialize client
+		// If .kitl does not exist, create it
+		const stat = await client.stat("/.kitl");
+		if (stat.type !== StorageItemType.Directory) {
+			await client.remove("/.kitl");
+			await client.mkdir("/.kitl");
+		}
+		// If .kitl/scratch.kitl does not exist, create it
+		const stat2 = await client.stat("/.kitl/scratch.kitl");
+		if (stat2.type !== StorageItemType.File) {
+			await client.remove("/.kitl/scratch.kitl");
+			await client.write(
+				"/.kitl/scratch.kitl",
+				str2arr(JSON.stringify(newRoot({}))),
+			);
+		}
 	}
 
 	// Helper

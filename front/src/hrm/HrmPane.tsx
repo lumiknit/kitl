@@ -63,22 +63,7 @@ const HrmPane: Component<HrmPaneProps> = props => {
 			<TbZoomReset />,
 			() => props.g.transform[1](() => ({ x: 0, y: 0, z: 1 })),
 		],
-		[
-			<TbZoomInArea />,
-			() => {
-				const rect = props.g.usedRect();
-				const paneSize = props.g.size();
-				if (!rect || !paneSize) return;
-				rect.w = Math.max(rect.w, 1);
-				rect.h = Math.max(rect.h, 1);
-				const zoomX = paneSize.w / rect.w,
-					zoomY = paneSize.h / rect.h,
-					z = Math.min(zoomX, zoomY);
-				const x = -rect.x * z + (paneSize.w - rect.w * z) / 2,
-					y = -rect.y * z + (paneSize.h - rect.h * z) / 2;
-				props.g.transform[1]({ x, y, z });
-			},
-		],
+		[<TbZoomInArea />, () => props.g.zoomAll()],
 	];
 
 	createEffect(() => {

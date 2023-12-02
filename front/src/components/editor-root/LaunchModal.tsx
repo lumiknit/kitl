@@ -1,8 +1,10 @@
 import Modal, { ModalPosition } from "@/components/modal/Modal";
 import { State } from "@/hrm";
-import { Component } from "solid-js";
+import { Component, createSignal } from "solid-js";
 import RadioButtons, { RadioButton } from "@/block/RadioButtons";
-import { Color } from "@/block";
+import { Button, Color } from "@/block";
+import InputCode from "@/block/InputCode";
+import { TbRocket } from "solid-icons/tb";
 
 enum LaunchModalTab {
 	Launch,
@@ -28,6 +30,16 @@ export type LaunchModalProps = {
 };
 
 const LaunchModal: Component<LaunchModalProps> = props => {
+	// Dummy launch to run js
+	let taRef: HTMLTextAreaElement | undefined;
+	const [result, setResult] = createSignal<any>("");
+	const handleClick = () => {
+		if (!taRef) return;
+		const code = taRef.value;
+		setResult("<Running...>");
+		const f = new Function(code);
+		setResult(f());
+	};
 	return (
 		<Modal
 			position={ModalPosition.Bottom}
@@ -37,7 +49,17 @@ const LaunchModal: Component<LaunchModalProps> = props => {
 				buttons={tabButtons}
 				initialValue={LaunchModalTab.Launch}
 			/>
-			Hello
+			<InputCode
+				ref={taRef}
+				autoresize
+				value=""
+				placeholder="JS Code here, return will be the result"
+			/>
+			<Button color={Color.primary} onClick={handleClick} class="w-100">
+				<TbRocket />
+				Launch
+			</Button>
+			<pre>{result()}</pre>
 		</Modal>
 	);
 };

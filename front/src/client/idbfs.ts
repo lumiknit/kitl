@@ -118,7 +118,9 @@ export const getMeta = async (
 ): Promise<StorageItemMeta> => {
 	const [p] = pPath(path);
 	try {
-		return await fs.meta.get(p);
+		const r = await fs.meta.get(p);
+		if (r === undefined) return notFound;
+		return r;
 	} catch {
 		return notFound;
 	}

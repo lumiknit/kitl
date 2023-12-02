@@ -48,7 +48,7 @@ import {
 const hCopyFiles = (state: State) => () => {
 	try {
 		copySelectedFiles(state, false);
-		toastSuccess(s("fileBrowser.toast.copySuccess"));
+		toastSuccess(s("toast.copySuccess"));
 	} catch (e) {
 		if (!(e instanceof NothingSelectedError)) throw e;
 		toastError(s("fileBrowser.toast.nothingSelected"));
@@ -58,7 +58,7 @@ const hCopyFiles = (state: State) => () => {
 const hCutFiles = (state: State) => () => {
 	try {
 		copySelectedFiles(state, true);
-		toastSuccess(s("fileBrowser.toast.cutSuccess"));
+		toastSuccess(s("toast.cutSuccess"));
 		reload(state);
 	} catch (e) {
 		if (!(e instanceof NothingSelectedError)) throw e;
@@ -69,7 +69,7 @@ const hCutFiles = (state: State) => () => {
 const hPasteFiles = (state: State) => async () => {
 	try {
 		await pasteFiles(state);
-		toastSuccess(s("fileBrowser.toast.pasteSuccess"));
+		toastSuccess(s("toast.pasteSuccess"));
 	} catch (e) {
 		toastError(s("fileBrowser.toast.pasteError"));
 		console.warn("Failed to paste files", e);
@@ -81,7 +81,7 @@ const hPasteFiles = (state: State) => async () => {
 const hDeleteFiles = (state: State) => async () => {
 	try {
 		await deleteSelectedFiles(state);
-		toastSuccess(s("fileBrowser.toast.deleteSuccess"));
+		toastSuccess(s("toast.deleteSuccess"));
 	} catch {
 		toastError(s("fileBrowser.toast.deleteError"));
 	}

@@ -29,7 +29,7 @@ const scratchHrmState = (): HrmState => {
 		comment: "Test",
 	});
 	return new HrmState(
-		"local:/.scratch.kitl",
+		"local:/.kitl/scratch.kitl",
 		"default",
 		thawValueDef(emptyValueDef()),
 	);
@@ -44,6 +44,9 @@ const postInitHrmState = (state: State) => {
 			? restoreMode(state)
 			: changeMode(state, ToolSet.Edit),
 	);
+	setTimeout(() => {
+		hrmState.zoomAll();
+	}, 16);
 };
 
 export const newState = (): State => {
@@ -102,7 +105,7 @@ export const openMetaModal = (state: State) => {
 export const openBrowserModal = (state: State) => {
 	state.modalActions[0]().open({
 		type: ModalType.Browser,
-		initialPath: "/",
+		initialPath: state.hrm[0]().path,
 		editValueDef: (path, name) => editValueDef(state, path, name),
 		onClose: () => state.modalActions[0]().close(),
 	});

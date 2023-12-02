@@ -15,6 +15,7 @@ const BrowserModal: Component<BrowserModalProps> = props => {
 			transition
 			position={ModalPosition.Bottom}>
 			<Browser
+				initialPath={props.initialPath}
 				onClose={props.onClose}
 				editValueDef={props.editValueDef}
 			/>

@@ -15,6 +15,17 @@
 		"undo": "실행취소",
 		"upload": "업로드"
 	},
+	"toast": {
+		"cutSuccess": "잘라냈어요!",
+		"cutError": "잘라내지 못했어요..",
+		"copySuccess": "복사했어요!",
+		"copyError": "복사하지 못했어요..",
+		"pasteSuccess": "붙여넣었어요!",
+		"pasteError": "붙여넣지 못했어요..",
+		"deleteSuccess": "삭제했어요!",
+		"deleteError": "삭제하지 못했어요..",
+		"saveSuccess": "저장되었어요!"
+	},
 	"ERROR": "오류",
 	"WARN": "주의",
 	"INFO": "참고",
@@ -106,14 +117,6 @@
 			"pasteOverwrite": "같은 이름의 파일이 존재해요. 덮어쓸까요?"
 		},
 		"toast": {
-			"cutSuccess": "잘라냈어요!",
-			"cutError": "잘라내지 못했어요..",
-			"copySuccess": "복사했어요!",
-			"copyError": "복사하지 못했어요..",
-			"pasteSuccess": "붙여넣었어요!",
-			"pasteError": "붙여넣지 못했어요..",
-			"deleteSuccess": "삭제했어요!",
-			"deleteError": "삭제하지 못했어요..",
 			"newFileSuccess": "새 파일이 만들어졌어요",
 			"newFileError": "새 파일을 만들지 못했어요..",
 			"newFolderSuccess": "새 폴더가 만들어졌어요",
@@ -123,7 +126,6 @@
 			"uploadError": "업로드하지 못했어요..",
 			"uploadReadError": "업로드할 파일을 읽을 수 없어요..",
 			"nothingSelected": "선택된 파일이 없어요..",
-			"saved": "저장되었어요!",
 			"invalidKitl": "올바르지 않은 KITL 파일입니다..",
 			"invalidDefCreationName": "올바르지 않은 정의 이름이에요.",
 			"defAlreadyExists": "같은 이름의 정의가 존재합니다!"

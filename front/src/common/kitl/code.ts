@@ -65,16 +65,22 @@ const parseName = (s: string): Name => {
 };
 
 export const stringifyNodeData = (x: NodeData): string => {
+	console.log(x);
 	switch (x.type) {
 		case NodeType.Alpha:
 			return JSON.stringify(x.val, null, 2);
 		case NodeType.Beta: {
 			const name = x.name,
-				ns = name.module ? `@${name.module}` : "",
+				ns = name.module ? ` @ ${name.module}` : "",
 				argc =
 					x.args.length <= 0
 						? ""
-						: `,${x.lhs},${Math.max(0, x.args.length - x.lhs)}`;
+						: x.lhs <= 0
+						  ? ` , ${x.args.length}`
+						  : ` , ${x.lhs} , ${Math.max(
+									0,
+									x.args.length - x.lhs,
+						    )}`;
 			return `${name.name}${ns}${argc}`;
 		}
 		case NodeType.Delta:
@@ -83,7 +89,7 @@ export const stringifyNodeData = (x: NodeData): string => {
 			return x.params.map(x => "\\" + x).join(" ");
 		case NodeType.Pi: {
 			const name = x.name,
-				ns = name.module ? `@${name.module}` : "",
+				ns = name.module ? ` @ ${name.module}` : "",
 				argc = x.elems <= 0 ? "" : `,${x.elems}`;
 			return `? ${name.name}${ns}${argc}`;
 		}

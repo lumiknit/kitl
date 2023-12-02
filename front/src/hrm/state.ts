@@ -15,7 +15,6 @@ import {
 	VWrap,
 	genID,
 	origin,
-	parseNodeData,
 	stringifyNodeData,
 } from "@/common";
 import { HSL2RGB, RGB2GRAY, hslCss } from "@/common/color";
@@ -26,12 +25,12 @@ import {
 	ConnectingEdgeEnd as ConnectingEnd,
 	HandleType,
 	Nodes,
-	SinkHandleData,
 	Transform,
 } from "./data";
 import {
 	freezeNode,
 	freezeNodes,
+	makeEditedNodeData,
 	renameHandles,
 	sourceToSinkHandle,
 	thawNode,
@@ -212,40 +211,17 @@ export class State {
 		};
 	}
 
-	fitTransformFor(elem?: HTMLElement) {
-		// If elem is out of view, move transform to show it
-		if (!elem) return;
-		const rect = elem.getBoundingClientRect();
-		const rootRect = this.rootRef!.getBoundingClientRect();
-		console.log(rootRect);
-		let dx = 0,
-			dy = 0;
-		if (rect.right + dx > rootRect.right) {
-			dx = rootRect.right - rect.right;
-		}
-		if (rect.left + dx < rootRect.left) {
-			dx = rootRect.left - rect.left;
-		}
-		if (rect.bottom + dy > rootRect.bottom) {
-			dy = rootRect.bottom - rect.bottom;
-		}
-		if (rect.top + dy < rootRect.top) {
-			dy = rootRect.top - rect.top;
-		}
-		this.transform[1](t => {
-			return {
-				...t,
-				x: t.x + dx,
-				y: t.y + dy,
-			};
-		});
-	}
-
 	// Range
 
 	usedRect(): Rect {
 		// Return the smallest rect that contains all nodes
 		const r = { x: 0, y: 0, w: 0, h: 0 };
+		const nodes = this.nodes();
+		// Pick the first node as the initial rect
+		const first = nodes.values().next().value;
+		if (!first) return r;
+		r.x = first[0]().position.x;
+		r.y = first[0]().position.y;
 		for (const [, node] of this.nodes()) {
 			const n = node[0]();
 			const pos = n.position;
@@ -645,52 +621,53 @@ export class State {
 
 	getNodeStringData(id: string): string {
 		const node = this.nodes().get(id);
-		if (!node) return "";
-		const n = node[0]();
-		return stringifyNodeData(n.data);
+		return node ? stringifyNodeData(freezeNode(id, node[0]()).x) : "";
 	}
 
 	applyEditNode(id: string, s: string) {
 		batch(() => {
 			const node = this.nodes().get(id);
 			if (!node) return;
+			const n = node[0]();
+			const color = n.color;
+			const frozen = freezeNode(id, node[0]());
 			const newNode: CNode = {
-				...freezeNode(id, node[0]()),
-				x: parseNodeData(s),
+				...frozen,
+				x: makeEditedNodeData(frozen.x, s),
 			};
 			const thawed = thawNode(newNode);
 			// Get original node
-			const oldNode = this.nodes().get(id);
-			if (!oldNode) return;
-			thawed[1](n => ({
-				...n,
-				color: oldNode[0]().color,
+			thawed[1](thawed => ({
+				...thawed,
+				color,
 			}));
-			// Transfer original edges
-			const oldSinkHandles: SinkHandleData[] = [];
-			for (const handle of oldNode ? oldNode[0]().handles : []) {
-				const h = handle[0]();
-				if (h.data.type === HandleType.Sink && h.data.sourceID) {
-					oldSinkHandles.push(h.data);
-				}
-			}
+			// Check edges and disconnect to invalid sink nodes
 			const newHandles = thawed[0]().handles;
-			for (let i = 0; i < newHandles.length; i++) {
-				newHandles[i][1](h => {
-					if (h.data.type !== HandleType.Sink) return h;
-					const data: SinkHandleData = { type: HandleType.Sink };
-					const oldHandleData = oldSinkHandles[i];
-					if (oldHandleData) {
-						// Try to get original edge
-						data.sourceID = oldHandleData.sourceID;
-						data.sourceHandle = oldHandleData.sourceHandle;
+			for (const [, node] of this.nodes()) {
+				for (const [, handle] of node[0]().handles.entries()) {
+					const h = handle[0]();
+					if (
+						h.data.type === HandleType.Sink &&
+						h.data.sourceID === id
+					) {
+						if (
+							(h.data.sourceHandle === undefined &&
+								NON_SOURCE_NODES.has(n.data.type)) ||
+							(h.data.sourceHandle !== undefined &&
+								(h.data.sourceHandle >= newHandles.length ||
+									newHandles[h.data.sourceHandle][0]().data
+										.type !== HandleType.Source))
+						) {
+							// Remove edge
+							handle[1](h => ({
+								...h,
+								data: {
+									type: HandleType.Sink,
+								},
+							}));
+						}
 					}
-					// Otherwise, remove edge
-					return {
-						...h,
-						data,
-					};
-				});
+				}
 			}
 			this.setNodes(ns => {
 				ns.set(id, thawed);
@@ -720,6 +697,20 @@ export class State {
 			...t,
 			z: t.z / 1.1,
 		}));
+	}
+
+	zoomAll() {
+		const rect = this.usedRect();
+		const paneSize = this.size();
+		if (!rect || !paneSize) return;
+		rect.w = Math.max(rect.w, 1);
+		rect.h = Math.max(rect.h, 1);
+		const zoomX = paneSize.w / rect.w,
+			zoomY = paneSize.h / rect.h,
+			z = Math.min(zoomX, zoomY, 8);
+		const x = -rect.x * z + (paneSize.w - rect.w * z) / 2,
+			y = -rect.y * z + (paneSize.h - rect.h * z) / 2;
+		this.transform[1]({ x, y, z });
 	}
 
 	resetZoom() {

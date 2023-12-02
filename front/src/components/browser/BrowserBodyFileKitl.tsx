@@ -190,6 +190,11 @@ const ValueDefItem: Component<ItemProps> = props => {
 			name={props.name}
 			contents={props.contents}
 			onOpen={async () => {
+				// Check modified
+				if (props.contents.modified[0]()) {
+					alert("Please save your changes first");
+					return;
+				}
 				if (props.state.editValueDef) {
 					await props.state.editValueDef(
 						props.state.path[0](),

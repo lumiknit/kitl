@@ -8,6 +8,7 @@ import "./styles.scss";
 import { s } from "@/locales";
 
 type BrowserProps = {
+	initialPath: string;
 	onClose: () => void;
 	editValueDef: (path: string, name: string) => Promise<void>;
 };
@@ -19,7 +20,7 @@ const WarningLocal: Component<StateWrap> = props => (
 );
 
 const Browser: Component<BrowserProps> = props => {
-	const state = newState("local:/");
+	const state = newState(props.initialPath);
 	state.onClose = () => props.onClose();
 	state.editValueDef = (path: string, name: string) =>
 		props.editValueDef(path, name);

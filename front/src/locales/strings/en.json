@@ -15,6 +15,17 @@
 		"undo": "Undo",
 		"upload": "Upload"
 	},
+	"toast": {
+		"cutSuccess": "Cutted!",
+		"cutError": "Cut failed..",
+		"copySuccess": "Copied!",
+		"copyError": "Copy failed..",
+		"pasteSuccess": "Pasted!",
+		"pasteError": "Paste failed..",
+		"deleteSuccess": "Deleted!",
+		"deleteError": "Delete failed..",
+		"saveSuccess": "Saved successfully!"
+	},
 	"ERROR": "ERROR",
 	"WARN": "WARN",
 	"INFO": "INFO",
@@ -115,14 +126,6 @@
 			"pasteOverwrite": "The file already exists. Overwrite it?"
 		},
 		"toast": {
-			"cutSuccess": "Cutted!",
-			"cutError": "Cut failed..",
-			"copySuccess": "Copied!",
-			"copyError": "Copy failed..",
-			"pasteSuccess": "Pasted!",
-			"pasteError": "Paste failed..",
-			"deleteSuccess": "Deleted!",
-			"deleteError": "Delete failed..",
 			"newFileSuccess": "New file created",
 			"newFileError": "New file creation failed..",
 			"newFolder": "New folder created",
@@ -132,7 +135,6 @@
 			"uploadError": "Upload failed..",
 			"uploadReadError": "Failed to read file to upload..",
 			"nothingSelected": "No file or folder selected..",
-			"saved": "Saved successfully!",
 			"invalidKitl": "Invalid KITL file!",
 			"invalidDefCreationName": "Invalid definition creation name!",
 			"defAlreadyExists": "Definition already exists!"
