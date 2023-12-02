@@ -1,6 +1,6 @@
 import { Component, JSX, JSXElement } from "solid-js";
 
-type InputGroupProps = {
+type Props = {
 	children: JSXElement;
 
 	onClick?: JSX.EventHandlerUnion<HTMLDivElement, MouseEvent>;
@@ -9,7 +9,7 @@ type InputGroupProps = {
 	class?: string;
 };
 
-const InputGroup: Component<InputGroupProps> = props => {
+const InputGroup: Component<Props> = props => {
 	return (
 		<div
 			class={`input-group ${props.class ?? ""}`}

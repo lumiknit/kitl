@@ -52,8 +52,7 @@ const HrmNewHandle: Component<HrmNewHandleProps> = props => {
 			class={`hrm-node-item hrm-handle-new hrm-pill ${
 				props.handleID < 0 ? "lhs" : "rhs"
 			} ${hover() ? "opacity-100" : ""}`}>
-			{" "}
-			+{" "}
+			+
 		</div>
 	);
 };

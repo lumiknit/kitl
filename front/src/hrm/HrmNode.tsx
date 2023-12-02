@@ -1,4 +1,11 @@
-import { For, Show, createEffect, createSignal, onMount } from "solid-js";
+import {
+	Component,
+	For,
+	Show,
+	createEffect,
+	createSignal,
+	onMount,
+} from "solid-js";
 import {
 	Getter,
 	LEFT_EXPANDABLE_NODES,
@@ -21,7 +28,7 @@ type HrmNodeProps = {
 	nodeW: VWrap<Node>;
 };
 
-const HrmNode = (props: HrmNodeProps) => {
+const HrmNode: Component<HrmNodeProps> = props => {
 	const [handleHover, setHandleHover]: VWrap<boolean> = createSignal(false);
 	const [showDetails, setShowDetails] = createSignal(false);
 	console.log("[HrmNode] render");

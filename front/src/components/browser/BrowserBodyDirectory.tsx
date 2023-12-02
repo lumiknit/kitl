@@ -222,7 +222,7 @@ type ItemProps = {
 	meta: StorageItem;
 };
 
-const Item = (props: ItemProps) => {
+const Item: Component<ItemProps> = props => {
 	const name = () => {
 		const p = splitPath(props.meta.path);
 		return p[p.length - 1];

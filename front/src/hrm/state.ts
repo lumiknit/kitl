@@ -23,6 +23,7 @@ import { batch, createSignal, untrack } from "solid-js";
 import {
 	ConnectingEdge,
 	ConnectingEdgeEnd as ConnectingEnd,
+	Handle,
 	HandleType,
 	Nodes,
 	Transform,
@@ -37,6 +38,8 @@ import {
 	thawNodes,
 } from "@/hrm-kitl";
 import { createDelayedSignal } from "@/solid-utils/indes";
+import { loadString, saveString } from "@/common/clipboard";
+import { toastError } from "@/block/ToastContainer";
 
 /* State */
 
@@ -186,12 +189,21 @@ export class State {
 		return { w: rect.width, h: rect.height };
 	}
 
+	centerPos(): Position | undefined {
+		const size = this.size();
+		if (!size) return;
+		const t = untrack(this.transform[0]);
+		return {
+			x: -t.x / t.z + size.w / 2 / t.z,
+			y: -t.y / t.z + size.h / 2 / t.z,
+		};
+	}
+
 	viewPos(x: number, y: number): Position | undefined {
 		// Client position to graph position
 		if (!this.viewRef) return;
 		const rootRect = this.viewRef!.getBoundingClientRect();
 		const t = untrack(this.transform[0]);
-		console.log(rootRect, t, x, y);
 		return {
 			x: (x - rootRect.left) / t.z,
 			y: (y - rootRect.top) / t.z,
@@ -255,18 +267,7 @@ export class State {
 
 	addEmptyNode(pos?: Position): NodeID {
 		if (!pos) {
-			const t = this.transform[0]();
-			const rootRef = this.rootRef;
-			if (!rootRef) {
-				pos = { x: 0, y: 0 };
-			} else {
-				// Find center
-				const rect = rootRef.getBoundingClientRect();
-				pos = {
-					x: (rect.width / 2 - t.x) / t.z,
-					y: (rect.height / 2 - t.y) / t.z,
-				};
-			}
+			pos = this.centerPos() ?? { x: 0, y: 0 };
 		}
 		const id = genID();
 		const args: Source[] = [];
@@ -361,6 +362,7 @@ export class State {
 	}
 
 	selectOneNode(id: NodeID, keep?: boolean) {
+		console.log(id);
 		keep ||= this.selectMode;
 		batch(() => {
 			let selected = false;
@@ -614,9 +616,26 @@ export class State {
 		}
 	}
 
+	// Valid source
+
+	isValidHandle(nodes: Nodes, handle: Handle): boolean {
+		if (handle.data.type !== HandleType.Sink) return true;
+		if (!handle.data.sourceID) return true;
+		const sourceNode = nodes.get(handle.data.sourceID);
+		if (!sourceNode) return false;
+		const n = sourceNode[0](),
+			h = handle.data.sourceHandle;
+		if (NON_SOURCE_NODES.has(n.data.type) || h === undefined) return true;
+		const handles = n.handles;
+		if (!(0 <= h && handles.length)) return false;
+		return handles[h]![0]().data.type === HandleType.Source;
+	}
+
 	// Edit Node
 	editNode(id: NodeID) {
-		this.onEditNode?.(id);
+		setTimeout(() => {
+			this.onEditNode?.(id);
+		}, 30);
 	}
 
 	getNodeStringData(id: string): string {
@@ -671,6 +690,106 @@ export class State {
 			}
 			this.setNodes(ns => {
 				ns.set(id, thawed);
+				return ns;
+			});
+		});
+	}
+
+	// Copy & Paste
+
+	cutSelectedNodes() {
+		this.copySelectedNodes();
+		this.deleteSelectedNodes();
+	}
+
+	copySelectedNodes() {
+		// Copy nodes into clipboard
+		// First, freeze them.
+		const nodes = this.nodes();
+		const frozen = [];
+		for (const [id, node] of nodes) {
+			if (node[0]().selected) {
+				frozen.push(freezeNode(id, node[0]()));
+			}
+		}
+		const json = JSON.stringify(frozen);
+		saveString(json);
+	}
+
+	async pasteNodes() {
+		// Get center of screen
+		const screenCenter: Position = this.centerPos() ?? { x: 0, y: 0 };
+		// Load from clipboard
+		const contents = await loadString();
+		let nodes = JSON.parse(contents) as CNode[];
+		// Check node type and reassign IDs
+		const renameMap = new Map<NodeID, NodeID>();
+		try {
+			const center = { x: 0, y: 0 };
+			// Ignore root nodes
+			nodes = nodes.filter(n => !ROOT_NODES.has(n.x.type));
+			// Find center of nodes
+			for (const n of nodes) {
+				center.x += n.pos.x;
+				center.y += n.pos.y;
+			}
+			center.x /= nodes.length;
+			center.y /= nodes.length;
+			// Assign new IDs and translate
+			for (const n of nodes) {
+				const id = genID();
+				renameMap.set(n.id, id);
+				n.id = id;
+				n.pos.x += screenCenter.x - center.x;
+				n.pos.y += screenCenter.y - center.y;
+			}
+		} catch (e) {
+			toastError("Clipboard contents are invalid.");
+			return;
+		}
+		// Paste nodes
+		batch(() => {
+			this.setNodes(ns => {
+				for (const n of nodes) {
+					// Check handles
+					const thawed = thawNode(n);
+					// Check handles
+					for (const [, updateHandle] of thawed[0]().handles) {
+						updateHandle(h => {
+							if (
+								h.data.type !== HandleType.Sink ||
+								h.data.sourceID === undefined
+							)
+								return h;
+							if (renameMap.has(h.data.sourceID)) {
+								console.log(
+									"rename",
+									h.data.sourceID,
+									renameMap.get(h.data.sourceID),
+								);
+								return {
+									...h,
+									data: {
+										...h.data,
+										sourceID: renameMap.get(
+											h.data.sourceID,
+										)!,
+									},
+								};
+							}
+							if (!this.isValidHandle(ns, h)) {
+								return {
+									...h,
+									data: {
+										type: HandleType.Sink,
+									},
+								};
+							}
+							return h;
+						});
+					}
+					ns.set(n.id, thawed);
+				}
 				return ns;
 			});
 		});

@@ -19,20 +19,20 @@ const GraphToolsModal: Component<GraphToolsModalProps> = props => {
 
 			<h3> {s("graphTools.layout")} </h3>
 			<Button color={Color.primary}>
-				{s("graphTools.tool.layoutDefault")}{" "}
+				{s("graphTools.tool.layoutDefault")}
 			</Button>
 			<Button color={Color.secondary}>
-				{s("graphTools.tool.layoutLinear")}{" "}
+				{s("graphTools.tool.layoutLinear")}
 			</Button>
 
 			<h3> {s("graphTools.optimization")} </h3>
 			<Button color={Color.warning}>
-				{s("graphTools.tool.selectUnreachables")}{" "}
+				{s("graphTools.tool.selectUnreachables")}
 			</Button>
 
 			<h3> {s("graphTools.validate")} </h3>
 			<Button color={Color.danger}>
-				{s("graphTools.tool.validateGraph")}{" "}
+				{s("graphTools.tool.validateGraph")}
 			</Button>
 		</Modal>
 	);

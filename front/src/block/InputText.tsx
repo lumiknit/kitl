@@ -1,6 +1,6 @@
 import { Component, Ref, type JSX } from "solid-js";
 
-export type TextProps = {
+type Props = {
 	class?: string;
 	readonly?: boolean;
 	placeholder?: string;
@@ -13,7 +13,7 @@ export type TextProps = {
 	onBlur?: JSX.EventHandlerUnion<HTMLInputElement, FocusEvent>;
 };
 
-const InputText: Component<TextProps> = props => {
+const InputText: Component<Props> = props => {
 	return (
 		<input
 			type="text"

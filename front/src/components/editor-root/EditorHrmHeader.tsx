@@ -78,19 +78,28 @@ const toolSet = (toolSet: ToolSet, g: HrmState) => {
 					<Button
 						color={Color.secondary}
 						class="flex-1"
-						onClick={() => alert("unimpl")}>
+						onClick={() => {
+							g.cutSelectedNodes();
+							toastSuccess(s("toast.cutSuccess"));
+						}}>
 						<TbScissors />
 					</Button>
 					<Button
 						color={Color.secondary}
 						class="flex-1"
-						onClick={() => alert("unimpl")}>
+						onClick={() => {
+							g.copySelectedNodes();
+							toastSuccess(s("toast.copySuccess"));
+						}}>
 						<TbCopy />
 					</Button>
 					<Button
 						color={Color.secondary}
 						class="flex-1"
-						onClick={() => alert("unimpl")}>
+						onClick={async () => {
+							await g.pasteNodes();
+							toastSuccess(s("toast.pasteSuccess"));
+						}}>
 						<TbClipboard />
 					</Button>
 					<Button

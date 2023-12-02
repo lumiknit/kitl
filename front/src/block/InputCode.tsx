@@ -47,7 +47,7 @@ const outdentTextareaContent = (
 	return [interleave(content, s, originalEnd, lines.join("\n")), start, end];
 };
 
-export type CodeProps = {
+export type Props = {
 	autofocus?: boolean;
 	autoresize?: boolean;
 	class?: string;
@@ -61,7 +61,7 @@ export type CodeProps = {
 	onKeyDown?: (e: TATarget & KeyboardEvent) => boolean | undefined;
 };
 
-const InputCode: Component<CodeProps> = props => {
+const InputCode: Component<Props> = props => {
 	let taRef: HTMLTextAreaElement | undefined;
 	let hiddenRef: HTMLTextAreaElement | undefined;
 

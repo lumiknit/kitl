@@ -1,13 +1,13 @@
 import { Component, JSX, Ref, Show, createSignal } from "solid-js";
 
-type CheckboxProps = {
+type Props = {
 	ref?: Ref<HTMLInputElement>;
 	children?: JSX.Element;
 	value?: boolean;
 	onChange?: (value: boolean) => void;
 };
 
-const Checkbox: Component<CheckboxProps> = props => {
+const Checkbox: Component<Props> = props => {
 	const [checked, setChecked] = createSignal(props.value);
 	const handleChange = (e: Event) => {
 		const target = e.target as HTMLInputElement;

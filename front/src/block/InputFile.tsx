@@ -4,7 +4,7 @@ import InputGroup from "./InputGroup";
 import InputText from "./InputText";
 import { Color } from "./colors";
 
-type InputFileProps = {
+type Props = {
 	class?: string;
 	ref?: Ref<HTMLInputElement>;
 	placeholder?: string;
@@ -12,7 +12,7 @@ type InputFileProps = {
 	onFiles?: (files: FileList) => void;
 };
 
-const InputFile: Component<InputFileProps> = props => {
+const InputFile: Component<Props> = props => {
 	let textRef;
 	let fileRef: HTMLInputElement | undefined;
 	const hackRef = (ref: HTMLInputElement) => {

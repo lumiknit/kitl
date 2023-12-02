@@ -8,8 +8,7 @@ const BrowserUploading: Component<StateWrap> = props => {
 	return (
 		<Show when={uploads().size > 0}>
 			<h3>
-				{" "}
-				<Spinner /> {s("fileBrowser.title.uploading")}{" "}
+				<Spinner /> {s("fileBrowser.title.uploading")}
 			</h3>
 			<ul>
 				<For each={Array.from(uploads())}>

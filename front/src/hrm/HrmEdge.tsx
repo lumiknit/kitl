@@ -13,7 +13,7 @@ type HrmEdgeProps = {
 	handleID: HandleID;
 };
 
-const HrmEdgeSub = (props: HrmEdgeProps) => {
+const HrmEdgeSub: Component<HrmEdgeProps> = props => {
 	const [path, setPath] = createSignal<string[]>([]);
 
 	let clickPathRef: SVGPathElement | undefined;

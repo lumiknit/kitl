@@ -2,7 +2,7 @@ import { Component, For, JSXElement, Show, createSignal } from "solid-js";
 
 import { Color } from "./colors";
 
-type DropdownButtonProps = {
+type Props = {
 	children: JSXElement;
 	list: JSXElement[][];
 	class?: string;
@@ -10,7 +10,7 @@ type DropdownButtonProps = {
 	outline?: boolean;
 };
 
-const DropdownButton: Component<DropdownButtonProps> = props => {
+const DropdownButton: Component<Props> = props => {
 	const [visible, setVisible] = createSignal(false);
 	return (
 		<div class="dropdown">

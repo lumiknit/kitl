@@ -1,10 +1,10 @@
 import { Component } from "solid-js";
 
-type SpinnerProps = {
+type Props = {
 	class?: string;
 };
 
-const Spinner: Component<SpinnerProps> = props => (
+const Spinner: Component<Props> = props => (
 	<span class={`spinner ${props.class}`} />
 );
 

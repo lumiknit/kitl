@@ -95,7 +95,7 @@ export const HrmNodeDetails: Component<DetailsProps> = props => {
 		[NodeType.Alpha]: () => (
 			<div
 				ref={ref}
-				class="hrm-node-details shadow-1"
+				class="hrm-node-details shadow-d"
 				style={{
 					left: `${n().position.x + 16}px`,
 					top: `${n().position.y}px`,
@@ -109,7 +109,7 @@ export const HrmNodeDetails: Component<DetailsProps> = props => {
 		[NodeType.Delta]: () => (
 			<div
 				ref={ref}
-				class="hrm-node-details shadow-1"
+				class="hrm-node-details shadow-d"
 				style={{
 					left: `${n().position.x + 16}px`,
 					top: `${n().position.y + n().size.h}px`,

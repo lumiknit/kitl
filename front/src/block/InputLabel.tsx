@@ -1,13 +1,13 @@
 import { Component, JSXElement } from "solid-js";
 
-export type TextProps = {
+export type Props = {
 	children: JSXElement;
 	class?: string;
 	color: string;
 	outline?: boolean;
 };
 
-const InputLabel: Component<TextProps> = props => {
+const InputLabel: Component<Props> = props => {
 	return (
 		<div
 			class={`form-control btn-${props.outline ? "ol-" : ""}${

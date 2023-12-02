@@ -2,7 +2,7 @@ import { Component, JSXElement, Ref } from "solid-js";
 
 import { Color } from "./colors";
 
-type ButtonProps = {
+type Props = {
 	ref?: Ref<HTMLButtonElement>;
 	children: JSXElement;
 	class?: string;
@@ -13,7 +13,7 @@ type ButtonProps = {
 	disabled?: boolean;
 };
 
-const Button: Component<ButtonProps> = props => {
+const Button: Component<Props> = props => {
 	return (
 		<button
 			ref={props.ref}
