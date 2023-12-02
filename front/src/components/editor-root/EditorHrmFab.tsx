@@ -18,6 +18,7 @@ const EditorHrmFab: Component<Props> = props => {
 		if (!buttonRef) return;
 		addEventListeners(
 			{
+				capture: true,
 				onClick: () => {
 					if (selected()) {
 						hrmState().deleteSelectedNodes();
@@ -28,7 +29,8 @@ const EditorHrmFab: Component<Props> = props => {
 				},
 				onLongPress: () => {
 					// Open menu
-					navigator.vibrate(10);
+					if(navigator.vibrate)
+						navigator.vibrate(10);
 					openMetaModal(props.state);
 				},
 			},

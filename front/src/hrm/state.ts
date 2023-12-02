@@ -635,7 +635,7 @@ export class State {
 	editNode(id: NodeID) {
 		setTimeout(() => {
 			this.onEditNode?.(id);
-		}, 30);
+		}, 100);
 	}
 
 	getNodeStringData(id: string): string {
