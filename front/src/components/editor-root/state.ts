@@ -94,11 +94,13 @@ export const restoreMode = (state: State) => {
 
 // Modals
 
+const modalOnClose = (state: State) => () => state.modalActions[0]().close();
+
 export const openMetaModal = (state: State) => {
 	state.modalActions[0]().open({
 		type: ModalType.Meta,
 		state: state,
-		onClose: () => state.modalActions[0]().close(),
+		onClose: modalOnClose(state),
 	});
 };
 
@@ -107,7 +109,7 @@ export const openBrowserModal = (state: State) => {
 		type: ModalType.Browser,
 		initialPath: state.hrm[0]().path,
 		editValueDef: (path, name) => editValueDef(state, path, name),
-		onClose: () => state.modalActions[0]().close(),
+		onClose: modalOnClose(state),
 	});
 };
 
@@ -115,7 +117,7 @@ export const openGraphToolsModal = (state: State) => {
 	state.modalActions[0]().open({
 		type: ModalType.GraphTools,
 		state: state.hrm[0](),
-		onClose: () => state.modalActions[0]().close(),
+		onClose: modalOnClose(state),
 	});
 };
 
@@ -129,7 +131,7 @@ export const openNodeEditModal = (state: State, id: string) => {
 			hrmState.applyEditNode(id, value);
 			state.modalActions[0]().close();
 		},
-		onClose: () => state.modalActions[0]().close(),
+		onClose: modalOnClose(state),
 	});
 };
 

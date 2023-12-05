@@ -42,9 +42,11 @@ const Modal: Component<ModalProps> = props => {
 		}
 	};
 	onMount(() => {
-		ref?.focus();
+		ref!.focus();
 		setTimeout(() => {
-			ref?.classList.add("show");
+			ref!.classList.add("show");
+			ref!.addEventListener("click", handleModalClick as any);
+			ref!.addEventListener("keydown", handleModalKeyDown as any);
 		}, 100);
 	});
 	return (
@@ -53,8 +55,6 @@ const Modal: Component<ModalProps> = props => {
 			class={`m-modal ${
 				ModalPositionClass[props.position ?? ModalPosition.Center]
 			} ${props.transition ? "transition" : ""}`}
-			onClick={handleModalClick}
-			onKeyDown={handleModalKeyDown}
 			tabIndex={0}>
 			<div
 				classList={{
