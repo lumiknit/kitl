@@ -39,7 +39,7 @@ const HrmPane: Component<HrmPaneProps> = props => {
 	type Control =
 		| [JSXElement, () => any]
 		| [JSXElement, () => any, HTMLButtonElement | undefined];
-	const dz = 1.1;
+	const dz = 1.2;
 	const controls: Control[] = [
 		[
 			<TbZoomIn />,
